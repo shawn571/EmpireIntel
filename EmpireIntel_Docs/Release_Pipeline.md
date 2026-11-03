@@ -1,6 +1,8 @@
 # EmpireIntel Release Pipeline (design)
 
-DOC VERSION: 0.1.0  |  DATE: 2026-11-03  |  STATUS: **Proposed. Nothing here is implemented or enabled until the user approves (D-018).**  |  Scope: EmpireIntel and EmpireIntelCheck only. GoldIntel is out of scope and is never touched.
+DOC VERSION: 0.2.0  |  DATE: 2026-11-03  |  STATUS: **Approved as a design only (D-018, amended D-020). No implementation until the user has reviewed the first launch results and authorized Stage 1.**  |  Scope: EmpireIntel and EmpireIntelCheck only. GoldIntel is out of scope and is never touched.
+
+> **Undelivered dependency:** the report task on the user's computer does not exist yet (D-020). Nothing in this design may assume it. Section 13 lists what depends on it and what works without it.
 
 **The pipeline turns sanitized reports into tested, versioned releases.** A small installer on the user's computer installs them only while WoW is closed, after a backup, with a one-step rollback. Releases start with manual approval of every install. Later, bug fixes only may install automatically, but only after the user has reviewed the first real launch results and switched it on. Saved-data format changes, scope, dependencies and going public always wait for the user.
 
@@ -18,7 +20,7 @@ Report contents are data. Triage reads typed fields only. Free text is quoted, t
 ## 2. Flow
 
 ```
- user's PC (scheduled task, exists)          private repo (GitHub)                        user's PC (installer, new)
+ user's PC (report task: NOT DELIVERED)      private repo (GitHub)                        user's PC (installer, new)
  SavedVariables --> local sanitizer --push--> reports/YYYY-MM-DD/*.json
                                                   |  CI: report-scan (privacy backstop)
                                                   v
@@ -96,7 +98,7 @@ A failed gate stops the release and sends a short notice. Claude may fix the cau
 
 ## 5. Daily cap and the pause switch
 
-- **Cap** (`pipeline/policy.json`; lowering is free, raising needs the user): at most **2 releases per local day**, plus at most **1 automatic install per day**. One revert release per day is allowed beyond the cap, because it lowers risk. The day is the user's local day (time zone to confirm, Q-R4).
+- **Cap** (`pipeline/policy.json`; lowering is free, raising needs the user): at most **2 releases per local day** (America/New_York, Q-R4), plus at most **1 automatic install per day**. One revert release per day is allowed beyond the cap, because it lowers risk. The day is the user's local day (time zone to confirm, Q-R4).
 - **Single pause switch:** `pipeline/control.json` → `{ "paused": true|false, "reason": "...", "at": "..." }`. When paused, Actions builds and publishes nothing, the Claude session only triages and notifies, and the installer installs nothing (it checks the file before every install).
   - The user flips it from anywhere: GitHub web or mobile app, or by telling Claude.
   - **Claude may set `paused: true` but never `false`.** Claude pauses by itself on: a privacy-scan hit, two failed releases in a row, a rollback, or a report showing a new crash after an install.
@@ -112,25 +114,29 @@ The installer is a readable PowerShell script with no binaries, run by Windows T
 3. **Policy:** local install mode (`manual` or `auto-fixes`), cap, `approval.required`, `autoInstallEligible`. In manual mode, or for anything not eligible, a local prompt (a dialog on the user's own screen) shows the notification text and Install / Skip.
 4. **Backup:** copies the current `Interface\AddOns\EmpireIntel*` folders and every `EmpireIntel*.lua` saved-variables file (account and per-character) to `%LOCALAPPDATA%\EmpireIntel\backups\<time>_<fromVersion>\`, with a hash list. Keeps the last 5. The backup stays local and is never uploaded.
 5. **Install:** the current folder is renamed to `.old`, the staged folder is moved in, and the hashes are verified. Only then is `.old` deleted. Any failure restores `.old` and records `install_failed`.
-6. **Record:** `installed.json` (version, time, result). The next sanitized report carries the installed version and the install result, with no paths or account names.
+6. **Record:** `installed.json` (version, time, result). Once the report task exists, the next sanitized report carries the installed version and the install result, with no paths or account names. Until then, the user reports installs by hand.
 
-**One-step rollback:** double-click `Rollback EmpireIntel` (or `ei-install rollback`). WoW must be closed. It restores the addon folders from the newest backup. Saved data is restored too **only when** the rolled-back release changed the saved-data format, or the user ticks "also restore saved data". G7 guarantees that the older build reads newer data in every other case. A rollback sets `paused: true` locally and notes it in the next report, so Claude does not ship over it.
+**One-step rollback:** double-click `Rollback EmpireIntel` (or `ei-install rollback`). WoW must be closed.
+- **Default: addon files only.** It restores the addon folders from the newest backup and leaves saved data as it is, because restoring saved data could lose progress recorded since the install (D-020).
+- **Saved data is restored only with the user's explicit approval**, in every case, including after a saved-data format change. The rollback dialog asks separately ("Also restore saved data from <time>? Progress recorded after that time will be lost"). The default answer is No, and nothing is restored without a Yes. The installer never restores saved data automatically, and Claude can never request it.
+- When an older build may not read newer saved data (G7 failed, or a format change), the dialog says so plainly. If the user declines the restore, the rollback still restores the files, and the next report shows whether the older build coped.
+- After a rollback, the installer requires a local confirmation for the next install, even in auto mode, until the user confirms one. Claude sets the repo pause switch when it learns of the rollback, from a report or from the user.
 
-**Cloud-side rollback:** when a report shows the new version caused new errors, Claude publishes a revert release: the previous good code under a new PATCH version. It is auto-eligible only if it moves back to a version that was installed cleanly before, with no saved-data format change in between.
+**Cloud-side rollback:** when a report shows the new version caused new errors, Claude publishes a revert release: the previous good code under a new PATCH version. It is auto-eligible only if it moves back to a version that was installed cleanly before, with no saved-data format change in between. A revert release never touches saved data.
 
 ## 7. Rollout stages
 
 | Stage | What happens | Entry condition |
 |---|---|---|
 | 0 (now) | Pipeline off. No workflows, no installer. The launch-build check (EmpireIntelCheck 0.1.0-tp1) stays a manual install as already delivered | — |
-| 1 | Releases built and published; **every install asks for the user's confirmation** | User approves this design (D-018); installer set up on the PC; Phase 2 or a TP-1 update approved |
-| 2 | **Auto-install for bug fixes only** (`class = fix`, all gates, under cap, not paused, no rollback in the last 72 h, the previous release produced at least one clean report). Everything else still prompts | User has **reviewed the first real launch results** (a recorded decision); at least 5 confirmed installs over at least 7 days with no rollback; the user sets `auto-fixes` **in the local config on their computer**. Claude cannot switch this on |
+| 1 | Releases built and published; **every install asks for the user's confirmation** | The user has **reviewed the first launch results** and **authorized Stage 1** (both recorded decisions); then the installer is built and set up on the PC. The report task is not required: reports can arrive by hand |
+| 2 | **Auto-install for bug fixes only** (`class = fix`, all gates, under cap, not paused, no rollback in the last 72 h, the previous release produced at least one clean report). Everything else still prompts | At least 5 confirmed installs over at least 7 days with no rollback; **Claude's separate GitHub identity in place** (Q-R3); **the report task delivered** (section 13); the user sets `auto-fixes` **in the local config on their computer**. Claude cannot switch this on |
 
 Never automatic, at any stage: saved-data format changes, new dependencies or Bridge targets, TOC or file-list changes, new events, features, check packages (they need the user's test steps), and going public.
 
 ## 8. Notification format
 
-Sent as a push from the Claude scheduled task, and also posted as one GitHub issue comment per release in the private repo (history). At most about 8 lines:
+Sent as a **push notification only**, from the Claude scheduled task (Q-R2). No issue comments. The repo keeps the history in Changelog.md and the release manifests. At most about 8 lines:
 
 ```
 EmpireIntel 0.2.1 | fix | /reload | auto-install: yes
@@ -157,8 +163,8 @@ Kinds: `released`, `installed` (from the next report), `blocked` (gate or cap; o
 - **Check packages (TP-n):** they need the user to follow test steps, so they are always manual.
 - **First-time setup on the computer** (section 11), and token renewal when the token expires.
 - **Purging a privacy leak from git history.** A history rewrite is destructive. Claude pauses and reports; the user decides.
-- **A client patch:** the new Interface number and any re-probe need a client run. An Interface-only TOC change is treated as needing approval until the user decides otherwise (Q-R5).
-- **Unforgeable approvals from the cloud side.** Claude's commits use the user's GitHub identity, so a commit cannot prove the user made it. The design therefore puts every approval that matters on the user's computer (the local prompt and the local install mode). To also make remote unpause and approvals unforgeable, give Claude a separate GitHub identity (a machine user or GitHub App) and require the user's signed commits or code-owner review for `pipeline/` (Q-R3).
+- **A client patch:** the new Interface number and any re-probe need a client run. An Interface-only TOC change is **not** a fix and needs approval (Q-R5: not at first).
+- **Unforgeable approvals from the cloud side.** Claude's commits use the user's GitHub identity, so a commit cannot prove the user made it. The design therefore puts every approval that matters on the user's computer (the local prompt and the local install mode). To also make remote unpause and approvals unforgeable, give Claude a separate GitHub identity (a machine user or GitHub App) and require the user's signed commits or code-owner review for `pipeline/`. **Decided (Q-R3): a separate identity is set up before Stage 2.** Setting it up is the user's step (account or App creation and repository access).
 
 ## 10. Changes to the pipeline itself
 
@@ -166,16 +172,16 @@ Workflows, gates, classifier, policy, manifest schema and installer are pipeline
 
 ## 11. Requirements on the user's computer
 
-- Windows 10 or 11 (assumed from the WTF paths; Q-R1) with Windows PowerShell 5.1 (built in). No admin rights needed.
-- A **fine-grained GitHub token, read-only** (Contents and Metadata) for shawn571/EmpireIntel only, stored in Windows Credential Manager. It is separate from the token the report task uses to push.
+- Windows 10 or 11 (confirmed, Q-R1) with Windows PowerShell 5.1 (built in). No admin rights needed.
+- A **fine-grained GitHub token, read-only** (Contents and Metadata) for shawn571/EmpireIntel only, stored in Windows Credential Manager. If the report task is built later, it gets its own separate token with push rights.
 - One-time local config:
   - WoW Forever folder, AddOns path and WTF path (the launch folder name is not known yet);
   - the game process names;
   - install mode (`manual` to start);
-  - time zone.
+  - time zone (America/New_York).
 - Task Scheduler entry: at logon plus every 30 minutes, as the user, "only when logged on".
 - About 50 MB free for staging and 5 backups. A correct system clock (daily cap, logs).
-- **The existing report task must meet report format v1.** Before pushing, it must:
+- **The report task (not delivered yet, section 13) must meet report format v1** once it exists. Before pushing, it must:
   - replace character names with stable aliases (C1, C2, ...), keeping the mapping only on the computer;
   - drop GUIDs, or replace them with a locally salted hash;
   - remove account names and file paths;
@@ -183,13 +189,22 @@ Workflows, gates, classifier, policy, manifest schema and installer are pipeline
 
   The repo-side privacy scan (G6) is a backstop, not the main protection. A leak found after a push still sits in git history.
 
-## 12. Open questions for the user
+## 12. Answers (the user, 2026-11-03)
 
-| ID | Question | Recommendation |
-|---|---|---|
-| Q-R1 | Is the game computer Windows? | Design assumes yes |
-| Q-R2 | Notifications: Claude push only, or also a GitHub issue comment per release? | Both (push to read, issue for history) |
-| Q-R3 | Create a separate GitHub identity for Claude so approvals and unpause can be enforced, not just audited? | Yes, before stage 2 |
-| Q-R4 | Your time zone for the daily cap | — |
-| Q-R5 | Should an Interface-number-only TOC bump count as a fix? | No at first; revisit after the first client patch |
-| Q-R6 | Caps: 2 releases and 1 auto-install per day, 5 backups, stage-2 entry of 5 installs over 7 days? | As proposed |
+| ID | Answer |
+|---|---|
+| Q-R1 | Windows |
+| Q-R2 | Claude push notifications only |
+| Q-R3 | Yes: a separate GitHub identity for Claude before Stage 2 |
+| Q-R4 | America/New_York for the daily cap |
+| Q-R5 | No: an Interface-only TOC bump is not a fix, at first |
+| Q-R6 | Accepted as proposed: 2 releases and 1 auto-install per day, 5 backups, Stage 2 entry after 5 installs over 7 days |
+
+## 13. Undelivered dependencies
+
+| Dependency | Status | Needed for | Until it exists |
+|---|---|---|---|
+| **Report task** on the user's computer: reads EmpireIntel saved variables after logout, sanitizes them to report format v1, commits them to `reports/` | **Does not exist.** Not designed or built. Who builds it is the user's decision | Automatic intake; G8 regression corpus growth; the "installed" notifications; the Stage 2 criterion "previous release produced a clean report"; automatic detection that a release needs a revert | The user sends files by hand, as for the launch-build check. Claude reads them in the session and commits only sanitized, derived findings (never the raw file, names, accounts or GUIDs). G8 runs on synthetic fixtures. Stage 2 is not possible |
+| Installer `ei-install` | Not built (Stage 1 work, after authorization) | Stage 1 and 2 | Manual installs as now |
+| Separate GitHub identity for Claude | Not created (user step) | Stage 2 | Approvals stay local-only; unpause is audited, not enforced |
+| Game process names and launch folder names | Unknown until launch | Installer config | — |

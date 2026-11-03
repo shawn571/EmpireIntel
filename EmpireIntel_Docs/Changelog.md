@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-03 | S-005 | Release pipeline design approved with amendments (documentation only)
+- Release_Pipeline.md 0.2.0: report task listed as an undelivered dependency (new section 13); rollback restores addon files by default, saved data only with explicit approval; push-only notifications; America/New_York cap day; Stage 1 entry after the launch-results review and authorization; Stage 2 needs Claude's separate identity and the report task. D-018 status, D-020.
+
 ## 2026-11-03 | S-004 | Release pipeline design (documentation only)
 - Release_Pipeline.md (Proposed, D-018); D-019 executive roles. No workflow, script or config added. EmpireIntelCheck unchanged.
 
