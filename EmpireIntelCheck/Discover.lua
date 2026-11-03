@@ -1,0 +1,361 @@
+local ADDON, NS = ...
+-- EmpireIntelCheck / Discover.lua
+-- Part B: discover the Legacy API in the live client WITHOUT assuming names (Architecture.md section 9).
+--   L-1 namespaces and globals   L-2 Enum and constants   L-3 addons and frames
+--   L-4 event names (validity only, never registered)   L-5 official API docs (only on /eicheck docs)
+--   D-1 zero-argument calls of discovered read-style names under runtime limits 1 and 7.
+-- All loops run inside a scheduler coroutine and call Checkpoint() between items (limit 3).
+
+local U = NS.U
+local D = {}
+NS.Discover = D
+
+D.MAX_CALLS = 300
+D.MAX_LIST = 300
+D.DOC_ADDONS = { 'Blizzard_APIDocumentation', 'Blizzard_APIDocumentationGenerated' }   -- candidates; presence is checked, never assumed
+
+local checkpoint = function() NS.Core.Checkpoint() end
+
+local function push(list, item, info)
+  if #list >= D.MAX_LIST then
+    if info then info.truncated = true end
+    return false
+  end
+  table.insert(list, item)
+  return true
+end
+
+local function frameInfo(v)
+  local ok, isFrame = pcall(function() return type(v.GetObjectType) == 'function' end)
+  if not ok or not isFrame then return nil end
+  local okT, ot = pcall(v.GetObjectType, v)
+  local okS, shown = pcall(v.IsShown, v)
+  return { objectType = okT and U.dump(ot) or 'error', shown = okS and U.dump(shown) or 'error' }
+end
+
+---------------------------------------------------------------------------
+-- L-1 and L-2: one resumable walk of the global table
+---------------------------------------------------------------------------
+-- Returns a discovery record:
+--  namespaces = { all = {names}, count }, matchedNamespaces = { [ns] = { term, members = {[name]=type} } },
+--  candidates = { 'C_X.Fn' or 'GlobalFn' -> { term, unrelated } }, globals = { functions, tables, frames, strings, constants },
+--  enums = { [name] = { term, members } }
+function D.Walk(rec)
+  local env = NS.env
+  rec.namespaces = { all = {}, count = 0 }
+  rec.matchedNamespaces = {}
+  rec.candidates = {}
+  rec.globals = { functions = {}, tables = {}, frames = {}, strings = {}, constants = {} }
+  rec.enums = {}
+  rec.info = { truncated = false, restarts = 0, visited = 0 }
+  local key = nil
+  local restarts = 0
+  while true do
+    local ok, k, v = pcall(next, env, key)
+    if not ok then
+      -- the key vanished between frames; restart the walk (bounded)
+      restarts = restarts + 1
+      rec.info.restarts = restarts
+      if restarts > 3 then rec.info.aborted = true; NS.Run.Unexpected('walk_aborted', 'global table changed too often'); break end
+      key = nil
+      k = nil
+    else
+      if k == nil then break end
+      key = k
+      rec.info.visited = rec.info.visited + 1
+      if type(k) == 'string' then
+        pcall(D.Visit, rec, k, v)
+      end
+    end
+    checkpoint()
+  end
+  table.sort(rec.namespaces.all)
+  D.WalkEnum(rec)
+  return rec
+end
+
+function D.VisitEnum(rec, ek, ev)
+  if type(ek) ~= 'string' or type(ev) ~= 'table' then return end
+  local eTerm = U.term(ek)
+  local members, hit = {}, false
+  for mk, mv in pairs(ev) do
+    if type(mk) == 'string' and (eTerm or U.term(mk)) then
+      members[mk] = U.dump(mv); hit = true
+    end
+  end
+  if hit then rec.enums[ek] = { term = eTerm or 'member', members = members, unrelated = U.unrelated(ek) } end
+end
+
+function D.WalkEnum(rec)
+  local enum = rec._enum
+  rec._enum = nil
+  if type(enum) ~= 'table' then return end
+  local key = nil
+  while true do
+    local ok, k, v = pcall(next, enum, key)
+    if not ok or k == nil then break end
+    key = k
+    pcall(D.VisitEnum, rec, k, v)
+    checkpoint()
+  end
+end
+
+function D.Visit(rec, k, v)
+  local tv = type(v)
+  if string.sub(k, 1, 2) == 'C_' and tv == 'table' then
+    rec.namespaces.count = rec.namespaces.count + 1
+    table.insert(rec.namespaces.all, k)
+    local nsTerm = U.term(k)
+    local members, nm, related = {}, 0, 0
+    for mk, mv in pairs(v) do
+      if type(mk) == 'string' then
+        local mTerm = U.term(mk)
+        if nsTerm or mTerm then
+          nm = nm + 1
+          if nm <= 200 then members[mk] = type(mv) end
+          local full = k .. '.' .. mk
+          local unrel = U.unrelated(full) or U.unrelated(k)
+          if not unrel then related = related + 1 end
+          if type(mv) == 'function' then
+            rec.candidates[full] = { term = nsTerm or mTerm, unrelated = unrel }
+          end
+        end
+      end
+    end
+    if nm > 0 then
+      -- a namespace whose only matches are known unrelated names does not count toward the verdict
+      rec.matchedNamespaces[k] = { term = nsTerm, members = members, unrelated = U.unrelated(k) or related == 0 }
+    end
+    return
+  end
+  if k == 'Enum' and tv == 'table' then
+    rec._enum = v          -- walked separately, resumable (D.WalkEnum)
+    return
+  end
+  local term = U.term(k)
+  if not term then return end
+  local unrelated = U.unrelated(k)
+  if tv == 'function' then
+    push(rec.globals.functions, { name = k, term = term, unrelated = unrelated }, rec.info)
+    rec.candidates[k] = { term = term, unrelated = unrelated }
+  elseif tv == 'table' then
+    local fi = frameInfo(v)
+    if fi then
+      fi.name = k; fi.term = term; fi.unrelated = unrelated
+      push(rec.globals.frames, fi, rec.info)
+    else
+      local keys, n = {}, 0
+      for tk, tval in pairs(v) do
+        if n >= 2000 then rec.info.truncated = true; break end
+        if type(tk) == 'string' then
+          n = n + 1
+          if n <= 50 then keys[tk] = type(tval) end
+          if type(tval) == 'function' then
+            rec.candidates[k .. '.' .. tk] = { term = term, unrelated = unrelated, method = true }
+          end
+        end
+      end
+      push(rec.globals.tables, { name = k, term = term, unrelated = unrelated, keys = keys, count = n }, rec.info)
+    end
+  elseif tv == 'string' then
+    push(rec.globals.strings, { name = k, value = U.ascii(v) }, rec.info)
+  elseif tv == 'number' or tv == 'boolean' then
+    push(rec.globals.constants, { name = k, value = v, unrelated = unrelated }, rec.info)
+  end
+end
+
+---------------------------------------------------------------------------
+-- L-3 addons (user addons by index; Blizzard ones arrive via ADDON_LOADED, see Run.lua)
+---------------------------------------------------------------------------
+function D.Addons(rec)
+  local ca = NS.G('C_AddOns')
+  rec.addons = { list = {}, docs = {} }
+  if type(ca) ~= 'table' then rec.addons.code = 'not_found'; return end
+  local okN, n = pcall(ca.GetNumAddOns)
+  rec.addons.count = okN and n or 'error'
+  if okN and type(n) == 'number' then
+    for i = 1, math.min(n, 150) do
+      local r = U.pack(pcall(ca.GetAddOnInfo, i))
+      if r[1] then
+        local okL, loaded = pcall(ca.IsAddOnLoaded, i)
+        local okD, lod = pcall(ca.IsAddOnLoadOnDemand, i)
+        table.insert(rec.addons.list, { name = U.dump(r[2]), loadable = U.dump(r[5]), reason = U.dump(r[6]),
+          loaded = okL and U.dump(loaded) or nil, lod = okD and U.dump(lod) or nil })
+      end
+      checkpoint()
+    end
+  end
+  for _, name in ipairs(D.DOC_ADDONS) do
+    local r = U.pack(pcall(ca.GetAddOnInfo, name))
+    local exists = r[1] and r[2] ~= nil and r[6] ~= 'MISSING'
+    rec.addons.docs[name] = exists and true or false
+    if exists then rec.addons.docsAvailable = true end
+  end
+end
+
+---------------------------------------------------------------------------
+-- L-5 official API documentation (user command only; it loads a Blizzard addon)
+---------------------------------------------------------------------------
+local function docMatches(sys)
+  if U.term(sys.Name) or U.term(sys.Namespace) then return true end
+  for _, f in ipairs(type(sys.Functions) == 'table' and sys.Functions or {}) do
+    if U.term(f.Name) then return true end
+  end
+  for _, e in ipairs(type(sys.Events) == 'table' and sys.Events or {}) do
+    if U.term(e.Name) or U.term(e.LiteralName) then return true end
+  end
+  return false
+end
+
+local function docArgs(list)
+  local out, required = {}, 0
+  for _, a in ipairs(type(list) == 'table' and list or {}) do
+    table.insert(out, { name = U.dump(a.Name), type = U.dump(a.Type), nilable = U.dump(a.Nilable) })
+    if a.Nilable ~= true and a.Default == nil then required = required + 1 end
+  end
+  return out, required
+end
+
+function D.LoadDocs()
+  local ca = NS.G('C_AddOns')
+  if type(ca) ~= 'table' or type(ca.LoadAddOn) ~= 'function' then return 'not_found (no C_AddOns.LoadAddOn)' end
+  local tried = {}
+  for _, name in ipairs(D.DOC_ADDONS) do
+    local r = U.pack(pcall(ca.LoadAddOn, name))
+    tried[name] = r[1] and U.dump(r[2]) or ('error ' .. U.ascii(tostring(r[2])))
+  end
+  local api = NS.G('APIDocumentation')
+  local db = NS.Core.DB()
+  if type(api) ~= 'table' or type(api.systems) ~= 'table' then
+    db.docs = { at = U.wall(), tried = tried, result = 'not_found (no APIDocumentation table after loading)' }
+    return 'not found'
+  end
+  local docs = { at = U.wall(), tried = tried, systems = {}, args = {}, events = {}, systemCount = #api.systems }
+  for _, sys in ipairs(api.systems) do
+    local ok, hit = pcall(docMatches, sys)
+    if ok and hit then
+      local s = { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace), functions = {}, events = {} }
+      for _, f in ipairs(type(sys.Functions) == 'table' and sys.Functions or {}) do
+        local args, required = docArgs(f.Arguments)
+        local rets = docArgs(f.Returns)
+        table.insert(s.functions, { name = U.dump(f.Name), args = args, returns = rets })
+        local full = (type(sys.Namespace) == 'string' and sys.Namespace ~= '') and (sys.Namespace .. '.' .. tostring(f.Name)) or tostring(f.Name)
+        docs.args[full] = required
+      end
+      for _, e in ipairs(type(sys.Events) == 'table' and sys.Events or {}) do
+        local payload = docArgs(e.Payload)
+        local lit = e.LiteralName
+        table.insert(s.events, { name = U.dump(e.Name), literal = U.dump(lit), payload = payload,
+          valid = type(lit) == 'string' and U.dump(NS.Core.EventValid(lit)) or nil })
+        if type(lit) == 'string' then docs.events[lit] = NS.Core.EventValid(lit) end
+      end
+      table.insert(docs.systems, s)
+    end
+  end
+  db.docs = docs
+  NS.Run.Schedule('docs', 1, true)
+  return 'saved ' .. #docs.systems .. ' matching systems of ' .. docs.systemCount .. '; rerun queued'
+end
+
+---------------------------------------------------------------------------
+-- D-1 guarded calls (runtime limits 1 and 7)
+---------------------------------------------------------------------------
+D.blockedLog = {}          -- filled by Run.lua from ADDON_ACTION_FORBIDDEN / _BLOCKED for this addon
+D.current = nil
+D.erroredThisSession = {}
+
+local function blockedText(err)
+  local low = string.lower(tostring(err))
+  return string.find(low, 'protected', 1, true) or string.find(low, 'forbidden', 1, true)
+    or string.find(low, 'blocked', 1, true) or string.find(low, 'restricted', 1, true)
+end
+
+-- Classify one name. Returns a result table { code, values?, detail? }.
+function D.Probe(full, cand, docsArgs, budget)
+  local fnName = string.match(full, '([^%.]+)$')
+  if cand and cand.unrelated then return { code = 'skipped_unrelated' } end
+  if U.denied(full) then return { code = 'skipped_denylist', detail = U.denied(full) } end
+  if not U.isReadName(fnName) then return nil end      -- not a read-style name: listed in discovery only
+  if docsArgs and (docsArgs[full] or 0) > 0 then return { code = 'skipped_args', detail = docsArgs[full] } end
+  if D.erroredThisSession[full] then return { code = 'skipped_errored_before' } end
+  if budget.calls >= D.MAX_CALLS then return { code = 'skipped_cap' } end
+  local fn = U.path(full)
+  if fn == nil then return { code = 'not_found' } end
+  if type(fn) ~= 'function' then return { code = 'not_function' } end
+  budget.calls = budget.calls + 1
+  local before = #D.blockedLog
+  D.current = full
+  local r = U.pack(pcall(fn))
+  D.current = nil
+  if #D.blockedLog > before then return { code = 'blocked', detail = D.blockedLog[#D.blockedLog].fn } end
+  if not r[1] then
+    D.erroredThisSession[full] = true
+    if blockedText(r[2]) then return { code = 'blocked', detail = U.ascii(tostring(r[2])) } end
+    return { code = 'error', detail = U.ascii(tostring(r[2])) }
+  end
+  local any = false
+  for i = 2, r.n do if r[i] ~= nil then any = true end end
+  if r.n <= 1 or not any then return { code = 'returned_nothing' } end
+  local values, info = {}, nil
+  for i = 2, r.n do
+    local v
+    v, info = U.dump(r[i], info)
+    values[i - 1] = v
+  end
+  budget.bytes = budget.bytes + (info and info.cost or 0)
+  local res = { code = 'ok', values = values, n = r.n - 1, truncated = info and info.truncated or nil }
+  if info and (info.secret > 0 or info.opaque > 0) then
+    res.code = 'unreadable'
+    res.detail = 'secret ' .. info.secret .. ', opaque ' .. info.opaque
+  end
+  return res
+end
+
+-- Meaningful data: something other than nil, false, 0, '' or an empty table.
+function D.Meaningful(res)
+  if not res or res.code ~= 'ok' or type(res.values) ~= 'table' then return false end
+  for i = 1, res.n or 0 do
+    local v = res.values[i]
+    if type(v) == 'table' then
+      if next(v) ~= nil then return true end
+    elseif v ~= nil and v ~= false and v ~= 0 and v ~= '' then
+      return true
+    end
+  end
+  return false
+end
+
+function D.CallAll(rec, run)
+  local db = NS.Core.DB()
+  local docsArgs = db.docs and db.docs.args or nil
+  -- names the official docs list (L-5) but the walk did not find: probed so they report not_found
+  if db.docs and type(db.docs.args) == 'table' then
+    for full in pairs(db.docs.args) do
+      if not rec.candidates[full] and U.term(full) then
+        rec.candidates[full] = { term = U.term(full), fromDocs = true, unrelated = U.unrelated(full) }
+      end
+    end
+  end
+  local names = {}
+  for full in pairs(rec.candidates) do table.insert(names, full) end
+  table.sort(names)
+  local results, counts = {}, {}
+  local budget = { calls = 0, bytes = 0 }
+  for _, full in ipairs(names) do
+    if U.inCombat() then
+      -- the scheduler pauses in combat; this guard covers a call that starts the same frame combat begins
+      results[full] = { code = 'skipped_combat' }
+    else
+      local ok, res = pcall(D.Probe, full, rec.candidates[full], docsArgs, budget)
+      if not ok then res = { code = 'error', detail = U.ascii(tostring(res)) } end
+      if res then
+        if budget.bytes > 96 * 1024 and res.values then res.values = nil; res.truncated = true; res.dropped = 'size cap' end
+        results[full] = res
+        counts[res.code] = (counts[res.code] or 0) + 1
+      end
+    end
+    checkpoint()
+  end
+  run.calls = { results = results, counts = counts, calls = budget.calls, bytes = budget.bytes }
+  return run.calls
+end

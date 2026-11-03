@@ -10,3 +10,4 @@ EmpireIntel_Docs/evidence/
 .DS_Store
 Thumbs.db
 *.swp
+dist/

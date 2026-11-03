@@ -72,6 +72,15 @@ Still Proposed and conditional on TP-1. The DataStore modules of interest change
 ## D-007 note (2026-11-03)
 The user reports the repository is now private, which resolves Q-2. On 2026-11-03 the GitHub API still returned `private: false` for shawn571/EmpireIntel. Until it reads private, the hygiene rules stay in force. They cost nothing, so they stay as defaults afterwards: SavedVariables and evidence remain git-ignored, as in GoldIntel.
 
+## D-013 update (2026-11-03): Approved with limits
+The user approved automatic getter calls (Q-7) under Architecture section 9 runtime limits 1 to 7: zero-argument Get/Is/Has names only, pcall, denylist Set/Spend/Learn/Reset/Buy/Purchase, login delay, spread across frames, saved-data cap, off switch, no interference with GoldIntel, separate result codes.
+
+## D-016 Provisional NOTHING EXPOSED and automatic reruns | Approved (user, 2026-11-03)
+Rule: Architecture section 9, runtime limit 8.
+
+## D-017 Phase 1 authorized for the check package only | Approved (user, 2026-11-03, Q-3)
+Rule: code may be written for `EmpireIntelCheck`, its offline tests and its build script. Nothing else. Before pushing code, verify that the repository is private.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -79,11 +88,11 @@ The user reports the repository is now private, which resolves Q-2. On 2026-11-0
 | ID | Question | Status |
 |---|---|---|
 | Q-1 | Product scope | **Resolved** (D-010, Requirements_v1.md) |
-| Q-2 | Publishing ported GoldIntel code | **Resolved** by the user (repository private). GitHub still showed it public on 2026-11-03: please check Settings > General > Danger Zone > Change visibility |
-| Q-3 | Approve Architecture v2.0.0 and authorize Phase 1 (TP-1 code only)? | Open |
+| Q-2 | Publishing ported GoldIntel code | **Resolved**: repository verified private via the GitHub API before the first code push (S-003, 2026-11-03) |
+| Q-3 | Approve Architecture v2.0.0 and authorize Phase 1 (TP-1 code only)? | **Approved** for the check package only (D-017) |
 | Q-4 | Run TP-1 on the launch build | **Resolved** (user: yes) |
 | Q-5 | Read GoldIntel results | Dropped (not in Requirements_v1) |
 | Q-6 | Working rules from memory | **Resolved** (user message 2026-11-03; Project_Bible sections 2 and 5) |
-| Q-7 | D-013: allow TP-1 to call discovered Legacy getters automatically in the first run? | Open. Recommendation: yes, under the D-013 rules; it saves a round trip during launch week |
+| Q-7 | D-013: allow TP-1 to call discovered Legacy getters automatically in the first run? | **Approved with limits** (D-013 update, D-016) |
 | Q-8 | If the verdict is PANE ONLY, may EmpireIntel read the Legacy pane's text as a source? | Open. Recommendation: decide after TP-1, when we know what the pane shows |
-| Q-9 | Allow these hosts in the session network settings so the Legacy rules can be checked against Blizzard's article: worldofwarcraft.blizzard.com, forg.gg, www.icy-veins.com | Open. Optional |
+| Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

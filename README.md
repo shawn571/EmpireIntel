@@ -4,7 +4,7 @@ A **WoW Forever** addon (client 1.60.x, Interface 16001) that tracks the **Legac
 Legacy points and challenges, perks spent per character against the cap, rested XP and professions, plus a
 "what next" list driven by a plan file you write.
 
-**Status:** planning (Phase 0). There is no addon code yet. The v1 design is in
+**Status:** Phase 1. `EmpireIntelCheck/` is Test Package 1, a passive in-client check (see its README.txt). EmpireIntel itself is not built yet. The v1 design is in
 [`EmpireIntel_Docs/Architecture.md`](EmpireIntel_Docs/Architecture.md) and is waiting for approval. The first package is a passive in-client check that discovers what the Legacy API exposes.
 
 ## Alt data
@@ -13,6 +13,8 @@ have it installed (Altoholic users already do), and from its own per-character s
 under its own license; EmpireIntel never bundles or copies it.
 
 ## Layout
+- `EmpireIntelCheck/` Test Package 1 (throwaway, read-only). `Tests/` offline suite: `lua5.1 Tests/run.lua` and `lua5.3 Tests/run.lua`.
+- `tools/build_package.py` builds and verifies `dist/EmpireIntelCheck_AddOns.zip`.
 - `EmpireIntel_Docs/` governance (start with `Project_Bible.md`), requirements, decisions, architecture, compatibility notes, risks,
   the GoldIntel reuse audit and the DataStore/Altoholic review.
 

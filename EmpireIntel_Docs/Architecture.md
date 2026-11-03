@@ -1,6 +1,6 @@
 # EmpireIntel Architecture v1
 
-DOC VERSION: 2.0.0  |  DATE: 2026-11-03  |  STATUS: **Proposed, awaiting the user's approval**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
+DOC VERSION: 2.1.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
 
 **EmpireIntel tracks the WoW Forever Legacy system across a player's characters.** For each character it shows Legacy points and perks, rested XP and professions. It also gives a "what next" list driven by a plan file the user writes. Alt data comes from EmpireIntel's own snapshots and, optionally, from DataStore.
 
@@ -114,8 +114,18 @@ For each goal in order: is it met (yes, no, unknown); its gap (e.g. 4 levels, 37
 
 A throwaway addon `EmpireIntelCheck`, separate from EmpireIntel. **It is passive:** it runs by itself at login and logout, prints one summary line, and writes everything to `EmpireIntelCheckDB`. It has no required commands. It runs on the **launch build**.
 
+**Runtime limits (the user, 2026-11-03, Q-7 and D-016; binding for every TP-1 build):**
+1. **Calls:** only names that start with `Get`, `Is` or `Has`, called with **zero arguments**, each inside `pcall`. A name containing `Set`, `Spend`, `Learn`, `Reset`, `Buy` or `Purchase` is never called. The match is case-insensitive, so it also skips harmless names such as `GetAssetInfo`; each skip is recorded as `skipped_denylist`. If the API documentation (L-5) lists a required argument, the call is skipped as `skipped_args`.
+2. **Login delay:** nothing heavy runs until 10 s after `PLAYER_ENTERING_WORLD`.
+3. **Spread across frames:** all scanning and calling runs as a queue with a budget of about 2 ms per frame (item count as a fallback where no precise timer exists). It pauses in combat.
+4. **Saved data cap:** `EmpireIntelCheckDB` stays under about 256 KB (estimated while writing). Older runs are dropped first, and truncation is marked where it happens.
+5. **Off switch:** `/eicheck off` stops all work at once and on later logins (one line at login says it is off); `/eicheck on` re-enables it. Disabling the addon at the character screen also works.
+6. **No interference with GoldIntel:** EmpireIntelCheck's only globals are `EmpireIntelCheckDB`, `SLASH_EMPIREINTELCHECK1` and its `SlashCmdList` entry. It never reads or writes `GoldIntelDB` or `GoldIntelCharDB`, never hooks a global function, only hooks `OnShow` of frames it discovered by Legacy terms, prints at most two lines per run, and uses its own unnamed event frame. A test checks the global footprint.
+7. **Separate result codes** for every probed name: `ok`, `not_found`, `returned_nothing`, `blocked`, `unreadable`, plus `error`, `skipped_denylist`, `skipped_args`, `skipped_unrelated`, `skipped_cap`. `blocked` = an `ADDON_ACTION_FORBIDDEN` / `ADDON_ACTION_BLOCKED` for EmpireIntelCheck during the call, or an error naming a protected or forbidden action. `unreadable` = a secret value (`issecretvalue`) or an opaque value (userdata, thread). `returned_nothing` = no return values or only nil.
+8. **Provisional verdict:** NOTHING EXPOSED is **provisional** while the Legacy pane has not been seen opening, or while no Legacy point is expected yet (estimate 0). The label says which. The check **reruns by itself** when: a Blizzard UI addon loads after login (likely the pane); a discovered frame is shown; a level reaches 25, 45 or 60; a crafting skill reaches 150, 225 or 300. There are at most 4 automatic runs per session.
+
 **Safety rules (GoldIntel lab protocol, plus discovery rules):**
-- It registers only events GoldIntel proved safe: `PLAYER_LOGIN`, `PLAYER_LOGOUT`, `PLAYER_LEVEL_UP`, `SKILL_LINES_CHANGED`, `PLAYER_REGEN_DISABLED`, `PLAYER_REGEN_ENABLED`. Discovered event names are checked with `C_EventUtils.IsEventValid` and recorded, **never registered**.
+- It registers only events GoldIntel proved safe (`PLAYER_LOGIN`, `PLAYER_ENTERING_WORLD`, `PLAYER_LOGOUT`, `PLAYER_LEVEL_UP`, `SKILL_LINES_CHANGED`, `PLAYER_REGEN_DISABLED`, `PLAYER_REGEN_ENABLED`). It also registers three that GoldIntel's own lab used or that every addon uses: `ADDON_LOADED`, `ADDON_ACTION_FORBIDDEN`, `ADDON_ACTION_BLOCKED`. Each is name-checked with `IsEventValid` first. Discovered event names are checked with `C_EventUtils.IsEventValid` and recorded, **never registered**.
 - **Discovery lists names. It never calls an unknown function** with one exception: D-1 below, under its rules.
 - Out of combat only (`InCombatLockdown()` false). Every call is in `pcall`; every value goes through `issecretvalue`; output is bounded (depth 4, 200 entries per table, 120 characters per string, ASCII).
 - It never writes to Blizzard or other addon tables, and it never loads a Blizzard addon on its own (the docs load in L-5 waits for the user's go-ahead).
@@ -131,7 +141,7 @@ A throwaway addon `EmpireIntelCheck`, separate from EmpireIntel. **It is passive
 | L-3 | Blizzard UI addons and frames | Enumerate every addon with `C_AddOns.GetNumAddOns` / `GetAddOnInfo` (names, load-on-demand, loaded); every global frame whose name matches | Names; is the Legacy pane an addon, is it loaded |
 | L-4 | Events | Event names from L-5 (if run) and from discovered `Enum` or constant names, checked with `IsEventValid` | Valid or invalid; never registered |
 | L-5 | Official API documentation, if the client ships it (opt-in) | If L-3 finds a Blizzard API-documentation addon, `/eicheck docs` loads it and saves each system whose name matches a term: functions with argument and return names, events with payloads, tables | Documented signatures. This is the most reliable discovery path, and it only runs when the user types the command |
-| D-1 | What do discovered getters return? | Automatic only for functions inside L-1 matches whose names start with `Get`, `Is`, `Has` or `Can` and whose documentation (L-5) shows no required arguments. Without L-5, a zero-argument `pcall`. Each function is called at most once per session, out of combat. A call that errors is recorded and never retried | Return values (bounded). Also: was any `ADDON_ACTION_FORBIDDEN` seen (watcher on that event, which GoldIntel's lab uses safely) |
+| D-1 | What do discovered getters return? | Under runtime limit 1: functions in matched namespaces and matched global functions. Known unrelated retail names (C_ChallengeMode, C_PerksProgram, C_PerksActivities, `IsLegacyLootModeEnabled`) are recorded but not called (`skipped_unrelated`) and do not count toward the verdict. At most 300 calls per run, once per run, out of combat. A call that errors is not repeated in that session | Result code (limit 7) and bounded return values; blocked-action events seen |
 | L-6 | Pane snapshot | If L-3 finds a matching frame: `HookScript('OnShow')` (taint-safe) re-runs D-1 when the player opens the Legacy pane in normal play | Values before and after opening; shows whether data loads lazily |
 | R-1 | Rested XP | `GetXPExhaustion`, `UnitXP`, `UnitXPMax`, `IsResting`, `GetRestState` (presence first, then values) at login and logout; time and resting state saved | Lets the next login test the projection rule (section 4) |
 | P-1 | Professions | `GetProfessions` (all returns, including the Forever order prof1, prof2, firstAid, fish, cook seen in DataStore) and `GetProfessionInfo` for each; `SKILL_LINES_CHANGED` re-snapshot | Name, skill, max, skill line id |
@@ -139,17 +149,17 @@ A throwaway addon `EmpireIntelCheck`, separate from EmpireIntel. **It is passive
 
 **The Legacy probes the user asked for, mapped:** points earned, challenges, perks spent, per-character cap and tree data are all searched for by L-1..L-3 and L-5, read by D-1 and L-6, and compared with E-1. Rested XP is R-1; professions are P-1.
 
-**Verdict line.** At the end of each run TP-1 sets exactly one of:
+**Verdict line.** Matches on `challenge` and `perk` that belong to known retail systems are excluded (D-1). At the end of each run TP-1 sets exactly one of:
 - `LEGACY API: FOUND` (at least one getter returned Legacy data);
 - `LEGACY API: NAMES ONLY` (names found, nothing returned data);
 - `LEGACY API: PANE ONLY` (a frame, no data API);
 - `LEGACY API: NOTHING EXPOSED`.
 
-The verdict is printed in chat (`EmpireIntelCheck: LEGACY API: NOTHING EXPOSED, see EmpireIntelCheckDB`) and saved. **NOTHING EXPOSED switches EmpireIntel to the section 6 fallback.**
+The verdict is printed in chat (`EmpireIntelCheck: LEGACY API: NOTHING EXPOSED, see EmpireIntelCheckDB`) and saved. NOTHING EXPOSED carries `(provisional: ...)` under runtime limit 8. **Only a final NOTHING EXPOSED switches EmpireIntel to the section 6 fallback.**
 
 **Package statement.** New addon folder: **full client restart required** (a `/reload` does not load a new addon). Later TP-1 updates that only change Lua files need just a `/reload`.
 
-**Test instructions (launch build, about 10 minutes of normal play):**
+**Test instructions (launch build, about 10 minutes of normal play).** The authoritative copy is `EmpireIntelCheck/README.txt` in the package. It adds a fallback `/eicheck pane` in step 5 for when no frame is detected, and says to exit the game fully so the file is written. Summary:
 1. Quit the game completely.
 2. Extract `EmpireIntelCheck_AddOns.zip` into the Forever game folder's `Interface\AddOns\` (the same folder GoldIntel is in; the beta used `_classic_beta_`, and the launch folder name is not known yet). Leave DataStore and Altoholic installed and enabled if you use them.
 3. Start the game. At the character screen, open AddOns and confirm `EmpireIntelCheck` is enabled (tick "Load out of date AddOns" if it is listed as out of date).
