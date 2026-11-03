@@ -27,4 +27,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [ ] 1.6 Evidence EI-E-01..; TP-1 report with the verdict and every unexpected condition; user decides D-012, D-005
 - Exit test: Architecture section 9 exit criteria.
 
+## Release pipeline (Release_Pipeline.md, D-018): NOT approved, stage 0
+- [x] S-004: design written (manifest, gates G1..G10, cap and pause, installer with backup and rollback, stages, notifications, manual parts, computer requirements)
+- [ ] **User:** approve or amend; answer Q-R1..Q-R6
+- Implementation tasks will be listed only after approval. Stage 2 (auto-install of fixes) also needs the user's review of the first launch results.
+
 ## Phase 2..4: see Architecture.md section 10 (not approved)
