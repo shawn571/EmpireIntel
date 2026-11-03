@@ -43,15 +43,47 @@ Affected: new addon `EmpireIntelCheck`. Migration: none.
 Why: GoldIntel's suite needs Lua 5.2+ (`goto`, `load(string)` in two test files: 1233 pass / 8 fail under 5.1, 1255 / 0 under 5.3), while the addon runs on 5.1.
 Rule: EmpireIntel test files stay 5.1-valid and the suite runs under both 5.1 and 5.3.
 
+## D-010 Product scope corrected: Legacy points, perks, rested XP, professions, plan-driven "what next" | Approved (user correction, 2026-11-03)
+Source: the user: "Legacy" means the WoW Forever Legacy points system, not old APIs.
+Rule: Requirements_v1.md. Architecture v2.0.0 replaces v1.0.0. The v1.0.0 gold/item/mail scope is dropped. Supersedes the scope part of D-005 and D-008.
+Affected: all design documents. Migration: none (no code).
+
+## D-011 Test Package 1 = the Legacy check, passive, launch build | Approved in principle (user, 2026-11-03); design Proposed. Supersedes D-008
+Rule: Architecture section 9. Part A keeps the v1.0.0 platform checks T1..T7 (the "legacy API" checks are renamed "pre-modern API" checks to avoid confusion). Part B discovers the Legacy API in the live client (L-1..L-6, D-1) and probes rested XP (R-1), professions (P-1) and the fallback's inputs (E-1). It runs automatically at login and logout, and its verdict is FOUND, NAMES ONLY, PANE ONLY or NOTHING EXPOSED.
+Run on the launch build (user, 2026-11-03).
+
+## D-012 Discovered Legacy names need approval before product code uses them | Proposed (2026-11-03)
+Why: no assumed API names (NFR-4); a discovered function can still have side effects.
+Rule: after TP-1, the report lists every discovered name with its observed behavior. Only names the user approves are used, and only in Platform/Legacy. Otherwise the Estimator (Architecture section 6) is used.
+
+## D-013 Automatic calls of discovered getters in TP-1 | Proposed (2026-11-03): needs the user's explicit OK
+Rule: TP-1 calls a discovered function automatically only when its name matches a Legacy search term and starts with Get/Is/Has/Can, and the documentation shows no required argument (or, with no docs, a zero-argument call). Calls happen at most once per session, out of combat, in pcall, with an ADDON_ACTION_FORBIDDEN watcher. Everything else is listed, never called.
+Risk: an undocumented getter could still be protected and show a popup (R-14). The alternative is names only in run 1 and calls in a second run after review, which costs one extra round trip.
+
+## D-014 Plan file in its own addon folder | Proposed (2026-11-03)
+Rule: `EmpireIntel_Plan/Plan.lua` (Architecture section 7), so updates never overwrite it. Edits take effect after `/reload`. Invalid goals are reported and skipped.
+
+## D-015 Package statements and passive collection are mandatory | Approved (user working rules, 2026-11-03)
+Rule: every package states "/reload is enough" or "full client restart required", and comes with exact step-by-step test instructions. Collection is passive: the user plays normally and sends the SavedVariables after /reload or logout.
+
+## D-005 note (2026-11-03)
+Still Proposed and conditional on TP-1. The DataStore modules of interest change with D-010: core plus Characters (level, class, rest XP, last logout) and Crafts (professions). Containers, Mails and Inventory are no longer needed.
+
+## D-007 note (2026-11-03)
+The user reports the repository is now private, which resolves Q-2. On 2026-11-03 the GitHub API still returned `private: false` for shawn571/EmpireIntel. Until it reads private, the hygiene rules stay in force. They cost nothing, so they stay as defaults afterwards: SavedVariables and evidence remain git-ignored, as in GoldIntel.
+
 ---
 
-## Open questions for the user
+## Open questions for the user (updated S-002, 2026-11-03)
 
-| ID | Question | Recommendation |
+| ID | Question | Status |
 |---|---|---|
-| Q-1 | Is the v1 scope in Architecture section 1 right (account roster, gold and item totals, mail expiry, commands only)? | Confirm, or tell me what EmpireIntel is for |
-| Q-2 | Copying GoldIntel code here publishes code that is private today. OK? | Yes for Platform/Core/Store/tests (generic, already MIT); keep Collect/Ledger private |
-| Q-3 | Approve Architecture v1 and authorize Phase 1 (TP-1 code only)? | Yes |
-| Q-4 | Run TP-1 on the launch build (2026-11-04 or later) rather than the beta? | Yes: launch may change realm and API |
-| Q-5 | Should EmpireIntel later read GoldIntel's results (per-character income) when both are installed? | Defer to after Phase 4 |
-| Q-6 | Where is the "goldintel-addon memory"? If it is a claude.ai project memory, please paste it so D-002 can be checked against it | — |
+| Q-1 | Product scope | **Resolved** (D-010, Requirements_v1.md) |
+| Q-2 | Publishing ported GoldIntel code | **Resolved** by the user (repository private). GitHub still showed it public on 2026-11-03: please check Settings > General > Danger Zone > Change visibility |
+| Q-3 | Approve Architecture v2.0.0 and authorize Phase 1 (TP-1 code only)? | Open |
+| Q-4 | Run TP-1 on the launch build | **Resolved** (user: yes) |
+| Q-5 | Read GoldIntel results | Dropped (not in Requirements_v1) |
+| Q-6 | Working rules from memory | **Resolved** (user message 2026-11-03; Project_Bible sections 2 and 5) |
+| Q-7 | D-013: allow TP-1 to call discovered Legacy getters automatically in the first run? | Open. Recommendation: yes, under the D-013 rules; it saves a round trip during launch week |
+| Q-8 | If the verdict is PANE ONLY, may EmpireIntel read the Legacy pane's text as a source? | Open. Recommendation: decide after TP-1, when we know what the pane shows |
+| Q-9 | Allow these hosts in the session network settings so the Legacy rules can be checked against Blizzard's article: worldofwarcraft.blizzard.com, forg.gg, www.icy-veins.com | Open. Optional |

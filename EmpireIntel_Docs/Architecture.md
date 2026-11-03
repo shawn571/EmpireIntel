@@ -1,158 +1,185 @@
 # EmpireIntel Architecture v1
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-03  |  STATUS: **Proposed, awaiting the user's approval**  |  Decisions.md wins over this file; Compatibility_Notes.md wins on client facts
+DOC VERSION: 2.0.0  |  DATE: 2026-11-03  |  STATUS: **Proposed, awaiting the user's approval**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
 
-**EmpireIntel shows a WoW Forever player's whole account, all characters together.** It covers gold, carried and banked items, mail about to expire, and how fresh each number is. Alt data comes from DataStore when it is installed. Otherwise EmpireIntel uses its own snapshot of each character, taken at that character's last login. The design reuses GoldIntel's proven platform layer (GoldIntel_Reuse_Audit.md). **The first thing built is Test Package 1, the Legacy API check.** No other code is written until it has run in the live client and the user has reviewed the result.
+**EmpireIntel tracks the WoW Forever Legacy system across a player's characters.** For each character it shows Legacy points and perks, rested XP and professions. It also gives a "what next" list driven by a plan file the user writes. Alt data comes from EmpireIntel's own snapshots and, optionally, from DataStore.
 
-The product scope in section 1 is an **assumption** made from the project name and the brief "use Altoholic and DataStore for alt data". Question Q-1 asks the user to confirm or correct it.
+**The Legacy API is not documented.** Nothing in this document assumes a function or event name for it. Test Package 1 discovers what the live launch client exposes. If nothing is exposed, EmpireIntel falls back to estimating points from levels and professions, and labels the result as an estimate (section 6).
 
-## 1. Scope v1 (assumed, Q-1)
+v2.0.0 replaces v1.0.0. That version misread "Legacy" as old APIs and designed an account wealth tracker (D-010).
 
-In scope:
-- An account roster: every character the account has played, keyed by GUID. For each: name, level, class, faction, gold, last seen, and the source and age of every value.
-- Account totals: gold across characters, and item counts across bags and bank ("how many Linen Cloth do I own in total").
-- Mail watch: mails that will expire or return soon, per character.
-- Commands only (`/ei roster`, `/ei gold`, `/ei item <id|link>`, `/ei mail`, `/ei sources`, `/ei check`). No windows in v1.
+## 1. Scope v1 (Requirements_v1.md; confirmed by the user 2026-11-03)
 
-Out of scope for v1: income attribution and GPH (GoldIntel's job), auction scanning or pricing, professions and recipes, cross-account or guild data, UI frames, sync between machines.
+- **Legacy, account-wide:** points earned, challenges completed, points not yet spent.
+- **Legacy, per character:** perks spent (tree and perk), points spent versus the per-character cap (16 at launch, expected to rise; read from the client if exposed, else from config).
+- **Rested XP per character:** the value at last logout, resting state, and a projection to now.
+- **Professions per character:** name, skill and max skill.
+- **"What next":** an ordered list of the plan's unmet goals with the next step for each, e.g. "Char2: level 45 (now 41), earns Warrior milestone".
+- Output: slash commands only (`/ei`, `/ei legacy`, `/ei next`, `/ei char <name>`). No windows in v1.
+- **Passive collection:** the player plays normally. EmpireIntel records at login, on level-up, on profession change, at logout, and when the Legacy pane opens (if one is found). The user sends the SavedVariables after `/reload` or logout.
+
+Out of scope: gold and item tracking (v1.0.0 idea, dropped), auction, mail, UI frames, guilds, more than one account.
 
 ## 2. Principles (ordered; earlier wins)
 
-1. **Correct over complete.** A number that cannot be sourced is shown as unknown, never as 0.
-2. **Every value carries provenance:** `{ v, src, asOf, conf }`, where `src` is `self` or `datastore`. Totals list their parts and the oldest part's age.
-3. **Third-party data is optional.** EmpireIntel works, with less coverage, when DataStore is absent, disabled, partly installed or broken (license, D-003).
-4. **Two boundaries, each enforced by a static test:** only `Platform/` touches WoW globals (inherited invariant), and only `Bridge/` touches third-party addon globals (`DataStore`, `AddonFactory`, `Altoholic`).
-5. **GUID is identity.** Names, realm text and DataStore keys are attributes (D-004).
-6. **Read-only toward other addons.** EmpireIntel never writes to another addon's tables or saved variables and never calls their scan or request functions.
-7. Modern API only, Lua 5.1, the GoldIntel file hygiene rules (C-1..C-6).
+1. **Measured beats estimated beats unknown,** and every value says which it is: `{ v, src, asOf, conf }`, where `src` is `client`, `datastore`, `estimate` or `plan`.
+2. **No assumed API names.** Legacy access goes only through names that TP-1 discovered and the user approved (D-012).
+3. **Surface unexpected conditions visibly:** a single chat line starting `EmpireIntel: UNEXPECTED`, plus a saved record. Nothing fails silently.
+4. **DataStore is optional** (license, D-003). EmpireIntel works without it.
+5. **Boundaries:** WoW API only in `Platform/`; third-party addons only in `Bridge/` (static tests).
+6. **GUID is identity** (D-004).
+7. **Lean:** no feature without a requirement. Lua 5.1, modern API, GoldIntel file rules C-1..C-6.
 
 ## 3. Layers
 
 ```
-+--------------------------- Platform/ (only WoW API users; from GoldIntel) ----------------------------+
-| Platform  Events  Clock  Scheduler  Unit  Money  Items  Bags  SavedVars  Slash  Probe                  |
-+--------------------------------------------------------------------------------------------------------+
-           | normalized events, plain tables                          (no WoW globals above this line)
-           v
- +----------------+        +-----------------------------------------------+
- | Sources/Self   |        | Bridge/ (only third-party addon users; new)   |
- | snapshot of    |        |   DataStoreBridge: detect, version, method    |
- | the logged-in  |        |   check, read-only getters, error isolation   |
- | character      |        +-----------------------------------------------+
- +----------------+                         |
-           \                                v
-            +--------> Roster (merge by GUID, provenance, conflict rule) --> Aggregates --> Commands
-                                    |
-                     Store/ (EmpireIntelDB account, EmpireIntelCharDB; migrations; from GoldIntel)
-                     Core/  (registry, bus, capability stages, config, boot; from GoldIntel)
++------------------------------- Platform/ (only WoW API users; ported from GoldIntel) -------------------------------+
+| Platform  Events  Clock  Scheduler  Unit(+XP, rest, professions)  SavedVars  Slash  Probe  Legacy (adapter, section 5) |
++----------------------------------------------------------------------------------------------------------------------+
+        | plain tables                                                         (no WoW globals above this line)
+        v
+ Sources/Self ----+                 Bridge/DataStoreBridge (optional: level, class, rest XP, professions of alts)
+ (snapshot of the  \                         |
+  logged-in char)   v                        v
+                 Roster (per GUID; merge by asOf; provenance) ---> Legacy model (measured | estimated) ---+
+                                                                                                         v
+ Plan (EmpireIntel_Plan addon: Plan.lua, user-edited) ------------------------------------------> Planner ("what next")
+                                                                                                         v
+                                                                                                    Commands
+ Core/ (registry, bus, capability stages, config, boot)   Store/ (EmpireIntelDB, EmpireIntelCharDB, migrations)
 ```
 
-| Module | Responsibility | Origin |
-|---|---|---|
-| Platform/* | WoW API access, capability registry, event allow-list, identity, money, bags | GoldIntel, renamed (audit section 1) |
-| Core/* | Module registry, typed bus, capability stages, config, slash, boot | GoldIntel; `Slash.lua` rewritten |
-| Store/* | Saved variables, schema, copy-then-commit migrations, pruning | GoldIntel; new chain from schema 1 |
-| Sources/Self | On login and at `BAG_UPDATE_DELAYED` / `PLAYER_MONEY` (throttled), snapshot of the current character: identity, money, carried items; bank only while the bank is open (TP-1 confirms the read) | New, on GoldIntel adapters |
-| Bridge/DataStoreBridge | Detects DataStore and its modules, checks that every method EmpireIntel uses exists, wraps each call in `pcall`, converts results to plain tables with `src = 'datastore'` and `asOf` from `GetModuleLastUpdate` | New |
-| Roster | Merges both sources per GUID; applies the conflict rule (section 4); flags duplicates and "Unknown" names | New, pure Lua |
-| Aggregates | Totals for gold and item counts, with parts and oldest age | New, pure Lua |
-| Commands | `/ei ...` output | New |
+| Module | Responsibility |
+|---|---|
+| Platform/Legacy | The only code that touches the Legacy API. Built from TP-1's discovered names. Absent or unapproved names mean `available = false` |
+| Platform/Unit (extended) | Level, XP, `GetXPExhaustion`, `IsResting`, `GetProfessions` / `GetProfessionInfo`. Names are re-confirmed by TP-1 |
+| Sources/Self | Snapshots at login, `PLAYER_LEVEL_UP`, `SKILL_LINES_CHANGED`, logout, Legacy pane open. Events from GoldIntel's proven list only |
+| Bridge/DataStoreBridge | Alt level, class, rest XP and professions when DataStore is installed. Each value carries `asOf` from DataStore |
+| Roster | Per-GUID merge; newest `asOf` wins; `client` beats `datastore` on a tie; "Unknown" names never overwrite known ones |
+| Legacy model | Account and per-character Legacy state, from Platform/Legacy when available, else from the Estimator |
+| Estimator | Section 6 |
+| Plan + Planner | Sections 7 and 8 |
+| Commands | `/ei` output, including source and age for every line |
 
-## 4. Data model and merge rule
+## 4. Rested XP
+
+Measured at each snapshot (`GetXPExhaustion`, `IsResting`, `UnitXPMax`). DataStore warns that `GetXPExhaustion` sometimes returns 0 or nil, so a nil is stored as unknown, never as 0. For alts, the projection to now uses the last logout time and resting state. **The rates are an assumption** (classic rules: 5% of a level's XP per 8 hours rested, a quarter of that outside a rest area, capped at 150% of a level). TP-1 compares a projection with a measured value on the next login. Projections are labelled `estimate`.
+
+## 5. Legacy access (filled in after TP-1)
+
+Platform/Legacy exposes one contract, whatever the client turns out to offer:
 
 ```
-EmpireIntelDB (account)
-  schema, meta, compat                      -- compat owned by Probe (GoldIntel rule)
-  roster[guid] = {
-    name = { v, src, asOf }, level = {...}, class = {...}, faction = {...},
-    money = { v, src, asOf }, lastSeen = t,
-    dsKey = 'Default.<Realm>.<First Last>' | nil,      -- attribute, never identity
-    flags = { unknownName = bool, dsMissing = bool, duplicateOf = guid | nil },
-    items = { [itemID] = { bags = n, bank = n, src, asOf } },   -- bounded, section 6
-  }
-EmpireIntelCharDB (per character): last self snapshot only
+Legacy.Available()            -> true | false, reason
+Legacy.Account()              -> { earned, spent?, challenges = { [id] = { name, done, category? } } } | nil
+Legacy.Character()            -> { spent, cap, perks = { [id] = { name, tree, rank? } }, trees = {...} } | nil
 ```
 
-Merge rule per field: the **newest** `asOf` wins. On a tie, `self` beats `datastore`. For the logged-in character, `self` is live and always wins, and the DataStore value is kept only for the cross-check (section 7, T5). A character that DataStore no longer lists keeps its record with `dsMissing = true` (DataStore can delete keys itself, Reference section 4). Records are deleted only by an explicit user command.
+Each field is filled only from approved discovered names. Each field is `nil` when not exposed. The design does not depend on any field existing. If TP-1 finds a Legacy pane but no data API, the fallback is a snapshot of what the pane shows. That needs a separate decision, because reading UI text is fragile (Q-8).
 
-## 5. Events
+## 6. Fallback: estimate from levels and professions
 
-v1 registers only events GoldIntel proved live on Forever: `PLAYER_LOGIN`, `PLAYER_ENTERING_WORLD`, `PLAYER_LOGOUT`, `PLAYER_MONEY`, `BAG_UPDATE_DELAYED`. Bank state is polled from the frame, the same way GoldIntel polls MailFrame (E-34 pattern), until a bank event is verified. Unproven events are never registered (inherited D-025).
+Used when Platform/Legacy is not available, or for the parts it does not cover. **The challenge families below come from fan guides that could not be opened from this session. They are unverified** (Compatibility_Notes section 5):
+- **Class milestones:** levels 25, 45 and 60 for each of 9 classes, once per account: up to 27 points.
+- **Crafting milestones:** skill 150, 225 and 300 in Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring, once per account: up to 18 points.
+- **The other ~20 challenges** (65 total) are of unknown kinds and are **not estimated**.
 
-## 6. Performance and storage
+Rule: for each class, the highest level any known character of that class has reached gives its milestones. Professions work the same way with skill. The result is a **lower bound**: "at least N of 65 (estimated from class levels and crafting skill; 20 challenges not covered)". Characters never seen by EmpireIntel or DataStore are missing, and deleted characters are missing. Perks spent cannot be estimated and are shown as unknown. The thresholds live in a data table (`Data/LegacyRules.lua`) so a correction is a one-line change.
 
-Handlers only enqueue. Snapshots run on the scheduler, at most once per 2 s. A bag scan costs under 1 ms (GoldIntel E-17: 44 slots in 0.74 ms). Item records are capped per character (proposal: 2,000 item ids), with the cap reported in `/ei sources`. Saved data stays within a 2 MB target.
+## 7. Plan file (contract; moves to Contracts.md when code starts)
 
-## 7. Test Package 1: Legacy API check (first deliverable; design only)
+The plan lives in a separate addon folder, `EmpireIntel_Plan/Plan.lua`, so that updating EmpireIntel never overwrites it. The user edits it with a text editor. **Editing an existing Plan.lua takes effect after `/reload`; adding the folder the first time needs a full client restart.**
 
-**Purpose.** Before EmpireIntel depends on anything, measure on the live Forever client:
-(a) which legacy APIs exist next to their modern replacements;
-(b) whether DataStore's Forever path behaves as the source review says;
-(c) whether the identity facts (GUID, two-part name, realm text) hold on the **launch** build.
+```lua
+EmpireIntelPlan = {
+  version = 1,
+  cap = 16,                                   -- per-character spend cap if the client does not expose it
+  goals = {                                   -- order = priority
+    { char = 'Char1', level = 60 },
+    { char = 'Char2', profession = 'Tailoring', skill = 300 },
+    { char = 'Char1', perk = 'Some Perk Name' },        -- matched to discovered perk names, else 'unverified'
+    { account = true, challenges = 30 },                -- account-wide Legacy target
+    { char = 'Char3', restedBefore = 'level', level = 40 }, -- 'rested XP covers the next level'
+  },
+}
+```
 
-Launch is 2026-11-04. GoldIntel's evidence is from beta builds 70338 to 70450, and launch may change the API, the realm model or the interface number (GoldIntel OI-11).
+Validation at load: unknown keys, wrong types and unknown character names are each reported as one `UNEXPECTED` line naming the goal number. The goal is then skipped, never guessed. Characters are matched by name only to find the GUID: the first match is used, and two characters with the same name are reported.
 
-**Form.** A throwaway, read-only addon `EmpireIntelCheck` (slash `/eicheck`, saved variable `EmpireIntelCheckDB`). It is separate from EmpireIntel, like GoldIntel's `GIProbeLoot`, and is not part of the product. Packaged with the GoldIntel build tool (renamed).
+## 8. "What next" (Planner)
 
-**Safety rules (from GoldIntel's lab protocol):**
-- It registers **no events**. It runs on `/eicheck run` after login.
-- It never calls a function with side effects: no `Query*`, `Request*`, `Send*`, `Pickup*`, `Use*`, nothing that opens a frame, and no DataStore scan.
-- Function presence is read with `type(_G[name])`; values are read only from pure getters, every call is wrapped in `pcall`, and every result goes through `issecretvalue` before use.
-- Output is bounded and ASCII-only. It goes to the chat frame, a copy window, and `EmpireIntelCheckDB` (read back from the file after `/reload`).
-- It writes to no other addon's tables. Lua 5.1, rules C-1..C-6.
+For each goal in order: is it met (yes, no, unknown); its gap (e.g. 4 levels, 37 skill points); the Legacy points it would earn (from the rules table, labelled estimate); and one next step. Output is limited to the first 10 unmet goals. Unknown is never shown as met.
 
-**Tests:**
+## 9. Test Package 1: the Legacy check (first deliverable; design only)
 
-| ID | Question | Method | Pass rule | Baseline (GoldIntel evidence, [inherited]) |
-|---|---|---|---|---|
-| T1 | Client profile | `GetBuildInfo()`, `WOW_PROJECT_ID`, `WOW_PROJECT_CAMELOT`, Lua feature checks (`load`, `table.unpack`, `bit`) | Values recorded; differences from the baseline listed | 1.60.1 / Interface 16001 / project 18 / Lua 5.1 (E-01, E-04) |
-| T2 | Legacy versus modern presence | `type(_G[x])` for each pair in the table below | Every row recorded as present, absent or unknown; any change from the baseline is a finding | See the table below |
-| T3 | Identity | `UnitGUID`, both returns of `UnitName('player')`, `GetRealmName`, `GetNormalizedRealmName` | GUID present; the second name return is recorded; realm text recorded; any 'Unknown' name flagged | GUID `Player-<server>-<id>`; realm 'Classic Beta PvE' in beta (E-07) |
-| T4 | DataStore presence | `C_AddOns.GetAddOnInfo` / `IsAddOnLoaded` for AddonFactory, DataStore and the 7 v1 modules; their `Version` metadata; `AddonFactory.isForever`, `isMainline`, `buildVersion` | Each addon: loaded / installed-not-loaded / missing; flags recorded | Source review: isForever = isMainline = true at 16001 |
-| T5 | DataStore method surface and cross-check | `type(DataStore[m])` for every method in Reference section 4; then read-only calls: `GetCharacterIDByGUID(UnitGUID('player'))`, `GetCharacterKey`, `GetCharacters`, and for the current character `GetMoney` versus the live `GetMoney()`, `GetCharacterLevel` versus `UnitLevel`, plus `GetContainerItemCount` of one carried item versus a C_Container count | All methods exist; the GUID resolves to this character's key; **money and level equal the live values**; the item count matches | n/a (new) |
-| T6 | Roster health | For each DataStore character: key, realm part, name equal to "Unknown", same GUID under two keys, `GetModuleLastUpdate` age | Recorded; duplicates and Unknown names counted | Altoholic notes the Unknown-name bug |
-| T7 | Bank read | With the bank open (user step): `C_Container.GetContainerNumSlots` for the bank bag ids, `BankFrame:IsShown()` | Readable, non-secret | Not yet measured anywhere |
+A throwaway addon `EmpireIntelCheck`, separate from EmpireIntel. **It is passive:** it runs by itself at login and logout, prints one summary line, and writes everything to `EmpireIntelCheckDB`. It has no required commands. It runs on the **launch build**.
 
-T2 pairs (legacy global, modern replacement):
+**Safety rules (GoldIntel lab protocol, plus discovery rules):**
+- It registers only events GoldIntel proved safe: `PLAYER_LOGIN`, `PLAYER_LOGOUT`, `PLAYER_LEVEL_UP`, `SKILL_LINES_CHANGED`, `PLAYER_REGEN_DISABLED`, `PLAYER_REGEN_ENABLED`. Discovered event names are checked with `C_EventUtils.IsEventValid` and recorded, **never registered**.
+- **Discovery lists names. It never calls an unknown function** with one exception: D-1 below, under its rules.
+- Out of combat only (`InCombatLockdown()` false). Every call is in `pcall`; every value goes through `issecretvalue`; output is bounded (depth 4, 200 entries per table, 120 characters per string, ASCII).
+- It never writes to Blizzard or other addon tables, and it never loads a Blizzard addon on its own (the docs load in L-5 waits for the user's go-ahead).
 
-| Family | Legacy global(s) | Modern | GoldIntel baseline |
+**Part A: platform checks (kept from v1.0.0).** T1 client profile; T2 pre-modern versus modern API presence (13 families, Compatibility_Notes section 2 baseline); T3 identity (GUID, both `UnitName` returns, realm text); T4 DataStore presence and AddonFactory flags; T5 DataStore method surface plus cross-check of level, money and one item count against live values; T6 DataStore roster health ("Unknown" names, duplicate GUIDs, ages); T7 bank read with the bank open.
+
+**Part B: Legacy discovery (new).** Search terms, case-insensitive: `legacy`, `perk`, `challenge`, `camelot`, `forever`. `camelot` is included because the Forever Blizzard UI has `Camelot` folders (seen in Altoholic Forever's source).
+
+| ID | Question | Method (read only) | Result recorded |
 |---|---|---|---|
-| Containers | `GetContainerNumSlots`, `GetContainerItemInfo`, `GetContainerItemLink` | `C_Container.*` | legacy ABSENT, modern works (E-17) |
-| Skill lines | `GetNumSkillLines`, `GetSkillLineInfo`, `ExpandSkillHeader` | `GetProfessions`, `GetProfessionInfo` | legacy ABSENT (E-05) |
-| Trade skill / craft | `GetTradeSkillInfo`, `GetNumTradeSkills`, `GetCraftInfo` | `C_TradeSkillUI` | legacy ABSENT (E-05) |
-| Auction | `QueryAuctionItems`, `GetAuctionItemInfo`, `GetNumAuctionItems` | `C_AuctionHouse` | legacy ABSENT (E-05) |
-| Addon info | `GetAddOnInfo`, `GetAddOnMetadata`, `IsAddOnLoaded` | `C_AddOns.*` | `GetAddOnInfo` ABSENT (E-08); the other two unmeasured |
-| Spell info | `GetSpellInfo` | `C_Spell.GetSpellName`, `C_Spell.GetSpellInfo` | `C_Spell.GetSpellName` works; global unmeasured. This is the DataStore fragile point (Reference section 3) |
-| Item info | `GetItemInfo`, `GetItemInfoInstant` | `C_Item.*` | both present (E-17, E-30) |
-| Quest log | `GetQuestLogTitle`, `GetNumQuestLogEntries` | `C_QuestLog.*` | modern present (E-18); legacy unmeasured |
-| Reputation | `GetFactionInfo`, `GetNumFactions` | `C_Reputation.*` | unmeasured |
-| Talents | `GetTalentInfo`, `GetNumTalentTabs` | `C_Talent*` / `C_ClassTalents` | unmeasured |
-| Currency | `GetCurrencyInfo` | `C_CurrencyInfo.*` | unmeasured |
-| Mail | `GetInboxHeaderInfo`, `TakeInboxMoney` (globals) | `C_Mail.*` | both present (E-29) |
-| Played time | `RequestTimePlayed` (presence only, never called) | n/a | unmeasured |
+| L-1 | Which API namespaces and globals exist? | Walk `_G` once at login: every `C_*` table with its member names; every global function, table or Enum whose name matches a term. Saves the full `C_*` namespace list plus a diff against GoldIntel's beta list (272 namespaces, E-05), so new namespaces show even if their name does not match | Names and types only |
+| L-2 | Enums and constants | Every `Enum.*` whose name or member names match; every global constant (number or string) whose name matches | Names and values |
+| L-3 | Blizzard UI addons and frames | Enumerate every addon with `C_AddOns.GetNumAddOns` / `GetAddOnInfo` (names, load-on-demand, loaded); every global frame whose name matches | Names; is the Legacy pane an addon, is it loaded |
+| L-4 | Events | Event names from L-5 (if run) and from discovered `Enum` or constant names, checked with `IsEventValid` | Valid or invalid; never registered |
+| L-5 | Official API documentation, if the client ships it (opt-in) | If L-3 finds a Blizzard API-documentation addon, `/eicheck docs` loads it and saves each system whose name matches a term: functions with argument and return names, events with payloads, tables | Documented signatures. This is the most reliable discovery path, and it only runs when the user types the command |
+| D-1 | What do discovered getters return? | Automatic only for functions inside L-1 matches whose names start with `Get`, `Is`, `Has` or `Can` and whose documentation (L-5) shows no required arguments. Without L-5, a zero-argument `pcall`. Each function is called at most once per session, out of combat. A call that errors is recorded and never retried | Return values (bounded). Also: was any `ADDON_ACTION_FORBIDDEN` seen (watcher on that event, which GoldIntel's lab uses safely) |
+| L-6 | Pane snapshot | If L-3 finds a matching frame: `HookScript('OnShow')` (taint-safe) re-runs D-1 when the player opens the Legacy pane in normal play | Values before and after opening; shows whether data loads lazily |
+| R-1 | Rested XP | `GetXPExhaustion`, `UnitXP`, `UnitXPMax`, `IsResting`, `GetRestState` (presence first, then values) at login and logout; time and resting state saved | Lets the next login test the projection rule (section 4) |
+| P-1 | Professions | `GetProfessions` (all returns, including the Forever order prof1, prof2, firstAid, fish, cook seen in DataStore) and `GetProfessionInfo` for each; `SKILL_LINES_CHANGED` re-snapshot | Name, skill, max, skill line id |
+| E-1 | Fallback inputs | Class, level, profession skills of this character, plus DataStore's other characters if present | The Estimator's inputs and its estimate, compared with L/D results if any |
 
-**Offline test plan (before anything goes to the client):** the package runs in the reused GoldIntel harness against three fake clients: (1) the Forever beta profile built from GoldIntel's evidence; (2) the same with DataStore stubbed present and consistent; (3) DataStore present but with a missing method, a wrong money value and an "Unknown" duplicate. Expected: no error in any configuration; each fault is reported, not raised. Plus the static rules C-1..C-6, a check that the package contains no `RegisterEvent` call, and a check that it calls only allow-listed getters.
+**The Legacy probes the user asked for, mapped:** points earned, challenges, perks spent, per-character cap and tree data are all searched for by L-1..L-3 and L-5, read by D-1 and L-6, and compared with E-1. Rested XP is R-1; professions are P-1.
 
-**Live run (user steps, about 5 minutes):** (1) install with DataStore and Altoholic Forever **disabled**, `/eicheck run`; (2) enable them, log in on two characters in turn, then `/eicheck run` on the second; (3) open the bank, `/eicheck bank`; (4) `/reload` and send `EmpireIntelCheck.lua` from SavedVariables. Run on the launch build.
+**Verdict line.** At the end of each run TP-1 sets exactly one of:
+- `LEGACY API: FOUND` (at least one getter returned Legacy data);
+- `LEGACY API: NAMES ONLY` (names found, nothing returned data);
+- `LEGACY API: PANE ONLY` (a frame, no data API);
+- `LEGACY API: NOTHING EXPOSED`.
 
-**Exit criteria.** Every T-row has a recorded result. Every change from the baseline is filed in Compatibility_Notes.md with an evidence id (EI-E-nn). T5 money and level match exactly. The user then decides D-005 (adopt DataStore fully, for some modules only, or not at all) and whether Phase 2 begins.
+The verdict is printed in chat (`EmpireIntelCheck: LEGACY API: NOTHING EXPOSED, see EmpireIntelCheckDB`) and saved. **NOTHING EXPOSED switches EmpireIntel to the section 6 fallback.**
 
-## 8. Phases and gates
+**Package statement.** New addon folder: **full client restart required** (a `/reload` does not load a new addon). Later TP-1 updates that only change Lua files need just a `/reload`.
+
+**Test instructions (launch build, about 10 minutes of normal play):**
+1. Quit the game completely.
+2. Extract `EmpireIntelCheck_AddOns.zip` into the Forever game folder's `Interface\AddOns\` (the same folder GoldIntel is in; the beta used `_classic_beta_`, and the launch folder name is not known yet). Leave DataStore and Altoholic installed and enabled if you use them.
+3. Start the game. At the character screen, open AddOns and confirm `EmpireIntelCheck` is enabled (tick "Load out of date AddOns" if it is listed as out of date).
+4. Log in to character 1 and wait until you are in the world. Expect one chat line `EmpireIntelCheck <version>: LEGACY API: <verdict> ...`. Any `UNEXPECTED` line, or any red error or popup: note it, keep playing.
+5. Open the Legacy pane once (however the game opens it), look at it for a few seconds, close it.
+6. Play normally for a few minutes. A level-up or profession skill-up is useful but not required.
+7. Optional: open your bank once.
+8. Optional, only if step 4 said `docs available`: type `/eicheck docs`, wait for `docs saved`.
+9. Log out to the character screen, log in to character 2, repeat steps 4 to 5, then log out completely (`/camp` or Exit Game).
+10. Send `WTF\Account\<account>\SavedVariables\EmpireIntelCheck.lua`, plus a screenshot of the Legacy pane with points and perks visible (this is the ground truth TP-1's values are checked against).
+
+**Exit criteria.** Part A rows recorded. A verdict recorded on two characters. If FOUND, D-1 values equal the pane screenshot. R-1 and P-1 values match what the game shows. Every unexpected condition listed in the TP-1 report. Then the user decides D-012 (which discovered names Platform/Legacy may use) and D-005 (DataStore), and whether Phase 2 starts.
+
+**Offline tests (before shipping):** the GoldIntel harness against four fake clients: (1) the beta profile with no Legacy anything (expect NOTHING EXPOSED, no error); (2) a fake `C_ForeverLegacy`-style namespace with getters (expect FOUND); (3) getters that error or return secret values (expect recorded, no throw); (4) DataStore present but faulty. Static checks: no `RegisterEvent` outside the allow-list, no call to a non-getter name, Lua 5.1 and C-1..C-6. The fake namespace names are test fixtures only and never appear in shipped code.
+
+## 10. Phases and gates
 
 | Phase | Content | Gate |
 |---|---|---|
-| 0 | Governance, audit, reference review, this architecture | User approves this document (now) |
-| 1 | Test Package 1 code, offline tests, live run, evidence | TP-1 exit criteria; user decides D-005 |
-| 2 | Port Platform / Core / Store / harness from GoldIntel; static tests incl. the Bridge rule | Suite green under Lua 5.1 and 5.3; loads in the client with no error |
-| 3 | Sources/Self and Bridge/DataStoreBridge | Live cross-check equals TP-1 T5 |
-| 4 | Roster, Aggregates, Commands | Live session on three or more characters; totals explained part by part |
-| 5 | UI (window, tooltip counts) | Separate scope decision |
+| 0 | Requirements, governance, audit, reviews, this architecture | User approves (now) |
+| 1 | TP-1 code, offline tests, launch-build run, evidence, report | Section 9 exit criteria; D-012, D-005 |
+| 2 | Port Platform / Core / Store / harness; Platform/Legacy from approved names or the fallback; Unit extension | Suite green under 5.1 and 5.3; loads with no error |
+| 3 | Sources/Self, Roster, DataStoreBridge, Estimator | Live: values match the game and the pane on two characters |
+| 4 | Plan + Planner + Commands | Live: `/ei next` correct for a test plan of 5 goals |
 
-## 9. Invariants (each gets an automated test)
+## 11. Invariants (each gets an automated test)
 
-1. No WoW global outside `Platform/`; no third-party addon global outside `Bridge/`.
-2. A total equals the sum of its listed parts.
-3. Every stored value has `src` and `asOf`.
-4. A character record is never deleted except by an explicit user command.
-5. EmpireIntel never writes to a table it does not own (checked with a fake DataStore that is frozen in tests).
-6. With DataStore absent, every command still answers, with self data only.
+1. No WoW global outside `Platform/`; no third-party addon global outside `Bridge/`; no Legacy name outside `Platform/Legacy`.
+2. Every stored value has `src` and `asOf`; an estimate is never shown without the word "estimate".
+3. Unknown is never displayed as 0 or as "met".
+4. The estimated earned points never exceed the rule table's maximum (45) and are never shown as the account total.
+5. A plan error skips that goal and is reported; it never stops the addon.
+6. EmpireIntel never writes to a table it does not own.

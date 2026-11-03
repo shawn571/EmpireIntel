@@ -1,21 +1,23 @@
 # EmpireIntel Project Bible
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-03  |  PROJECT VERSION: 0.0.0-planning  |  STATUS: Active
+DOC VERSION: 1.1.0  |  DATE: 2026-11-03 (S-002)  |  PROJECT VERSION: 0.0.0-planning  |  STATUS: Active
 
 > Read this file first. If another project document conflicts with it on governance, this file wins. On client facts, Compatibility_Notes.md wins. These rules are adopted from GoldIntel's Project Bible (v1.0.0, D-032 roles), which has worked through GoldIntel Phases 0 to 3b.
 
 ## 1. What EmpireIntel is
 
-An account-wide intelligence addon for **World of Warcraft: Forever** (client 1.60.x, Interface 16001; launch 2026-11-04). It shows all of a player's characters together: gold, items, mail expiry, and how fresh each number is. Alt data comes from DataStore when installed, and from EmpireIntel's own per-character snapshots otherwise. Scope v1 is in Architecture.md section 1 and is an assumption until the user confirms it (Q-1).
+An addon for **World of Warcraft: Forever** (client 1.60.x, Interface 16001; launch 2026-11-04) that tracks the **Legacy system** across a player's characters. It covers Legacy points and challenges, perks spent per character against the cap, rested XP and professions. A "what next" list is driven by a plan file the user writes. DataStore is an optional source for alt data. Scope: Requirements_v1.md (D-010).
 
-Sibling project: GoldIntel (gold income analytics, private). EmpireIntel reuses GoldIntel's platform layer and evidence and does not duplicate its ledgers.
+"Legacy" in this project always means the Forever Legacy points system. Old WoW APIs are called "pre-modern".
+
+Sibling project: GoldIntel (gold income analytics). EmpireIntel reuses GoldIntel's platform layer, harness and evidence.
 
 ## 2. Roles and review model
 
 | Role | Holder | Responsibilities |
 |---|---|---|
 | Project sponsor, project manager, client tester, final decision authority | User | Approves phases and decisions; runs the real client; resolves disagreements |
-| Lead architect and developer; owner of architecture, contracts, code, changelog and governance documents | Claude | Source of truth for project artifacts |
+| Lead architect and developer | Claude | Source of truth for requirements, contracts, code, changelogs, architecture and governance documents |
 | Independent reviewers (ChatGPT, Gemini, others) | Advisors | Advise; do not implement; cannot approve a gate |
 
 External review intake follows GoldIntel's rules. Every finding gets a verdict (accepted, rejected or partially accepted) with a technical justification. A claim that cannot be verified becomes a probe, a risk or a question, never a design change. Review documents are stored unedited in `reviews/` and logged in `reviews/External_Review_Log.md` once the first one arrives.
@@ -31,10 +33,11 @@ Any session can end at any time. Every AI must:
 
 ## 4. Mandatory reading order
 
-1. Project_Bible.md  2. Decisions.md  3. TODO.md  4. latest Session_Handoff.md  5. Architecture.md  6. Compatibility_Notes.md  7. Risk_Register.md  8. GoldIntel_Reuse_Audit.md and Reference_DataStore_Altoholic.md
+1. Project_Bible.md  2. Requirements_v1.md  3. Decisions.md  4. TODO.md  5. latest Session_Handoff.md  6. Architecture.md  7. Compatibility_Notes.md  8. Risk_Register.md  9. GoldIntel_Reuse_Audit.md and Reference_DataStore_Altoholic.md
 
 | Conflict | Winner |
 |---|---|
+| Requirements_v1.md vs any design | Requirements_v1.md |
 | Decisions.md vs Architecture.md | Decisions.md |
 | Compatibility_Notes.md vs Architecture.md on a client fact | Compatibility_Notes.md |
 | Newer handoff vs older | Newer |
@@ -44,6 +47,13 @@ Any session can end at any time. Every AI must:
 A conflict the table cannot settle: stop, list it under OPEN ISSUES in the handoff, ask the user.
 
 ## 5. Governance rules
+
+**Working rules (the user, 2026-11-03, D-015):**
+- **Lean scope.** Build only what Requirements_v1.md asks for.
+- **Surface unexpected conditions visibly:** in the addon (a chat line starting `UNEXPECTED` plus a saved record) and in every report to the user.
+- **Every package states** whether a `/reload` is enough or a **full client restart** is required (new addon folder or TOC change = restart), and comes with **exact step-by-step test instructions**.
+- **Passive collection.** The user plays normally; Claude reads the SavedVariables the user sends after `/reload` or logout. No required in-game commands, except an explicitly optional step.
+- **Stop for the user's approval before writing code,** and at every phase gate.
 
 - **Planning is not implementation.** No addon code is written until TODO.md names a phase as approved for implementation. As of 2026-11-03 **no phase is approved for code**.
 - One verified step at a time: each phase closes on live evidence and the user's approval before the next starts.
@@ -57,9 +67,9 @@ A conflict the table cannot settle: stop, list it under OPEN ISSUES in the hando
 - Evidence files from the client are dated and kept **outside the public repository** (see section 7). The Compatibility_Notes ledger records each with an id `EI-E-nn`.
 - Third-party addon source is read for behavior only. It is never copied (D-003).
 
-## 7. Public repository hygiene (D-007)
+## 7. Repository hygiene (D-007)
 
-The repository is public. Never commit SavedVariables, WTF folders, chat logs, screenshots with names, character names, GUIDs, account names or balances. Fixtures are synthetic or anonymized (names replaced, GUIDs rewritten, money rounded). `.gitignore` enforces the folder rules; review enforces the rest.
+The user made the repository private on 2026-11-03 (GitHub still showed it public at the time of writing; see Decisions Q-2). These rules stay as defaults anyway. Never commit SavedVariables, WTF folders, chat logs, screenshots with names, character names, GUIDs, account names or balances. Fixtures are synthetic or anonymized (names replaced, GUIDs rewritten, money rounded). `.gitignore` enforces the folder rules; review enforces the rest.
 
 ## 8. Design principles (ordered)
 
@@ -81,13 +91,16 @@ The repository is public. Never commit SavedVariables, WTF folders, chat logs, s
 | Source | Where a value came from: `self` (EmpireIntel's own snapshot) or `datastore` |
 | asOf | Time the source last observed the value |
 | Bridge | The only layer allowed to call third-party addons |
-| TP-n | Test Package n: a throwaway, read-only in-client check that gates design choices |
+| TP-n | Test Package n: a throwaway, read-only, passive in-client check that gates design choices |
+| Legacy | The Forever account-wide points system: challenges earn points, perks spend them per character up to a cap |
+| Estimate | A value computed by EmpireIntel's rules, not read from the client; always labelled |
 
 ## 10. Document inventory
 
 | File | Purpose | Rule |
 |---|---|---|
 | Project_Bible.md | Governance | Changed only by user decision |
+| Requirements_v1.md | What v1 must do | Changed only by user decision |
 | Decisions.md | Decisions and open questions | Append-only |
 | TODO.md | Phases, current phase, tasks | Every session |
 | Session_Handoff.md | State transfer | Newest at top |
