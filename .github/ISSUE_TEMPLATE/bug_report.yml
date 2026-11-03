@@ -1,0 +1,31 @@
+name: Bug report
+description: Something in EmpireIntel looked wrong
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Public repository: do not paste SavedVariables files, character names, GUIDs or account names. Replace names with Char1, Char2."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what did EmpireIntel show?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of /ei version (or /eicheck version for the check package)
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Client build
+      description: "Output of /dump GetBuildInfo()"
+  - type: dropdown
+    id: datastore
+    attributes:
+      label: DataStore installed?
+      options: ["No", "Yes, with Altoholic", "Yes, without Altoholic", "Not sure"]

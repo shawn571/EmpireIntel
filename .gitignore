@@ -1,0 +1,12 @@
+# Game data and traces (character names, GUIDs, balances): never commit (public repository, D-007)
+SavedVariables/
+WTF/
+evidence/
+EmpireIntel_Docs/evidence/
+*.lua.bak
+# Build output
+*.zip
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
