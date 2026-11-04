@@ -106,4 +106,6 @@ Rule: the user decides scope, phases, saved-data format changes, dependencies an
 | Q-6 | Working rules from memory | **Resolved** (user message 2026-11-03; Project_Bible sections 2 and 5) |
 | Q-7 | D-013: allow TP-1 to call discovered Legacy getters automatically in the first run? | **Approved with limits** (D-013 update, D-016) |
 | Q-8 | If the verdict is PANE ONLY, may EmpireIntel read the Legacy pane's text as a source? | Open. Recommendation: decide after TP-1, when we know what the pane shows |
+| Q-T1 | Approve EmpireIntelCheck 0.1.1-tp1 with fixes 1 to 7 of TP1_Report_Run1.md, including fix 4, which changes EmpireIntelCheckDB's saved-data format? | Open. Recommendation: yes (Lua only, `/reload` is enough) |
+| Q-T2 | D-005: adopt DataStore Characters and Containers now (they held up live, EI-E-07), Crafts later? | Open. Recommendation: yes |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

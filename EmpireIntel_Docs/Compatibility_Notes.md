@@ -45,7 +45,7 @@ The pages could not be opened from the session (network policy). These facts com
 |---|---|---|
 | Challenges | 65, one point each, account-wide (66 if a beta-participation challenge is counted) | Sources disagree |
 | Trees | Professions, Adventure, Resourcefulness; 21 perks (forg.gg) | |
-| Per-character spend cap | 16 at launch; expected to rise later; one site says the beta used 30 | Read from the client if exposed |
+| Per-character spend cap | 16 at launch; expected to rise later; one site says the beta used 30 | **Client text (EI-E-04): a *seasonal* cap on points spent "in total"; per character or per account still open** |
 | One character alone | can earn up to 29 points | Blizzard, per summary |
 | Class milestones | levels 25, 45, 60 per class, 9 classes = 27 | Basis of the Estimator |
 | Crafting milestones | skill 150, 225, 300 in Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking, Tailoring = 18 | Gathering not included |
@@ -59,4 +59,11 @@ Hint for discovery: the Forever Blizzard UI has `Camelot` folders (`Blizzard_Auc
 
 | ID | Fact | Source |
 |---|---|---|
-| (none yet) | | |
+| EI-E-01 | Launch build 1.60.1 / 70790 (Nov 3 2026), Interface still 16001, project id 18; all 13 pre-modern families as in beta; also absent: `GetSpellInfo`, `IsAddOnLoaded`, `GetAddOnMetadata`, pre-modern quest-log, reputation, talent and currency globals; `RequestTimePlayed` present | TP1_Report_Run1.md section 3 (user's file, 2026-11-04) [file] |
+| EI-E-02 | **The Legacy system unlocks when the account's first character reaches level 25** (client string `LEGACY_MICRO_BUTTON_LOCKED_TOOLTIP`); `LegacyMicroButtonMixin.IsLegacySystemUnlocked()` returned false on an account whose highest character is level 9 | TP1_Report_Run1.md section 2 [file] |
+| EI-E-03 | No Legacy-named `C_` namespace or Enum (272 namespaces, the beta count); the Legacy UI exists: `ToggleLegacySystemUI`, `LegacySystemFrame_LoadUI`, `ToggleLegacyChallenges`, `ShowLegacyChallenge`, `LegacyMicroButton`, `LegacyChallengeViewedUtil` | section 2 [file] |
+| EI-E-04 | Client text confirms three trees (Professions, Adventure, Resourcefulness), "Legacy Points %d / %d", a **seasonal** spending cap on points "in total", a reward track and challenges; a "Talented" perk grants class talent points; `Enum.TraitConfigType.CamelotCombat = 4` | section 2 [file]; the trait link is [inferred] |
+| EI-E-05 | `Blizzard_APIDocumentation` and `Blizzard_APIDocumentationGenerated` are installed (loadable on demand) | section 1 [file] |
+| EI-E-06 | Launch has named realms ("CAMWOW US2 Realm N PvE"); one account's characters can sit on different realms | section 3 [file] |
+| EI-E-07 | DataStore 2026.10.14 on the launch build: money, level, class and a carried item count equal the live values; the roster spans both realms; no "Unknown" names, no duplicate GUIDs | section 3 [file] |
+| EI-E-08 | At `PLAYER_LOGOUT`, `UnitLevel` and `UnitXPMax` returned 1 and 0 for a level-2 character: unit data is unreliable at logout | section 4 [file] |

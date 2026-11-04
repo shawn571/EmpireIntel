@@ -23,8 +23,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.2 Fake clients: beta profile without Legacy; fake Legacy namespace with every result case; docs; good and faulty DataStore (S-003)
 - [x] 1.3 `EmpireIntelCheck` 0.1.0-tp1: Part A T1..T7, Part B L-1..L-6, D-1, R-1, P-1, E-1, verdict and provisional rule, runtime limits 1 to 8 (S-003)
 - [x] 1.4 65 tests green under Lua 5.1 and 5.3; 13 guard mutants all caught; `tools/build_package.py` builds and verifies `dist/EmpireIntelCheck_AddOns.zip`; package README with the restart statement and steps (S-003)
-- [ ] 1.5 **User:** launch-build run (full client restart), two characters, Legacy pane opened, SavedVariables and a pane screenshot returned
-- [ ] 1.6 Evidence EI-E-01..; TP-1 report with the verdict and every unexpected condition; user decides D-012, D-005
+- [x] 1.5 Launch-build run received 2026-11-04 (one character played; the pane could not be opened: the system is locked until level 25)
+- [x] 1.6 TP1_Report_Run1.md and EI-E-01..08 (S-006)
+- [ ] 1.7 **User:** decide Q-T1 (0.1.1-tp1 fixes, including a check saved-data format change) and Q-T2 (DataStore); then the docs run, and a later run once a character is level 25
 - Exit test: Architecture section 9 exit criteria.
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0

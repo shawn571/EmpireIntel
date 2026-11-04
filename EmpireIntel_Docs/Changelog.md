@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-04 | S-006 | TP-1 launch-build results (documentation only)
+- TP1_Report_Run1.md: Legacy system locked until the first character reaches 25; automatic FOUND verdict was a false positive; 7 check defects listed; DataStore matched live. Evidence EI-E-01..08; risks R-19, R-20; questions Q-T1, Q-T2. No code changed.
+
 ## 2026-11-03 | S-005 | Release pipeline design approved with amendments (documentation only)
 - Release_Pipeline.md 0.2.0: report task listed as an undelivered dependency (new section 13); rollback restores addon files by default, saved data only with explicit approval; push-only notifications; America/New_York cap day; Stage 1 entry after the launch-results review and authorization; Stage 2 needs Claude's separate identity and the report task. D-018 status, D-020.
 
