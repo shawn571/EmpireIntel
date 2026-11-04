@@ -34,6 +34,7 @@ local function newFrame(W, name)
   end
   function f:UnregisterEvent(ev) self.events[ev] = nil end
   function f:IsShown() return self.shown end
+  function f:IsVisible() return self.shown and not self.parentHidden end
   function f:GetObjectType() return 'Frame' end
   function f:Show()
     self.shown = true
@@ -200,6 +201,39 @@ function F.new(opts)
     env.LEGACY_FIXTURE_TITLE = 'Legacy'
   end
 
+  if opts.launch then
+    -- retail look-alikes seen on the launch build (TP1_Report_Run1.md); none may count
+    local mixin = {}
+    for _, m in ipairs({ 'GetText', 'GetColor', 'IsEnabled', 'GetDifficultyID' }) do
+      mixin[m] = function() rec('raid.' .. m); return m == 'GetText' and '10 Player' or 1 end
+    end
+    env.UnitPopupLegacyRaidDifficulty1ButtonMixin = mixin
+    env.GetLegacyRaidDifficultyID = function() rec('GetLegacyRaidDifficultyID'); return 0 end
+    env.C_FriendList = { IsLegacyFriendSystemEnabled = function() rec('legacyFriend'); return false end }
+    env.C_GameRules = { GetForeverExperiencePreset = function() rec('GetForeverExperiencePreset'); return 1 end,
+      SetForeverExperiencePresetPostLogin = function() rec('SetForeverExperiencePresetPostLogin') end }
+    local guild = newFrame(W, 'CommunitiesFrameGuildDetailsFrameInfoChallenge1')
+    guild.shown = true; guild.parentHidden = true          -- shown but not visible, as on the launch build
+    env.CommunitiesFrameGuildDetailsFrameInfoChallenge1 = guild
+    -- the Forever Legacy UI, locked
+    W.unlocked = false
+    env.LegacyMicroButtonMixin = { IsLegacySystemUnlocked = function() rec('IsLegacySystemUnlocked'); return W.unlocked end,
+      OnClick = function() rec('legacy.OnClick') end }
+    env.LegacyChallengeViewedUtil = { HasAnyUnviewedChallenges = function() return false end }
+    env.ToggleLegacySystemUI = function() rec('ToggleLegacySystemUI') end
+    env.LegacySystemFrame_LoadUI = function() rec('LegacySystemFrame_LoadUI') end
+    local btn = newFrame(W, 'LegacyMicroButton'); btn.shown = true
+    function btn:GetObjectType() return 'Button' end
+    env.LegacyMicroButton = btn
+    env.LEGACY_MICRO_BUTTON_LOCKED_TOOLTIP = 'This feature becomes available when your first character reaches level 25.'
+  end
+  if opts.bugs then
+    env.BugGrabberDB = { errors = {
+      { message = 'Interface/AddOns/EmpireIntelCheck/Run.lua:10: attempt to index a nil value', stack = '', counter = 2, session = 1 },
+      { message = 'Interface/AddOns/ElvUI/Core.lua:5: something', stack = '', counter = 1, session = 1, locals = 'SENTINEL_LOCALS_42 Player-1-00000001' },
+    } }
+  end
+
   if opts.datastore then
     local faulty = opts.datastore == 'faulty'
     local key = 'Default.Test Realm.' .. char.first .. ' ' .. char.last
@@ -222,8 +256,10 @@ function F.new(opts)
       for _, it in ipairs(W.bags[0]) do if it[1] == id then n = n + it[2] end end
       return n, 0, 0
     end
-    function ds:GetProfessions() return {} end
-    function ds:GetProfessionInfo() return nil end
+    function ds:GetProfession1Name(k) if k == 'Default.Test Realm.Alt Two' then return 'Tailoring' end; return '' end
+    function ds:GetProfession1Rank(k) if k == 'Default.Test Realm.Alt Two' then return 230, 300 end; return 0, 0 end
+    function ds:GetProfession2Name() return '' end
+    function ds:GetProfession2Rank() return 0, 0 end
     function ds:IterateCharacters(cb)
       cb(key, 1)
       cb('Default.Test Realm.Alt Two', 2)

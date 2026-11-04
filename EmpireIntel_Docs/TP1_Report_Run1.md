@@ -2,6 +2,8 @@
 
 DOC VERSION: 1.0.0  |  DATE: 2026-11-04  |  Source: the user's `EmpireIntelCheck.lua` (EmpireIntelCheck 0.1.0-tp1), sent by hand. The raw file is **not** in the repository. Characters are aliased C1 and C2; no names, GUIDs or account details appear here.
 
+> **Status 2026-11-04:** fixes 1 to 7 are built in EmpireIntelCheck 0.1.1-tp1 (D-021). Re-classified with the new rules, this run reads PANE ONLY, provisional (system locked), as expected.
+
 **Result: the Legacy system is locked on this account, so no Legacy data could be read yet.** The client's own text says the system "becomes available when your first character reaches level 25". The highest character known is level 9. The check's automatic verdict, `LEGACY API: FOUND`, is a **false positive**: every "found" getter belongs to the retail legacy raid-difficulty menu, not to the Forever Legacy system. The correct reading is **NOTHING EXPOSED, provisional (system locked)**. Everything else held: no popup, no blocked call, no error in the check itself, and DataStore's data matched the live client exactly.
 
 ## 1. What ran

@@ -25,7 +25,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.4 65 tests green under Lua 5.1 and 5.3; 13 guard mutants all caught; `tools/build_package.py` builds and verifies `dist/EmpireIntelCheck_AddOns.zip`; package README with the restart statement and steps (S-003)
 - [x] 1.5 Launch-build run received 2026-11-04 (one character played; the pane could not be opened: the system is locked until level 25)
 - [x] 1.6 TP1_Report_Run1.md and EI-E-01..08 (S-006)
-- [ ] 1.7 **User:** decide Q-T1 (0.1.1-tp1 fixes, including a check saved-data format change) and Q-T2 (DataStore); then the docs run, and a later run once a character is level 25
+- [x] 1.7 User approved Q-T1 and Q-T2 (2026-11-04)
+- [x] 1.8 EmpireIntelCheck 0.1.1-tp1 built: 82 tests pass under Lua 5.1 and 5.3; 21 guard mutants caught; run 1 re-classified correctly (S-007)
+- [ ] 1.9 **User:** install 0.1.1 (/reload), run `/eicheck docs`, send the file
+- [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
 - Exit test: Architecture section 9 exit criteria.
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0

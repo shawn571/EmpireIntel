@@ -1,4 +1,4 @@
-EmpireIntelCheck 0.1.0-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.1-tp1 - EmpireIntel Test Package 1: the Legacy check
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
@@ -6,8 +6,18 @@ WHAT IT IS
   to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  FULL CLIENT RESTART REQUIRED for the first install (a new addon folder is only loaded at game start).
-  Later updates of this package that only change .lua files: /reload is enough (the notes will say so).
+  Update from 0.1.0: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
+  The AddOns list keeps showing 0.1.0 until your next full restart; that is only the label.
+  First-ever install (no EmpireIntelCheck folder yet): FULL CLIENT RESTART.
+
+WHAT CHANGED IN 0.1.1 (fixes from your launch-build run)
+  - Only names that point at the Forever Legacy system count; retail "legacy raid" and guild challenge names no longer do.
+  - The Legacy lock is read and shown: while no character has reached level 25 the verdict says "locked".
+  - The Legacy pane counts as opened only when a Legacy frame actually becomes visible. No script hooks any more.
+  - Rested XP at logout falls back to the last in-world reading (the client gave wrong values at logout).
+  - Saved data uses less space: the full discovery is kept once. Your old data is converted automatically.
+  - If BugSack/BugGrabber is installed, the check reads its error list (read-only) and records which addons raised
+    errors, so you do not need to copy errors by hand.
 
 WHAT IT DOES TO YOUR GAME
   Nothing you need to do: it runs by itself 10 seconds after you enter the world, pauses in combat,
@@ -17,30 +27,23 @@ WHAT IT DOES TO YOUR GAME
   It does not touch GoldIntel or its data. It keeps its saved data under about 256 KB.
   Off switch: /eicheck off  (stays off on later logins; /eicheck on to re-enable)
 
-TEST STEPS (launch build, about 10 minutes of normal play)
-  1. Quit the game completely.
-  2. Extract EmpireIntelCheck_AddOns.zip into the Forever game folder's Interface\AddOns\ folder
-     (the same folder GoldIntel is in). You should then have Interface\AddOns\EmpireIntelCheck\EmpireIntelCheck.toc.
-     Leave DataStore and Altoholic installed and enabled if you use them. GoldIntel can stay installed.
-  3. Start the game. At the character screen, click AddOns and make sure EmpireIntelCheck is ticked.
-     If it is listed as out of date, tick "Load out of date AddOns" (the launch build may have a new
-     interface number).
-  4. Log in to character 1. About 10 seconds after you are in the world, expect ONE chat line like:
-       EmpireIntelCheck 0.1.0-tp1: LEGACY API: <verdict> ... Run 1 (login) ...
-     A second line starting "UNEXPECTED" is possible: note it and keep playing. Note any red Lua
-     error or any "addon blocked" popup (screenshot if you can) and keep playing.
-  5. Open the Legacy pane once, the normal way the game opens it. Leave it open for about 5 seconds, then close it.
-     If no new chat line appears within about 10 seconds, type  /eicheck pane  once (with the pane open
-     if possible). This tells the check the pane was opened.
-  6. Play normally for a few minutes. A level-up or a profession skill-up helps but is not required.
-  7. Optional: open your bank once.
-  8. Optional: only if the line in step 4 ended with "docs available: /eicheck docs", type  /eicheck docs
-     and wait about 10 seconds for a new line.
-  9. Log out to the character screen, log in to character 2 (ideally a different class), repeat steps 4 and 5.
- 10. Exit the game completely (Exit Game, not just the character screen), so the data is written.
- 11. Send me:
+TEST STEPS (about 2 minutes now, plus one short session after a character reaches level 25)
+  NOW
+  1. Extract EmpireIntelCheck_AddOns.zip into the Forever game folder's Interface\AddOns\ and let it REPLACE the
+     existing EmpireIntelCheck folder (overwrite all files). The game may be running.
+  2. In game, type  /reload
+     About 10 seconds later expect one line like:
+       EmpireIntelCheck 0.1.1-tp1: LEGACY API: PANE ONLY (provisional: Legacy system locked ...). Run 9 (login); docs available: /eicheck docs ...
+     A second line starting "UNEXPECTED" is possible: note it and carry on.
+  3. Type  /eicheck docs  once. Expect "docs: loading ...", then within a few seconds "docs: saved ...", and a new
+     verdict line about 10 seconds later ending "docs saved".
+  4. Type  /reload  once more (writes the file and frees the memory the docs used).
+  5. Exit the game fully and send me
        WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua
-     plus a screenshot of the Legacy pane with points, challenges and perks visible (the ground truth).
+  LATER, when any character first reaches level 25
+  6. Log in with the check installed. Open the Legacy pane the normal way (it should now be unlocked) and keep it open
+     about 5 seconds. A new line should appear within about 10 seconds; if not, type  /eicheck pane  with the pane open.
+  7. Exit the game fully and send the same file again, plus a screenshot of the pane showing points and perks.
 
 VERDICTS
   FOUND            a Legacy getter returned data

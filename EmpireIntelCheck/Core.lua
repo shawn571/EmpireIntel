@@ -11,7 +11,7 @@ C.LOGIN_DELAY = 10          -- seconds after PLAYER_ENTERING_WORLD before any he
 C.FRAME_BUDGET_MS = 2       -- per-frame work budget with a precise timer (limit 3)
 C.FRAME_STEPS = 40          -- per-frame step cap without one
 C.DB_LIMIT = 256 * 1024     -- saved-data cap in bytes (limit 4)
-C.MAX_RUNS_KEPT = 6
+C.MAX_RUNS_KEPT = 20       -- format 2 runs are small (the full discovery is kept once)
 
 -- Events: GoldIntel-proven ones plus three every addon uses (section 9 safety rules).
 C.EVENTS = {
@@ -39,8 +39,21 @@ function C.DB()
     db = {}
     env.EmpireIntelCheckDB = db
   end
-  db.format = 1
   db.runs = type(db.runs) == 'table' and db.runs or {}
+  -- Format 1 -> 2 (approved, Q-T1): old runs keep their verdict, results counts and Part A,
+  -- but drop their full discovery and call results (they are in the user's report already).
+  if db.format == 1 then
+    for _, r in ipairs(db.runs) do
+      if type(r) == 'table' then
+        r.discovery = nil
+        if type(r.calls) == 'table' then r.calls = { counts = r.calls.counts, calls = r.calls.calls } end
+        r.compacted = 'format 1 -> 2'
+      end
+    end
+    db.migratedFrom = 1
+  end
+  db.format = 2
+  db.strongSeen = type(db.strongSeen) == 'table' and db.strongSeen or {}
   db.chars = type(db.chars) == 'table' and db.chars or {}
   db.logout = type(db.logout) == 'table' and db.logout or {}
   db.bank = type(db.bank) == 'table' and db.bank or {}
@@ -62,14 +75,29 @@ function C.Trim()
     table.remove(db.runs, 1)
     size = U.size(db)
   end
+  -- then shed the least valuable parts, in order, marking each
+  if size > C.DB_LIMIT and db.latest and db.latest.results then
+    for _, res in pairs(db.latest.results) do res.values = nil end
+    db.latest.valuesDropped = 'over size cap'
+    size = U.size(db)
+  end
+  if size > C.DB_LIMIT and db.docs and db.docs.index then
+    db.docs.index = nil
+    db.docs.indexDropped = 'over size cap'
+    size = U.size(db)
+  end
+  if size > C.DB_LIMIT and db.latest then
+    db.latest.discovery = { dropped = 'over size cap' }
+    size = U.size(db)
+  end
   if size > C.DB_LIMIT and db.docs then
     db.docs = { dropped = 'over size cap', at = U.wall() }
     size = U.size(db)
   end
   if size > C.DB_LIMIT and db.runs[1] then
     local r = db.runs[1]
-    r.discovery = { dropped = 'over size cap' }
     r.calls = { dropped = 'over size cap' }
+    r.partA = { dropped = 'over size cap' }
     r.truncated = true
     size = U.size(db)
   end

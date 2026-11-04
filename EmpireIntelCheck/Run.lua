@@ -21,8 +21,8 @@ local S = {                 -- session state (not saved)
   pending = nil,            -- reasons waiting for the login delay or for the running job
   running = false,
   paneSeen = nil,           -- nil | 'frame:<name>' | 'user' | 'addon:<name>'
-  hooked = {},              -- frame name -> true
-  watchFrames = {},         -- names polled for IsShown
+  watchFrames = {},         -- Legacy frame name -> visibility when first seen (polled for a hidden->visible change)
+  lastRest = nil,           -- last in-world rest reading (the logout baseline, defect 3 of run 1)
   lastRelevant = nil,       -- relevant name count of the last full run
   lastRescan = -1000,
   unexpected = {},
@@ -94,37 +94,63 @@ local function safe(run, label, fn, ...)
   return res
 end
 
+-- Counts only names that point at the Forever Legacy system (U.strong), split by layer:
+-- data = game API (C_ functions, Enum, docs, global read-style functions); ui = frames, mixins, UI functions.
 local function relevantCount(rec)
-  local n = { candidates = 0, namespaces = 0, enums = 0, tables = 0, frames = 0, functions = 0 }
-  for _, c in pairs(rec.candidates or {}) do if not c.unrelated then n.candidates = n.candidates + 1 end end
-  for _, m in pairs(rec.matchedNamespaces or {}) do if not m.unrelated then n.namespaces = n.namespaces + 1 end end
-  for _, e in pairs(rec.enums or {}) do if not e.unrelated then n.enums = n.enums + 1 end end
+  local n = { data = 0, ui = 0, frames = 0, enums = 0, namespaces = 0, weak = 0 }
+  for _, c in pairs(rec.candidates or {}) do
+    if c.strong and not c.unrelated then
+      if c.layer == 'data' then n.data = n.data + 1 else n.ui = n.ui + 1 end
+    elseif not c.unrelated then
+      n.weak = n.weak + 1
+    end
+  end
+  for _, m in pairs(rec.matchedNamespaces or {}) do if m.strong and not m.unrelated then n.namespaces = n.namespaces + 1 end end
+  for _, e in pairs(rec.enums or {}) do if e.strong and not e.unrelated then n.enums = n.enums + 1 end end
   local g = rec.globals or {}
-  for _, t in ipairs(g.tables or {}) do if not t.unrelated then n.tables = n.tables + 1 end end
-  for _, f in ipairs(g.frames or {}) do if not f.unrelated then n.frames = n.frames + 1 end end
-  n.total = n.candidates + n.namespaces + n.enums + n.tables + n.frames
+  for _, t in ipairs(g.tables or {}) do if t.strong and not t.unrelated then n.ui = n.ui + 1 end end
+  for _, f in ipairs(g.frames or {}) do if f.strong and not f.unrelated then n.frames = n.frames + 1 end end
+  n.total = n.data + n.ui + n.frames + n.enums + n.namespaces
   return n
 end
 R.RelevantCount = relevantCount
+
+-- Lock state from a discovered getter (EI-E-02: LegacyMicroButtonMixin.IsLegacySystemUnlocked).
+local function lockState(calls)
+  for full, res in pairs(calls and calls.results or {}) do
+    if string.match(full, 'IsLegacySystemUnlocked$') and res.code == 'ok' and type(res.values) == 'table' then
+      return res.values[1], full
+    end
+  end
+  return nil
+end
 
 function R.Verdict(rec, calls, estimate)
   local n = relevantCount(rec)
   local found = {}
   for full, res in pairs(calls and calls.results or {}) do
     local c = rec.candidates[full]
-    if c and not c.unrelated and D.Meaningful(res) then table.insert(found, full) end
+    -- FOUND needs data from the game API layer; UI helper methods (mixins) never count
+    if c and c.strong and not c.unrelated and c.layer == 'data' and not c.method and D.Meaningful(res)
+      and not string.match(full, 'IsLegacySystemUnlocked$') then
+      table.insert(found, full)
+    end
   end
   table.sort(found)
-  local v = { counts = n, found = found }
+  local unlocked, lockName = lockState(calls)
+  local v = { counts = n, found = found, unlocked = unlocked, lockName = lockName }
   if #found > 0 then
     v.verdict = 'FOUND'
-  elseif n.candidates + n.namespaces + n.enums + n.tables > 0 then
+  elseif n.data + n.enums + n.namespaces > 0 then
     v.verdict = 'NAMES ONLY'
-  elseif n.frames > 0 then
+  elseif n.frames + n.ui > 0 then
     v.verdict = 'PANE ONLY'
   else
     v.verdict = 'NOTHING EXPOSED'
+  end
+  if v.verdict ~= 'FOUND' then
     local reasons = {}
+    if unlocked == false then table.insert(reasons, 'Legacy system locked (unlocks at the first level 25)') end
     if not S.paneSeen then table.insert(reasons, 'Legacy pane not seen opening yet') end
     if not estimate or (estimate.total or 0) == 0 then table.insert(reasons, 'no Legacy point expected yet') end
     if #reasons > 0 then
@@ -152,18 +178,59 @@ local function nsDiff(db, rec, build)
   return { baselineBuild = db.nsBaseline.build, count = rec.namespaces.count, added = added, removed = removed }
 end
 
-local function hookFrames(rec)
+-- Watch Legacy frames for a hidden -> visible change (polled once per second; no hooks).
+local function watchFrames(rec, fromRescan)
   for _, f in ipairs(rec.globals and rec.globals.frames or {}) do
-    if not f.unrelated and not S.hooked[f.name] then
-      local obj = NS.G(f.name)
-      if type(obj) == 'table' and type(obj.HookScript) == 'function' then
-        local name = f.name
-        local ok = pcall(obj.HookScript, obj, 'OnShow', function() R.PaneSeen('frame:' .. name) end)
-        S.hooked[name] = ok and true or 'failed'
-      end
-      table.insert(S.watchFrames, f.name)
+    if f.strong and not f.unrelated and S.watchFrames[f.name] == nil then
+      local visible = f.visible == true
+      S.watchFrames[f.name] = visible
+      -- a Legacy frame that appears visible after a Blizzard UI addon loaded is the pane opening
+      if fromRescan and visible then R.PaneSeen('frame:' .. f.name) end
     end
   end
+end
+
+-- Storage format 2 (approved, Q-T1): the full discovery and call results are kept once (db.latest);
+-- each run keeps its verdict, the results for Legacy names, and what changed since the previous run.
+local function namesOf(rec)
+  local set = {}
+  for full in pairs(rec.candidates or {}) do set[full] = true end
+  for _, k in ipairs({ 'functions', 'tables', 'frames' }) do
+    for _, e in ipairs(rec.globals and rec.globals[k] or {}) do set[e.name] = true end
+  end
+  for k in pairs(rec.matchedNamespaces or {}) do set[k] = true end
+  for k in pairs(rec.enums or {}) do set['Enum.' .. k] = true end
+  return set
+end
+
+local function storeRun(db, run, rec)
+  local names = namesOf(rec)
+  local prev = db.latest
+  local added, removed, changed = {}, {}, {}
+  if prev and prev.names then
+    for n in pairs(names) do if not prev.names[n] then table.insert(added, n) end end
+    for n in pairs(prev.names) do if not names[n] then table.insert(removed, n) end end
+  end
+  table.sort(added); table.sort(removed)
+  local strongResults = {}
+  for full, res in pairs(run.calls and run.calls.results or {}) do
+    local c = rec.candidates[full]
+    if c and c.strong then strongResults[full] = res end
+    local old = prev and prev.results and prev.results[full]
+    if old and old.code ~= res.code and #changed < 100 then table.insert(changed, { name = full, from = old.code, to = res.code }) end
+  end
+  for n in pairs(names) do
+    if U.strong(n) and not db.strongSeen[n] then db.strongSeen[n] = { first = run.at, run = run.id, build = run.build and run.build[2] } end
+  end
+  local results = run.calls and run.calls.results
+  db.latest = { runId = run.id, at = run.at, build = run.build, names = names, discovery = rec, results = results }
+  run.calls = run.calls and { counts = run.calls.counts, calls = run.calls.calls, bytes = run.calls.bytes,
+    legacy = strongResults, changed = changed } or nil
+  run.discoveryChanges = { baselineRun = prev and prev.runId, added = added, removed = removed }
+  run.discoverySummary = { candidates = run.discovery_candidateCount, info = rec.info, namespaces = rec.namespaces,
+    docsAvailable = rec.addons and rec.addons.docsAvailable }
+  run.discovery_candidateCount = nil
+  table.insert(db.runs, run)
 end
 
 function R.Start(reason, manual)
@@ -186,12 +253,16 @@ function R.Start(reason, manual)
     run.partA.T4 = safe(run, 'T4', A.T4); C.Checkpoint()
     run.partA.T5 = safe(run, 'T5', A.T5, run, ident); C.Checkpoint()
     run.partA.T6 = safe(run, 'T6', A.T6, run); C.Checkpoint()
+    run.partA.T8 = safe(run, 'T8', A.T8, run); C.Checkpoint()
     -- R-1, P-1 and the snapshot used by E-1
     local okS, snap, rest, profs = pcall(Ch.Snapshot, run.guid)
     if okS then
       run.char = { snapshot = snap, rest = rest, professions = profs }
       local last = run.guid and db.logout[run.guid]
       if last then run.char.restProjection = Ch.Project(last, rest) end
+      if type(rest) == 'table' and type(rest.level) == 'number' and rest.level >= 1 and (tonumber(rest.xpMax) or 0) > 0 then
+        S.lastRest = rest
+      end
     else
       R.Unexpected('probe_error', 'character: ' .. tostring(snap), run)
     end
@@ -205,7 +276,15 @@ function R.Start(reason, manual)
     -- E-1
     local dsChars = {}
     for _, c in ipairs(run.partA.T6 and run.partA.T6.chars or {}) do
-      if type(c.level) == 'number' then table.insert(dsChars, { class = c.class, level = c.level }) end
+      if type(c.level) == 'number' then
+        local crafts = {}
+        for _, p in ipairs(c.professions or {}) do
+          for _, craft in pairs(Ch.RULES.crafts) do
+            if p.name == craft and type(p.rank) == 'number' then crafts[craft] = p.rank end
+          end
+        end
+        table.insert(dsChars, { class = c.class, level = c.level, crafts = crafts })
+      end
     end
     run.estimate = safe(run, 'E-1', Ch.Estimate, dsChars)
     -- verdict
@@ -213,20 +292,22 @@ function R.Start(reason, manual)
     run.verdict = v.text
     run.verdictInfo = v
     run.paneSeen = S.paneSeen
+    run.legacyUnlocked = v.unlocked
     run.addonLoads = S.addonLoads
     rec.namespaces.all = nil        -- kept once in db.nsBaseline
-    run.discovery = rec
-    run.discovery.candidateCount = 0
-    for _ in pairs(rec.candidates) do run.discovery.candidateCount = run.discovery.candidateCount + 1 end
-    run.discovery.candidates = nil  -- the call results carry every candidate name
+    local cc = 0
+    for _ in pairs(rec.candidates) do cc = cc + 1 end
+    run.discovery_candidateCount = cc
     run.scheduler = { ticks = C.stats.ticks, maxStepsPerFrame = C.stats.maxSteps }
     S.lastRelevant = v.counts.total
-    hookFrames(rec)
-    table.insert(db.runs, run)
+    watchFrames(rec, false)
+    storeRun(db, run, rec)
     local size = C.Trim()
     run.dbSize = size
     -- chat: at most two lines (limit 6)
-    local docsHint = rec.addons and rec.addons.docsAvailable and '; docs available: /eicheck docs' or ''
+    local docsHint = ''
+    if db.docs and db.docs.systems then docsHint = '; docs saved'
+    elseif rec.addons and rec.addons.docsAvailable then docsHint = '; docs available: /eicheck docs' end
     C.Say(v.text .. '. Run ' .. run.id .. ' (' .. tostring(reason) .. ')' .. docsHint .. '. Data in EmpireIntelCheckDB.')
     if #run.unexpected > 0 then
       local codes, seen = {}, {}
@@ -298,6 +379,7 @@ function R.LightRescan(addonName)
     local rec = {}
     D.Walk(rec)
     local n = relevantCount(rec)
+    watchFrames(rec, true)
     if S.lastRelevant and n.total > S.lastRelevant then
       R.Schedule('new-names-after-' .. addonName, 1)
     end
@@ -306,12 +388,29 @@ end
 
 local function pollFrames()
   if C.IsOff() then return end
-  for _, name in ipairs(S.watchFrames) do
+  for name, wasVisible in pairs(S.watchFrames) do
     local f = NS.G(name)
-    if type(f) == 'table' and type(f.IsShown) == 'function' then
-      local ok, shown = pcall(f.IsShown, f)
-      if ok and shown then R.PaneSeen('frame:' .. name); return end
+    if type(f) == 'table' and type(f.IsVisible) == 'function' then
+      local ok, visible = pcall(f.IsVisible, f)
+      if ok then
+        visible = visible and true or false
+        if visible and not wasVisible then R.PaneSeen('frame:' .. name) end
+        S.watchFrames[name] = visible
+      end
     end
+  end
+end
+
+-- Rest reading every 5 minutes in the world (cheap reads), so logout has a good baseline.
+local restAcc = 0
+local function pollRest()
+  if C.IsOff() or not S.ready or U.inCombat() then return end
+  restAcc = restAcc + 1
+  if restAcc < 300 then return end
+  restAcc = 0
+  local ok, rest = pcall(Ch.Rest)
+  if ok and type(rest) == 'table' and type(rest.level) == 'number' and rest.level >= 1 and (tonumber(rest.xpMax) or 0) > 0 then
+    S.lastRest = rest
   end
 end
 
@@ -330,7 +429,7 @@ C.On('ADDON_LOADED', function(name)
   S.addonLoads = S.addonLoads or {}
   if #S.addonLoads < 40 then table.insert(S.addonLoads, { name = name, at = U.now() }) end
   if string.sub(name, 1, 9) == 'Blizzard_' then
-    if U.term(name) then
+    if U.strong(name) then
       S.paneSeen = S.paneSeen or ('addon:' .. name)
       R.Schedule('addon-' .. name, 3)
     else
@@ -373,13 +472,28 @@ end)
 C.On('PLAYER_LOGOUT', function()
   -- tiny write only: the rested-XP baseline for the next login's projection check
   if C.IsOff() then return end
+  -- EI-E-08: unit data at logout can be wrong (level 1, xpMax 0), so fall back to the last in-world reading
   local ok, rest = pcall(Ch.Rest)
   local g = S.guid
   if not g then
     local _, v = A.Call('UnitGUID', 'player')
     g = v and v[1]
   end
-  if ok and type(g) == 'string' then C.DB().logout[g] = rest end
+  if type(g) ~= 'string' then return end
+  local good = ok and type(rest) == 'table' and type(rest.level) == 'number' and rest.level >= 1
+    and (tonumber(rest.xpMax) or 0) > 0 and (not S.lastRest or rest.level >= (S.lastRest.level or 0))
+  local base
+  if good then
+    base = rest
+    base.source = 'logout'
+  elseif S.lastRest then
+    base = {}
+    for k, v in pairs(S.lastRest) do base[k] = v end
+    base.source = 'last-in-world'
+    base.readAt = S.lastRest.at
+    base.at = U.wall()
+  end
+  if base then C.DB().logout[g] = base end
 end)
 
 local function onBlocked(addon, fn)
@@ -393,6 +507,7 @@ C.On('ADDON_ACTION_FORBIDDEN', onBlocked)
 C.On('ADDON_ACTION_BLOCKED', onBlocked)
 
 table.insert(C.pollers, pollFrames)
+table.insert(C.pollers, pollRest)
 table.insert(C.pollers, function() if not C.IsOff() and S.ready then A.PollBank() end end)
 
 C.Boot()

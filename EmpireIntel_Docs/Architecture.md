@@ -1,6 +1,6 @@
 # EmpireIntel Architecture v1
 
-DOC VERSION: 2.1.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
+DOC VERSION: 2.2.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
 
 **EmpireIntel tracks the WoW Forever Legacy system across a player's characters.** For each character it shows Legacy points and perks, rested XP and professions. It also gives a "what next" list driven by a plan file the user writes. Alt data comes from EmpireIntel's own snapshots and, optionally, from DataStore.
 
@@ -193,3 +193,18 @@ The verdict is printed in chat (`EmpireIntelCheck: LEGACY API: NOTHING EXPOSED, 
 4. The estimated earned points never exceed the rule table's maximum (45) and are never shown as the account total.
 5. A plan error skips that goal and is reported; it never stops the addon.
 6. EmpireIntel never writes to a table it does not own.
+
+## 12. TP-1 amendments for 0.1.1 (D-021, after launch-build run 1)
+
+- **Legacy names only:** a name counts toward the verdict only if it contains "legacy" and is not a known retail feature (`U.strong`). "challenge", "perk", "camelot" and "forever" matches are recorded but never counted.
+- **Layers:**
+  - FOUND needs meaningful data from the game API layer: `C_` functions, Enum, documented functions, or global read-style functions.
+  - Legacy UI (frames, mixins, UI functions) gives PANE ONLY.
+  - UI actions (`Toggle...`, `Show...`, `..._LoadUI`) are never called.
+- **Lock state:** read from `LegacyMicroButtonMixin.IsLegacySystemUnlocked` (EI-E-02). Every verdict other than FOUND is provisional while the system is locked, the pane has not been seen, or no point is expected.
+- **Pane:** seen when a Legacy frame goes from not visible to visible (`IsVisible`, polled once per second), or when a Blizzard addon with a Legacy name loads. No script hooks.
+- **Logout baseline:** the logout reading is used only when it is valid; otherwise the last in-world reading, refreshed every 5 minutes (EI-E-08).
+- **Storage format 2:** the full discovery and call results are kept once in `latest`. Each run keeps its verdict, the results for Legacy names, and the names and codes that changed. Up to 20 runs. Format 1 runs are compacted.
+- **Denylist:** applied exactly as worded by the user: capitalized `Set`, `Spend`, `Learn`, `Reset`, `Buy`, `Purchase` anywhere in the name, plus lower-case at the start of a name segment.
+- **Docs:** an index of every documented system, plus matching on argument, return, event, payload, table and field names. Processing is spread across frames.
+- **T8:** read-only count of BugGrabber/BugSack errors per addon. Our own messages are kept with GUIDs and paths removed; locals are never copied.

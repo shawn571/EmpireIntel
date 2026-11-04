@@ -133,7 +133,7 @@ function Ch.Estimate(extra)
   end
   for _, c in pairs(NS.Core.DB().chars) do addChar(c.class, c.level, c.crafts, 'self') end
   if type(extra) == 'table' then
-    for _, c in ipairs(extra) do addChar(c.class, c.level, nil, 'datastore') end
+    for _, c in ipairs(extra) do addChar(c.class, c.level, c.crafts, 'datastore') end
   end
   local total, classPts, craftPts = 0, {}, {}
   for _, cls in ipairs(R.classes) do

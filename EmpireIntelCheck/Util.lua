@@ -10,7 +10,7 @@ local ADDON, NS = ...
 
 NS = NS or {}
 NS.env = NS.env or _G
-NS.VERSION = '0.1.0-tp1'
+NS.VERSION = '0.1.1-tp1'
 
 local U = {}
 NS.U = U
@@ -78,15 +78,36 @@ end
 ---------------------------------------------------------------------------
 
 U.TERMS = { 'legacy', 'perk', 'challenge', 'camelot', 'forever' }
+-- The user's rule (Q-7): skip anything containing Set, Spend, Learn, Reset, Buy or Purchase.
+-- Matched as written (capitalized words), so 'Preset', 'Offset' or 'Asset' do not match,
+-- and also as a lower-case word at the start of a name segment ('setUp', 'buy_x').
+U.DENY_WORDS = { 'Set', 'Spend', 'Learn', 'Reset', 'Buy', 'Purchase' }
 U.DENY = { 'set', 'spend', 'learn', 'reset', 'buy', 'purchase' }
 
--- Known retail-engine systems that match a term but are not the Forever Legacy system.
--- They are recorded, never called, and never count toward the verdict.
+-- Known retail-engine systems that match a term but are not the Forever Legacy system
+-- (from GoldIntel evidence and the launch-build run, TP1_Report_Run1.md). Recorded, never called,
+-- never counted toward the verdict.
 U.UNRELATED_PREFIX = {
-  'C_ChallengeMode', 'C_PerksProgram', 'C_PerksActivities', 'ChallengeMode', 'Challenges',
+  'C_ChallengeMode', 'C_PerksProgram', 'C_PerksActivities', 'C_ProfSpecs', 'C_MythicPlus', 'ChallengeMode', 'Challenges',
   'PerksProgram', 'PerksActivities', 'PERKS_PROGRAM', 'CHALLENGE_MODE', 'WOW_PROJECT_',
+  'UnitPopupLegacyRaid', 'UnitPopupResetChallenge', 'GuildChallenge', 'CommunitiesGuild', 'CommunitiesFrameGuild',
+  'GetGuildChallenge', 'GetNumGuildChallenges', 'RequestGuildChallenge', 'GetGuildPerk', 'GetNumGuildPerks',
+  'ProfessionsSpecPerk', 'ScenarioChallengeMode', 'ScenarioObjectiveTrackerChallengeMode', 'EventToastChallengeMode',
+  'RecruitAFriendClaimLegacy', 'Class_PerksProgram', 'wlEvent_', 'AddPerksProgram', 'TextToSpeechFrame_LoadLegacy',
+  'AuthChallenge', 'IsLegacyDifficulty', 'NormalizeLegacyDifficulty', 'GetLegacyRaidDifficulty', 'SetLegacyRaidDifficulty',
+  'C_FriendList.IsLegacyFriend', 'C_Reputation.SetLegacyReputations', 'C_Reputation.AreLegacyReputations',
+  'C_PartyInfo.IsChallengeMode', 'C_PartyInfo.ChallengeMode', 'HEALBOT_', 'LE_GAME_ERR_CHALLENGE', 'LE_GAME_ERR_LEGACY_RAID',
+  'LE_FRAME_TUTORIAL_PERKS', 'CHALLENGE_MEDAL', 'GUILD_CHALLENGE', 'NUM_CHALLENGE', 'LE_SCENARIO_TYPE_CHALLENGE',
+  'LE_GAME_ERR_NO_LOOT_IN_CHALLENGE', 'LE_GAME_ERR_START_RESTRICTED_CHALLENGE', 'LE_GAME_ERR_CLAIMED_CHALLENGE',
+  'LE_GAME_ERR_CANT_DO_THAT_CHALLENGE', 'LE_GAME_ERR_NO_CHALLENGE', 'CamelotBank',
 }
 U.UNRELATED_EXACT = { ['C_Loot.IsLegacyLootModeEnabled'] = true }
+
+-- 'legacy' sub-words that belong to retail features, not to the Forever Legacy system.
+U.LEGACY_RETAIL = { 'legacyraid', 'legacydifficulty', 'legacyfriend', 'legacyreputation', 'legacyloot', 'claimlegacy',
+  'legacysettings', 'legacyliquid', 'legacyspell', 'expansionlegacy', 'legacyletterbox', 'legacyunsupported',
+  'legacybehavior', 'legacyexpansion', 'legacyrecruit', 'legacyrewardsbutton', 'legacy_raid', 'legacy_loot',
+  'nameplates_style_legacy', 'voice', 'turnstrafe' }
 
 function U.term(name)
   if type(name) ~= 'string' then return nil end
@@ -98,11 +119,28 @@ function U.term(name)
 end
 
 function U.denied(name)
-  local low = string.lower(name)
-  for _, d in ipairs(U.DENY) do
-    if string.find(low, d, 1, true) then return d end
+  for _, w in ipairs(U.DENY_WORDS) do
+    if string.find(name, w, 1, true) then return w end
+  end
+  for seg in string.gmatch(name, '[^%._]+') do
+    local low = string.lower(seg)
+    for _, d in ipairs(U.DENY) do
+      if string.sub(seg, 1, #d) == d or (seg == string.upper(seg) and string.find(low, d, 1, true)) then return d end
+    end
   end
   return nil
+end
+
+-- A name that points at the Forever Legacy system: contains 'legacy', is not a known retail feature.
+function U.strong(name)
+  if type(name) ~= 'string' then return false end
+  local low = string.lower(name)
+  if not string.find(low, 'legacy', 1, true) then return false end
+  if U.unrelated(name) then return false end
+  for _, r in ipairs(U.LEGACY_RETAIL) do
+    if string.find(low, r, 1, true) then return false end
+  end
+  return true
 end
 
 -- 'Get', 'Is' or 'Has' followed by an upper-case letter, a digit, an underscore or the end.

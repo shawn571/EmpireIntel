@@ -139,7 +139,9 @@ end
 ---------------------------------------------------------------------------
 A.DS_METHODS = { 'GetCharacter', 'GetCharacters', 'GetCharacterIDByGUID', 'GetCharacterKey', 'GetModuleLastUpdateByKey',
   'IterateCharacters', 'GetCharacterName', 'GetCharacterLevel', 'GetCharacterClass', 'GetMoney', 'GetRestXP',
-  'IsResting', 'GetLastLogout', 'GetContainerItemCount', 'GetProfessions', 'GetProfessionInfo' }
+  'IsResting', 'GetLastLogout', 'GetContainerItemCount',
+  -- DataStore_Crafts on Forever (API/Common.lua): names and ranks of the two primary professions
+  'GetProfession1Name', 'GetProfession1Rank', 'GetProfession2Name', 'GetProfession2Rank' }
 
 local function dsCall(ds, m, ...)
   local f = ds[m]
@@ -234,7 +236,14 @@ function A.T6(run)
     local _, last = dsCall(ds, 'GetModuleLastUpdateByKey', 'DataStore_Characters', key)
     local guid = type(guids) == 'table' and guids[id] or nil
     local row = { key = U.ascii(tostring(key)), account = acct, realm = realm, name = name, level = U.dump(level),
-      class = U.dump(token), lastUpdate = U.dump(last), guid = U.dump(guid) }
+      class = U.dump(token), lastUpdate = U.dump(last), guid = U.dump(guid), professions = {} }
+    for i = 1, 2 do
+      local _, pname = dsCall(ds, 'GetProfession' .. i .. 'Name', key)
+      local _, rank, maxRank = dsCall(ds, 'GetProfession' .. i .. 'Rank', key)
+      if type(pname) == 'string' and pname ~= '' then
+        table.insert(row.professions, { name = U.ascii(pname), rank = U.dump(rank), max = U.dump(maxRank) })
+      end
+    end
     if name == 'Unknown' then out.unknownNames = out.unknownNames + 1 end
     if guid and seenGuid[guid] then out.duplicateGuids = out.duplicateGuids + 1; row.duplicate = true end
     if guid then seenGuid[guid] = true end
@@ -286,4 +295,52 @@ function A.PollBank()
   end
   local guid = first('UnitGUID', 'player')
   if guid then NS.Core.DB().bank[guid] = rec end
+end
+
+---------------------------------------------------------------------------
+-- T8 Lua errors seen by BugGrabber/BugSack (read-only; answers "were any errors ours?")
+-- Reads BugGrabber's own error list if that addon is installed. Stores counts per addon folder
+-- and, for EmpireIntelCheck only, the first lines of each message. Never stores locals.
+---------------------------------------------------------------------------
+local function errorList()
+  local bg = NS.G('BugGrabber')
+  if type(bg) == 'table' and type(bg.GetDB) == 'function' then
+    local ok, list = pcall(bg.GetDB, bg)
+    if ok and type(list) == 'table' then return list, 'BugGrabber:GetDB' end
+  end
+  local db = NS.G('BugGrabberDB')
+  if type(db) == 'table' and type(db.errors) == 'table' then return db.errors, 'BugGrabberDB.errors' end
+  return nil
+end
+
+local function clean(text)
+  text = string.gsub(tostring(text or ''), 'Player%-%d+%-%x+', '<GUID>')
+  text = string.gsub(text, '[A-Za-z]:[\\/][^\n]-[\\/]Interface[\\/]', 'Interface/')
+  return U.ascii(text)
+end
+
+function A.T8(run)
+  local list, src = errorList()
+  if not list then return { present = false } end
+  local out = { present = true, source = src, total = 0, byAddon = {}, ours = {} }
+  local n = 0
+  for _, e in ipairs(list) do
+    n = n + 1
+    if n > 500 then out.truncated = true; break end
+    if type(e) == 'table' then
+      out.total = out.total + 1
+      local msg = tostring(e.message or '')
+      local folder = string.match(msg, 'AddOns[\\/]([^\\/]+)[\\/]') or string.match(tostring(e.stack or ''), 'AddOns[\\/]([^\\/]+)[\\/]') or '?'
+      folder = U.ascii(folder)
+      out.byAddon[folder] = (out.byAddon[folder] or 0) + (tonumber(e.counter) or 1)
+      if folder == ADDON or string.find(msg, ADDON, 1, true) then
+        if #out.ours < 10 then
+          table.insert(out.ours, { message = clean(string.sub(msg, 1, 300)), count = tonumber(e.counter) or 1,
+            session = U.dump(e.session) })
+        end
+      end
+    end
+  end
+  if #out.ours > 0 then NS.Run.Unexpected('own_lua_error', tostring(#out.ours) .. ' error(s) recorded by BugGrabber', run) end
+  return out
 end

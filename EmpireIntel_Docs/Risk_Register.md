@@ -23,4 +23,4 @@ DOC VERSION: 1.1.0  |  DATE: 2026-11-03 (S-002)  |  Reviewed at every phase gate
 | R-17 | The plan file has errors or names an unknown character | H | L | Validation at load; each bad goal reported and skipped | 4 |
 | R-18 | Launch-week patches change the API between TP-1 and Phase 2 | M | M | Re-run TP-1 after each patch (it is passive and cheap) | all |
 | R-19 | Legacy cannot be verified until a character reaches level 25 | H | M | The docs search finds the API names now; the value check waits for level 25 | 1 |
-| R-20 | Each check run stores about 75 KB, so the cap keeps only 2 to 3 runs and older evidence is lost | H | M | Fix 4 of the TP-1 report (discovery once per build): needs approval as a saved-data format change | 1 |
+| R-20 | Each check run stores about 75 KB, so the cap keeps only 2 to 3 runs and older evidence is lost | L | M | Fixed in 0.1.1 (format 2: discovery kept once, up to 20 runs) | 1 |

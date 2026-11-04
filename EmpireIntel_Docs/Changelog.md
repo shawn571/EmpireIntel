@@ -2,6 +2,11 @@
 
 Append-only. Newest first.
 
+## 2026-11-04 | S-007 | EmpireIntelCheck 0.1.1-tp1 (/reload is enough when updating from 0.1.0)
+- Fixes 1 to 7 of TP1_Report_Run1.md: Legacy-only verdict with data/UI layers and lock state, visibility-based pane detection without hooks, valid logout baseline, saved-data format 2 with migration, corrected DataStore methods, exact-wording denylist, docs index and field matching.
+- Added: T8 read-only BugGrabber error counts; DataStore alt professions in the estimate; docs processing spread across frames.
+- Tests: 82 pass under Lua 5.1 and 5.3; new fixtures mirror the launch-build run. D-005 update, D-021.
+
 ## 2026-11-04 | S-006 | TP-1 launch-build results (documentation only)
 - TP1_Report_Run1.md: Legacy system locked until the first character reaches 25; automatic FOUND verdict was a false positive; 7 check defects listed; DataStore matched live. Evidence EI-E-01..08; risks R-19, R-20; questions Q-T1, Q-T2. No code changed.
 

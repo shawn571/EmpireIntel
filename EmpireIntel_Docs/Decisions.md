@@ -92,6 +92,17 @@ Rule: the user decides scope, phases, saved-data format changes, dependencies an
 2. Rollback restores addon files by default. Saved data is restored only with the user's explicit approval, in every case, because restoring it could lose newer progress. The installer never restores saved data on its own, and Claude can never request it.
 3. Answers: Q-R1 Windows; Q-R2 Claude push notifications only; Q-R3 a separate GitHub identity for Claude before Stage 2; Q-R4 America/New_York; Q-R5 an Interface-only TOC bump is not a fix, at first; Q-R6 limits accepted as proposed.
 
+## D-005 update (2026-11-04): Approved, option A, for Characters and Containers (user, Q-T2)
+DataStore Characters and Containers are adopted as optional alt-data sources: they held up live on the launch build (EI-E-07). Crafts follows once a character has professions; on Forever it exposes `GetProfession1Name`, `GetProfession1Rank` and the same for 2. EmpireIntel product code is still not authorized (Phase 2), so nothing is built yet.
+
+## D-021 EmpireIntelCheck 0.1.1-tp1 | Approved (user, 2026-11-04, Q-T1)
+Fixes 1 to 7 of TP1_Report_Run1.md, including **saved-data format 2 of EmpireIntelCheckDB** (full discovery once in `latest`, per-run results only for Legacy names and changes; format 1 runs compacted on first load). Additions within the check's scope:
+- T8, a read-only count of BugGrabber's recorded Lua errors per addon, with our own messages kept (never locals). It answers the user's "not sure" about errors.
+- DataStore alt professions in the estimate.
+- Docs processing spread across frames.
+- OnShow hooks removed in favour of polling visibility.
+Update from 0.1.0: /reload is enough.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -106,6 +117,6 @@ Rule: the user decides scope, phases, saved-data format changes, dependencies an
 | Q-6 | Working rules from memory | **Resolved** (user message 2026-11-03; Project_Bible sections 2 and 5) |
 | Q-7 | D-013: allow TP-1 to call discovered Legacy getters automatically in the first run? | **Approved with limits** (D-013 update, D-016) |
 | Q-8 | If the verdict is PANE ONLY, may EmpireIntel read the Legacy pane's text as a source? | Open. Recommendation: decide after TP-1, when we know what the pane shows |
-| Q-T1 | Approve EmpireIntelCheck 0.1.1-tp1 with fixes 1 to 7 of TP1_Report_Run1.md, including fix 4, which changes EmpireIntelCheckDB's saved-data format? | Open. Recommendation: yes (Lua only, `/reload` is enough) |
-| Q-T2 | D-005: adopt DataStore Characters and Containers now (they held up live, EI-E-07), Crafts later? | Open. Recommendation: yes |
+| Q-T1 | Approve EmpireIntelCheck 0.1.1-tp1 with fixes 1 to 7, including the check's saved-data format change? | **Approved** (D-021) |
+| Q-T2 | D-005: adopt DataStore Characters and Containers now, Crafts later? | **Approved** (D-005 update) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

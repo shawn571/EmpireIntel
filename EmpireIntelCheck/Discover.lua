@@ -30,7 +30,9 @@ local function frameInfo(v)
   if not ok or not isFrame then return nil end
   local okT, ot = pcall(v.GetObjectType, v)
   local okS, shown = pcall(v.IsShown, v)
-  return { objectType = okT and U.dump(ot) or 'error', shown = okS and U.dump(shown) or 'error' }
+  local okV, visible = pcall(v.IsVisible, v)
+  return { objectType = okT and U.dump(ot) or 'error', shown = okS and U.dump(shown) or 'error',
+    visible = okV and U.dump(visible) or 'error' }
 end
 
 ---------------------------------------------------------------------------
@@ -83,7 +85,11 @@ function D.VisitEnum(rec, ek, ev)
       members[mk] = U.dump(mv); hit = true
     end
   end
-  if hit then rec.enums[ek] = { term = eTerm or 'member', members = members, unrelated = U.unrelated(ek) } end
+  if hit then
+    local strong = U.strong(ek)
+    for mk in pairs(members) do if U.strong(mk) and U.strong(ek .. mk) then strong = true end end
+    rec.enums[ek] = { term = eTerm or 'member', members = members, unrelated = U.unrelated(ek), strong = strong or nil }
+  end
 end
 
 function D.WalkEnum(rec)
@@ -117,14 +123,17 @@ function D.Visit(rec, k, v)
           local unrel = U.unrelated(full) or U.unrelated(k)
           if not unrel then related = related + 1 end
           if type(mv) == 'function' then
-            rec.candidates[full] = { term = nsTerm or mTerm, unrelated = unrel }
+            rec.candidates[full] = { term = nsTerm or mTerm, unrelated = unrel, strong = U.strong(full) or nil, layer = 'data' }
           end
         end
       end
     end
     if nm > 0 then
       -- a namespace whose only matches are known unrelated names does not count toward the verdict
-      rec.matchedNamespaces[k] = { term = nsTerm, members = members, unrelated = U.unrelated(k) or related == 0 }
+      local strongNs = false
+      for mk in pairs(members) do if U.strong(k .. '.' .. mk) then strongNs = true end end
+      rec.matchedNamespaces[k] = { term = nsTerm, members = members, unrelated = U.unrelated(k) or related == 0,
+        strong = strongNs or nil }
     end
     return
   end
@@ -135,13 +144,16 @@ function D.Visit(rec, k, v)
   local term = U.term(k)
   if not term then return end
   local unrelated = U.unrelated(k)
+  local strong = U.strong(k) or nil
   if tv == 'function' then
-    push(rec.globals.functions, { name = k, term = term, unrelated = unrelated }, rec.info)
-    rec.candidates[k] = { term = term, unrelated = unrelated }
+    push(rec.globals.functions, { name = k, term = term, unrelated = unrelated, strong = strong }, rec.info)
+    -- a global read-style function may be data; anything else (Toggle..., Show...) is UI
+    rec.candidates[k] = { term = term, unrelated = unrelated, strong = strong,
+      layer = U.isReadName(k) and 'data' or 'ui' }
   elseif tv == 'table' then
     local fi = frameInfo(v)
     if fi then
-      fi.name = k; fi.term = term; fi.unrelated = unrelated
+      fi.name = k; fi.term = term; fi.unrelated = unrelated; fi.strong = strong
       push(rec.globals.frames, fi, rec.info)
     else
       local keys, n = {}, 0
@@ -151,11 +163,11 @@ function D.Visit(rec, k, v)
           n = n + 1
           if n <= 50 then keys[tk] = type(tval) end
           if type(tval) == 'function' then
-            rec.candidates[k .. '.' .. tk] = { term = term, unrelated = unrelated, method = true }
+            rec.candidates[k .. '.' .. tk] = { term = term, unrelated = unrelated, method = true, strong = strong, layer = 'ui' }
           end
         end
       end
-      push(rec.globals.tables, { name = k, term = term, unrelated = unrelated, keys = keys, count = n }, rec.info)
+      push(rec.globals.tables, { name = k, term = term, unrelated = unrelated, strong = strong, keys = keys, count = n }, rec.info)
     end
   elseif tv == 'string' then
     push(rec.globals.strings, { name = k, value = U.ascii(v) }, rec.info)
@@ -196,13 +208,25 @@ end
 ---------------------------------------------------------------------------
 -- L-5 official API documentation (user command only; it loads a Blizzard addon)
 ---------------------------------------------------------------------------
+-- A docs system matches when its name, namespace, a function, an argument or return name,
+-- an event or payload name, or a table or field name carries a term (defect 7 of run 1).
+local function listHit(list)
+  for _, a in ipairs(type(list) == 'table' and list or {}) do
+    if type(a) == 'table' and (U.term(a.Name) or U.term(a.InnerType)) then return true end
+  end
+  return false
+end
+
 local function docMatches(sys)
   if U.term(sys.Name) or U.term(sys.Namespace) then return true end
   for _, f in ipairs(type(sys.Functions) == 'table' and sys.Functions or {}) do
-    if U.term(f.Name) then return true end
+    if U.term(f.Name) or listHit(f.Arguments) or listHit(f.Returns) then return true end
   end
   for _, e in ipairs(type(sys.Events) == 'table' and sys.Events or {}) do
-    if U.term(e.Name) or U.term(e.LiteralName) then return true end
+    if U.term(e.Name) or U.term(e.LiteralName) or listHit(e.Payload) then return true end
+  end
+  for _, t in ipairs(type(sys.Tables) == 'table' and sys.Tables or {}) do
+    if U.term(t.Name) or listHit(t.Fields) then return true end
   end
   return false
 end
@@ -216,7 +240,8 @@ local function docArgs(list)
   return out, required
 end
 
-function D.LoadDocs()
+-- Runs inside a scheduler job (limit 3): one system per Checkpoint.
+function D.LoadDocsJob()
   local ca = NS.G('C_AddOns')
   if type(ca) ~= 'table' or type(ca.LoadAddOn) ~= 'function' then return 'not_found (no C_AddOns.LoadAddOn)' end
   local tried = {}
@@ -230,11 +255,22 @@ function D.LoadDocs()
     db.docs = { at = U.wall(), tried = tried, result = 'not_found (no APIDocumentation table after loading)' }
     return 'not found'
   end
-  local docs = { at = U.wall(), tried = tried, systems = {}, args = {}, events = {}, systemCount = #api.systems }
+  local docs = { at = U.wall(), tried = tried, systems = {}, args = {}, events = {}, systemCount = #api.systems, index = {} }
   for _, sys in ipairs(api.systems) do
+    -- index of every system, so a neutrally named Legacy system can still be spotted by eye
+    if #docs.index < 400 then
+      table.insert(docs.index, { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace),
+        functions = type(sys.Functions) == 'table' and #sys.Functions or 0,
+        events = type(sys.Events) == 'table' and #sys.Events or 0,
+        tables = type(sys.Tables) == 'table' and #sys.Tables or 0 })
+    end
     local ok, hit = pcall(docMatches, sys)
-    if ok and hit then
-      local s = { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace), functions = {}, events = {} }
+    if ok and hit and not (type(sys.Namespace) == 'string' and U.unrelated(sys.Namespace)) then
+      local s = { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace), functions = {}, events = {}, tables = {} }
+      for _, t in ipairs(type(sys.Tables) == 'table' and sys.Tables or {}) do
+        local fields = docArgs(t.Fields)
+        if #s.tables < 60 then table.insert(s.tables, { name = U.dump(t.Name), type = U.dump(t.Type), fields = fields }) end
+      end
       for _, f in ipairs(type(sys.Functions) == 'table' and sys.Functions or {}) do
         local args, required = docArgs(f.Arguments)
         local rets = docArgs(f.Returns)
@@ -251,10 +287,22 @@ function D.LoadDocs()
       end
       table.insert(docs.systems, s)
     end
+    checkpoint()
   end
   db.docs = docs
   NS.Run.Schedule('docs', 1, true)
   return 'saved ' .. #docs.systems .. ' matching systems of ' .. docs.systemCount .. '; rerun queued'
+end
+
+function D.LoadDocs()
+  if D.docsQueued then return 'already loading' end
+  D.docsQueued = true
+  NS.Core.Enqueue(function()
+    local result = D.LoadDocsJob()
+    D.docsQueued = false
+    NS.Core.Say('docs: ' .. tostring(result), true)
+  end, 'docs', function() D.docsQueued = false end)
+  return 'loading; results in a few seconds'
 end
 
 ---------------------------------------------------------------------------
@@ -332,7 +380,7 @@ function D.CallAll(rec, run)
   if db.docs and type(db.docs.args) == 'table' then
     for full in pairs(db.docs.args) do
       if not rec.candidates[full] and U.term(full) then
-        rec.candidates[full] = { term = U.term(full), fromDocs = true, unrelated = U.unrelated(full) }
+        rec.candidates[full] = { term = U.term(full), fromDocs = true, unrelated = U.unrelated(full), strong = U.strong(full) or nil, layer = 'data' }
       end
     end
   end
