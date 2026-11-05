@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: EmpireIntel
 ## Notes: Your characters' progress toward the Forever Legacy unlock. Phase 2 increment P2-1.
-## Version: 0.2.0
+## Version: 0.2.1
 ## SavedVariables: EmpireIntelDB
 
 Platform/Platform.lua

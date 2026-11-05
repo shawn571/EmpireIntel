@@ -49,7 +49,7 @@ function C.Status()
   local rest = rec.rest and (rec.rest .. ' XP') or 'none reported'
   P.Print(string.format('%s (%s %s, %s): XP %s/%s, rested %s, %s; professions: %s. Saved %s. %d characters known.',
     tostring(rec.name), tostring(rec.class), tostring(rec.level), tostring(rec.realm or 'realm unknown'),
-    tostring(rec.xp), tostring(rec.xpMax), rest, rec.resting and 'resting' or 'not resting',
+    tostring(rec.xp), tostring(rec.xpMax), rest, (rec.resting == true and 'resting') or (rec.resting == false and 'not resting') or 'resting unknown',
     profText(rec.professions), ago(rec.lastSeen), known))
 end
 

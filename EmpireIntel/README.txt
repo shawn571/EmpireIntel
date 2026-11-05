@@ -1,4 +1,9 @@
-EmpireIntel 0.2.0 - Phase 2 increment P2-1 (foundation and this character's snapshot)
+EmpireIntel 0.2.1 - Phase 2 increment P2-1 (foundation and this character's snapshot)
+
+WHAT CHANGED IN 0.2.1
+  - "Not resting" is now saved (0.2.0 lost it, so a character outside an inn had no resting value).
+  - /ei says "resting unknown" when the game gives no answer, instead of "not resting".
+  Update from 0.2.0: /RELOAD IS ENOUGH (Lua files only; no files added or removed).
 
 WHAT IT DOES
   Records, for each character you log in with: name, realm, class, level, XP, rested XP, resting or not, and
@@ -8,29 +13,22 @@ WHAT IT DOES
   /ei off stops all recording (also on later logins); /ei on resumes.
 
 RESTART OR RELOAD?
-  FULL CLIENT RESTART REQUIRED (a new addon folder is only loaded at game start).
+  Update from 0.2.0: /reload is enough. First-ever install: FULL CLIENT RESTART (new addon folder).
 
-INSTALL AND TEST (about 5 minutes)
-  1. Quit the game completely.
-  2. Extract the zip into the Forever game folder's Interface\AddOns\ folder. You should then have
-     Interface\AddOns\EmpireIntel\EmpireIntel.toc. Leave EmpireIntelCheck and GoldIntel where they are.
-  3. Start the game. At the character screen click AddOns and make sure EmpireIntel is ticked
-     (tick "Load out of date AddOns" if it is listed as out of date).
-  4. Log in to character 1 and wait about 5 seconds. Type  /ei
-     Expect one line like:
-       EmpireIntel: First Last (PALADIN 4, <realm>): XP 86/2100, rested none reported, not resting;
-       professions: none. Saved just now. 1 characters known.
-     Compare with the game: level, the XP bar numbers (hover the XP bar), rested XP (the XP bar shows it when you
-     have any), and your profession skill numbers (Professions / Skills window). Note any difference.
-  5. Type  /ei version   Expect: "version 0.2.0, saved data schema 1 (created)" the first time.
-  6. Log out to the character screen, log in to character 2, wait 5 seconds, type  /ei  and compare the same way.
-     It should now say "2 characters known".
-  7. Exit the game fully (this writes the file) and send
-       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
-     plus a note of anything /ei showed that differs from the game.
+UPDATE AND TEST (about 2 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip (the game may be running).
+  2. Type  /reload  and wait about 5 seconds.
+  3. On a character standing OUTSIDE an inn or city, type  /ei
+     Expect "... rested <amount or none reported>, not resting; ..." (0.2.0 could not save "not resting").
+  4. Optional: walk into an inn, wait for the "resting" message, type  /ei  again: it should say "resting"
+     after the next save (about 5 minutes, or at once after a /reload).
+  5. Type  /ei version   Expect "version 0.2.1, saved data schema 1 (ok)".
+  6. Exit the game fully and send  WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
+     and say whether /ei matched the game (level, XP bar numbers, rested XP, profession skills).
   Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
 
 ROLLBACK (one step)
-  Quit the game, then delete the folder Interface\AddOns\EmpireIntel (or untick EmpireIntel in the AddOns list).
+  To 0.2.0: put the 0.2.0 folder back and /reload (addon files only; your saved data stays as it is).
+  To no EmpireIntel at all: quit the game, then delete the folder Interface\AddOns\EmpireIntel (or untick it).
   Nothing else changes: GoldIntel and EmpireIntelCheck keep working. The saved file EmpireIntel.lua stays where it is
   and is ignored; it is only removed if you decide so.

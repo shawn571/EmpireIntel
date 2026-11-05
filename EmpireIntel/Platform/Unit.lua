@@ -206,12 +206,15 @@ local function num(v) if type(v) == 'number' and v == v then return v end return
 --- Level, XP and rested XP of the player now. Fields are nil when the client gives nothing usable.
 -- rest is nil (not 0) when GetXPExhaustion returns nothing: the approved format never stores unknown as 0.
 function Unit.Progress()
-  local resting = call('IsResting')
+  local r = call('IsResting')
+  -- explicit: the pattern `(r == true or r == false) and r or nil` turns false into nil (P2-1 live defect D1)
+  local resting = nil
+  if r == true then resting = true elseif r == false then resting = false end
   return {
     level = num((call('UnitLevel', 'player'))),
     xp = num((call('UnitXP', 'player'))),
     xpMax = num((call('UnitXPMax', 'player'))),
     rest = num((call('GetXPExhaustion'))),
-    resting = (resting == true or resting == false) and resting or nil,
+    resting = resting,
   }
 end

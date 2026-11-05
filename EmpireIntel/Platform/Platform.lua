@@ -28,7 +28,7 @@ EI = EI or {}   -- real clients always pass the addon table; plain-Lua tests pas
 local P = EI.Platform or {}
 EI.Platform = P
 
-P.VERSION = '0.2.0'
+P.VERSION = '0.2.1'
 P.CONTRACT_VERSION = 'EI-1'
 P.env = P.env or _G
 P.debug = P.debug or false

@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-015 | EmpireIntel 0.2.1 (/reload; branch p2-1-foundation)
+- D1 from the live test: "not resting" was never saved (an and/or pattern turned false into nil). Fixed. `/ei` says "resting unknown" when the game gives no answer. 180 tests pass under Lua 5.1 and 5.3. P2-1_Report.md; EI-E-14.
+
 ## 2026-11-05 | S-014 | EmpireIntel 0.2.0, increment P2-1 (FULL CLIENT RESTART; branch p2-1-foundation)
 - New addon `EmpireIntel/`:
   - Platform, Clock, Events, Scheduler, Unit, SavedVars, Slash, Store and Migrations ported from GoldIntel a21e071, with their changes listed in each header;
