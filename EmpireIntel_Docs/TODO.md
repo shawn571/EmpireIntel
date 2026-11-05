@@ -32,7 +32,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.9b 0.1.2 docs run: 14 of 410 systems matched, but the saved docs were dropped by the size cap (defect 9)
 - [x] 1.9c 0.1.3-tp1 built (defect 9; 86 tests pass) (S-009)
 - [x] 1.9d 0.1.3 docs run: 410 systems, no Legacy system; 20 undocumented namespaces; trait-system lead; defect 10 (S-010)
-- [ ] 1.9e **User:** decide Q-T3 (undocumented namespaces) and Q-T4 (trait chain, later)
+- [x] 1.9e User approved Q-T3 with limits; Q-T4 deferred (2026-11-05)
+- [x] 1.9f 0.1.4-tp1 built: undocumented namespaces, /eicheck undoc, crash guard, defect 10 (94 tests pass) (S-011)
+- [ ] 1.9g **User:** install 0.1.4 (/reload), `/eicheck undoc`, /reload, send the file; Claude shows the C_Reincarnation list
 - [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
 - Exit test: Architecture section 9 exit criteria.
 

@@ -244,9 +244,12 @@ local function docArgs(list, max)
 end
 
 -- Does any name in a docs system point at the Forever Legacy system (U.strong)?
+-- Defect 10: retail enums document a member literally named 'Legacy' (TurnStrafeStyle, VoiceProviderID);
+-- such member names do not make a system a Legacy system.
+local ENUM_MEMBER = { Legacy = true, IsLegacy = true, LegacyFriend = true, LegacyLetterbox = true, LegacyUnsupported = true }
 local function listStrong(list)
   for _, a in ipairs(type(list) == 'table' and list or {}) do
-    if type(a) == 'table' and (U.strong(a.Name) or U.strong(a.InnerType)) then return true end
+    if type(a) == 'table' and not ENUM_MEMBER[a.Name] and (U.strong(a.Name) or U.strong(a.InnerType)) then return true end
   end
   return false
 end
@@ -415,10 +418,16 @@ function D.Probe(full, cand, docsArgs, budget)
   local fn = U.path(full)
   if fn == nil then return { code = 'not_found' } end
   if type(fn) ~= 'function' then return { code = 'not_function' } end
+  local db = NS.Core.DB()
+  if db.neverCall[full] then return { code = 'skipped_crash_guard', detail = db.neverCall[full] } end
   budget.calls = budget.calls + 1
   local before = #D.blockedLog
   D.current = full
+  -- crash guard (user, Q-T3): the name is in saved data while the call runs and is cleared right after.
+  -- Found at the next login (disconnect, /reload or error mid-call) -> never called again.
+  db.inFlight = { name = full, at = U.wall() }
   local r = U.pack(pcall(fn))
+  db.inFlight = nil
   D.current = nil
   if #D.blockedLog > before then return { code = 'blocked', detail = D.blockedLog[#D.blockedLog].fn } end
   if not r[1] then
@@ -491,4 +500,94 @@ function D.CallAll(rec, run)
   end
   run.calls = { results = results, counts = counts, calls = budget.calls, bytes = budget.bytes }
   return run.calls
+end
+
+---------------------------------------------------------------------------
+-- Undocumented namespaces (Q-T3, approved with limits 2026-11-05; evidence EI-E-12)
+--   * every undocumented namespace is LISTED (member names and types)
+--   * C_Seasons and C_Trophy: zero-argument Get/Is/Has names (extended denylist) are PLANNED passively and
+--     CALLED only when the user types /eicheck undoc (a hard crash erases any in-session marker, so a person
+--     starts the calls), each under the crash guard in D.Probe
+--   * C_Reincarnation: listed for the user's review, never called
+--   * service, store, debug and all other namespaces: listed, never called
+---------------------------------------------------------------------------
+D.UNDOC_KNOWN = { 'C_AccountServices', 'C_ArrowCalloutManager', 'C_BlackMarket', 'C_CharacterServices',
+  'C_CharacterServicesPublic', 'C_Debug', 'C_FunctionContainers', 'C_Heirloom', 'C_PrototypeDialog', 'C_Reincarnation',
+  'C_Scenario', 'C_Seasons', 'C_SharedCharacterServices', 'C_SpectatingUI', 'C_ToyBox', 'C_Trophy', 'C_Widget',
+  'C_WoWLabsMatchmaking', 'C_WowLabsDataManager', 'C_WowTokenPublic' }
+D.UNDOC_CALL = { C_Seasons = true, C_Trophy = true }
+D.UNDOC_REVIEW = { C_Reincarnation = true }
+
+function D.ListUndocumented(rec)
+  local db = NS.Core.DB()
+  local set = {}
+  for _, n in ipairs(D.UNDOC_KNOWN) do set[n] = 'known' end
+  if db.docs and type(db.docs.index) == 'table' and type(rec.namespaces) == 'table' and type(rec.namespaces.all) == 'table' then
+    local documented = {}
+    for _, e in ipairs(db.docs.index) do if type(e.namespace) == 'string' then documented[e.namespace] = true end end
+    for _, n in ipairs(rec.namespaces.all) do if not documented[n] and not set[n] then set[n] = 'new' end end
+  end
+  local out, plan = {}, {}
+  for ns, origin in pairs(set) do
+    local t = NS.G(ns)
+    local policy = D.UNDOC_CALL[ns] and 'call-on-command' or (D.UNDOC_REVIEW[ns] and 'review' or 'list')
+    local e = { present = type(t) == 'table', origin = origin, policy = policy, members = {}, count = 0 }
+    if type(t) == 'table' then
+      pcall(function()
+        for k, v in pairs(t) do
+          if type(k) == 'string' then
+            e.count = e.count + 1
+            if e.count <= 200 then e.members[k] = type(v) end
+            if policy == 'call-on-command' and type(v) == 'function' then
+              local full = ns .. '.' .. k
+              if U.isReadName(k) and not U.denied(full) and not db.neverCall[full] then
+                table.insert(plan, full)
+              end
+            end
+          end
+        end
+      end)
+    end
+    out[ns] = e
+    checkpoint()
+  end
+  table.sort(plan)
+  db.undoc = { at = U.wall(), namespaces = out, plan = plan, results = db.undoc and db.undoc.results or nil,
+    calledAt = db.undoc and db.undoc.calledAt or nil }
+  return db.undoc
+end
+
+-- /eicheck undoc: call the planned names once, in a scheduler job (limit 3), each under the crash guard.
+function D.CallUndocumented()
+  local db = NS.Core.DB()
+  if not db.undoc or type(db.undoc.plan) ~= 'table' then return 'nothing planned yet (wait for the next check line)' end
+  if #db.undoc.plan == 0 then return 'nothing to call (no allowed names)' end
+  if D.undocQueued then return 'already running' end
+  D.undocQueued = true
+  NS.Core.Enqueue(function()
+    local results, counts = {}, {}
+    local budget = { calls = 0, bytes = 0 }
+    for _, full in ipairs(db.undoc.plan) do
+      local res
+      if U.inCombat() then
+        res = { code = 'skipped_combat' }
+      else
+        local ok, r = pcall(D.Probe, full, nil, db.docs and db.docs.args or nil, budget)
+        res = ok and r or { code = 'error', detail = U.ascii(tostring(r)) }
+      end
+      if res then
+        results[full] = res
+        counts[res.code] = (counts[res.code] or 0) + 1
+      end
+      checkpoint()
+    end
+    db.undoc.results = results
+    db.undoc.calledAt = U.wall()
+    D.undocQueued = false
+    local parts = {}
+    for code, n in pairs(counts) do table.insert(parts, code .. ' ' .. n) end
+    table.sort(parts)
+    NS.Core.Say('undoc: ' .. #db.undoc.plan .. ' names called: ' .. table.concat(parts, ', ') .. '. Type /reload to save.', true)
+  end, 'undoc', function() D.undocQueued = false end)
+  return 'calling ' .. #db.undoc.plan .. ' names in C_Seasons and C_Trophy; result in a few seconds'
 end

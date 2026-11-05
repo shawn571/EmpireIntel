@@ -10,7 +10,7 @@ local ADDON, NS = ...
 
 NS = NS or {}
 NS.env = NS.env or _G
-NS.VERSION = '0.1.3-tp1'
+NS.VERSION = '0.1.4-tp1'
 
 local U = {}
 NS.U = U
@@ -81,8 +81,9 @@ U.TERMS = { 'legacy', 'perk', 'challenge', 'camelot', 'forever' }
 -- The user's rule (Q-7): skip anything containing Set, Spend, Learn, Reset, Buy or Purchase.
 -- Matched as written (capitalized words), so 'Preset', 'Offset' or 'Asset' do not match,
 -- and also as a lower-case word at the start of a name segment ('setUp', 'buy_x').
-U.DENY_WORDS = { 'Set', 'Spend', 'Learn', 'Reset', 'Buy', 'Purchase' }
-U.DENY = { 'set', 'spend', 'learn', 'reset', 'buy', 'purchase' }
+-- Extended by the user for Q-T3 (2026-11-05): Request, Claim, Open, Toggle, Show, Reincarnate. Applied to every call.
+U.DENY_WORDS = { 'Set', 'Spend', 'Learn', 'Reset', 'Buy', 'Purchase', 'Request', 'Claim', 'Open', 'Toggle', 'Show', 'Reincarnate' }
+U.DENY = { 'set', 'spend', 'learn', 'reset', 'buy', 'purchase', 'request', 'claim', 'open', 'toggle', 'show', 'reincarnate' }
 
 -- Known retail-engine systems that match a term but are not the Forever Legacy system
 -- (from GoldIntel evidence and the launch-build run, TP1_Report_Run1.md). Recorded, never called,

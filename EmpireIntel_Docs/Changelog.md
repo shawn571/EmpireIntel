@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-011 | EmpireIntelCheck 0.1.4-tp1 (/reload)
+- Undocumented namespaces listed passively; `/eicheck undoc` calls the planned zero-argument Get/Is/Has names of C_Seasons and C_Trophy once; C_Reincarnation listed for review; service, store and debug groups never called.
+- Denylist extended with Request, Claim, Open, Toggle, Show, Reincarnate for every call; crash guard (`inFlight` / `neverCall`) on every call. Defect 10 fixed. 94 tests pass under Lua 5.1 and 5.3. D-025.
+
 ## 2026-11-05 | S-010 | Run 4 docs results (documentation only)
 - TP1_Report_Run1.md section 9: no Legacy system in the 410 documented systems; 20 undocumented live namespaces (C_Seasons, C_Reincarnation, C_Trophy among them); trait-system lead; defect 10 (enum fields named "Legacy" in docs). EI-E-11, EI-E-12; questions Q-T3, Q-T4. No code changed.
 

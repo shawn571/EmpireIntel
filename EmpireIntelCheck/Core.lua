@@ -54,6 +54,7 @@ function C.DB()
   end
   db.format = 2
   db.strongSeen = type(db.strongSeen) == 'table' and db.strongSeen or {}
+  db.neverCall = type(db.neverCall) == 'table' and db.neverCall or {}
   db.chars = type(db.chars) == 'table' and db.chars or {}
   db.logout = type(db.logout) == 'table' and db.logout or {}
   db.bank = type(db.bank) == 'table' and db.bank or {}
@@ -293,6 +294,8 @@ function C.Slash(msg)
   elseif msg == 'pane' then
     if NS.Run then NS.Run.PaneSeen('user') end
     C.Say('noted: Legacy pane open. Rerun queued.', true)
+  elseif msg == 'undoc' then
+    if NS.Discover then C.Say('undoc: ' .. tostring(NS.Discover.CallUndocumented()), true) end
   elseif msg == 'docs' then
     if NS.Discover then
       local r = NS.Discover.LoadDocs()
@@ -301,7 +304,7 @@ function C.Slash(msg)
   else
     local last = db.runs[#db.runs]
     C.Say('status: ' .. (last and (tostring(last.verdict) .. ' (run ' .. tostring(last.id) .. ', ' .. tostring(last.reason) .. ')') or 'no run yet')
-      .. '. Commands: off, on, run, pane, docs', true)
+      .. '. Commands: off, on, run, pane, docs, undoc', true)
   end
 end
 

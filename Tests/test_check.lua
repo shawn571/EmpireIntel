@@ -632,3 +632,105 @@ T.describe('0.1.3: under cap pressure the docs go last', function()
     T.truthy(db.latest.valuesDropped or db.latest.namesDropped or #db.runs < 5, 'cheaper data went first')
   end)
 end)
+
+T.describe('0.1.4: undocumented namespaces (Q-T3 limits)', function()
+  local function count(W, prefix) local n = 0; for k, v in pairs(W.calls) do if k:sub(1, #prefix) == prefix then n = n + v end end; return n end
+  T.it('passive run lists every undocumented namespace and calls none of them', function()
+    local W = F.session({ undoc = true })
+    local u = W:db().undoc
+    T.truthy(u and u.namespaces.C_Seasons.present)
+    T.eq(u.namespaces.C_Seasons.policy, 'call-on-command')
+    T.eq(u.namespaces.C_Reincarnation.policy, 'review')
+    T.eq(u.namespaces.C_AccountServices.policy, 'list')
+    T.eq(u.namespaces.C_Debug.policy, 'list')
+    T.eq(u.namespaces.C_Reincarnation.members.Reincarnate, 'function', 'Reincarnation function list for review')
+    for _, p in ipairs({ 'C_Seasons.', 'C_Trophy.', 'C_Reincarnation.', 'C_AccountServices.', 'C_Debug.' }) do
+      T.eq(count(W, p), 0, p .. ' called passively')
+    end
+  end)
+  T.it('the plan holds only zero-argument read names that pass the extended denylist', function()
+    local W = F.session({ undoc = true })
+    local plan = table.concat(W:db().undoc.plan, ',')
+    T.truthy(plan:find('C_Seasons.GetActiveSeason', 1, true))
+    T.truthy(plan:find('C_Seasons.HasActiveSeason', 1, true))
+    T.truthy(plan:find('C_Trophy.GetTrophyListInfo', 1, true))
+    for _, bad in ipairs({ 'IsSeasonOpen', 'RequestSeasonInfo', 'SetSeason', 'ShowTrophy', 'ClaimTrophy', 'Reincarnat', 'AccountThing', 'DebugThing' }) do
+      T.falsy(plan:find(bad, 1, true), bad .. ' planned')
+    end
+  end)
+  T.it('/eicheck undoc calls the plan once, with the crash marker set during each call and cleared after', function()
+    local W = F.session({ undoc = true })
+    W:slash('undoc')
+    W:advance(5)
+    local u = W:db().undoc
+    T.eq(W.calls['C_Seasons.GetActiveSeason'], 1)
+    T.eq(W.inFlightSeen, 'C_Seasons.GetActiveSeason', 'name written before the call')
+    T.isnil(W:db().inFlight, 'cleared after')
+    T.eq(u.results['C_Seasons.GetActiveSeason'].code, 'ok')
+    T.eq(u.results['C_Trophy.GetTrophyListInfo'].code, 'returned_nothing')
+    T.eq(u.results['C_Trophy.GetTrophyByIndex'].code, 'error')
+    for _, n in ipairs({ 'C_Seasons.IsSeasonOpen', 'C_Seasons.RequestSeasonInfo', 'C_Seasons.SetSeason', 'C_Trophy.ShowTrophy', 'C_Trophy.ClaimTrophy' }) do
+      T.eq(W.calls[n], nil, n)
+    end
+    T.eq(count(W, 'C_Reincarnation.'), 0)
+    T.eq(count(W, 'C_AccountServices.'), 0)
+    T.eq(count(W, 'C_Debug.'), 0)
+    local saw = false
+    for _, line in ipairs(W.chat) do if line:find('undoc: ', 1, true) and line:find('/reload', 1, true) then saw = true end end
+    T.truthy(saw, 'result line asks for /reload')
+  end)
+  T.it('a call that did not finish last session is never made again', function()
+    local W = F.new({ undoc = true, db = { format = 2, runs = {}, chars = {}, logout = {}, bank = {},
+      inFlight = { name = 'C_Seasons.GetActiveSeason', at = 1 } } })
+    F.load(W)
+    W:login(); W:advance(40)
+    local db = W:db()
+    T.truthy(db.neverCall['C_Seasons.GetActiveSeason'])
+    T.isnil(db.inFlight)
+    local flagged = false
+    for _, u in ipairs(db.sessionUnexpected or {}) do if u.code == 'interrupted_call' then flagged = true end end
+    T.truthy(flagged, 'reported as unexpected')
+    T.falsy(table.concat(db.undoc.plan, ','):find('GetActiveSeason', 1, true), 'not planned')
+    W:slash('undoc'); W:advance(5)
+    T.eq(W.calls['C_Seasons.GetActiveSeason'], nil, 'not called')
+  end)
+  T.it('the crash guard also covers the regular Legacy getters', function()
+    local W = F.new({ legacy = 'getters', db = { format = 2, runs = {}, chars = {}, logout = {}, bank = {},
+      inFlight = { name = 'C_LegacyFixture.GetPoints', at = 1 } } })
+    F.load(W)
+    W:login(); W:advance(40)
+    T.eq(W.calls.GetPoints, nil, 'interrupted getter not called again')
+    T.eq(W:db().latest.results['C_LegacyFixture.GetPoints'].code, 'skipped_crash_guard')
+  end)
+  T.it('with the docs index, a live namespace missing from the docs is listed, not called', function()
+    local W = F.session({ undoc = true, docs = true })
+    W:slash('docs'); W:advance(40)
+    W:slash('run'); W:advance(40)
+    local e = W:db().undoc.namespaces.C_NewSecretThing
+    T.truthy(e and e.origin == 'new' and e.policy == 'list')
+    W:slash('undoc'); W:advance(5)
+    T.eq(W.calls['C_NewSecretThing.GetX'], nil)
+  end)
+  T.it('the extended denylist applies to every call (Show, Open, Toggle, Claim, Request, Reincarnate)', function()
+    local U = F.load(F.new()).U
+    for _, n in ipairs({ 'LegacyX.IsShown', 'C_X.IsOpen', 'C_X.GetToggleState', 'C_X.GetClaimable', 'C_X.GetRequestId', 'C_X.GetReincarnateCost' }) do
+      T.truthy(U.denied(n), n)
+    end
+    T.falsy(U.denied('C_GameRules.GetForeverExperiencePreset'))
+    T.falsy(U.denied('LegacyMicroButtonMixin.IsLegacySystemUnlocked'))
+  end)
+end)
+
+T.describe('0.1.4: defect 10 (docs enum members named Legacy)', function()
+  T.it('a system whose only Legacy match is an enum member is not a Legacy system', function()
+    local W = F.new({ docs = true })
+    table.insert(W.docsTable.systems, { Name = 'KeyBindings', Namespace = 'C_KeyBindings', Functions = { { Name = 'GetTurnStrafeStyle', Arguments = {} } },
+      Tables = { { Name = 'TurnStrafeStyle', Type = 'Enumeration', Fields = { { Name = 'Modern' }, { Name = 'Legacy' } } } } })
+    F.load(W)
+    W:login(); W:advance(40)
+    W:slash('docs'); W:advance(40)
+    for _, s in ipairs(W:db().docs.systems) do
+      if s.name == 'KeyBindings' then T.falsy(s.legacy, 'KeyBindings marked Legacy') end
+    end
+  end)
+end)

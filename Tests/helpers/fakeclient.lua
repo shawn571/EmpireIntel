@@ -231,6 +231,29 @@ function F.new(opts)
     env.Enum.RespecType = { Talents = 1, Legacy = 4 }
     env.Enum.BnetAccountFlag = { IsLegacy = 131072 }
   end
+  if opts.undoc then
+    -- undocumented namespaces (EI-E-12); fixture behaviour only
+    env.C_Seasons = {
+      GetActiveSeason = function() rec('C_Seasons.GetActiveSeason'); W.inFlightSeen = env.EmpireIntelCheckDB.inFlight and env.EmpireIntelCheckDB.inFlight.name; return 2 end,
+      HasActiveSeason = function() rec('C_Seasons.HasActiveSeason'); return true end,
+      IsSeasonOpen = function() rec('C_Seasons.IsSeasonOpen'); return true end,
+      RequestSeasonInfo = function() rec('C_Seasons.RequestSeasonInfo') end,
+      SetSeason = function() rec('C_Seasons.SetSeason') end,
+    }
+    env.C_Trophy = {
+      GetTrophyListInfo = function() rec('C_Trophy.GetTrophyListInfo') end,
+      GetTrophyByIndex = function(i) rec('C_Trophy.GetTrophyByIndex'); if i == nil then error('index required') end end,
+      ShowTrophy = function() rec('C_Trophy.ShowTrophy') end,
+      ClaimTrophy = function() rec('C_Trophy.ClaimTrophy') end,
+    }
+    env.C_Reincarnation = {
+      GetReincarnationInfo = function() rec('C_Reincarnation.GetReincarnationInfo'); return 1 end,
+      Reincarnate = function() rec('C_Reincarnation.Reincarnate') end,
+    }
+    env.C_AccountServices = { GetAccountThing = function() rec('C_AccountServices.GetAccountThing'); return 1 end }
+    env.C_Debug = { GetDebugThing = function() rec('C_Debug.GetDebugThing'); return 1 end }
+    env.C_NewSecretThing = { GetX = function() rec('C_NewSecretThing.GetX'); return 1 end }
+  end
   if opts.bugs then
     env.BugGrabberDB = { errors = {
       { message = 'Interface/AddOns/EmpireIntelCheck/Run.lua:10: attempt to index a nil value', stack = '', counter = 2, session = 1 },

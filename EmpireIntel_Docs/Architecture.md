@@ -1,6 +1,6 @@
 # EmpireIntel Architecture v1
 
-DOC VERSION: 2.3.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
+DOC VERSION: 2.4.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
 
 **EmpireIntel tracks the WoW Forever Legacy system across a player's characters.** For each character it shows Legacy points and perks, rested XP and professions. It also gives a "what next" list driven by a plan file the user writes. Alt data comes from EmpireIntel's own snapshots and, optionally, from DataStore.
 
@@ -222,3 +222,13 @@ EmpireIntel is not a level-25 addon. Until a character reaches 25, the Legacy pa
 | What next | plan file if present, else the default suggestions of FR-PRE-4 | `1. Level C2 (rested, closest to 25)` |
 
 Once the system unlocks, the same views gain measured Legacy values (points, perks, cap) where the client exposes them, and the estimate is shown beside them, never in their place.
+
+## 14. TP-1 0.1.4: undocumented namespaces (D-025)
+
+- **L-7 (passive):** for every live `C_` namespace missing from the docs (the 20 of EI-E-12, plus any new one found against the docs index), save its member names and types. Policies:
+  - `C_Seasons` and `C_Trophy`: `call-on-command`;
+  - `C_Reincarnation`: `review`, shown to the user, never called;
+  - everything else: `list`.
+- **Plan:** the zero-argument Get/Is/Has names of the call-on-command namespaces that pass the extended denylist and the crash guard.
+- **D-2 (`/eicheck undoc`, user-started):** calls the plan once, inside a scheduler job, each name through D.Probe.
+- **Crash guard (all calls):** `inFlight` holds the name during the call and is cleared after. A leftover `inFlight` at login moves the name to `neverCall` and raises `interrupted_call`. Limitation: no addon write survives a hard crash, hence the user-started trigger.

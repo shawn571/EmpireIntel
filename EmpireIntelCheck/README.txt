@@ -1,4 +1,4 @@
-EmpireIntelCheck 0.1.3-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.4-tp1 - EmpireIntel Test Package 1: the Legacy check
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
@@ -6,9 +6,20 @@ WHAT IT IS
   to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  Update from 0.1.0, 0.1.1 or 0.1.2: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
+  Update from any 0.1.x: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
   The AddOns list keeps showing the old version until your next full restart; that is only the label.
   First-ever install (no EmpireIntelCheck folder yet): FULL CLIENT RESTART.
+
+WHAT CHANGED IN 0.1.4 (your Q-T3 limits)
+  - Lists the 20 game API groups that are missing from Blizzard's documentation. Nothing in them is called on its own.
+  - /eicheck undoc calls, once, only C_Seasons and C_Trophy functions whose names start with Get, Is or Has, with no
+    arguments. Never anything containing Set, Spend, Learn, Reset, Buy, Purchase, Request, Claim, Open, Toggle, Show
+    or Reincarnate (this list now applies to every call the check makes).
+  - C_Reincarnation is listed for your review and never called. Service, store and debug groups are listed, never called.
+  - Crash guard: each name is written to saved data before its call and cleared after. If it is still there at the
+    next login, that name is never called again. A hard client crash writes nothing, so if the game crashes after
+    /eicheck undoc, do not type it again; just tell me.
+  - Retail settings with an option named "Legacy" no longer count in the API docs either.
 
 WHAT CHANGED IN 0.1.3
   - The saved API docs could be thrown away by the size limit (your last file). Now they are kept: Legacy systems
@@ -34,24 +45,18 @@ WHAT IT DOES TO YOUR GAME
   It does not touch GoldIntel or its data. It keeps its saved data under about 256 KB.
   Off switch: /eicheck off  (stays off on later logins; /eicheck on to re-enable)
 
-TEST STEPS (about 2 minutes now, plus one short session after a character reaches level 25)
-  NOW
-  1. Extract EmpireIntelCheck_AddOns.zip into the Forever game folder's Interface\AddOns\ and let it REPLACE the
-     existing EmpireIntelCheck folder (overwrite all files). The game may be running.
-  2. In game, type  /reload
-     About 10 seconds later expect one line like:
-       EmpireIntelCheck 0.1.3-tp1: LEGACY API: PANE ONLY (provisional: Legacy system locked ...). Run 9 (login); docs available: /eicheck docs ...
-     A second line starting "UNEXPECTED" is possible: note it and carry on.
-  3. IMPORTANT, this is the step that can find the Legacy data before level 25 (run it again after updating):
-     type  /eicheck docs  once. Expect "docs: loading ...", then within a few seconds "docs: saved ...", and a new
-     verdict line about 10 seconds later ending "docs saved".
-  4. Type  /reload  once more (writes the file and frees the memory the docs used).
-  5. Exit the game fully and send me
-       WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua
-  LATER, when any character first reaches level 25
-  6. Log in with the check installed. Open the Legacy pane the normal way (it should now be unlocked) and keep it open
-     about 5 seconds. A new line should appear within about 10 seconds; if not, type  /eicheck pane  with the pane open.
-  7. Exit the game fully and send the same file again, plus a screenshot of the pane showing points and perks.
+TEST STEPS (about 2 minutes)
+  1. Replace the EmpireIntelCheck folder in the Forever game folder's Interface\AddOns\ with the one in the zip.
+  2. Type  /reload  and wait about 10 seconds for the line
+       EmpireIntelCheck 0.1.4-tp1: LEGACY API: PANE ONLY (provisional: ...)
+  3. Type  /eicheck undoc  once, out of combat. Expect "undoc: calling N names ..." and within a few seconds
+       "undoc: N names called: ... Type /reload to save."
+  4. Type  /reload  (this writes the file).
+  5. Send  WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua
+  If the game crashes or disconnects during step 3: do not type /eicheck undoc again; tell me.
+
+  LATER, when any character first reaches level 25: log in, open the Legacy pane for about 5 seconds, exit fully, and
+  send the file plus a screenshot of the pane.
 
 VERDICTS
   FOUND            a Legacy getter returned data
@@ -63,3 +68,4 @@ VERDICTS
 COMMANDS (all optional)
   /eicheck        status       /eicheck off | on     /eicheck run    one more check now
   /eicheck pane   say "the Legacy pane is open"      /eicheck docs   save Blizzard's API docs, if present
+  /eicheck undoc  call the planned C_Seasons / C_Trophy getters once

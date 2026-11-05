@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-011 | 2026-11-05 | Claude
+
+- **Done:** Q-T3 approved with the user's limits (D-025). Built 0.1.4-tp1. 94 tests pass under 5.1 and 5.3. Each new guard, when disabled, fails the suite.
+- **Told the user plainly:** an addon cannot write anything that survives a hard client crash, so the calls start only on the user's command and the marker covers disconnects, reloads and errors.
+- **WAITING FOR:** the 0.1.4 file after `/eicheck undoc`. Then show the user C_Reincarnation's function list before anything is called there.
+
 ## S-010 | 2026-11-05 | Claude
 
 - **Done:** read run 4 (0.1.3) as data. The docs survived (all 410 systems indexed, 14 matched). No Legacy system is documented; the 3 "Legacy" matches are retail enum fields (defect 10, not yet fixed). Comparing live namespaces with the docs found 20 undocumented ones (C_Seasons, C_Reincarnation, C_Trophy look Forever-related). Trait-system lead from the "Legacy" talent-frame tab and the CamelotCombat config type.

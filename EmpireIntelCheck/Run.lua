@@ -272,6 +272,7 @@ function R.Start(reason, manual)
     D.Walk(rec)
     D.Addons(rec)
     rec.namespaces.diff = nsDiff(db, rec, run.build)
+    D.ListUndocumented(rec)          -- yields between namespaces; each namespace is read inside its own pcall
     D.CallAll(rec, run)
     -- E-1
     local dsChars = {}
@@ -421,6 +422,12 @@ C.On('ADDON_LOADED', function(name)
   if name == ADDON then
     local db = C.DB()
     db.addonVersion = NS.VERSION
+    -- crash guard: a call that never finished last session is never made again
+    if type(db.inFlight) == 'table' and type(db.inFlight.name) == 'string' then
+      db.neverCall[db.inFlight.name] = 'interrupted at ' .. tostring(db.inFlight.at)
+      R.Unexpected('interrupted_call', db.inFlight.name .. ' did not finish last session; it will not be called again')
+      db.inFlight = nil
+    end
     C.InstallSlash()
     if C.IsOff() then C.Say('is OFF. Nothing runs. /eicheck on to re-enable.', true) end
     return

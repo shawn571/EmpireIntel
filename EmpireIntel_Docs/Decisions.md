@@ -118,6 +118,22 @@ Run 3 lost the saved docs to the size cap: the trim order dropped them before ch
 
 Same fields as before, so no saved-data format change. `/reload` is enough.
 
+## D-025 Undocumented namespaces, EmpireIntelCheck 0.1.4-tp1 | Approved (user, 2026-11-05, Q-T3 with limits); Q-T4 deferred
+Rules:
+- All undocumented namespaces are listed.
+- Only `C_Seasons` and `C_Trophy` may be called, and only Get/Is/Has names with no arguments.
+- Never call anything containing Set, Request, Claim, Purchase, Reset, Open, Toggle, Show or Reincarnate. Added to the existing denylist and applied to every call.
+- Each function name is written to saved data before its call and cleared after (crash guard). A leftover name is never called again.
+- `C_Reincarnation`'s functions are listed and shown to the user before any call. None is called in 0.1.4.
+- Service, store and debug groups are listed and never called.
+
+Implementation notes:
+- The calls start only on the user's command (`/eicheck undoc`). An addon cannot write anything that survives a hard client crash, so a person is the only reliable guard against repeating a crash.
+- Undocumented functions have no documented arguments. A function that needs one fails harmlessly and is recorded as `error`.
+- Also fixes defect 10.
+
+Q-T4 (trait-system calls with arguments) waits until after the level-25 run.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -134,6 +150,6 @@ Same fields as before, so no saved-data format change. `/reload` is enough.
 | Q-8 | If the verdict is PANE ONLY, may EmpireIntel read the Legacy pane's text as a source? | Open. Recommendation: decide after TP-1, when we know what the pane shows |
 | Q-T1 | Approve EmpireIntelCheck 0.1.1-tp1 with fixes 1 to 7, including the check's saved-data format change? | **Approved** (D-021) |
 | Q-T2 | D-005: adopt DataStore Characters and Containers now, Crafts later? | **Approved** (D-005 update) |
-| Q-T3 | Let the next check list the members of the 20 undocumented namespaces, and call their zero-argument Get/Is/Has names under the existing limits, for `C_Seasons`, `C_Reincarnation` and `C_Trophy` only? (The service, debug and store namespaces would be listed, never called.) | Open. Recommendation: yes; it can run now, before level 25 |
-| Q-T4 | After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | Open. Recommendation: decide once a character reaches 25 and the pane opens; that run shows whether it is needed |
+| Q-T3 (**approved with limits, D-025**) | Let the next check list the members of the 20 undocumented namespaces, and call their zero-argument Get/Is/Has names under the existing limits, for `C_Seasons`, `C_Reincarnation` and `C_Trophy` only? (The service, debug and store namespaces would be listed, never called.) | Approved 2026-11-05 |
+| Q-T4 | After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | **Deferred** by the user until after the level-25 run |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |
