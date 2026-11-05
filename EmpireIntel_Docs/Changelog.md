@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-010 | Run 4 docs results (documentation only)
+- TP1_Report_Run1.md section 9: no Legacy system in the 410 documented systems; 20 undocumented live namespaces (C_Seasons, C_Reincarnation, C_Trophy among them); trait-system lead; defect 10 (enum fields named "Legacy" in docs). EI-E-11, EI-E-12; questions Q-T3, Q-T4. No code changed.
+
 ## 2026-11-05 | S-009 | EmpireIntelCheck 0.1.3-tp1 (/reload)
 - Defect 9: the saved docs have their own budget and survive the size cap. Legacy systems are kept first with details, reduced if large; other matches keep names only; omissions are listed; the docs are trimmed last; the trim runs after saving them. Argument-count map capped at 600 entries. 86 tests pass under Lua 5.1 and 5.3. D-024.
 

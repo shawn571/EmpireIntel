@@ -31,7 +31,8 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.9a 0.1.2-tp1 built (defect 8), FR-PRE-1..4 recorded (S-008)
 - [x] 1.9b 0.1.2 docs run: 14 of 410 systems matched, but the saved docs were dropped by the size cap (defect 9)
 - [x] 1.9c 0.1.3-tp1 built (defect 9; 86 tests pass) (S-009)
-- [ ] 1.9d **User:** install 0.1.3 (/reload), run `/eicheck docs` again, /reload, send the file
+- [x] 1.9d 0.1.3 docs run: 410 systems, no Legacy system; 20 undocumented namespaces; trait-system lead; defect 10 (S-010)
+- [ ] 1.9e **User:** decide Q-T3 (undocumented namespaces) and Q-T4 (trait chain, later)
 - [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
 - Exit test: Architecture section 9 exit criteria.
 

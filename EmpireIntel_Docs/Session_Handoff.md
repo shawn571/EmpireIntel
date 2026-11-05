@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-010 | 2026-11-05 | Claude
+
+- **Done:** read run 4 (0.1.3) as data. The docs survived (all 410 systems indexed, 14 matched). No Legacy system is documented; the 3 "Legacy" matches are retail enum fields (defect 10, not yet fixed). Comparing live namespaces with the docs found 20 undocumented ones (C_Seasons, C_Reincarnation, C_Trophy look Forever-related). Trait-system lead from the "Legacy" talent-frame tab and the CamelotCombat config type.
+- **Not done, on purpose:** no code. Both next steps widen what the check calls (Q-T3, Q-T4).
+- **NEXT RECOMMENDED TASK:** if Q-T3 is approved, build 0.1.4 (defect 10 + undocumented-namespace listing and guarded zero-argument calls for the three namespaces), `/reload` only.
+
 ## S-009 | 2026-11-05 | Claude
 
 - **Done:** run 3 showed the docs run worked (14 of 410 systems matched) but the saved docs were dropped by the size cap. Built 0.1.3-tp1 with a docs budget and a docs-last trim order (D-024). 86 tests pass under 5.1 and 5.3. Mutation check: the guards are caught except "no save-time budget", which the trim covers anyway (near-equivalent).

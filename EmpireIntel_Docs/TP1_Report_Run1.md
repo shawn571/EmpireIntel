@@ -90,3 +90,19 @@ What this means:
 - `/eicheck docs` worked in the client: **410 documented API systems, 14 matched** the search terms (the user's chat lines).
 - **Defect 9:** the saved file holds no docs, only a "dropped: over size cap" marker. The 14 systems in full exceeded the 256 KB cap. The trim order dropped the docs before cheaper data, and only 1 run was left. Fixed in 0.1.3 (D-024).
 - Otherwise as run 2: PANE ONLY (provisional: locked), 3 getters called, no blocked call, no errors from EmpireIntelCheck. The logout baseline was valid (level 4).
+
+## 9. Run 4 (0.1.3-tp1, 2026-11-05): the API documentation
+
+**Result: Blizzard's in-client API documentation has no Legacy system.** All 410 systems were indexed and 14 matched a term. None is the Forever Legacy system.
+
+| Finding | Detail |
+|---|---|
+| The 3 "Legacy" matches are false positives (**defect 10**) | FriendList, KeyBindings and VoiceChat matched only through retail enum fields literally named "Legacy" (TurnStrafeStyle, VoiceProviderID); the same pattern as defect 8, inside the docs |
+| The 11 other matches | Retail features: legacy raid difficulty, legacy loot, legacy reputations, legacy friends, guild challenges, challenge mode. Plus **GameRules** (C_GameRules, 30 functions), which holds Forever's own rules: `GetForeverExperiencePreset`, `IsHardcoreActive`, `IsSelfFoundAllowed`, game modes. Nothing about Legacy |
+| **20 live namespaces are undocumented** | `C_AccountServices`, `C_ArrowCalloutManager`, `C_BlackMarket`, `C_CharacterServices`, `C_CharacterServicesPublic`, `C_Debug`, `C_FunctionContainers`, `C_Heirloom`, `C_PrototypeDialog`, **`C_Reincarnation`**, `C_Scenario`, **`C_Seasons`**, `C_SharedCharacterServices`, `C_SpectatingUI`, `C_ToyBox`, **`C_Trophy`**, `C_Widget`, `C_WoWLabsMatchmaking`, `C_WowLabsDataManager`, `C_WowTokenPublic`. The check never looked inside them: their names carry no search term |
+| Trait-system lead [inferred] | The client text `TALENT_FRAME_TAB_LABEL_LEGACY` = "Legacy" (run 1) puts the Legacy trees on a tab of the talent frame. Forever has its own trait config type (`Enum.TraitConfigType.CamelotCombat = 4`, EI-E-04). The documented `C_Traits` (53 functions) and `C_TraitConfig` are therefore the most likely data path, but their getters need arguments (config and tree ids) |
+
+What this means:
+- **Pre-unlock features are unaffected.** FR-PRE-1..4 need no Legacy API.
+- After the unlock, the Legacy values are most likely readable through the trait system, or through one of the undocumented namespaces (`C_Seasons` fits the client's "seasonal cap" wording).
+- Both paths widen what the check calls, so both wait for the user (Q-T3, Q-T4).
