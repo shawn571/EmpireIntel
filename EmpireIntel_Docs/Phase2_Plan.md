@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-05  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). Each increment needs its own approval; none is approved yet.**
+DOC VERSION: 1.1.0  |  DATE: 2026-11-05  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). Each increment needs its own approval; none is approved yet.**
 
 **Phase 2 builds EmpireIntel itself, limited to what works before any character reaches level 25:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). It uses no Legacy API. Everything about Legacy points, perks and the cap waits for the level-25 run and Q-T4.
 
@@ -28,7 +28,7 @@ EmpireIntelDB = {
   off = nil | true,                          -- /ei off
   roster = {
     [<GUID>] = {
-      name = 'First Last', class = 'PALADIN', level = 4,
+      name = 'First Last', realm = '<realm name>', class = 'PALADIN', level = 4,   -- realm added (user, Q-P2-1)
       xp = 86, xpMax = 2100,
       rest = 0 | nil,                         -- nil = unknown, never stored as 0 when the client returns nothing
       resting = false, restAt = <time>,       -- when rest was read (baseline for the projection)

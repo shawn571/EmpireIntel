@@ -151,6 +151,22 @@ Not authorized:
 - Release pipeline Stage 1.
 - Q-T4: waits until after the level-25 run.
 
+## D-028 Increment P2-1 approved, saved-data format 1 with changes | Approved (user, 2026-11-05, Q-P2-1)
+Changes to format 1:
+- each roster record gains a `realm` field (launch has named realms, EI-E-06);
+- no 0.5 s P_TICK: EmpireIntel records on events plus one 5-minute timer only.
+
+Built on branch `p2-1-foundation` as EmpireIntel 0.2.0. Closing P2-1 needs a separate approval.
+
+Ported read-only from GoldIntel a21e071:
+- Platform: Platform, Clock, Events, Scheduler, Unit, SavedVars, Slash;
+- Store: Store, Migrations.
+
+Each file's header lists its changes. Not ported:
+- Map (the source of P_TICK);
+- Money, Loot and the other collectors;
+- Probe, Bus, Capabilities, Config and the Core module registry.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -171,5 +187,6 @@ Not authorized:
 | Q-T4 | After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | **Deferred** by the user until after the level-25 run |
 | Q-T5 | C_Reincarnation: call the two read names, or leave the namespace uncalled? | **Leave uncalled**; blocklist changed to whole words plus the stem Reincarnat (D-026) |
 | Q-T6 | Authorize Phase 2 and/or Stage 1? | **Phase 2 for pre-25 features only** (D-027); Stage 1 **not** authorized |
-| Q-P2-1 | Approve increment P2-1 (foundation, own snapshot) including saved-data format 1 (Phase2_Plan.md section 2)? | Open. Recommendation: yes |
+| Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
+| Q-P2-1c | Close P2-1 after the live test (values match the game on two characters)? | Open: separate approval by the user |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

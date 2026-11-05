@@ -48,8 +48,8 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - Implementation tasks are listed only after Stage 1 is authorized.
 
 ## Phase 2: pre-25 features (AUTHORIZED, D-027; one approval per increment; Phase2_Plan.md)
-- [ ] **User:** Q-P2-1, approve P2-1 including saved-data format 1
-- [ ] P2-1 Foundation and own snapshot (full restart)
+- [x] Q-P2-1 approved with realm field and no P_TICK (D-028)
+- [ ] P2-1 Foundation and own snapshot: **built** (0.2.0, branch p2-1-foundation, 178 tests pass under 5.1 and 5.3); waiting for the user's live test and the separate closing approval
 - [ ] P2-2 Alts from DataStore (/reload)
 - [ ] P2-3 Views: unlock, rest, milestones (/reload)
 - [ ] P2-4 What next and the plan file (plan format needs approval)

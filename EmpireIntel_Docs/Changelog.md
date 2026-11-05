@@ -2,6 +2,15 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-014 | EmpireIntel 0.2.0, increment P2-1 (FULL CLIENT RESTART; branch p2-1-foundation)
+- New addon `EmpireIntel/`:
+  - Platform, Clock, Events, Scheduler, Unit, SavedVars, Slash, Store and Migrations ported from GoldIntel a21e071, with their changes listed in each header;
+  - new Core/Snapshot, Core/Commands, Core/Boot.
+- Saved-data format 1 with realm: records on login (+2 s), level-up, profession change, every 5 minutes and at logout, with the logout guard. No P_TICK.
+- `/ei`, `/ei version`, `/ei off`, `/ei on`.
+- Tests: `test_ei_static.lua`, `test_ei.lua`. 178 tests in total pass under Lua 5.1 and 5.3. Mutation check: every guard is caught except one equivalent case (the commit clears keys that the only migration never removes).
+- `tools/build_package.py EmpireIntel` builds the versioned `dist/EmpireIntel_AddOns_v0.2.0.zip`. D-028.
+
 ## 2026-11-05 | S-013 | EmpireIntelCheck 0.1.5-tp1 (/reload) and Phase 2 plan
 - Blocklist matched as whole CamelCase words plus the stem Reincarnat; C_Reincarnation stays uncalled; defect 11 wording. 99 tests pass under Lua 5.1 and 5.3. D-026.
 - Phase 2 authorized for pre-25 features only (D-027). Phase2_Plan.md: increments P2-1..P2-4 and saved-data format 1, waiting for approval of P2-1 (Q-P2-1). No EmpireIntel code yet.

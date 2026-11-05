@@ -44,3 +44,15 @@ Estimated reusable code: about 4,500 of GoldIntel's addon lines (Platform core a
 ## 3. What EmpireIntel v1 needs from the client (for the event allow-list)
 
 Only events already proven on Forever (GoldIntel E-02, E-13, E-15): `PLAYER_LOGIN`, `PLAYER_ENTERING_WORLD`, `PLAYER_LOGOUT`, `PLAYER_LEVEL_UP`, `SKILL_LINES_CHANGED`, `PLAYER_REGEN_DISABLED` / `ENABLED` (to stay out of combat). TP-1 uses the same list. A Legacy event found by discovery is recorded but not registered until a later, approved package verifies it (GoldIntel D-029 pattern). `Platform/Unit.lua` already reads level and `GetProfessions`; it needs `GetXPExhaustion` and `IsResting` added.
+
+## 4. What P2-1 actually ported (2026-11-05, D-028)
+
+| GoldIntel file | EmpireIntel | Changes |
+|---|---|---|
+| Platform/Platform.lua | ported | collector allow-list and adapters removed; TRUSTED_EVENTS reduced; fatal capability = frame only |
+| Platform/Clock.lua, Scheduler.lua, SavedVars.lua, Slash.lua | ported | names; SavedVars is account-wide only |
+| Platform/Events.lua | ported | events reduced to P_LEVEL, P_PROFS, P_COMBAT, P_LOGOUT; stages, counters and unit filter removed |
+| Platform/Unit.lua | ported | two-part name, realm, XP and rested XP, professions with skill, max and line; cast tracking removed |
+| Store/Store.lua, Migrations.lua | ported | no compat, no per-character table; format 1 sections (meta, roster); step 0 -> 1 |
+| Platform/Map.lua (P_TICK), Money, Loot and the other collectors, Probe, Core/Bus, Capabilities, Config, Core.lua | **not ported** | not needed for P2-1; the 0.5 s tick is excluded by the user |
+

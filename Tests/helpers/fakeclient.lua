@@ -18,6 +18,7 @@ Options (all optional):
 ]]
 
 local F = {}
+F.NIL = {}        -- marker: set this character field to nil (a Lua table cannot hold nil)
 
 local function newFrame(W, name)
   local f = { name = name, scripts = {}, hooks = {}, events = {}, shown = false }
@@ -53,7 +54,7 @@ function F.new(opts)
   local char = { guid = 'Player-1-00000001', first = 'Testchar', last = 'Tester', class = 'WARRIOR',
     classLoc = 'Warrior', classId = 1, level = 10, xp = 100, xpMax = 10000, rest = 0, resting = false,
     money = 1234, profIdx = {}, profs = {} }
-  for k, v in pairs(opts.char or {}) do char[k] = v end
+  for k, v in pairs(opts.char or {}) do if v == F.NIL then char[k] = nil else char[k] = v end end
   W.char = char
   W.bags = { [0] = { { 6948, 1 }, { 2589, 5 }, { 2589, 3 } } }
   W.bankShown = false
@@ -300,8 +301,33 @@ function F.new(opts)
     end
   end
 
+  if opts.ctimer then
+    -- a fake C_Timer that records every interval asked for (P2-1: no 0.5 s tick)
+    W.tickers, W.timers = {}, {}
+    local function sched(list, sec, fn, repeating)
+      local t = { sec = sec, fn = fn, due = W.t + sec, repeating = repeating, active = true }
+      table.insert(list, t)
+      return { Cancel = function() t.active = false end }
+    end
+    env.C_Timer = {
+      NewTicker = function(sec, fn) return sched(W.tickers, sec, fn, true) end,
+      NewTimer = function(sec, fn) return sched(W.timers, sec, fn, false) end,
+      After = function(sec, fn) sched(W.timers, sec, fn, false) end,
+    }
+    W.runTimers = function()
+      for _, list in ipairs({ W.tickers, W.timers }) do
+        for _, t in ipairs(list) do
+          if t.active and W.t >= t.due then
+            if t.repeating then t.due = t.due + t.sec else t.active = false end
+            t.fn()
+          end
+        end
+      end
+    end
+  end
   for i = 1, (opts.extraGlobals or 0) do env['Dummy' .. i] = i end
   if opts.db then env.EmpireIntelCheckDB = opts.db end
+  if opts.eidb then env.EmpireIntelDB = opts.eidb end
 
   function W:fire(event, ...)
     for _, f in ipairs(self.frames) do
@@ -318,6 +344,7 @@ function F.new(opts)
       for _, f in ipairs(self.frames) do
         if f.scripts.OnUpdate then f.scripts.OnUpdate(f, step) end
       end
+      if self.runTimers then self.runTimers() end
     end
   end
 
@@ -353,6 +380,26 @@ function F.load(W, root)
   end
   W.NS = NS
   return NS, files
+end
+
+-- Load an addon folder (EmpireIntel) into a fresh namespace bound to the fake client.
+function F.loadAddon(W, folder, root)
+  root = root or F.root
+  local EI = { Platform = { env = W.env } }
+  local toc = io.open(root .. '/' .. folder .. '/' .. folder .. '.toc', 'r')
+  local files = {}
+  for line in toc:lines() do
+    line = line:gsub('\r', '')
+    if line ~= '' and not line:find('^#') then table.insert(files, line) end
+  end
+  toc:close()
+  for _, file in ipairs(files) do
+    local chunk, err = loadfile(root .. '/' .. folder .. '/' .. file)
+    if not chunk then error(err) end
+    chunk(folder, EI)
+  end
+  W.EI = EI
+  return EI, files
 end
 
 -- Login, wait for the delay and let every queued job finish.

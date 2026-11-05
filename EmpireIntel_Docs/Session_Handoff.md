@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-014 | 2026-11-05 | Claude
+
+- **Done:** built P2-1 on branch `p2-1-foundation` (D-028): EmpireIntel 0.2.0, ported Platform and Store layers, own snapshot (format 1 with realm, no P_TICK), `/ei` commands. 178 tests pass under 5.1 and 5.3. Package `dist/EmpireIntel_AddOns_v0.2.0.zip` built and verified.
+- **Not done, on purpose:** not merged to main; P2-1 is not closed (separate user approval). P2-2 not started.
+- **WAITING FOR:** the user's live test (two characters, `/ei` against the game) and the saved file `EmpireIntel.lua`.
+
 ## S-013 | 2026-11-05 | Claude
 
 - **Done:** Q-T5 (C_Reincarnation uncalled; whole-word blocklist with the Reincarnat stem) built as 0.1.5-tp1, with 99 tests passing and the mutation check holding. Phase 2 authorized for the pre-25 features only (D-027). Wrote Phase2_Plan.md: four increments and saved-data format 1.
