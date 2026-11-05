@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-012 | 2026-11-05 | Claude
+
+- **Done:** read run 5. `/eicheck undoc` called only `C_Seasons` (0, false); `C_Trophy` had no allowed names; `C_Reincarnation`'s 4 functions shown to the user, none called. Crash guard clean.
+- **Conclusion:** before level 25, no Legacy data is reachable. TP-1 discovery is done until the unlock run.
+- **OPEN:** Q-T5 (Reincarnation, recommend leave uncalled), Q-T6 (authorize Phase 2 and/or Stage 1), Q-T4 after level 25. Defect 11 is wording only, so it waits for the next build.
+
 ## S-011 | 2026-11-05 | Claude
 
 - **Done:** Q-T3 approved with the user's limits (D-025). Built 0.1.4-tp1. 94 tests pass under 5.1 and 5.3. Each new guard, when disabled, fails the suite.

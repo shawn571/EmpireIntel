@@ -34,7 +34,8 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.9d 0.1.3 docs run: 410 systems, no Legacy system; 20 undocumented namespaces; trait-system lead; defect 10 (S-010)
 - [x] 1.9e User approved Q-T3 with limits; Q-T4 deferred (2026-11-05)
 - [x] 1.9f 0.1.4-tp1 built: undocumented namespaces, /eicheck undoc, crash guard, defect 10 (94 tests pass) (S-011)
-- [ ] 1.9g **User:** install 0.1.4 (/reload), `/eicheck undoc`, /reload, send the file; Claude shows the C_Reincarnation list
+- [x] 1.9g 0.1.4 run: C_Seasons no active season; C_Trophy unrelated; C_Reincarnation list shown to the user (S-012)
+- [ ] 1.9h **User:** decide Q-T5 (Reincarnation) and Q-T6 (Phase 2 / Stage 1)
 - [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
 - Exit test: Architecture section 9 exit criteria.
 

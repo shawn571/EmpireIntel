@@ -106,3 +106,18 @@ What this means:
 - **Pre-unlock features are unaffected.** FR-PRE-1..4 need no Legacy API.
 - After the unlock, the Legacy values are most likely readable through the trait system, or through one of the undocumented namespaces (`C_Seasons` fits the client's "seasonal cap" wording).
 - Both paths widen what the check calls, so both wait for the user (Q-T3, Q-T4).
+
+## 10. Run 5 (0.1.4-tp1, 2026-11-05): undocumented namespaces
+
+**Result: no Legacy data is reachable before the unlock by any route tried.** The routes were names, the API docs, and the undocumented namespaces.
+
+| Namespace | Members | Outcome |
+|---|---|---|
+| `C_Seasons` | `GetActiveSeason`, `HasActiveSeason` | Both called (`/eicheck undoc`): **0** and **false**, so no active season. This looks like the classic seasonal-realm API, not Legacy |
+| `C_Trophy` | 9 functions, all `Monument...` (retail garrison trophy monument) | None is a Get/Is/Has name, so nothing was called. Unrelated |
+| `C_Reincarnation` | `GetReincarnatingCharacter`, `IsReincarnating`, `StartReincarnation`, `StopReincarnation` | Listed for the user, **not called**. Note: "Reincarnating" does not contain the blocked word "Reincarnate", so the two read names would pass the denylist; they stay uncalled under the review rule |
+| 17 others | service, store, debug, retail UI | Listed, never called |
+
+- The crash guard held: no leftover `inFlight`, empty `neverCall`. No unexpected conditions.
+- **Defect 11 (wording):** `/eicheck undoc` typed before the first check of the session finished answered "nothing planned yet (wait for the next check line)". It should say to retry in about 10 seconds. To fix in the next build.
+- **What remains:** the Legacy values themselves can only be checked after a character reaches level 25. That needs the pane run, and possibly the trait-system calls of Q-T4.

@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-012 | Run 5 undocumented-namespace results (documentation only)
+- TP1_Report_Run1.md section 10, EI-E-13: no Legacy data before the unlock by any route tried; C_Seasons inactive; C_Trophy unrelated; C_Reincarnation listed, not called. Defect 11 (retry wording) noted. Questions Q-T5, Q-T6. No code changed.
+
 ## 2026-11-05 | S-011 | EmpireIntelCheck 0.1.4-tp1 (/reload)
 - Undocumented namespaces listed passively; `/eicheck undoc` calls the planned zero-argument Get/Is/Has names of C_Seasons and C_Trophy once; C_Reincarnation listed for review; service, store and debug groups never called.
 - Denylist extended with Request, Claim, Open, Toggle, Show, Reincarnate for every call; crash guard (`inFlight` / `neverCall`) on every call. Defect 10 fixed. 94 tests pass under Lua 5.1 and 5.3. D-025.
