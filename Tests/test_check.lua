@@ -713,7 +713,7 @@ T.describe('0.1.4: undocumented namespaces (Q-T3 limits)', function()
   end)
   T.it('the extended denylist applies to every call (Show, Open, Toggle, Claim, Request, Reincarnate)', function()
     local U = F.load(F.new()).U
-    for _, n in ipairs({ 'LegacyX.IsShown', 'C_X.IsOpen', 'C_X.GetToggleState', 'C_X.GetClaimable', 'C_X.GetRequestId', 'C_X.GetReincarnateCost' }) do
+    for _, n in ipairs({ 'LegacyX.Show', 'C_X.IsOpen', 'C_X.GetToggleState', 'C_X.GetClaim', 'C_X.GetRequestId', 'C_X.GetReincarnateCost' }) do
       T.truthy(U.denied(n), n)
     end
     T.falsy(U.denied('C_GameRules.GetForeverExperiencePreset'))
@@ -732,5 +732,43 @@ T.describe('0.1.4: defect 10 (docs enum members named Legacy)', function()
     for _, s in ipairs(W:db().docs.systems) do
       if s.name == 'KeyBindings' then T.falsy(s.legacy, 'KeyBindings marked Legacy') end
     end
+  end)
+end)
+
+T.describe('0.1.5: whole CamelCase words and the stem Reincarnat (user, Q-T5)', function()
+  local U = F.load(F.new()).U
+  T.it('blocked: a whole word equal to a blocked word, in any segment or case', function()
+    for _, n in ipairs({ 'C_X.SetSeason', 'C_X.GetResetCost', 'C_X.GetBuyPrice', 'PurchaseRank', 'C_X.GetRequestId',
+        'C_Seasons.IsSeasonOpen', 'C_X.GetToggleState', 'C_X.ShowFrame', 'C_X.GetClaim', 'C_X.SpendPoint', 'C_X.LearnPerk',
+        'GuildChallengeAlertSystem.setUpFunction', 'LEGACY_SET_X' }) do
+      T.truthy(U.denied(n), n)
+    end
+  end)
+  T.it('blocked: anything starting with the stem Reincarnat', function()
+    for _, n in ipairs({ 'C_Reincarnation.GetReincarnatingCharacter', 'C_Reincarnation.IsReincarnating',
+        'C_X.GetReincarnationInfo', 'C_X.GetReincarnateCost' }) do
+      T.truthy(U.denied(n), n)
+    end
+  end)
+  T.it('allowed: words that only contain a blocked word', function()
+    for _, n in ipairs({ 'C_GameRules.GetForeverExperiencePreset', 'LegacyX.IsShown', 'C_X.GetClaimable', 'IsPerkLearned',
+        'C_X.GetBuyout', 'C_X.GetUnset', 'C_X.GetAssetInfo', 'C_X.GetSpellOffset', 'C_Seasons.GetActiveSeason',
+        'LegacyMicroButtonMixin.IsLegacySystemUnlocked' }) do
+      T.falsy(U.denied(n), n)
+    end
+  end)
+  T.it('CamelCase split handles acronyms and digits', function()
+    T.eq(U.words('C_X.GetUIState'), { 'C', 'X', 'Get', 'UI', 'State' })
+    T.eq(U.words('GetItem2Count'), { 'Get', 'Item', '2', 'Count' })
+  end)
+end)
+
+T.describe('0.1.5: defect 11 wording', function()
+  T.it('undoc before the first check says to retry in about 10 seconds', function()
+    local W = F.new({ undoc = true })
+    F.load(W)
+    W:login(); W:advance(2)
+    W:slash('undoc')
+    T.truthy(W.chat[#W.chat]:find('try again in about 10 seconds', 1, true), W.chat[#W.chat])
   end)
 end)

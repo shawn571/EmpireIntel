@@ -110,5 +110,6 @@ The user made the repository private on 2026-11-03 (GitHub still showed it publi
 | Risk_Register.md | Risks | Reviewed at every gate |
 | GoldIntel_Reuse_Audit.md | What is reused from GoldIntel and how | Update when code is ported |
 | Reference_DataStore_Altoholic.md | Source review of the alt-data providers | Update per DataStore release that matters |
+| Phase2_Plan.md | Phase 2 increments and saved-data format 1 | One approval per increment |
 | Release_Pipeline.md | Release, install and rollback design | Changes need the user's approval (pipeline code rule) |
 | reviews/ | External reviews and their log | Documents stored unedited |

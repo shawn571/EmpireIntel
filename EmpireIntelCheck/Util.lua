@@ -10,7 +10,7 @@ local ADDON, NS = ...
 
 NS = NS or {}
 NS.env = NS.env or _G
-NS.VERSION = '0.1.4-tp1'
+NS.VERSION = '0.1.5-tp1'
 
 local U = {}
 NS.U = U
@@ -81,9 +81,10 @@ U.TERMS = { 'legacy', 'perk', 'challenge', 'camelot', 'forever' }
 -- The user's rule (Q-7): skip anything containing Set, Spend, Learn, Reset, Buy or Purchase.
 -- Matched as written (capitalized words), so 'Preset', 'Offset' or 'Asset' do not match,
 -- and also as a lower-case word at the start of a name segment ('setUp', 'buy_x').
--- Extended by the user for Q-T3 (2026-11-05): Request, Claim, Open, Toggle, Show, Reincarnate. Applied to every call.
-U.DENY_WORDS = { 'Set', 'Spend', 'Learn', 'Reset', 'Buy', 'Purchase', 'Request', 'Claim', 'Open', 'Toggle', 'Show', 'Reincarnate' }
+-- Blocked words (Q-7, extended for Q-T3). Since 0.1.5 (user, Q-T5, 2026-11-05) they are matched as WHOLE
+-- CamelCase words, case-insensitive, plus the stem 'Reincarnat' (Reincarnate, Reincarnating, Reincarnation ...).
 U.DENY = { 'set', 'spend', 'learn', 'reset', 'buy', 'purchase', 'request', 'claim', 'open', 'toggle', 'show', 'reincarnate' }
+U.DENY_STEMS = { 'reincarnat' }
 
 -- Known retail-engine systems that match a term but are not the Forever Legacy system
 -- (from GoldIntel evidence and the launch-build run, TP1_Report_Run1.md). Recorded, never called,
@@ -119,14 +120,29 @@ function U.term(name)
   return nil
 end
 
-function U.denied(name)
-  for _, w in ipairs(U.DENY_WORDS) do
-    if string.find(name, w, 1, true) then return w end
+-- Split a name into words: on '.', '_' and other non-alphanumerics, then at CamelCase boundaries.
+-- 'C_Seasons.GetActiveSeason' -> C, Seasons, Get, Active, Season; 'GetUIState' -> Get, UI, State;
+-- 'setUpFunction' -> set, Up, Function; 'LEGACY_SET_X' -> LEGACY, SET, X.
+function U.words(name)
+  local out = {}
+  for seg in string.gmatch(tostring(name), '%w+') do
+    seg = string.gsub(seg, '(%l)(%u)', '%1 %2')
+    seg = string.gsub(seg, '(%u)(%u%l)', '%1 %2')
+    seg = string.gsub(seg, '(%a)(%d)', '%1 %2')
+    seg = string.gsub(seg, '(%d)(%a)', '%1 %2')
+    for w in string.gmatch(seg, '%S+') do table.insert(out, w) end
   end
-  for seg in string.gmatch(name, '[^%._]+') do
-    local low = string.lower(seg)
+  return out
+end
+
+function U.denied(name)
+  for _, w in ipairs(U.words(name)) do
+    local low = string.lower(w)
     for _, d in ipairs(U.DENY) do
-      if string.sub(seg, 1, #d) == d or (seg == string.upper(seg) and string.find(low, d, 1, true)) then return d end
+      if low == d then return w end
+    end
+    for _, stem in ipairs(U.DENY_STEMS) do
+      if string.sub(low, 1, #stem) == stem then return w end
     end
   end
   return nil

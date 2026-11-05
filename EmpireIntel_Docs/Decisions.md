@@ -134,6 +134,23 @@ Implementation notes:
 
 Q-T4 (trait-system calls with arguments) waits until after the level-25 run.
 
+## D-026 C_Reincarnation uncalled; whole-word blocklist (EmpireIntelCheck 0.1.5-tp1) | Approved (user, 2026-11-05, Q-T5)
+Rules:
+- `C_Reincarnation` is never called.
+- Blocked words are matched as whole CamelCase words, case-insensitive, plus the stem "Reincarnat".
+- Names are split on '.', '_' and CamelCase boundaries, so `setUp` and `LEGACY_SET_X` stay blocked.
+
+Effect, as told to the user: `IsShown`, `GetClaimable`, `IsPerkLearned`, `GetBuyout` and `GetUnset` are no longer blocked. 0.1.5 also fixes defect 11 (retry wording). `/reload` is enough.
+
+## D-027 Phase 2 authorized for the pre-25 features only | Approved (user, 2026-11-05, Q-T6)
+Scope:
+- Unlock progress, rested XP, milestones ahead and "what next" (FR-PRE-1..4), with the usual phase gates and one approval per increment.
+- Increments are listed in Phase2_Plan.md.
+
+Not authorized:
+- Release pipeline Stage 1.
+- Q-T4: waits until after the level-25 run.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -152,6 +169,7 @@ Q-T4 (trait-system calls with arguments) waits until after the level-25 run.
 | Q-T2 | D-005: adopt DataStore Characters and Containers now, Crafts later? | **Approved** (D-005 update) |
 | Q-T3 (**approved with limits, D-025**) | Let the next check list the members of the 20 undocumented namespaces, and call their zero-argument Get/Is/Has names under the existing limits, for `C_Seasons`, `C_Reincarnation` and `C_Trophy` only? (The service, debug and store namespaces would be listed, never called.) | Approved 2026-11-05 |
 | Q-T4 | After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | **Deferred** by the user until after the level-25 run |
-| Q-T5 | C_Reincarnation (`GetReincarnatingCharacter`, `IsReincarnating`, `StartReincarnation`, `StopReincarnation`): call the two read names, or leave the namespace uncalled? | Open. Recommendation: leave it uncalled. It is not Legacy, EmpireIntel has no use for it, and Start/Stop are actions |
-| Q-T6 | TP-1 has done what it can before the unlock. Authorize Phase 2 (EmpireIntel itself, starting with the pre-unlock features FR-PRE-1..4, which need no Legacy API) and/or release-pipeline Stage 1 now that the launch results are reviewed? | Open. The user decides phases |
+| Q-T5 | C_Reincarnation: call the two read names, or leave the namespace uncalled? | **Leave uncalled**; blocklist changed to whole words plus the stem Reincarnat (D-026) |
+| Q-T6 | Authorize Phase 2 and/or Stage 1? | **Phase 2 for pre-25 features only** (D-027); Stage 1 **not** authorized |
+| Q-P2-1 | Approve increment P2-1 (foundation, own snapshot) including saved-data format 1 (Phase2_Plan.md section 2)? | Open. Recommendation: yes |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

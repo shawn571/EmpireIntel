@@ -4,6 +4,13 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-013 | 2026-11-05 | Claude
+
+- **Done:** Q-T5 (C_Reincarnation uncalled; whole-word blocklist with the Reincarnat stem) built as 0.1.5-tp1, with 99 tests passing and the mutation check holding. Phase 2 authorized for the pre-25 features only (D-027). Wrote Phase2_Plan.md: four increments and saved-data format 1.
+- **Not authorized:** Stage 1; Q-T4 (after the level-25 run).
+- **WAITING FOR:** Q-P2-1 (approve P2-1 including format 1); later the level-25 run.
+- **NEXT RECOMMENDED TASK:** on approval, build P2-1: port Platform, Core and Store from GoldIntel a21e071 read-only, own snapshot, `/ei`. Full client restart.
+
 ## S-012 | 2026-11-05 | Claude
 
 - **Done:** read run 5. `/eicheck undoc` called only `C_Seasons` (0, false); `C_Trophy` had no allowed names; `C_Reincarnation`'s 4 functions shown to the user, none called. Crash guard clean.

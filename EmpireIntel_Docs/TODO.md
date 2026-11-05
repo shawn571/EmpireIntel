@@ -35,7 +35,8 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.9e User approved Q-T3 with limits; Q-T4 deferred (2026-11-05)
 - [x] 1.9f 0.1.4-tp1 built: undocumented namespaces, /eicheck undoc, crash guard, defect 10 (94 tests pass) (S-011)
 - [x] 1.9g 0.1.4 run: C_Seasons no active season; C_Trophy unrelated; C_Reincarnation list shown to the user (S-012)
-- [ ] 1.9h **User:** decide Q-T5 (Reincarnation) and Q-T6 (Phase 2 / Stage 1)
+- [x] 1.9h Q-T5 and Q-T6 decided (2026-11-05); 0.1.5-tp1 built (whole-word blocklist, Reincarnat stem, defect 11) (S-013)
+- [ ] 1.10 **User:** the level-25 run (pane open, file, screenshot); then Q-T4
 - [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
 - Exit test: Architecture section 9 exit criteria.
 
@@ -46,4 +47,11 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - Undelivered dependencies: report task (does not exist), installer, Claude's separate GitHub identity (before Stage 2)
 - Implementation tasks are listed only after Stage 1 is authorized.
 
-## Phase 2..4: see Architecture.md section 10 (not approved)
+## Phase 2: pre-25 features (AUTHORIZED, D-027; one approval per increment; Phase2_Plan.md)
+- [ ] **User:** Q-P2-1, approve P2-1 including saved-data format 1
+- [ ] P2-1 Foundation and own snapshot (full restart)
+- [ ] P2-2 Alts from DataStore (/reload)
+- [ ] P2-3 Views: unlock, rest, milestones (/reload)
+- [ ] P2-4 What next and the plan file (plan format needs approval)
+
+## Later phases: see Architecture.md section 10 (not approved)

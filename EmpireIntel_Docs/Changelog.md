@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-013 | EmpireIntelCheck 0.1.5-tp1 (/reload) and Phase 2 plan
+- Blocklist matched as whole CamelCase words plus the stem Reincarnat; C_Reincarnation stays uncalled; defect 11 wording. 99 tests pass under Lua 5.1 and 5.3. D-026.
+- Phase 2 authorized for pre-25 features only (D-027). Phase2_Plan.md: increments P2-1..P2-4 and saved-data format 1, waiting for approval of P2-1 (Q-P2-1). No EmpireIntel code yet.
+
 ## 2026-11-05 | S-012 | Run 5 undocumented-namespace results (documentation only)
 - TP1_Report_Run1.md section 10, EI-E-13: no Legacy data before the unlock by any route tried; C_Seasons inactive; C_Trophy unrelated; C_Reincarnation listed, not called. Defect 11 (retry wording) noted. Questions Q-T5, Q-T6. No code changed.
 

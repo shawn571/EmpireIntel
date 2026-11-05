@@ -560,7 +560,7 @@ end
 -- /eicheck undoc: call the planned names once, in a scheduler job (limit 3), each under the crash guard.
 function D.CallUndocumented()
   local db = NS.Core.DB()
-  if not db.undoc or type(db.undoc.plan) ~= 'table' then return 'nothing planned yet (wait for the next check line)' end
+  if not db.undoc or type(db.undoc.plan) ~= 'table' then return "the first check of this session hasn't finished; try again in about 10 seconds" end
   if #db.undoc.plan == 0 then return 'nothing to call (no allowed names)' end
   if D.undocQueued then return 'already running' end
   D.undocQueued = true
