@@ -1,4 +1,4 @@
-EmpireIntelCheck 0.1.2-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.3-tp1 - EmpireIntel Test Package 1: the Legacy check
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
@@ -6,9 +6,13 @@ WHAT IT IS
   to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  Update from 0.1.0 or 0.1.1: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
+  Update from 0.1.0, 0.1.1 or 0.1.2: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
   The AddOns list keeps showing the old version until your next full restart; that is only the label.
   First-ever install (no EmpireIntelCheck folder yet): FULL CLIENT RESTART.
+
+WHAT CHANGED IN 0.1.3
+  - The saved API docs could be thrown away by the size limit (your last file). Now they are kept: Legacy systems
+    first and in detail, other matches as names only, anything left out listed by name. They are trimmed last.
 
 WHAT CHANGED IN 0.1.2
   - Retail settings that merely have an option called "Legacy" (nameplate style, respec type, ...) no longer count.
@@ -36,9 +40,9 @@ TEST STEPS (about 2 minutes now, plus one short session after a character reache
      existing EmpireIntelCheck folder (overwrite all files). The game may be running.
   2. In game, type  /reload
      About 10 seconds later expect one line like:
-       EmpireIntelCheck 0.1.2-tp1: LEGACY API: PANE ONLY (provisional: Legacy system locked ...). Run 9 (login); docs available: /eicheck docs ...
+       EmpireIntelCheck 0.1.3-tp1: LEGACY API: PANE ONLY (provisional: Legacy system locked ...). Run 9 (login); docs available: /eicheck docs ...
      A second line starting "UNEXPECTED" is possible: note it and carry on.
-  3. IMPORTANT, this is the step that can find the Legacy data before level 25:
+  3. IMPORTANT, this is the step that can find the Legacy data before level 25 (run it again after updating):
      type  /eicheck docs  once. Expect "docs: loading ...", then within a few seconds "docs: saved ...", and a new
      verdict line about 10 seconds later ending "docs saved".
   4. Type  /reload  once more (writes the file and frees the memory the docs used).

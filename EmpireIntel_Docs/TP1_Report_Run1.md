@@ -84,3 +84,9 @@ What this means:
 | Logout baseline | Valid at logout this time (level 3, xpMax 1400, source `logout`) |
 | **Errors (T8)** | BugGrabber had 11 errors recorded: TradeSkillMaster 199 (counted repeats), Accountant_Classic 6, ZygorGuidesViewerForever 4, !BugGrabber 4, Questie 2, TradeSkillMaster_AppHelper 1. **None from EmpireIntelCheck, and none from GoldIntel** |
 | Docs | Not run: `/eicheck docs` is still the step that can find the Legacy data API before level 25 |
+
+## 8. Run 3 (0.1.2-tp1, 2026-11-05, C1 at level 4)
+
+- `/eicheck docs` worked in the client: **410 documented API systems, 14 matched** the search terms (the user's chat lines).
+- **Defect 9:** the saved file holds no docs, only a "dropped: over size cap" marker. The 14 systems in full exceeded the 256 KB cap. The trim order dropped the docs before cheaper data, and only 1 run was left. Fixed in 0.1.3 (D-024).
+- Otherwise as run 2: PANE ONLY (provisional: locked), 3 getters called, no blocked call, no errors from EmpireIntelCheck. The logout baseline was valid (level 4).

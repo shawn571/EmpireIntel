@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-009 | 2026-11-05 | Claude
+
+- **Done:** run 3 showed the docs run worked (14 of 410 systems matched) but the saved docs were dropped by the size cap. Built 0.1.3-tp1 with a docs budget and a docs-last trim order (D-024). 86 tests pass under 5.1 and 5.3. Mutation check: the guards are caught except "no save-time budget", which the trim covers anyway (near-equivalent).
+- **WAITING FOR:** a 0.1.3 run with `/eicheck docs`. The user offered to paste text where it saves an upload. The docs need the file; the `/eicheck report` copy window was offered and not taken up.
+- **NEXT RECOMMENDED TASK:** read the docs systems and look for the Legacy data API.
+
 ## S-008 | 2026-11-05 | Claude
 
 - **Done:** read run 2 as data. Migration fine; no errors from EmpireIntelCheck or GoldIntel (T8); defect 8 found and fixed in 0.1.2-tp1 (82 tests pass under 5.1 and 5.3; run 2 re-classified as PANE ONLY). Recorded the user's scope point as FR-PRE-1..4 (D-022): EmpireIntel must guide progress before the Legacy unlock.

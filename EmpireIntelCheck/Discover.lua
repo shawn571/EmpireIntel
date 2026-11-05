@@ -232,14 +232,46 @@ local function docMatches(sys)
   return false
 end
 
-local function docArgs(list)
+local function docArgs(list, max)
   local out, required = {}, 0
   for _, a in ipairs(type(list) == 'table' and list or {}) do
-    table.insert(out, { name = U.dump(a.Name), type = U.dump(a.Type), nilable = U.dump(a.Nilable) })
+    if #out < (max or 12) then
+      table.insert(out, { name = U.dump(a.Name), type = U.dump(a.Type), nilable = U.dump(a.Nilable) })
+    end
     if a.Nilable ~= true and a.Default == nil then required = required + 1 end
   end
   return out, required
 end
+
+-- Does any name in a docs system point at the Forever Legacy system (U.strong)?
+local function listStrong(list)
+  for _, a in ipairs(type(list) == 'table' and list or {}) do
+    if type(a) == 'table' and (U.strong(a.Name) or U.strong(a.InnerType)) then return true end
+  end
+  return false
+end
+
+local function docStrong(sys)
+  if U.strong(sys.Name) or U.strong(sys.Namespace) then return true end
+  for _, f in ipairs(type(sys.Functions) == 'table' and sys.Functions or {}) do
+    if U.strong(f.Name) or listStrong(f.Arguments) or listStrong(f.Returns) then return true end
+  end
+  for _, e in ipairs(type(sys.Events) == 'table' and sys.Events or {}) do
+    if U.strong(e.Name) or U.strong(e.LiteralName) or listStrong(e.Payload) then return true end
+  end
+  for _, t in ipairs(type(sys.Tables) == 'table' and sys.Tables or {}) do
+    if U.strong(t.Name) or listStrong(t.Fields) then return true end
+  end
+  return false
+end
+
+-- Size limits for the saved docs (run 3 lost the docs to the size cap). Same fields as before:
+-- Legacy systems keep signatures and fields within these caps; other matches keep names only.
+D.DOCS_BUDGET = 120 * 1024
+D.CAP = { functions = 40, args = 6, tables = 20, fields = 10, events = 20 }
+D.CAP_REDUCED = { functions = 40, args = 3, tables = 10, fields = 5, events = 20 }
+D.SYSTEM_DETAIL_MAX = 64 * 1024   -- a Legacy system bigger than this in full is kept with names only
+D.ARGS_MAX = 600                  -- documented argument counts kept (Legacy systems first)
 
 -- Runs inside a scheduler job (limit 3): one system per Checkpoint.
 function D.LoadDocsJob()
@@ -256,10 +288,12 @@ function D.LoadDocsJob()
     db.docs = { at = U.wall(), tried = tried, result = 'not_found (no APIDocumentation table after loading)' }
     return 'not found'
   end
-  local docs = { at = U.wall(), tried = tried, systems = {}, args = {}, events = {}, systemCount = #api.systems, index = {} }
+  local docs = { at = U.wall(), tried = tried, systems = {}, args = {}, events = {}, systemCount = #api.systems, index = {},
+    skipped = {}, strongSystems = 0, argsCount = 0 }
+  local strongList, weakList = {}, {}
   for _, sys in ipairs(api.systems) do
     -- index of every system, so a neutrally named Legacy system can still be spotted by eye
-    if #docs.index < 400 then
+    if #docs.index < 450 then
       table.insert(docs.index, { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace),
         functions = type(sys.Functions) == 'table' and #sys.Functions or 0,
         events = type(sys.Events) == 'table' and #sys.Events or 0,
@@ -267,32 +301,82 @@ function D.LoadDocsJob()
     end
     local ok, hit = pcall(docMatches, sys)
     if ok and hit and not (type(sys.Namespace) == 'string' and U.unrelated(sys.Namespace)) then
-      local s = { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace), functions = {}, events = {}, tables = {} }
-      for _, t in ipairs(type(sys.Tables) == 'table' and sys.Tables or {}) do
-        local fields = docArgs(t.Fields)
-        if #s.tables < 60 then table.insert(s.tables, { name = U.dump(t.Name), type = U.dump(t.Type), fields = fields }) end
-      end
-      for _, f in ipairs(type(sys.Functions) == 'table' and sys.Functions or {}) do
-        local args, required = docArgs(f.Arguments)
-        local rets = docArgs(f.Returns)
-        table.insert(s.functions, { name = U.dump(f.Name), args = args, returns = rets })
-        local full = (type(sys.Namespace) == 'string' and sys.Namespace ~= '') and (sys.Namespace .. '.' .. tostring(f.Name)) or tostring(f.Name)
-        docs.args[full] = required
-      end
-      for _, e in ipairs(type(sys.Events) == 'table' and sys.Events or {}) do
-        local payload = docArgs(e.Payload)
-        local lit = e.LiteralName
-        table.insert(s.events, { name = U.dump(e.Name), literal = U.dump(lit), payload = payload,
-          valid = type(lit) == 'string' and U.dump(NS.Core.EventValid(lit)) or nil })
-        if type(lit) == 'string' then docs.events[lit] = NS.Core.EventValid(lit) end
-      end
-      table.insert(docs.systems, s)
+      local okS, strong = pcall(docStrong, sys)
+      if okS and strong then table.insert(strongList, sys) else table.insert(weakList, sys) end
     end
     checkpoint()
   end
+  local C = D.CAP
+  local function build(sys, full, caps)
+    local C = caps or D.CAP
+    local s = { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace), functions = {}, events = {}, tables = {},
+      legacy = full or nil }
+    local fns = type(sys.Functions) == 'table' and sys.Functions or {}
+    for _, f in ipairs(fns) do
+      local args, required = docArgs(f.Arguments, C.args)
+      local fullName = (type(sys.Namespace) == 'string' and sys.Namespace ~= '') and (sys.Namespace .. '.' .. tostring(f.Name)) or tostring(f.Name)
+      if (full or required > 0) and docs.argsCount < D.ARGS_MAX then
+        docs.args[fullName] = required
+        docs.argsCount = docs.argsCount + 1
+      end
+      if #s.functions < C.functions then
+        if full then
+          table.insert(s.functions, { name = U.dump(f.Name), args = args, returns = (docArgs(f.Returns, C.args)) })
+        else
+          table.insert(s.functions, { name = U.dump(f.Name) })
+        end
+      end
+    end
+    if #fns > C.functions then s.functionsTotal = #fns end
+    for _, e in ipairs(type(sys.Events) == 'table' and sys.Events or {}) do
+      local lit = e.LiteralName
+      if type(lit) == 'string' then docs.events[lit] = NS.Core.EventValid(lit) end
+      if #s.events < C.events then
+        table.insert(s.events, { name = U.dump(e.Name), literal = U.dump(lit),
+          payload = full and (docArgs(e.Payload, C.args)) or {},
+          valid = type(lit) == 'string' and U.dump(NS.Core.EventValid(lit)) or nil })
+      end
+    end
+    for _, t in ipairs(type(sys.Tables) == 'table' and sys.Tables or {}) do
+      if #s.tables < C.tables then
+        table.insert(s.tables, { name = U.dump(t.Name), type = U.dump(t.Type), fields = full and (docArgs(t.Fields, C.fields)) or {} })
+      end
+    end
+    return s
+  end
+  local used = 0
+  local function add(sys, full)
+    local s = build(sys, full)
+    local cost = U.size(s)
+    if full and (cost > D.SYSTEM_DETAIL_MAX or used + cost > D.DOCS_BUDGET) then
+      -- too big in full: first fewer arguments and fields, then names only, rather than lose it
+      s = build(sys, true, D.CAP_REDUCED)
+      s.detailReduced = 'size'
+      cost = U.size(s)
+      if cost > D.SYSTEM_DETAIL_MAX or used + cost > D.DOCS_BUDGET then
+        s = build(sys, false)
+        s.legacy = true
+        s.detailDropped = 'size'
+        cost = U.size(s)
+      end
+    end
+    if used + cost > D.DOCS_BUDGET then
+      table.insert(docs.skipped, { name = U.dump(sys.Name), namespace = U.dump(sys.Namespace), reason = 'size budget',
+        legacy = full or nil })
+      return
+    end
+    used = used + cost
+    table.insert(docs.systems, s)
+    if full then docs.strongSystems = docs.strongSystems + 1 end
+  end
+  for _, sys in ipairs(strongList) do add(sys, true); checkpoint() end
+  for _, sys in ipairs(weakList) do add(sys, false); checkpoint() end
+  docs.bytes = used
   db.docs = docs
+  NS.Core.Trim()
   NS.Run.Schedule('docs', 1, true)
-  return 'saved ' .. #docs.systems .. ' matching systems of ' .. docs.systemCount .. '; rerun queued'
+  return 'saved ' .. #docs.systems .. ' matching systems of ' .. docs.systemCount .. ' (' .. docs.strongSystems
+    .. ' with Legacy names' .. (#docs.skipped > 0 and (', ' .. #docs.skipped .. ' skipped for size') or '') .. '); rerun queued'
 end
 
 function D.LoadDocs()

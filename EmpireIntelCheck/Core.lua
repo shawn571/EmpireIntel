@@ -67,39 +67,58 @@ function C.IsOff()
 end
 
 -- Keep the saved data under the cap: drop the oldest runs first, then trim the largest sections.
+-- Keep the saved data under the cap. Docs are the most valuable evidence and go LAST
+-- (run 3 lost them because they were trimmed before cheaper data).
 function C.Trim()
   local db = C.DB()
   while #db.runs > C.MAX_RUNS_KEPT do table.remove(db.runs, 1) end
   local size = U.size(db)
-  while size > C.DB_LIMIT and #db.runs > 1 do
-    table.remove(db.runs, 1)
-    size = U.size(db)
-  end
-  -- then shed the least valuable parts, in order, marking each
-  if size > C.DB_LIMIT and db.latest and db.latest.results then
+  local function over() return size > C.DB_LIMIT end
+  local function again() size = U.size(db) end
+  while over() and #db.runs > 3 do table.remove(db.runs, 1); again() end
+  if over() and db.latest and db.latest.results then
     for _, res in pairs(db.latest.results) do res.values = nil end
-    db.latest.valuesDropped = 'over size cap'
-    size = U.size(db)
+    db.latest.valuesDropped = 'over size cap'; again()
   end
-  if size > C.DB_LIMIT and db.docs and db.docs.index then
-    db.docs.index = nil
-    db.docs.indexDropped = 'over size cap'
-    size = U.size(db)
+  if over() and db.latest and db.latest.names then
+    db.latest.names = nil; db.latest.namesDropped = 'over size cap'; again()
   end
-  if size > C.DB_LIMIT and db.latest then
-    db.latest.discovery = { dropped = 'over size cap' }
-    size = U.size(db)
+  if over() and db.latest and db.latest.discovery then
+    db.latest.discovery = { dropped = 'over size cap' }; again()
   end
-  if size > C.DB_LIMIT and db.docs then
-    db.docs = { dropped = 'over size cap', at = U.wall() }
-    size = U.size(db)
+  if over() and db.nsBaseline and db.nsBaseline.list then
+    db.nsBaseline = nil; db.nsBaselineDropped = 'over size cap'; again()
   end
-  if size > C.DB_LIMIT and db.runs[1] then
+  while over() and #db.runs > 1 do table.remove(db.runs, 1); again() end
+  if over() and db.docs and db.docs.index then
+    db.docs.index = nil; db.docs.indexDropped = 'over size cap'; again()
+  end
+  -- docs: drop systems without Legacy names first (from the end), recording what was dropped
+  if over() and db.docs and db.docs.systems then
+    local i = #db.docs.systems
+    while over() and i >= 1 do
+      local s = db.docs.systems[i]
+      if not s.legacy then
+        db.docs.skipped = db.docs.skipped or {}
+        table.insert(db.docs.skipped, { name = s.name, namespace = s.namespace, reason = 'size cap' })
+        table.remove(db.docs.systems, i); again()
+      end
+      i = i - 1
+    end
+  end
+  if over() and db.runs[1] then
     local r = db.runs[1]
     r.calls = { dropped = 'over size cap' }
     r.partA = { dropped = 'over size cap' }
-    r.truncated = true
-    size = U.size(db)
+    r.truncated = true; again()
+  end
+  if over() and db.docs and db.docs.systems then
+    while over() and #db.docs.systems > 0 do
+      local s = table.remove(db.docs.systems)
+      db.docs.skipped = db.docs.skipped or {}
+      table.insert(db.docs.skipped, { name = s.name, namespace = s.namespace, reason = 'size cap (Legacy)' })
+      again()
+    end
   end
   db.sizeEstimate = size
   return size

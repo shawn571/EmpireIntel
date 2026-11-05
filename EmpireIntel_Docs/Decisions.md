@@ -109,6 +109,15 @@ Rule: Requirements FR-PRE-1..4, Architecture section 13. EmpireIntel must give u
 ## D-023 EmpireIntelCheck 0.1.2-tp1 | Approved within D-017 scope (check-package fix)
 Defect 8 from launch-build run 2: retail enums with a member named "Legacy" made the verdict NAMES ONLY. An enum now counts only when its own name points at Legacy. No saved-data change; `/reload` is enough.
 
+## D-024 EmpireIntelCheck 0.1.3-tp1 | Approved within D-017 scope (check-package fix)
+Run 3 lost the saved docs to the size cap: the trim order dropped them before cheaper data, and the docs had no size limit of their own. Now:
+- the docs have a 120 KB budget;
+- systems with Legacy names keep signatures and fields, in a reduced form if they are large; other matches keep names only;
+- anything left out is listed by name;
+- the docs are trimmed last, and the trim runs right after saving them.
+
+Same fields as before, so no saved-data format change. `/reload` is enough.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

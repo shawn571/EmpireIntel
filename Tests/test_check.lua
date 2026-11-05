@@ -555,3 +555,80 @@ T.describe('0.1.1: docs processing is spread across frames (limit 3)', function(
     T.truthy(saw, 'result line printed')
   end)
 end)
+
+T.describe('0.1.3: docs survive the size cap (launch-build run 3)', function()
+  local function bigSystem(name, ns, legacyField)
+    local fns, tbls = {}, {}
+    for i = 1, 150 do
+      local args = {}
+      for j = 1, 6 do args[j] = { Name = 'argument' .. j .. string.rep('x', 20), Type = 'number', Nilable = false } end
+      fns[i] = { Name = 'GetPerkThing' .. i, Arguments = args, Returns = args }
+    end
+    for i = 1, 80 do
+      local fields = {}
+      for j = 1, 25 do fields[j] = { Name = 'field' .. j .. string.rep('y', 20), Type = 'string' } end
+      if legacyField and i == 1 then fields[1] = { Name = 'legacyPointsEarned', Type = 'number' } end
+      tbls[i] = { Name = 'PerkTable' .. i, Type = 'Structure', Fields = fields }
+    end
+    return { Name = name, Namespace = ns, Functions = fns, Tables = tbls, Events = {} }
+  end
+  local W = F.new({ legacy = 'getters', docs = true, extraGlobals = 3000 })
+  for i = 1, 12 do table.insert(W.docsTable.systems, bigSystem('PerkSystem' .. i, 'C_PerkSystem' .. i)) end
+  table.insert(W.docsTable.systems, bigSystem('AccountProgress', 'C_AccountProgress', true))
+  F.load(W)
+  W:login(); W:advance(40)
+  W:slash('docs'); W:advance(80)
+  for _ = 1, 3 do W:slash('run'); W:advance(40) end
+  local docs = W:db().docs
+  T.it('docs are kept, not dropped, and the total stays under the cap', function()
+    T.truthy(docs and docs.systems, 'docs.systems present')
+    T.isnil(docs.dropped)
+    T.truthy(W:db().sizeEstimate <= 256 * 1024, 'size ' .. W:db().sizeEstimate)
+  end)
+  T.it('systems with Legacy names keep signatures and fields; others keep names only', function()
+    local legacyFound, weakHasArgs = false, false
+    for _, sys in ipairs(docs.systems) do
+      if sys.name == 'AccountProgress' then
+        legacyFound = sys.legacy and #sys.functions[1].args > 0 and #sys.tables[1].fields > 0
+      elseif not sys.legacy and sys.functions[1] and sys.functions[1].args then
+        weakHasArgs = true
+      end
+    end
+    T.truthy(legacyFound, 'the Legacy system is stored with detail')
+    T.falsy(weakHasArgs, 'non-Legacy systems keep names only')
+    T.truthy(docs.strongSystems >= 2, 'LegacyFixture and AccountProgress')
+  end)
+  T.it('anything left out is listed by name', function()
+    T.truthy(type(docs.skipped) == 'table')
+    T.truthy(#docs.systems + #docs.skipped >= 14, 'kept ' .. #docs.systems .. ' skipped ' .. #docs.skipped)
+  end)
+end)
+
+T.describe('0.1.3: under cap pressure the docs go last', function()
+  local function sys(name, ns, n)
+    local fns = {}
+    for i = 1, n do fns[i] = { Name = 'GetPerkItem' .. i, Arguments = { { Name = 'id', Type = 'number', Nilable = false } } } end
+    return { Name = name, Namespace = ns, Functions = fns, Events = {}, Tables = {} }
+  end
+  T.it('cheap data is shed first; the Legacy docs survive; budget and post-docs trim hold', function()
+    local W = F.new({ legacy = 'getters', docs = true, extraGlobals = 2000 })
+    for i = 1, 30 do table.insert(W.docsTable.systems, sys('PerkSys' .. i, 'C_PerkSys' .. i, 120)) end
+    F.load(W)
+    W.NS.Core.DB_LIMIT = 70 * 1024
+    W:login(); W:advance(40)
+    for _ = 1, 4 do W:slash('run'); W:advance(40) end
+    W:slash('docs')
+    W:advance(0.5)                               -- the docs job is done; the rerun (1 s later) has not run yet
+    local db = W:db()
+    T.truthy(db.docs and db.docs.systems, 'docs kept')
+    local U = W.NS.U
+    local systemsSize = U.size(db.docs.systems)
+    T.truthy(systemsSize <= W.NS.Discover.DOCS_BUDGET + 4096, 'docs within budget (measured): ' .. systemsSize)
+    local total = U.size(db)
+    T.truthy(total <= 70 * 1024 + 64, 'trimmed right after docs (measured): ' .. total)
+    local legacy = false
+    for _, s in ipairs(db.docs.systems) do if s.name == 'LegacyFixture' then legacy = true end end
+    T.truthy(legacy, 'the Legacy system is still there')
+    T.truthy(db.latest.valuesDropped or db.latest.namesDropped or #db.runs < 5, 'cheaper data went first')
+  end)
+end)

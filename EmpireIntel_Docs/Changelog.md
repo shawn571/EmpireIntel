@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-009 | EmpireIntelCheck 0.1.3-tp1 (/reload)
+- Defect 9: the saved docs have their own budget and survive the size cap. Legacy systems are kept first with details, reduced if large; other matches keep names only; omissions are listed; the docs are trimmed last; the trim runs after saving them. Argument-count map capped at 600 entries. 86 tests pass under Lua 5.1 and 5.3. D-024.
+
 ## 2026-11-05 | S-008 | EmpireIntelCheck 0.1.2-tp1 (/reload) and pre-unlock requirements
 - Defect 8: enums count only when their own name points at Legacy (retail enums with a "Legacy" member made run 2 read NAMES ONLY).
 - Requirements FR-PRE-1..4 and Architecture section 13: EmpireIntel guides progress before the Legacy unlock. D-022, D-023. Run 2 findings in TP1_Report_Run1.md section 7; EI-E-09, EI-E-10.
