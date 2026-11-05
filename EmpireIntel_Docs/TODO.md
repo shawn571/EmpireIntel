@@ -27,7 +27,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.6 TP1_Report_Run1.md and EI-E-01..08 (S-006)
 - [x] 1.7 User approved Q-T1 and Q-T2 (2026-11-04)
 - [x] 1.8 EmpireIntelCheck 0.1.1-tp1 built: 82 tests pass under Lua 5.1 and 5.3; 21 guard mutants caught; run 1 re-classified correctly (S-007)
-- [ ] 1.9 **User:** install 0.1.1 (/reload), run `/eicheck docs`, send the file
+- [x] 1.9 0.1.1 run received 2026-11-05 (migration fine, no own errors; docs not run; defect 8)
+- [x] 1.9a 0.1.2-tp1 built (defect 8), FR-PRE-1..4 recorded (S-008)
+- [ ] 1.9b **User:** install 0.1.2 (/reload), run `/eicheck docs`, send the file
 - [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
 - Exit test: Architecture section 9 exit criteria.
 

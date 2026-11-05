@@ -1,6 +1,6 @@
 # EmpireIntel Architecture v1
 
-DOC VERSION: 2.2.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
+DOC VERSION: 2.3.0  |  DATE: 2026-11-03  |  STATUS: **Section 9 (TP-1) approved by the user for implementation (Q-3, Q-7); the rest Proposed**  |  Requirements_v1.md wins on scope, Decisions.md on design, Compatibility_Notes.md on client facts
 
 **EmpireIntel tracks the WoW Forever Legacy system across a player's characters.** For each character it shows Legacy points and perks, rested XP and professions. It also gives a "what next" list driven by a plan file the user writes. Alt data comes from EmpireIntel's own snapshots and, optionally, from DataStore.
 
@@ -208,3 +208,17 @@ The verdict is printed in chat (`EmpireIntelCheck: LEGACY API: NOTHING EXPOSED, 
 - **Denylist:** applied exactly as worded by the user: capitalized `Set`, `Spend`, `Learn`, `Reset`, `Buy`, `Purchase` anywhere in the name, plus lower-case at the start of a name segment.
 - **Docs:** an index of every documented system, plus matching on argument, return, event, payload, table and field names. Processing is spread across frames.
 - **T8:** read-only count of BugGrabber/BugSack errors per addon. Our own messages are kept with GUIDs and paths removed; locals are never copied.
+
+## 13. Before the unlock (FR-PRE-1..4, user, 2026-11-05)
+
+EmpireIntel is not a level-25 addon. Until a character reaches 25, the Legacy pane is locked (EI-E-02), so everything below comes from levels, XP, rested XP and professions. All of these are measured today, through Platform/Unit and, for alts, DataStore Characters and Crafts (D-005). The Legacy API is never required.
+
+| View | Source | Example line |
+|---|---|---|
+| Unlock progress | highest known level vs 25; current XP of the closest character | `Legacy unlock: C2 is level 9, 16 levels to go (client rule: first character to 25)` |
+| Rested XP | `GetXPExhaustion` / DataStore `GetRestXP`, projected for alts | `C2: 1.2 levels rested (estimate since last login 2 days ago)` |
+| Milestones ahead | rules table (unverified until the client confirms) | `Next Legacy points: Shaman 25 (C2, 16 levels), Paladin 25 (C1, 22 levels)` |
+| Crafting milestones | profession skill vs 150/225/300 | `Tailoring 150: C3 at 131 (19 to go)` |
+| What next | plan file if present, else the default suggestions of FR-PRE-4 | `1. Level C2 (rested, closest to 25)` |
+
+Once the system unlocks, the same views gain measured Legacy values (points, perks, cap) where the client exposes them, and the estimate is shown beside them, never in their place.

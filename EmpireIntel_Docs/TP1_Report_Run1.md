@@ -72,3 +72,15 @@ What this means:
    - (a) **No new install:** type `/eicheck docs` once in game with 0.1.0. The current matcher may miss a neutrally named system (defect 7), and the docs may push older runs out under the cap.
    - (b) **Recommended: EmpireIntelCheck 0.1.1-tp1** with fixes 1 to 7. It is a Lua-only update (**/reload is enough**), but fix 4 changes the check's saved-data format, so it waits for your approval. Then type `/eicheck docs` once. A second run after a character reaches level 25 confirms the unlock and reads real Legacy values.
 4. **The release pipeline stays at Stage 0.** These results are the "first launch results" the Stage 1 decision depends on. Real Legacy data is not available until a character reaches 25.
+
+## 7. Run 2 (0.1.1-tp1, 2026-11-04/05, C1 at level 3)
+
+| Item | Result |
+|---|---|
+| Migration | Format 1 -> 2 worked: runs 9 and 10 (0.1.0) compacted, run 11 (0.1.1) stored in the new form; 216 KB in total |
+| Verdict | `NAMES ONLY (provisional: locked; pane not seen; no point expected)`. **Defect 8:** five retail enums (NamePlateStyle, RespecType, RaidAuraOrganizationType, Itemsetflags, BnetAccountFlag) have a member called "Legacy". Fixed in 0.1.2; re-classified, the run reads **PANE ONLY**, as expected |
+| Calls | Only 3 getters called (lock state false, unviewed challenges false, Forever experience preset = 1); 2 Set names skipped; 350 retail names skipped as unrelated. No blocked call, no error |
+| Lock | `IsLegacySystemUnlocked` = false (as in run 1) |
+| Logout baseline | Valid at logout this time (level 3, xpMax 1400, source `logout`) |
+| **Errors (T8)** | BugGrabber had 11 errors recorded: TradeSkillMaster 199 (counted repeats), Accountant_Classic 6, ZygorGuidesViewerForever 4, !BugGrabber 4, Questie 2, TradeSkillMaster_AppHelper 1. **None from EmpireIntelCheck, and none from GoldIntel** |
+| Docs | Not run: `/eicheck docs` is still the step that can find the Legacy data API before level 25 |

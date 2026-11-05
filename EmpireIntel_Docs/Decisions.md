@@ -103,6 +103,12 @@ Fixes 1 to 7 of TP1_Report_Run1.md, including **saved-data format 2 of EmpireInt
 - OnShow hooks removed in favour of polling visibility.
 Update from 0.1.0: /reload is enough.
 
+## D-022 Pre-unlock usefulness is a requirement | Approved (user, 2026-11-05)
+Rule: Requirements FR-PRE-1..4, Architecture section 13. EmpireIntel must give useful guidance before any character reaches level 25 and without any Legacy API. Product code is still not authorized (Phase 2).
+
+## D-023 EmpireIntelCheck 0.1.2-tp1 | Approved within D-017 scope (check-package fix)
+Defect 8 from launch-build run 2: retail enums with a member named "Legacy" made the verdict NAMES ONLY. An enum now counts only when its own name points at Legacy. No saved-data change; `/reload` is enough.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

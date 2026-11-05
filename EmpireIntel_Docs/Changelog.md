@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-008 | EmpireIntelCheck 0.1.2-tp1 (/reload) and pre-unlock requirements
+- Defect 8: enums count only when their own name points at Legacy (retail enums with a "Legacy" member made run 2 read NAMES ONLY).
+- Requirements FR-PRE-1..4 and Architecture section 13: EmpireIntel guides progress before the Legacy unlock. D-022, D-023. Run 2 findings in TP1_Report_Run1.md section 7; EI-E-09, EI-E-10.
+
 ## 2026-11-04 | S-007 | EmpireIntelCheck 0.1.1-tp1 (/reload is enough when updating from 0.1.0)
 - Fixes 1 to 7 of TP1_Report_Run1.md: Legacy-only verdict with data/UI layers and lock state, visibility-based pane detection without hooks, valid logout baseline, saved-data format 2 with migration, corrected DataStore methods, exact-wording denylist, docs index and field matching.
 - Added: T8 read-only BugGrabber error counts; DataStore alt professions in the estimate; docs processing spread across frames.

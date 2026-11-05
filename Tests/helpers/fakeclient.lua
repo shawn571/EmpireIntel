@@ -226,6 +226,10 @@ function F.new(opts)
     function btn:GetObjectType() return 'Button' end
     env.LegacyMicroButton = btn
     env.LEGACY_MICRO_BUTTON_LOCKED_TOOLTIP = 'This feature becomes available when your first character reaches level 25.'
+    -- retail enums with a member literally named Legacy (launch-build run 2, defect 8)
+    env.Enum.NamePlateStyle = { Modern = 1, Legacy = 5 }
+    env.Enum.RespecType = { Talents = 1, Legacy = 4 }
+    env.Enum.BnetAccountFlag = { IsLegacy = 131072 }
   end
   if opts.bugs then
     env.BugGrabberDB = { errors = {

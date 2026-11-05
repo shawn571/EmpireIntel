@@ -66,4 +66,6 @@ Hint for discovery: the Forever Blizzard UI has `Camelot` folders (`Blizzard_Auc
 | EI-E-05 | `Blizzard_APIDocumentation` and `Blizzard_APIDocumentationGenerated` are installed (loadable on demand) | section 1 [file] |
 | EI-E-06 | Launch has named realms ("CAMWOW US2 Realm N PvE"); one account's characters can sit on different realms | section 3 [file] |
 | EI-E-07 | DataStore 2026.10.14 on the launch build: money, level, class and a carried item count equal the live values; the roster spans both realms; no "Unknown" names, no duplicate GUIDs | section 3 [file] |
+| EI-E-09 | Retail enums with a member named "Legacy" exist (NamePlateStyle, RespecType, RaidAuraOrganizationType, Itemsetflags, BnetAccountFlag); `C_GameRules.GetForeverExperiencePreset()` returned 1 (`Enum.ForeverExperiencePreset`: Classic 0, Enhanced 1) | TP1_Report_Run1.md section 7 [file] |
+| EI-E-10 | BugGrabber `GetDB()` is readable; on the user's setup the recorded errors came from TradeSkillMaster, Accountant_Classic, Zygor, Questie and BugGrabber, none from EmpireIntelCheck or GoldIntel | section 7 [file] |
 | EI-E-08 | At `PLAYER_LOGOUT`, `UnitLevel` and `UnitXPMax` returned 1 and 0 for a level-2 character: unit data is unreliable at logout | section 4 [file] |

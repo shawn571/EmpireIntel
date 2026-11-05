@@ -1,4 +1,4 @@
-EmpireIntelCheck 0.1.1-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.2-tp1 - EmpireIntel Test Package 1: the Legacy check
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
@@ -6,9 +6,12 @@ WHAT IT IS
   to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  Update from 0.1.0: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
-  The AddOns list keeps showing 0.1.0 until your next full restart; that is only the label.
+  Update from 0.1.0 or 0.1.1: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
+  The AddOns list keeps showing the old version until your next full restart; that is only the label.
   First-ever install (no EmpireIntelCheck folder yet): FULL CLIENT RESTART.
+
+WHAT CHANGED IN 0.1.2
+  - Retail settings that merely have an option called "Legacy" (nameplate style, respec type, ...) no longer count.
 
 WHAT CHANGED IN 0.1.1 (fixes from your launch-build run)
   - Only names that point at the Forever Legacy system count; retail "legacy raid" and guild challenge names no longer do.
@@ -33,9 +36,10 @@ TEST STEPS (about 2 minutes now, plus one short session after a character reache
      existing EmpireIntelCheck folder (overwrite all files). The game may be running.
   2. In game, type  /reload
      About 10 seconds later expect one line like:
-       EmpireIntelCheck 0.1.1-tp1: LEGACY API: PANE ONLY (provisional: Legacy system locked ...). Run 9 (login); docs available: /eicheck docs ...
+       EmpireIntelCheck 0.1.2-tp1: LEGACY API: PANE ONLY (provisional: Legacy system locked ...). Run 9 (login); docs available: /eicheck docs ...
      A second line starting "UNEXPECTED" is possible: note it and carry on.
-  3. Type  /eicheck docs  once. Expect "docs: loading ...", then within a few seconds "docs: saved ...", and a new
+  3. IMPORTANT, this is the step that can find the Legacy data before level 25:
+     type  /eicheck docs  once. Expect "docs: loading ...", then within a few seconds "docs: saved ...", and a new
      verdict line about 10 seconds later ending "docs saved".
   4. Type  /reload  once more (writes the file and frees the memory the docs used).
   5. Exit the game fully and send me

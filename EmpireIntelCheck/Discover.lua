@@ -86,8 +86,9 @@ function D.VisitEnum(rec, ek, ev)
     end
   end
   if hit then
+    -- an enum counts only when its own name points at Legacy: retail enums such as NamePlateStyle or
+    -- RespecType have a member literally called 'Legacy' (launch-build run 2, defect 8)
     local strong = U.strong(ek)
-    for mk in pairs(members) do if U.strong(mk) and U.strong(ek .. mk) then strong = true end end
     rec.enums[ek] = { term = eTerm or 'member', members = members, unrelated = U.unrelated(ek), strong = strong or nil }
   end
 end
