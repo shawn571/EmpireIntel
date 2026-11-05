@@ -167,6 +167,14 @@ Each file's header lists its changes. Not ported:
 - Money, Loot and the other collectors;
 - Probe, Bus, Capabilities, Config and the Core module registry.
 
+## D-029 P2-1 closed | Approved (user, 2026-11-05, Q-P2-1c)
+EmpireIntel 0.2.1 met the P2-1 gate:
+- tests pass under Lua 5.1 and 5.3;
+- loads with no error next to GoldIntel and the check;
+- the user confirmed `/ei` matched the game on two characters (P2-1_Report.md).
+
+Branch `p2-1-foundation` merged into main. P2-2 needs its own approval (Q-P2-2).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -188,5 +196,6 @@ Each file's header lists its changes. Not ported:
 | Q-T5 | C_Reincarnation: call the two read names, or leave the namespace uncalled? | **Leave uncalled**; blocklist changed to whole words plus the stem Reincarnat (D-026) |
 | Q-T6 | Authorize Phase 2 and/or Stage 1? | **Phase 2 for pre-25 features only** (D-027); Stage 1 **not** authorized |
 | Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
-| Q-P2-1c | Close P2-1 after the live test (values match the game on two characters)? | Open: separate approval by the user |
+| Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
+| Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | Open |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

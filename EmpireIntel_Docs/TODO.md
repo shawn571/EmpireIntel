@@ -49,8 +49,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 
 ## Phase 2: pre-25 features (AUTHORIZED, D-027; one approval per increment; Phase2_Plan.md)
 - [x] Q-P2-1 approved with realm field and no P_TICK (D-028)
-- [ ] P2-1 Foundation and own snapshot: **built** (0.2.0, branch p2-1-foundation, 178 tests pass under 5.1 and 5.3); live test 1 received (D1 found, fixed in 0.2.1, P2-1_Report.md); waiting for the 0.2.1 run, the user's confirmation that /ei matched the game, and the closing approval (Q-P2-1c)
-- [ ] P2-2 Alts from DataStore (/reload)
+- [x] P2-1 Foundation and own snapshot: EmpireIntel 0.2.1, closed by the user 2026-11-05 (D-029)
+- [ ] **User:** Q-P2-2, approve P2-2 (Phase2_Plan.md section 5)
+- [ ] P2-2 Alts from DataStore (full client restart: new TOC file)
 - [ ] P2-3 Views: unlock, rest, milestones (/reload)
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 

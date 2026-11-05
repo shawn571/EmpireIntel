@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-05 | S-017 | P2-1 closed; branch merged; P2-2 detailed for approval
+- The user confirmed `/ei` matched the game and approved closing P2-1 (D-029). `p2-1-foundation` merged into main.
+- Phase2_Plan.md section 5: P2-2 in detail (DataStore methods, merge rule, `/ei alts` output, gate). Waiting for Q-P2-2. No code.
+
 ## 2026-11-05 | S-015 | EmpireIntel 0.2.1 (/reload; branch p2-1-foundation)
 - D1 from the live test: "not resting" was never saved (an and/or pattern turned false into nil). Fixed. `/ei` says "resting unknown" when the game gives no answer. 180 tests pass under Lua 5.1 and 5.3. P2-1_Report.md; EI-E-14.
 

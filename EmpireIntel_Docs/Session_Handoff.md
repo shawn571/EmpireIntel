@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-017 | 2026-11-05 | Claude
+
+- **Done:** P2-1 closed (D-029); branch merged into main (fast-forward). P2-2 written out in Phase2_Plan.md section 5.
+- **WAITING FOR:** Q-P2-2. Later: the level-25 run and Q-T4.
+
 ## S-016 | 2026-11-05 | Claude
 
 - **Done:** read the 0.2.1 file. D1 fix confirmed (true and false both stored); level, XP, profession and rested changes recorded correctly; the logout guard fired for both characters. P2-1_Report.md section 2.
