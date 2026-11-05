@@ -15,3 +15,15 @@ DOC VERSION: 1.0.0  |  DATE: 2026-11-05  |  Source: the user's `EmpireIntel.lua`
 | **D1 (defect)** | C1 had **no `resting` field**. `Unit.Progress` used `(r == true or r == false) and r or nil`, which turns `false` into `nil`, so "not resting" was never stored, and `/ei` showed "not resting" for unknown too. **Fixed in 0.2.1**: explicit true/false/nil; `/ei` says "resting unknown" when unknown; 2 new tests; reintroducing the bug fails the suite |
 
 Gate for closing P2-1: run 0.2.1, confirm "not resting" is saved, and confirm `/ei` matched the game on two characters.
+
+## 2. Live test 2 (0.2.1, 2026-11-05)
+
+| Check | Result |
+|---|---|
+| D1 fix | **Confirmed:** C2 stored `resting = false` (outside a rest area), C1 stored `resting = true` |
+| Updates | C1 level 12 to 13 (xpMax 11400, the classic value), Mining 26 to 36, Skinning max 75 to 150 (trained). C2 learned Enchanting (14/75); Tailoring 38 to 55 |
+| Rested | C2 414 to 440 XP between sessions (rest accrued while logged out); C1 16 XP, resting |
+| Logout guard | Fired for both characters this time: `lastSeen` moved, values kept from the last in-world save (17 s and about 2 min earlier). At most 5 minutes of change can be missed at logout; nothing wrong is ever written |
+| meta | `opens = 4`, `version 0.2.1`, schema 1 |
+| Open for closing | The user's confirmation that `/ei` matched the game (level, XP bar, rested XP, profession skills) |
+

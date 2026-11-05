@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-016 | 2026-11-05 | Claude
+
+- **Done:** read the 0.2.1 file. D1 fix confirmed (true and false both stored); level, XP, profession and rested changes recorded correctly; the logout guard fired for both characters. P2-1_Report.md section 2.
+- **WAITING FOR:** the user's confirmation that `/ei` matched the game, then Q-P2-1c.
+
 ## S-015 | 2026-11-05 | Claude
 
 - **Done:** read the user's P2-1 file as data. Two records correct; meta exact; logout guard fired once as designed. Defect D1 (resting false lost) fixed in 0.2.1, `/reload` only, on branch `p2-1-foundation`.
