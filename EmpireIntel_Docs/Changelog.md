@@ -2,6 +2,12 @@
 
 Append-only. Newest first.
 
+## 2026-11-06 | S-018 | EmpireIntel 0.3.0, increment P2-2 (FULL CLIENT RESTART; branch p2-2-alts)
+- New `Bridge/DataStoreBridge.lua`: reads characters from DataStore live, with the 11 approved read-only getters only. Any other name is refused at run time, and every error is caught.
+- New `Core/Alts.lua` and `/ei alts`: merges own records with DataStore by GUID. The newer source wins, and each line shows its source and age. Works without DataStore. Faults show as UNEXPECTED lines. Nothing is stored; format 1 is unchanged.
+- Fixed before release: one unprintable DataStore key could stop the whole list.
+- Tests: `test_ei_alts.lua` covers DataStore good, faulty, erroring, without a character list, without Crafts, and absent, plus the static bridge rules. 211 tests pass under Lua 5.1 and 5.3. All 13 guard mutants are caught. D-030.
+
 ## 2026-11-05 | S-017 | P2-1 closed; branch merged; P2-2 detailed for approval
 - The user confirmed `/ei` matched the game and approved closing P2-1 (D-029). `p2-1-foundation` merged into main.
 - Phase2_Plan.md section 5: P2-2 in detail (DataStore methods, merge rule, `/ei alts` output, gate). Waiting for Q-P2-2. No code.

@@ -72,4 +72,5 @@ EmpireIntelDB = {
 | ID | Question | Recommendation |
 |---|---|---|
 | Q-P2-1 | Approve increment P2-1, including saved-data format 1 (section 2)? | **Approved**; P2-1 closed (D-029) |
-| Q-P2-2 | Approve increment P2-2 as in section 5? | Yes |
+| Q-P2-2 | Approve increment P2-2 as in section 5? | **Approved** 2026-11-06; built as 0.3.0 (D-030) |
+| Q-P2-2c | Close P2-2 after the live test? | Waiting for the live test |

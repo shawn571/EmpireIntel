@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-018 | 2026-11-06 | Claude
+
+- **Done:** Q-P2-2 approved. Built P2-2 as EmpireIntel 0.3.0 on branch `p2-2-alts` (D-030). 211 tests pass under 5.1 and 5.3; 13 of 13 guard mutants caught. Package `dist/EmpireIntel_AddOns_v0.3.0.zip` built and verified.
+- **Not done, on purpose:** not merged to main; P2-2 not closed (Q-P2-2c). P2-3 not started.
+- **WAITING FOR:** the P2-2 live test (full restart; `/ei alts` with DataStore on and off; saved file), then Q-P2-2c. Later: the level-25 run and Q-T4.
+
 ## S-017 | 2026-11-05 | Claude
 
 - **Done:** P2-1 closed (D-029); branch merged into main (fast-forward). P2-2 written out in Phase2_Plan.md section 5.

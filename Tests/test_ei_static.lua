@@ -29,10 +29,10 @@ local function luacGlobals(path)
 end
 
 T.describe('EmpireIntel static rules', function()
-  T.it('TOC: Interface 16001, version 0.2.1, one saved variable, forward slashes, files exist', function()
+  T.it('TOC: Interface 16001, version 0.3.0, one saved variable, forward slashes, files exist', function()
     local toc = read(DIR .. 'EmpireIntel.toc')
     T.truthy(toc:find('^## Interface: 16001\n'))
-    T.truthy(toc:find('## Version: 0.2.1', 1, true))
+    T.truthy(toc:find('## Version: 0.3.0', 1, true))
     T.truthy(toc:find('## SavedVariables: EmpireIntelDB\n', 1, true))
     T.falsy(toc:find('SavedVariablesPerCharacter', 1, true), 'format 1 is account-wide only')
     T.falsy(toc:find('Dependencies', 1, true))
@@ -65,11 +65,39 @@ T.describe('EmpireIntel static rules', function()
       T.falsy(src:find('hooksecurefunc', 1, true))
       T.falsy(src:find('HookScript', 1, true))
       T.falsy(src:find('GoldIntelDB', 1, true))
-      T.falsy(src:find('DataStore', 1, true), 'DataStore is P2-2 (Bridge/), not P2-1')
+      if file ~= 'Bridge/DataStoreBridge.lua' then          -- user-facing text may name DataStore; code may not
+        local code = src:gsub('%-%-[^\n]*', ''):gsub("'[^'\n]*'", "''"):gsub('"[^"\n]*"', '""')
+        T.falsy(code:find('DataStore', 1, true) and not code:find('EI%.DataStoreBridge'), 'only Bridge/ touches DataStore: ' .. file)
+        T.falsy(code:find('env%.DataStore'), 'no DataStore access outside Bridge/: ' .. file)
+      end
     end)
     T.it(file .. ': no 0.5 s tick (user, Q-P2-1)', function()
       local code = src:gsub('%-%-[^\n]*', '')          -- comments may mention it; code may not
       T.falsy(code:find('P_TICK', 1, true))
     end)
   end
+
+  T.it('Bridge/DataStoreBridge.lua: only the approved read-only getters, no writes into DataStore', function()
+    local src = read(DIR .. 'Bridge/DataStoreBridge.lua')
+    local code = src:gsub('%-%-[^\n]*', '')
+    local approved = { 'IterateCharacters', 'GetCharacterLevel', 'GetCharacterClass', 'GetRestXP', 'IsResting', 'GetLastLogout',
+      'GetModuleLastUpdateByKey', 'GetProfession1Name', 'GetProfession1Rank', 'GetProfession2Name', 'GetProfession2Rank' }
+    local ok = {}
+    for _, m in ipairs(approved) do ok[m] = true end
+    -- the ALLOWED table lists exactly the approved names
+    local block = code:match('B%.ALLOWED = (%b{})')
+    T.truthy(block, 'ALLOWED table found')
+    local listed = {}
+    for name in block:gmatch('([%w_]+) = true') do listed[name] = true; T.truthy(ok[name], 'not approved: ' .. name) end
+    for _, m in ipairs(approved) do T.truthy(listed[m], 'missing from ALLOWED: ' .. m) end
+    -- every name passed to dsCall is approved (the Profession names are built from 1..2)
+    for name in code:gmatch("dsCall%(ds, errs, '([%w_]+)'[,%)]") do T.truthy(ok[name], 'dsCall of ' .. name) end
+    for name in code:gmatch("'GetProfession' %.%. i %.%. '([%w_]+)'") do T.truthy(ok['GetProfession1' .. name], name) end
+    -- nothing that scans, sets, requests or deletes; no assignment into the DataStore tables
+    for _, bad in ipairs({ 'Set', 'Scan', 'Request', 'Delete', 'Clear', 'Import', 'Broadcast', 'RegisterEvent', 'SendMessage' }) do
+      T.falsy(code:find("'" .. bad, 1, true) or code:find(':' .. bad, 1, true), bad)
+    end
+    T.falsy(code:find('ds%s*%.[%w_]+%s*=[^=]') or code:find('ds%s*%b[]%s*=[^=]') or code:find('guids%s*%b[]%s*=[^=]'))
+    T.falsy(code:find('EmpireIntelDB', 1, true) or code:find('Store%.'), 'the bridge never touches saved data')
+  end)
 end)

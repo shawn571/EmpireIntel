@@ -175,6 +175,16 @@ EmpireIntel 0.2.1 met the P2-1 gate:
 
 Branch `p2-1-foundation` merged into main. P2-2 needs its own approval (Q-P2-2).
 
+## D-030 P2-2 built: EmpireIntel 0.3.0 | Approved design (user, 2026-11-06, Q-P2-2)
+The user approved P2-2 as written in Phase2_Plan.md section 5. Built on branch `p2-2-alts`:
+- `Bridge/DataStoreBridge.lua` is the only file that touches DataStore. It calls only the 11 approved getters, refuses any other name at run time, and a static test checks both the list and every call.
+- `Core/Alts.lua` merges by GUID: the newer source is the base (a tie goes to EmpireIntel). Missing name, realm, class, level or professions come from the other source, and the line names that source and its age. Rested XP and resting come from the base only. "Unknown" never replaces a known name.
+- Nothing from DataStore is stored; saved-data format 1 is unchanged (tested).
+- Rested XP is shown in XP, plus levels only when EmpireIntel measured that character's XP bar at the same level. Rest projection stays in P2-3.
+- Version 0.3.0 (a new feature). Full client restart (two new TOC files).
+
+P2-2 is not closed: closing needs the live gate and a separate user approval (Q-P2-2c).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -197,5 +207,6 @@ Branch `p2-1-foundation` merged into main. P2-2 needs its own approval (Q-P2-2).
 | Q-T6 | Authorize Phase 2 and/or Stage 1? | **Phase 2 for pre-25 features only** (D-027); Stage 1 **not** authorized |
 | Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
 | Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
-| Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | Open |
+| Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
+| Q-P2-2c | Close P2-2 after the live test? | Open |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

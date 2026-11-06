@@ -1,7 +1,8 @@
 local ADDON, EI = ...
--- EmpireIntel / Core / Commands.lua                                      (Phase 2, increment P2-1)
+-- EmpireIntel / Core / Commands.lua                                      (Phase 2, increments P2-1, P2-2)
 --
 -- /ei            this character: level, XP, rested XP, professions, last saved; characters known
+-- /ei alts       every character, own records merged with DataStore (Core/Alts.lua, P2-2)
 -- /ei version    addon version, saved-data schema, store state
 -- /ei off | on   stop or resume all snapshots (kept across logins)
 -- /ei help
@@ -20,6 +21,7 @@ local function ago(t)
   if d < 172800 then return math.floor(d / 3600) .. ' h ago' end
   return math.floor(d / 86400) .. ' days ago'
 end
+C.Ago = ago
 
 local function profText(list)
   if type(list) ~= 'table' then return 'not read yet' end
@@ -60,6 +62,9 @@ function C.Handle(msg)
   local db = EI.Store.Get()
   if msg == '' or msg == 'status' then
     C.Status()
+  elseif msg == 'alts' then
+    local ok, err = pcall(EI.Alts.Show)
+    if not ok then P.Print('UNEXPECTED: /ei alts failed: ' .. tostring(err)) end
   elseif msg == 'version' then
     local st = EI.Store.Status() or {}
     P.Print('version ' .. P.VERSION .. ', saved data schema ' .. tostring(st.schema) .. ' (' .. tostring(st.state) .. ')')
@@ -72,7 +77,7 @@ function C.Handle(msg)
     EI.Snapshot.Start()
     P.Print('ON. This character is saved in about 2 seconds.')
   else
-    P.Print('commands: /ei (this character), /ei version, /ei off, /ei on')
+    P.Print('commands: /ei (this character), /ei alts (all characters), /ei version, /ei off, /ei on')
   end
 end
 

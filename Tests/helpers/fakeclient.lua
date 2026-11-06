@@ -8,7 +8,7 @@ Options (all optional):
   legacy    = 'none' | 'getters'      'getters' adds a FAKE Legacy namespace C_LegacyFixture, a frame
                                       LegacyFixtureFrame, an Enum and a string. These names are test
                                       fixtures only; they never appear in shipped code.
-  datastore = nil | 'good' | 'faulty'
+  datastore = nil | 'good' | 'faulty' | 'throws' | 'nolist' | 'charsonly'
   docs      = true                    a loadable Blizzard API documentation addon with one Legacy system
   precise   = number                  provide debugprofilestop; each call advances it by this many ms
   char      = table                   overrides for the character
@@ -278,7 +278,7 @@ function F.new(opts)
     function ds:GetMoney() return faulty and (char.money + 5) or char.money end
     if not faulty then function ds:GetRestXP() return char.rest end end
     function ds:IsResting() return char.resting end
-    function ds:GetLastLogout() return W.wall - 60 end
+    function ds:GetLastLogout(k) if k == key then return 5000000000 end; return W.wall - 60 end   -- DataStore: logged in
     function ds:GetContainerItemCount(_, id)
       local n = 0
       for _, it in ipairs(W.bags[0]) do if it[1] == id then n = n + it[2] end end
@@ -293,8 +293,17 @@ function F.new(opts)
       cb('Default.Test Realm.Alt Two', 2)
       if faulty then cb('Default.Test Realm.Unknown', 3) end
     end
-    env.DataStore = ds
-    env.DataStore_CharacterGUIDs = { [1] = char.guid, [2] = 'Player-1-00000002', [3] = faulty and char.guid or nil }
+    if opts.datastore == 'throws' then
+      function ds:GetCharacterLevel(k) if k == key then return char.level end; error('boom in level') end
+    elseif opts.datastore == 'nolist' then
+      ds.IterateCharacters = nil
+    elseif opts.datastore == 'charsonly' then
+      for _, m in ipairs({ 'GetProfession1Name', 'GetProfession1Rank', 'GetProfession2Name', 'GetProfession2Rank' }) do ds[m] = nil end
+    end
+    W.dsWrites = 0
+    env.DataStore = setmetatable(ds, { __newindex = function(t, k, v) W.dsWrites = W.dsWrites + 1; rawset(t, k, v) end })
+    env.DataStore_CharacterGUIDs = setmetatable({ [1] = char.guid, [2] = 'Player-1-00000002', [3] = faulty and char.guid or nil },
+      { __newindex = function(t, k, v) W.dsWrites = W.dsWrites + 1; rawset(t, k, v) end })
     env.AddonFactory = { isForever = true, isMainline = true, buildVersion = 16001 }
     for _, n in ipairs({ 'AddonFactory', 'DataStore', 'DataStore_Characters', 'DataStore_Containers', 'Altoholic' }) do
       table.insert(W.addons, { name = n, loaded = true })
