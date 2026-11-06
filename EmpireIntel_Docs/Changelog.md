@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-06 | S-019 | EmpireIntel 0.3.1 (/reload; branch p2-2-alts)
+- Live test 1 of 0.3.0: format 1 unchanged; the DataStore-off path passed. The DataStore-on output is not received yet. P2-2_Report.md.
+- D2: `/ei alts` said "rested unknown" for an own record with no rested XP. It now says "rested none reported", as `/ei` does. 212 tests pass under Lua 5.1 and 5.3.
+
 ## 2026-11-06 | S-018 | EmpireIntel 0.3.0, increment P2-2 (FULL CLIENT RESTART; branch p2-2-alts)
 - New `Bridge/DataStoreBridge.lua`: reads characters from DataStore live, with the 11 approved read-only getters only. Any other name is refused at run time, and every error is caught.
 - New `Core/Alts.lua` and `/ei alts`: merges own records with DataStore by GUID. The newer source wins, and each line shows its source and age. Works without DataStore. Faults show as UNEXPECTED lines. Nothing is stored; format 1 is unchanged.

@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-019 | 2026-11-06 | Claude
+
+- **Done:** read the 0.3.0 file and chat as data (P2-2_Report.md). The DataStore-off gate passed; format 1 is unchanged. D2 wording fixed in 0.3.1 (`/reload`).
+- **WAITING FOR:** `/ei alts` with DataStore on, on 0.3.1, and the user's confirmation that it matches; then Q-P2-2c. Remind: install EmpireIntelCheck 0.1.5 before the level-25 run.
+
 ## S-018 | 2026-11-06 | Claude
 
 - **Done:** Q-P2-2 approved. Built P2-2 as EmpireIntel 0.3.0 on branch `p2-2-alts` (D-030). 211 tests pass under 5.1 and 5.3; 13 of 13 guard mutants caught. Package `dist/EmpireIntel_AddOns_v0.3.0.zip` built and verified.

@@ -101,7 +101,8 @@ function A.Line(row, isPlayer)
     rest = 'rested ' .. row.rest .. ' XP'
     if row.xpMax and row.rest > 0 then rest = rest .. string.format(' (%.2f levels)', row.rest / row.xpMax) end
   else
-    rest = 'rested unknown'
+    -- own record: nil means the game reported no rested XP (format 1); from DataStore it is simply unknown
+    rest = (row.src == 'self') and 'rested none reported' or 'rested unknown'
   end
   local resting = (row.resting == true and 'resting') or (row.resting == false and 'not resting') or 'resting unknown'
   local when = (isPlayer and 'this character') or (row.online and row.src == 'datastore' and 'online now') or ago(row.at)
