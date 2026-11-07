@@ -121,3 +121,21 @@ What this means:
 - The crash guard held: no leftover `inFlight`, empty `neverCall`. No unexpected conditions.
 - **Defect 11 (wording):** `/eicheck undoc` typed before the first check of the session finished answered "nothing planned yet (wait for the next check line)". It should say to retry in about 10 seconds. To fix in the next build.
 - **What remains:** the Legacy values themselves can only be checked after a character reaches level 25. That needs the pane run, and possibly the trait-system calls of Q-T4.
+
+## 11. Run 6 (0.1.4-tp1, 2026-11-07): the level-25 run
+
+C1 (Paladin) reached level 25 on client build **1.60.1/70862** (Nov 6; new since run 5). The run was triggered by `Blizzard_LegacySystem` loading when the user opened the pane.
+
+- **Unlocked:** `LegacyMicroButtonMixin.IsLegacySystemUnlocked` reports unlocked. Verdict: **PANE ONLY**. No data function exists by name, and no namespace was added. `C_Seasons` is gone in 70862.
+- **The pane's own Lua code (zero-argument Get/Is/Has calls, denylist applied; 63 calls, 0 own errors):**
+  - A Lua table **`LegacySystem`** holds `GetCurrencyInfo` (answered with one value), `GetFilteredChallenges` (one value), `GetChallengeIndices` and `IsChallengeVisible` (both errored for lack of arguments).
+  - `GetChallengeIndices` failed inside **`GetCategoryNumAchievements(categoryID, ...)`**: the Legacy challenges are **achievements in a category**.
+  - `LegacyChallengePointSummaryMixin.SetCurrencyInfo` (not called, denylisted): Legacy points are shown from **currency info**.
+  - Trees: `LegacyTreeTraitPanelMixin` and `TalentButtonLegacyMixin` (trait UI, as in run 4). A reward track: `LegacyRewardTrackPageMixin`.
+  - Mixin methods called without a frame fail with "self is nil", as expected.
+- **Gap:** 0.1.4 records only the result codes and value counts of these calls, not the values. So the currency info that `LegacySystem.GetCurrencyInfo` returned is not in the file.
+- **The estimate fallback says 1 point (lower bound)**. The real number shown in the pane is not known yet.
+- DataStore T5 matches live (level, class, money, items). T6: 3 characters, no "Unknown", no duplicate GUID. **`GetModuleLastUpdateByKey` returned nil for all 3** (EI-E-17).
+- BugGrabber: 34 entries, none from EmpireIntel or the check.
+
+**Lead for the next step (Q-T7):** the Legacy values look readable through two documented, read-only APIs: achievements (the challenges) and `C_CurrencyInfo` (the points). Both need an id argument, which the zero-argument rule does not allow.

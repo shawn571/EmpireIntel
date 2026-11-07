@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-020 | 2026-11-07 | Claude
+
+- **Done:** read run 6 (the level-25 run, build 70862) and the EmpireIntel file as data. TP1_Report_Run1.md section 11; EI-E-15..17; Q-T7 proposed (achievement and currency getters). P2-2_Report.md section 4. No code changed.
+- **WAITING FOR:** Q-T7; the Legacy point number from the pane plus a screenshot; `/ei alts` lines on 0.3.1 with DataStore on, then Q-P2-2c.
+
 ## S-019 | 2026-11-06 | Claude
 
 - **Done:** read the 0.3.0 file and chat as data (P2-2_Report.md). The DataStore-off gate passed; format 1 is unchanged. D2 wording fixed in 0.3.1 (`/reload`).

@@ -23,6 +23,13 @@ C1's line said "rested unknown". In EmpireIntel's own record, an empty rest mean
 - The chat shows EmpireIntelCheck **0.1.4-tp1** still installed, not 0.1.5-tp1. This is harmless before level 25, but 0.1.5 should be installed before the level-25 run (whole-word blocklist and the Reincarnat stem, D-026).
 - C1 is level 16: 9 levels to the Legacy unlock.
 
-## 4. Still needed to close P2-2 (Q-P2-2c)
+## 4. Seen in the 2026-11-07 files (DataStore on, still 0.3.0)
+
+- DataStore knows 3 characters; EmpireIntel knows 2. C1 and C2 match between the two: level, class, and both primary professions with ranks. C3 (Shaman 9, Skinning 61/75) is known only to DataStore, so `/ei alts` should show it marked `[datastore]`.
+- `GetModuleLastUpdateByKey` returned nil (EI-E-17). The bridge falls back to the last logout time, as designed, so ages still show.
+- Saved data is still format 1 with no new key; `meta.version` = 0.3.0, so 0.3.1 was not installed yet.
+- The `/ei alts` lines themselves were not sent.
+
+## 5. Still needed to close P2-2 (Q-P2-2c)
 
 `/ei alts` with DataStore ticked, on 0.3.1: every line copied or a screenshot, plus the user's word that the lines match the game.

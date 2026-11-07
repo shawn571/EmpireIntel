@@ -36,8 +36,8 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.9f 0.1.4-tp1 built: undocumented namespaces, /eicheck undoc, crash guard, defect 10 (94 tests pass) (S-011)
 - [x] 1.9g 0.1.4 run: C_Seasons no active season; C_Trophy unrelated; C_Reincarnation list shown to the user (S-012)
 - [x] 1.9h Q-T5 and Q-T6 decided (2026-11-05); 0.1.5-tp1 built (whole-word blocklist, Reincarnat stem, defect 11) (S-013)
-- [ ] 1.10 **User:** the level-25 run (pane open, file, screenshot); then Q-T4
-- [ ] 1.10 **User:** a run after a character reaches level 25, with the pane opened, plus a screenshot
+- [x] 1.10 Level-25 run received 2026-11-07 (pane opened; build 70862); TP1_Report_Run1.md section 11 (S-020)
+- [ ] 1.11 **User:** Q-T7, plus the Legacy point number shown in the pane (screenshot)
 - Exit test: Architecture section 9 exit criteria.
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0
