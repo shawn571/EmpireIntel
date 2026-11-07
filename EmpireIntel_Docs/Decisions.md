@@ -185,6 +185,17 @@ The user approved P2-2 as written in Phase2_Plan.md section 5. Built on branch `
 
 P2-2 is not closed: closing needs the live gate and a separate user approval (Q-P2-2c).
 
+## D-031 Q-T7: the check reads Legacy challenges and points | Approved (user, 2026-11-07)
+- (a) The check saves the values of the zero-argument `LegacySystem` calls it already made, and the table's non-function fields (read, not called).
+- (b) Calls with arguments are allowed only to documented achievement and currency getters, and only with numbers the game itself returned. The denylist and crash guard stay.
+
+Built as EmpireIntelCheck 0.1.6-tp1 (`Legacy.lua`, Part C) on branch `tp1-legacy-read`. Full client restart (new file).
+- The allowed list has 9 names: the 7 from the Q-T7 text, plus `C_CurrencyInfo.GetCurrencyListSize` and `GetCurrencyListInfo`, which find the currency by name if `LegacySystem` names no id. Both are documented currency getters, so they fall under the approval's wording.
+- "Documented" means the public WoW API reference. The check also records which of the 9 the in-client docs list, when those docs are loaded.
+- Saved data: the check's format 2 gains one section, `legacy`, the latest read with a 30-entry history. The user approved saving these values with (a); the shape is recorded here.
+- Character names the game returns with achievements are not saved.
+- Defect 12 fixed: run results shared their tables with `db.latest.results`, so the size trim erased the Legacy call values of a run.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -205,7 +216,7 @@ P2-2 is not closed: closing needs the live gate and a separate user approval (Q-
 | Q-T4 | After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | **Deferred** by the user until after the level-25 run |
 | Q-T5 | C_Reincarnation: call the two read names, or leave the namespace uncalled? | **Leave uncalled**; blocklist changed to whole words plus the stem Reincarnat (D-026) |
 | Q-T6 | Authorize Phase 2 and/or Stage 1? | **Phase 2 for pre-25 features only** (D-027); Stage 1 **not** authorized |
-| Q-T7 | After run 6 (EI-E-16): (a) let the check save the values returned by the zero-argument Legacy calls it already makes, plus the non-function fields of the `LegacySystem` table (no new calls); (b) allow read-only calls with arguments to documented getters only: `C_CurrencyInfo.GetCurrencyInfo(id)`, `GetCategoryList()`, `GetCategoryInfo(id)`, `GetCategoryNumAchievements(id)`, `GetAchievementInfo(category, index)`, `GetAchievementNumCriteria(id)`, `GetAchievementCriteriaInfo(id, i)`, with ids the client itself returned? This replaces Q-T4's trait chain as the first step | Open (recommend: yes to both) |
+| Q-T7 | After run 6 (EI-E-16): (a) let the check save the values returned by the zero-argument Legacy calls it already makes, plus the non-function fields of the `LegacySystem` table (no new calls); (b) allow read-only calls with arguments to documented getters only: `C_CurrencyInfo.GetCurrencyInfo(id)`, `GetCategoryList()`, `GetCategoryInfo(id)`, `GetCategoryNumAchievements(id)`, `GetAchievementInfo(category, index)`, `GetAchievementNumCriteria(id)`, `GetAchievementCriteriaInfo(id, i)`, with ids the client itself returned? This replaces Q-T4's trait chain as the first step | **Approved** 2026-11-07, both (a) and (b), with the denylist and crash guard (D-031) |
 | Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
 | Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |

@@ -772,3 +772,166 @@ T.describe('0.1.5: defect 11 wording', function()
     T.truthy(W.chat[#W.chat]:find('try again in about 10 seconds', 1, true), W.chat[#W.chat])
   end)
 end)
+
+T.describe('0.1.6: Part C, the Legacy read (Q-T7)', function()
+  local function serialize(v, out, depth)
+    out = out or {}
+    depth = depth or 0
+    if type(v) == 'table' and depth < 12 then for k, x in pairs(v) do serialize(k, out, depth + 1); serialize(x, out, depth + 1) end
+    else table.insert(out, tostring(v)) end
+    return out
+  end
+  local function has(list, text) for _, s in ipairs(list) do if s:find(text, 1, true) then return true end end return false end
+
+  local W = F.session({ launch = true, legacy25 = 'ids' })
+  local db = W.env.EmpireIntelCheckDB
+  local L = db.legacy
+  T.it('runs after an unlocked run and saves challenges, criteria and points', function()
+    T.truthy(L, 'db.legacy saved')
+    T.eq(L.unlocked, true)
+    T.eq(L.summary.challenges, 3)
+    T.eq(L.summary.completed, 1)
+    T.eq(L.summary.categories, 3, 'Legacy and its two child categories')
+    T.eq(L.summary.points, 1)
+    T.eq(L.summary.max, 16)
+    T.eq(L.summary.currency, 'Legacy Points')
+    T.eq(L.currency[1].source, 'GetCurrencyInfo', 'the id came from LegacySystem.GetCurrencyInfo')
+    local nov
+    for _, ch in ipairs(L.challenges) do if ch.id == 50010 then nov = ch end end
+    T.eq(nov.criteriaCount, 2)
+    T.eq(nov.criteria[1].text, 'Ragefire Chasm')
+    T.eq(nov.criteria[1].completed, true)
+    T.eq(nov.criteria[2].completed, false)
+  end)
+  T.it('(a) keeps the LegacySystem fields and the values of its zero-argument calls', function()
+    T.eq(L.system.present, true)
+    T.eq(L.system.fields.CHALLENGE_CATEGORY_ID, 15000)
+    T.eq(L.system.GetCurrencyInfo.code, 'ok')
+    T.eq(L.system.GetCurrencyInfo.values[1].currencyID, 3001)
+    T.truthy(has(L.system.functions, 'GetChallengeIndices'), 'listed')
+    T.isnil(W.calls['LegacySystem.GetChallengeIndices'], 'a function that needs arguments is listed, never called')
+  end)
+  T.it('(b) every argument was a number the game returned; nothing outside the list was called', function()
+    T.truthy(W.argCalls > 10)
+    T.eq(W.badArgs, 0)
+    T.isnil(W.calls['SetCurrencyBackpack!'])
+    T.eq(L.calls.counts.refused, nil)
+  end)
+  T.it('character names returned by the game are not saved', function()
+    T.falsy(has(serialize(L), 'Someone Name'))
+  end)
+  T.it('crash guard: the name is in saved data during the call and cleared after', function()
+    T.eq(W.inFlightSeen, 'GetCategoryInfo')
+    T.isnil(db.inFlight)
+  end)
+  T.it('chat: still two lines per run, the second is the Legacy read', function()
+    local run = W:lastRun()
+    local mine = {}
+    for _, m in ipairs(W.chat) do if m:find('Run ' .. run.id .. ' ', 1, true) or m:find('Legacy read:', 1, true) then table.insert(mine, m) end end
+    T.truthy(has(W.chat, 'Legacy read: 3 challenges (1 completed) in 3 categories; Legacy Points 1/16'), table.concat(W.chat, '\n'))
+    T.eq(run.legacy.points, 1)
+  end)
+  T.it('defect 12: the run keeps its Legacy call values when the latest results are trimmed', function()
+    local run = W:lastRun()
+    for _, r in pairs(db.latest.results) do r.values = nil end
+    local res = run.calls.legacy['LegacySystem.GetCurrencyInfo']
+    T.truthy(res and res.values and res.values[1].currencyID == 3001, 'own copy kept')
+  end)
+  T.it('refuses a number the game did not return, and any name outside the list, before calling', function()
+    local st = { ids = {}, calls = 0, counts = {}, errors = {}, refused = {} }
+    local n = W.calls.GetCategoryInfo
+    T.isnil(W.NS.Legacy.Call(st, 'GetCategoryInfo', 15000))
+    T.eq(W.calls.GetCategoryInfo, n, 'not called')
+    T.isnil(W.NS.Legacy.Call(st, 'C_CurrencyInfo.SetCurrencyBackpack', 1))
+    T.isnil(W.calls['SetCurrencyBackpack!'])
+    T.eq(st.counts.refused, 2)
+    st.ids[15000] = true
+    T.truthy(W.NS.Legacy.Call(st, 'GetCategoryInfo', 15000), 'allowed once the game returned it')
+  end)
+  T.it('a name outside the list, or the wrong number of arguments, is refused even with a game number', function()
+    local st = { ids = { [1] = true }, calls = 0, counts = {}, errors = {}, refused = {} }
+    T.isnil(W.NS.Legacy.Call(st, 'C_CurrencyInfo.SetCurrencyBackpack', 1))
+    T.isnil(W.calls['SetCurrencyBackpack!'])
+    local n = W.calls.GetCategoryList
+    T.isnil(W.NS.Legacy.Call(st, 'GetCategoryList', 1))
+    T.eq(W.calls.GetCategoryList, n)
+    T.eq(st.counts.refused, 2)
+  end)
+  T.it('the denylist still applies to a name that somehow got into the list', function()
+    local A = W.NS.Legacy.ALLOWED
+    A['C_CurrencyInfo.SetCurrencyBackpack'] = { [0] = true }
+    local st = { ids = {}, calls = 0, counts = {}, errors = {}, refused = {} }
+    T.isnil(W.NS.Legacy.Call(st, 'C_CurrencyInfo.SetCurrencyBackpack'))
+    A['C_CurrencyInfo.SetCurrencyBackpack'] = nil
+    T.isnil(W.calls['SetCurrencyBackpack!'])
+    T.eq(st.counts.skipped_denylist, 1)
+  end)
+  T.it('with a currency id from LegacySystem, the currency list is not scanned', function()
+    T.isnil(W.calls['C_CurrencyInfo.GetCurrencyListSize'])
+  end)
+  T.it('a name in neverCall is skipped (crash guard from an earlier session)', function()
+    db.neverCall.GetCategoryList = { at = 1 }
+    local st = { ids = {}, calls = 0, counts = {}, errors = {}, refused = {} }
+    local n = W.calls.GetCategoryList
+    T.isnil(W.NS.Legacy.Call(st, 'GetCategoryList'))
+    T.eq(W.calls.GetCategoryList, n)
+    T.eq(st.counts.skipped_crash_guard, 1)
+    db.neverCall.GetCategoryList = nil
+  end)
+  T.it('/eicheck legacy reads again on command', function()
+    local before = #db.legacy.history
+    W.env.SlashCmdList.EMPIREINTELCHECK('legacy')
+    W:advance(30)
+    T.eq(#db.legacy.history, before + 1)
+    T.eq(db.legacy.reason, 'command')
+    T.truthy(has(W.chat, 'Type /reload to save.'))
+  end)
+end)
+
+T.describe('0.1.6: Part C without LegacySystem, and while locked', function()
+  T.it('without the LegacySystem table: the category is found by its title and the points in the currency list', function()
+    local W = F.session({ launch = true, legacy25 = 'list' })
+    local L = W.env.EmpireIntelCheckDB.legacy
+    T.eq(L.system.present, false)
+    T.eq(L.summary.challenges, 3)
+    T.eq(L.summary.points, 1)
+    T.eq(L.currency[1].source, 'currency list')
+    T.eq(W.badArgs, 0)
+    local saw = false
+    for _, m in ipairs(W.chat) do if m:find('LegacySystem not loaded', 1, true) then saw = true end end
+    T.truthy(saw)
+  end)
+  T.it('while locked nothing is read', function()
+    local W = F.session({ launch = true })
+    T.isnil(W.env.EmpireIntelCheckDB.legacy)
+    T.isnil(W.calls.GetCategoryList)
+  end)
+  T.it('in combat no Legacy call is made', function()
+    local W = F.new({ launch = true, legacy25 = 'ids' })
+    F.load(W)
+    local st = { ids = {}, calls = 0, counts = {}, errors = {}, refused = {} }
+    W.env.InCombatLockdown = function() return true end
+    T.isnil(W.NS.Legacy.Call(st, 'GetCategoryList'))
+    T.eq(st.counts.skipped_combat, 1)
+  end)
+end)
+
+T.describe('0.1.6: Part C under frame spreading and faults', function()
+  T.it('completes when the scheduler yields between almost every call (Lua 5.1 safe)', function()
+    local W = F.session({ launch = true, legacy25 = 'ids', precise = 2 })
+    W:advance(60)
+    local L = W.env.EmpireIntelCheckDB.legacy
+    T.truthy(L and L.summary.challenges == 3, 'read finished')
+    T.truthy(W.NS.Core.stats.ticks > 3, 'spread over frames')
+  end)
+  T.it('a game function that throws is counted; the rest of the read goes on', function()
+    local W = F.new({ launch = true, legacy25 = 'ids' })
+    W.env.GetAchievementNumCriteria = function() error('boom criteria') end
+    F.load(W); W:login(); W:advance(12); W:advance(30)
+    local L = W.env.EmpireIntelCheckDB.legacy
+    T.eq(L.summary.challenges, 3)
+    T.eq(L.summary.points, 1)
+    T.truthy(tostring(L.calls.errors.GetAchievementNumCriteria):find('boom criteria', 1, true))
+    T.truthy(L.calls.counts.error >= 3)
+  end)
+end)

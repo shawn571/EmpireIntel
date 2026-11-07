@@ -9,6 +9,7 @@ Options (all optional):
                                       LegacyFixtureFrame, an Enum and a string. These names are test
                                       fixtures only; they never appear in shipped code.
   datastore = nil | 'good' | 'faulty' | 'throws' | 'nolist' | 'charsonly'
+  legacy25  = 'ids' | 'list'          unlocked level-25 profile with achievement and currency getters (use with launch)
   docs      = true                    a loadable Blizzard API documentation addon with one Legacy system
   precise   = number                  provide debugprofilestop; each call advances it by this many ms
   char      = table                   overrides for the character
@@ -231,6 +232,70 @@ function F.new(opts)
     env.Enum.NamePlateStyle = { Modern = 1, Legacy = 5 }
     env.Enum.RespecType = { Talents = 1, Legacy = 4 }
     env.Enum.BnetAccountFlag = { IsLegacy = 131072 }
+  end
+  if opts.legacy25 then
+    -- the level-25 profile (run 6, EI-E-16), with the achievement and currency getters of Q-T7.
+    -- 'ids': LegacySystem answers name a currency id and a category id; 'list': no ids, no LegacySystem table.
+    W.unlocked = true
+    W.badArgs, W.argCalls = 0, 0
+    local known = { [92] = true, [15000] = true, [15001] = true, [15002] = true, [50001] = true, [50002] = true, [50010] = true, [3001] = true }
+    local function arg(v, max)
+      W.argCalls = W.argCalls + 1
+      if type(v) ~= 'number' or not (known[v] or (max and v >= 1 and v <= max)) then W.badArgs = W.badArgs + 1 end
+    end
+    local cats = { [92] = { 'General', -1 }, [15000] = { 'Legacy', -1 }, [15001] = { 'Class Mastery', 15000 }, [15002] = { 'Dungeons', 15000 } }
+    local ach = {
+      [50001] = { 50001, 'Paladin: Level 25', 1, true, 11, 7, 26, 'Reach level 25 with a Paladin.', 0, 1, 'Legacy Point', false, true, 'Someone Name', false },
+      [50002] = { 50002, 'Paladin: Level 45', 1, false, nil, nil, nil, 'Reach level 45 with a Paladin.', 0, 1, 'Legacy Point', false, false, nil, false },
+      [50010] = { 50010, 'Novice Spelunker', 1, false, nil, nil, nil, 'Complete these dungeons.', 0, 1, 'Legacy Point', false, false, nil, false },
+    }
+    local inCat = { [15001] = { 50001, 50002 }, [15002] = { 50010 } }
+    local function unpackT(t, i, n) if i > n then return end return t[i], unpackT(t, i + 1, n) end
+    env.GetCategoryList = function() rec('GetCategoryList'); return { 92, 15000, 15001, 15002 } end
+    env.GetCategoryInfo = function(id)
+      arg(id); rec('GetCategoryInfo')
+      W.inFlightSeen = env.EmpireIntelCheckDB.inFlight and env.EmpireIntelCheckDB.inFlight.name
+      local c = cats[id]; if c then return c[1], c[2], 0 end
+    end
+    env.GetCategoryNumAchievements = function(id)
+      arg(id); rec('GetCategoryNumAchievements')
+      local l = inCat[id] or {}
+      local done = 0
+      for _, a in ipairs(l) do if ach[a][4] then done = done + 1 end end
+      return #l, done, #l - done
+    end
+    env.GetAchievementInfo = function(a, b)
+      rec('GetAchievementInfo')
+      local id
+      if b ~= nil then arg(a); arg(b, 2); id = inCat[a] and inCat[a][b] else arg(a); id = a end
+      local t = id and ach[id]
+      if t then return unpackT(t, 1, 15) end
+    end
+    env.GetAchievementNumCriteria = function(id) arg(id); rec('GetAchievementNumCriteria'); return id == 50010 and 2 or 0 end
+    env.GetAchievementCriteriaInfo = function(id, i)
+      arg(id); arg(i, 2); rec('GetAchievementCriteriaInfo')
+      if id == 50010 and i == 1 then return 'Ragefire Chasm', 8, true, 1, 1, 'Someone Name', 0, 389, '1/1', 777, true end
+      if id == 50010 and i == 2 then return 'Wailing Caverns', 8, false, 0, 1, nil, 0, 43, '0/1', 778, true end
+    end
+    local legacyPoints = { name = 'Legacy Points', quantity = 1, maxQuantity = 16, totalEarned = 1, isAccountWide = true, iconFileID = 4567 }
+    env.C_CurrencyInfo = {
+      GetCurrencyInfo = function(id) arg(id); rec('C_CurrencyInfo.GetCurrencyInfo'); if id == 3001 then return legacyPoints end end,
+      GetCurrencyListSize = function() rec('C_CurrencyInfo.GetCurrencyListSize'); return 2 end,
+      GetCurrencyListInfo = function(i)
+        arg(i, 2); rec('C_CurrencyInfo.GetCurrencyListInfo')
+        if i == 1 then return { name = 'Honor', quantity = 50 } end
+        if i == 2 then return legacyPoints end
+      end,
+      SetCurrencyBackpack = function() rec('SetCurrencyBackpack!') end,
+    }
+    if opts.legacy25 == 'ids' then
+      env.LegacySystem = {
+        CHALLENGE_CATEGORY_ID = 15000,
+        GetCurrencyInfo = function() rec('LegacySystem.GetCurrencyInfo'); return { currencyID = 3001, name = 'Legacy Points', quantity = 1 } end,
+        GetFilteredChallenges = function() rec('LegacySystem.GetFilteredChallenges'); return nil end,
+        GetChallengeIndices = function() error('Usage: GetCategoryNumAchievements(categoryID, includeSuperceded)') end,
+      }
+    end
   end
   if opts.undoc then
     -- undocumented namespaces (EI-E-12); fixture behaviour only

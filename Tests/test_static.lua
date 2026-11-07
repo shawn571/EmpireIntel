@@ -76,3 +76,33 @@ T.describe('static rules', function()
     end)
   end
 end)
+
+T.describe('0.1.6: Legacy.lua call list (Q-T7)', function()
+  local src = read(DIR .. 'Legacy.lua'):gsub('%-%-[^\n]*', '')
+  T.it('ALLOWED holds exactly the approved achievement and currency getters', function()
+    local block = src:match('L%.ALLOWED = (%b{})')
+    local names = {}
+    for n in block:gmatch("%[?'?([%w_%.]+)'?%]? = {") do names[n] = true end
+    local want = { 'C_CurrencyInfo.GetCurrencyInfo', 'C_CurrencyInfo.GetCurrencyListSize', 'C_CurrencyInfo.GetCurrencyListInfo',
+      'GetCategoryList', 'GetCategoryInfo', 'GetCategoryNumAchievements', 'GetAchievementInfo', 'GetAchievementNumCriteria',
+      'GetAchievementCriteriaInfo' }
+    local n = 0
+    for _ in pairs(names) do n = n + 1 end
+    T.eq(n, #want)
+    for _, w in ipairs(want) do T.truthy(names[w], w) end
+  end)
+  T.it('every L.Call names an allowed function; no denylisted word in any of them', function()
+    for name in src:gmatch("L%.Call%(st, '([%w_%.]+)'") do
+      T.truthy(src:find("'" .. name:gsub('%.', '%%.') .. "'", 1) , name)
+      for _, bad in ipairs({ 'Set', 'Spend', 'Learn', 'Reset', 'Buy', 'Purchase', 'Request', 'Claim', 'Open', 'Toggle', 'Show', 'Reincarnat' }) do
+        T.falsy(name:find(bad, 1, true), name)
+      end
+    end
+  end)
+  T.it('the only direct calls are pcall(fn, ...) inside L.Call and D.Probe for the two LegacySystem getters', function()
+    local n = 0
+    for _ in src:gmatch('pcall%(fn,') do n = n + 1 end
+    T.eq(n, 1)
+    T.truthy(src:find("{ 'GetCurrencyInfo', 'GetFilteredChallenges' }", 1, true))
+  end)
+end)

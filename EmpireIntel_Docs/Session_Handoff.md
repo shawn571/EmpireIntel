@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-021 | 2026-11-07 | Claude
+
+- **Done:** Q-T7 approved; built EmpireIntelCheck 0.1.6-tp1 on branch `tp1-legacy-read` (stacked on `p2-2-alts`). Legacy_Rules.md written. 238 tests; 15/15 mutants. `dist/EmpireIntelCheck_AddOns_v0.1.6-tp1.zip`.
+- **WAITING FOR:** the 0.1.6 run (full restart, pane opened, `/eicheck legacy`, file); the `/ei alts` lines on 0.3.1, then Q-P2-2c.
+- **Open:** tree node names need the trait system (Q-T4) or tooltips; not part of Q-T7.
+
 ## S-020 | 2026-11-07 | Claude
 
 - **Done:** read run 6 (the level-25 run, build 70862) and the EmpireIntel file as data. TP1_Report_Run1.md section 11; EI-E-15..17; Q-T7 proposed (achievement and currency getters). P2-2_Report.md section 4. No code changed.

@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: EmpireIntelCheck
 ## Notes: EmpireIntel Test Package 1: passive, read-only Legacy API check. /eicheck off disables it.
-## Version: 0.1.5-tp1
+## Version: 0.1.6-tp1
 ## SavedVariables: EmpireIntelCheckDB
 
 Util.lua
@@ -9,4 +9,5 @@ Core.lua
 PartA.lua
 Character.lua
 Discover.lua
+Legacy.lua
 Run.lua
