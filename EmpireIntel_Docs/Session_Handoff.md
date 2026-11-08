@@ -4,6 +4,32 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-054 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, P2-4 **built** as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1 (D-053), waiting for its live gate (README steps 1-10), then the user's decision to close it. The post-25 plan (Phase3_Legacy_Plan.md sections 7-12) is written, plan only.
+
+**Approved:** through D-052 (P2-4 with the Legacy lock rule). #9 (the P2-4 plan) merged by Claude after the lock-rule edits (90cb234).
+
+**Pending (the user decides):**
+- Merging the P2-4 build pull request (`p2-4-next`): code, so it needs the user's approval.
+- The P2-4 live gate, then closing P2-4.
+- The post-25 plan, pull request https://github.com/shawn571/EmpireIntel/pull/10 (`p3-post25-plan`, only Phase3_Legacy_Plan.md): its merge and its questions Q-P3-2a (C2 pane check, no code), Q-P3-2, Q-P3-2b, Q-T4a, Q-T4b, Q-P3-3, Q-P3-4, Q-P3-5. One increment at a time.
+- Q-T4 unapproved; P3-2, P3-3, P3-4 locked; Stage 1 not authorized.
+
+**Branches and pull requests:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 90cb234 | EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, the approved P2-4 plan; 321 tests | is main |
+| p2-4-next | this push | main plus EmpireIntel 0.6.0, EmpireIntel_Plan 1; 364 tests | no: ahead; pull request open |
+| p3-post25-plan | 1 docs commit | main plus the post-25 plan | no: ahead; #10 open |
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1. 0.6.0 and EmpireIntel_Plan 1 delivered, not installed.
+
+**Open questions:** the post-25 questions above; whether a new addon folder loads with `/reload` (P2-4 step 7 answers it).
+
+**User's next step:** run the P2-4 live gate (README steps 1-10) and send the lines; approve (or not) merging the P2-4 pull request; read the post-25 plan and answer Q-P3-2a first.
+
 ## S-053 | 2026-11-08 | Claude
 
 **Phase and increment:** Phase 2, increment P2-4 **approved** with the Legacy lock rule (D-052); build next as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1. Also asked: a post-25 plan (Phase 3: P3-2, P3-3, perk goals), plan only.
