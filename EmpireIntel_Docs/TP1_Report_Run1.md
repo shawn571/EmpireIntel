@@ -259,3 +259,26 @@ Chat line only: "65 challenges (2 completed, 2 of 65 Legacy points); Explorer 0 
 - **Invariant:** quantity + spent = maxQuantity held in all three reads.
 - **spentInTree:** 0 with the Adventure tree open, although the spent point is in Adventure. The selected-tree hypothesis (section 16) **fails**. Remaining hypotheses: (a) points placed but not applied; (b) a tree argument (Q-T4); (c) a stale value. The user now has an unspent point, so (a) can be tested now.
 - Which challenge gave the second point is not in the chat line; the saved file would show it.
+
+## 19. Run 13 (0.1.8-tp1, 2026-11-08 00:19-00:20 user time): placed but not applied, then applied
+
+Chat lines only. Per the test steps, the first read was taken with the point placed and not applied, the second after "Apply Changes".
+
+| Field | Placed, not applied (00:19:49) | Applied (00:20:05) |
+|---|---|---|
+| quantity | 1 | **0** |
+| spent | 1 | **2** |
+| maxQuantity | 2 | 2 |
+| renownCurrency | 2 | 2 |
+| spentInTree | 0 | 0 |
+
+- **Committed points only:** `GetCurrencyInfo()` does not see a placed point until it is applied.
+- **Hypothesis (a) fails:** spentInTree is not "placed but not applied".
+- **Spent confirmed:** `spent` rose by exactly one on each applied spend, two moves, and never moved on an earn.
+- **Invariant:** quantity + spent = maxQuantity held in every read (5 reads).
+- **spentInTree:** 0 in every read, with the spent tree open or not, placed or applied. Remaining explanations:
+  - (b) it needs a tree argument;
+  - (c) it is filled only by the pane's own `UpdateCurrencyInfo`, never called by the check;
+  - it may also be unused on Forever.
+
+Testing (b) needs a tree id from the game, which only the trait system gives (Q-T4, unapproved). The check has no game-returned tree id to pass, so even an approved argument call would first need Q-T4.

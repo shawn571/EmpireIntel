@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-034 | 2026-11-08 | Claude
+
+- **Done:** recorded run 13 (TP1_Report_Run1.md section 19, EI-E-26). Available, spent and earned are settled; spentInTree is unexplained.
+- **Open for the user:** keep spentInTree out (recommended), or approve Q-T4 to read the trees; the file showing which challenge gave point 2; P2-3 confirmation and the inn test.
+
 ## S-033 | 2026-11-08 | Claude
 
 - **Done:** recorded run 12 (TP1_Report_Run1.md section 18, EI-E-25).

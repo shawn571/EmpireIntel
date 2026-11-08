@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-034 | Run 13: unapplied placement test (documentation only)
+- GetCurrencyInfo counts applied points only; spent is confirmed (EI-E-26). spentInTree is not an unapplied placement; it stays unexplained and is left out of `/ei legacy`. No code changed.
+
 ## 2026-11-08 | S-033 | Run 12: the second earned point (documentation only)
 - quantity is confirmed as "available"; spent is consistent with "spent"; maxQuantity and renownCurrency both track earned (EI-E-25). spentInTree stays 0 with the spent tree open, so the selected-tree hypothesis fails. No code changed.
 
