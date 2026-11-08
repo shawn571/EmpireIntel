@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-028 | Run 8, all 65 challenges read (documentation only)
+- 0.1.7 read 111 achievements: the 65 Legacy challenges (reward "Earn 1 Legacy Point.") and 46 supporting exploration achievements. 1 completed, which matches the pane (EI-E-22). Defects 15 (the size cap dropped the steps) and 16 (wrong totals). The class and crafting rules are confirmed by the game. Q-T9 proposed. No code changed.
+
 ## 2026-11-08 | S-027 | EmpireIntelCheck 0.1.7-tp1 (/reload; branch tp1-legacy-read)
 - Q-T8 (D-035). Defect 13: reads every category the game lists. "Tier 1 Gear" and "Do Not Display" (and children) are saved but left out of the totals. Defect 14: the points come from `LegacySystem.GetCurrencyInfo()`, all fields as-is, and the trait currency is never sent to `C_CurrencyInfo`. The chat line shows the points earned of those offered.
 - The fixture now mirrors run 7. 274 tests pass under Lua 5.1 and 5.3; 11 of 11 new and 13 of 13 earlier guard mutants caught.

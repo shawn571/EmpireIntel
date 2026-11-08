@@ -155,3 +155,15 @@ The user installed 0.1.6 with a `/reload` (EI-E-19), opened the pane, typed `/ei
 - **Defect 14:** the points were not taken from `LegacySystem.GetCurrencyInfo`, and `traitCurrencyID` was wrongly passed to `C_CurrencyInfo`.
 
 Fix proposed as 0.1.7 (Q-T8), within the Q-T7 limits.
+
+## 13. Run 8 (0.1.7-tp1, 2026-11-08): the full challenge list
+
+The user installed 0.1.7 with `/reload`, opened the pane and typed `/eicheck legacy`. 955 calls, all ok; no error, no refusal.
+
+- **All 65 Legacy challenges are readable (EI-E-22).** The 27 shown categories hold 111 achievements. Exactly **65** have the reward text "Earn 1 Legacy Point." The other **46** have no reward: Explore Azeroth, Explore Eastern Kingdoms, Explore Kalimdor, and the 43 "Explore <zone>" achievements that make up the Explorer challenge.
+- **Completed:** 1 (Novice Paladin), which matches the pane's "Legacy Points 1 / 65". "Tier 1 Gear" and "Do Not Display" hold no achievements.
+- **Points:** `LegacySystem.GetCurrencyInfo()` gave the same six fields as run 7 (quantity 1, maxQuantity 1, renownCurrency 1, spent 0, spentInTree 0, traitCurrencyID 4225).
+- **Defect 15 (size):** the read did not fit under the 256 KB cap. The trim removed every challenge's steps and the category list. The largest sections are now discovery leftovers: `latest` 42 KB, `strongSeen` 39 KB, `docs` 24 KB, `undoc` 11 KB.
+- **Defect 16 (totals):** 0.1.7 counted all 111 achievements and summed the achievement-points field. That field is not the Legacy value (only Onyxia, id 684, carries 1), so the line said "111 challenges, 0 of 1 points" instead of "65 challenges, 1 of 65 points".
+
+Fix proposed as 0.1.8 (Q-T9).

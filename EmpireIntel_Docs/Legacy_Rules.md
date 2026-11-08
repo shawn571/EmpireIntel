@@ -29,6 +29,20 @@ Spelunker dungeon lists:
 
 The web lists will be replaced by the criteria the client returns (0.1.6 saves each criterion's text and progress).
 
+## 1b. Confirmed by the client: the 65 challenges (run 8, EI-E-22)
+
+The game's own list agrees with section 1 in every group:
+- **Classes:** 27 challenges (Novice 25, Experienced 45, Master 60, "for the first time on a <class>").
+- **Crafting:** 18 challenges (Journeyman 150, Expert 225, Artisan 300, "for the first time").
+- **PvP ranks:** 5 (Sergeant (3) through Grand Marshal / High Warlord (14)).
+- **Battleground exalted:** 4 (Alterac Valley, Arathi Basin, Warsong Gulch and **Darkspear Islands**).
+- **Field of Honor:** weeks 4, 7, 10.
+- **Spelunkers:** 3 (6, 10 and 17 dungeons).
+- **Raids:** 3 (13, 8 and 1 bosses).
+- **Adventure:** 2.
+
+Explorer needs the Explore Azeroth achievement on one character: Eastern Kingdoms (23 zones, including Riverglades) and Kalimdor (20 zones, including Mount Hyjal and Shen'dralas). The class and crafting rules that P2-3 labels "from your list" are now **confirmed by the game**.
+
 ## 1a. Confirmed by the client and the pane (2026-11-08)
 
 - The pane's total is **65** ("Legacy Points 1 / 65") [screenshot], which matches section 1.
