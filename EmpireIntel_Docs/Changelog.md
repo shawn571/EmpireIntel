@@ -5,6 +5,9 @@ Append-only. Newest first.
 ## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
 - Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
 
+## 2026-11-08 | S-023 | P2-3 plan for approval (documentation only)
+- Phase2_Plan.md 1.3.0 section 6: `/ei unlock`, `/ei rest`, `/ei milestones`; Core/Rules.lua and Core/Views.lua; no format change; full restart (corrected from /reload). Questions Q-P2-3, Q-P2-3a, Q-P2-3b. No code.
+
 ## 2026-11-08 | S-022 | P2-2 closed; branch merged
 - The user confirmed `/ei alts` matched the game with DataStore on and approved closing P2-2 (D-032). `p2-2-alts` merged into main. No hide-old-characters rule (user).
 

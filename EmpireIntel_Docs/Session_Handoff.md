@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-023 | 2026-11-08 | Claude
+
+- **Done:** P2-3 plan, Phase2_Plan.md section 6, on branch `p2-3-views`. No code.
+- **WAITING FOR:** Q-P2-3 (with a and b); the EmpireIntelCheck 0.1.6 run with the pane open, plus the user's Legacy Points line.
+
 ## S-022 | 2026-11-08 | Claude
 
 - **Done:** P2-2 closed (D-032); `p2-2-alts` merged into main (fast-forward).
