@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-044 | 0.5.2 checked live; merge 1 pull request (documentation only)
+- D-044: 0.5.2 steps 2-5 match; pull request shawn571/EmpireIntel#1 (`p2-3-views` into main) opened for the user to merge. Restored the Decisions.md "Open questions" heading lost in S-043.
+
 ## 2026-11-08 | S-043 | EmpireIntel 0.5.2: labels after the inn test (/reload; branch p3-1-legacy)
 - `/ei rest` label: inn rate checked on Forever; outside rate and 1.5-level cap unverified (D-041). `/ei milestones` label: class and crafting milestones confirmed by the game (EI-E-22); the Legacy points line keeps [estimate] (D-043). Text only. 321 tests pass under Lua 5.1 and 5.3; 3 of 3 label mutants caught.
 

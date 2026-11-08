@@ -291,7 +291,17 @@ The user's words: "Build 0.5.2 with the rest label: yes, as worded. Milestones l
 - Built on `p3-1-legacy` as EmpireIntel 0.5.2 (`/reload`). Text only: `R.LABEL_REST` is "[estimate: 5% of a level per 8 h resting (inn rate checked on Forever); a quarter outside and the 1.5-level cap unverified]"; `R.LABEL_RULES` is "[class and crafting milestones confirmed by the game]". The Legacy points line keeps "[estimate]". No new call, saved data unchanged. This builds the D-041 label change.
 - Tests: 321 pass under Lua 5.1 and 5.3; new assertions check both headers and that no view line says "not yet confirmed"; 3 of 3 label mutants caught.
 - Merge 1 (`p2-3-views` into main, a fast-forward): approved. The first attempt was blocked by the session's auto-mode permission check (merge without review), so main is unchanged at 83b3574 until the user allows the push or merges it on GitHub.
- (updated S-002, 2026-11-03)
+
+## D-044 0.5.2 checked live; merge 1 by pull request | Decided (user, 2026-11-08)
+The user's words: "0.5.2 is installed (the reviewer chat copied the files from d1ae945 into my Forever folder; all 20 match). Steps 2–5: match. Merge 1: open a PR p2-3-views → main and I’ll merge it on GitHub with a merge commit. Merges 2 and 3 still need separate approval."
+- 0.5.2 live check passed (README steps 2-5) [reported].
+- Pull request https://github.com/shawn571/EmpireIntel/pull/1 opened: `p2-3-views` (257c2bb) into main (83b3574). The user merges it on GitHub with a merge commit. Merges 2 and 3 wait for separate approval.
+- Test count: still 321 because the test runner counts `T.it` blocks, not assertions; 0.5.2 added assertions inside the two existing label tests (each fails when its label is undone).
+- Repair: the S-043 edit of this file dropped the "---" line and the "## Open questions for the user" heading before the table below; restored here (text only, no entry changed).
+
+---
+
+## Open questions for the user (updated S-002, 2026-11-03)
 
 | ID | Question | Status |
 |---|---|---|

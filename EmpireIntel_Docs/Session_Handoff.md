@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-044 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed. EmpireIntel 0.5.2 checked live (D-044). No increment open; P3-2, P3-3 locked.
+
+**Done (docs only):** D-044; pull request https://github.com/shawn571/EmpireIntel/pull/1 (`p2-3-views` 257c2bb into main 83b3574; GitHub reports it mergeable, clean), for the user to merge on GitHub with a merge commit. Restored the Decisions.md "Open questions" heading that the S-043 edit dropped.
+
+**Pending (the user decides):** merging pull request 1; merges 2 (`tp1-legacy-read`) and 3 (`p3-1-legacy`), each separately; Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches:** as S-043, except `p3-1-legacy` head is this push. One pull request: #1, open.
+
+**Installed (as the user has said):** EmpireIntel 0.5.2 (files from d1ae945, all 20 match); EmpireIntelCheck 0.1.8-tp1.
+
+**Note for merges 2 and 3:** after a merge-commit merge of pull request 1, merges 2 and 3 are merge commits too; no conflicts expected, since each branch already contains `p2-3-views`.
+
+**User's next step:** merge pull request 1 on GitHub and say so; approve merge 2 when ready.
+
 ## S-043 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-3 and P3-1 closed. EmpireIntel 0.5.2 built (labels only, D-043), waiting for the user's live check. No increment open; P3-2, P3-3 locked.
