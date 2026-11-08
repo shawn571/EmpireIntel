@@ -224,3 +224,18 @@ Leading hypothesis: `spentInTree` is the points spent in the tree the pane curre
 **Test without any new call:** open the pane on the tree where the point was spent, leave it open, and type `/eicheck legacy`. Then do the same on another tree.
 - spentInTree 1, then 0: it follows the selected tree.
 - 0 both times: it needs something the pane does not pass to `GetCurrencyInfo()`, such as a tree argument. Calling it with one stays under Q-T4 and needs the user's approval.
+
+## 17. Run 11 (0.1.8-tp1, 2026-11-07 23:15-23:16 user time): the selected-tree test
+
+Chat lines only (no file):
+- two automatic reads when the pane loaded;
+- two `/eicheck legacy` reads at 23:15:54 and 23:16:08, which the user ran as the test from section 16.
+
+All four reads were identical: maxQuantity 1, quantity 0, renownCurrency 1, spent 1, **spentInTree 0**. The lines do not say which tree was open for each read, or whether a tree page (not Challenges) was showing.
+
+**Provisional reading:** if the 23:15:54 read was on the tree holding the spent point, spentInTree does **not** follow the pane's selected tree when `GetCurrencyInfo()` is called with no argument. The leading hypothesis of section 16 then fails.
+
+Remaining hypotheses:
+- (a) It counts points placed in a tree but **not yet applied** ("Apply Changes" commits; `spent` counts committed points). Testable without new calls once a point is available: place it, read, apply, read.
+- (b) It needs a tree argument. Testing that is a call with an argument, under Q-T4, which is unapproved.
+- (c) The pane refreshes the field through `UpdateCurrencyInfo`, which the check never calls, and it was stale.

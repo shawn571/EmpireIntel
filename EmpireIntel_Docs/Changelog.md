@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-032 | Run 11: spentInTree stays 0 with the pane open (documentation only)
+- Four reads with the pane open, all spentInTree 0. The selected-tree hypothesis likely fails (which tree each read was on is not recorded). Next test: an unapplied placement once a point is available. No code changed.
+
 ## 2026-11-08 | S-031 | Run 10: the first point spent (documentation only)
 - After one spend, quantity went from 1 to 0 and spent from 0 to 1; the other fields were unchanged (EI-E-24). Field meanings are recorded as inferred. Challenge and step data did not change because of the spend (two zone sub-areas were explored in between). spentInTree is analysed, not explained (TP1_Report_Run1.md section 16). Legacy_Rules.md section 4: the `/ei legacy` plan note. No code changed.
 

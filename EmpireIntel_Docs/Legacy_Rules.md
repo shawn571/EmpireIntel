@@ -83,7 +83,7 @@ What a future `/ei legacy` could show from the reads proven by the check:
 | Earned (pane field) | `maxQuantity` or `renownCurrency`: both 1 | **Inferred**: both equal the earned count so far; which one is "earned" is not yet known |
 | **Available to spend** | `quantity`: 1, then 0 after one spend | **Inferred, 1 data point**: it fell by exactly the point spent |
 | **Spent** | `spent`: 0, then 1 | **Inferred, 1 data point**: it rose by exactly the point spent |
-| Spent in a tree | `spentInTree`: 0 after a spend | **Unknown** (TP1_Report_Run1.md section 16); not shown |
+| Spent in a tree | `spentInTree`: 0 after a spend, also with the pane open (run 11) | **Unknown** (TP1_Report_Run1.md sections 16 and 17); not shown. Next test: place an available point without applying it |
 | Challenges and steps | Achievements (65 challenges, Explorer's 46 steps) | **Confirmed** (runs 8-10) |
 
 The line would also show "Available / spent", and the challenge list with "what is left", for example "Novice Spelunker: Excavation Site: Wetlands left".

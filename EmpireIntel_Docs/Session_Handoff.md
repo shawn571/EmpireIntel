@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-032 | 2026-11-08 | Claude
+
+- **Done:** recorded run 11 (TP1_Report_Run1.md section 17). spentInTree stays 0 with the pane open.
+- **WAITING FOR:** which tree each read was on; which tree and perk hold the spent point; the staging test at the next available point; P2-3 confirmation and the inn test.
+
 ## S-031 | 2026-11-08 | Claude
 
 - **Done:** recorded run 10 (TP1_Report_Run1.md sections 15 and 16, EI-E-24, Legacy_Rules.md section 4). No code changed; 0.1.8-tp1 stays current.
