@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-047 | Merge 2 done; merge 3 pull request (documentation only)
+- main is e8a30b3 (merge of shawn571/EmpireIntel#2): EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1, 283 tests. Merge 3 (`p3-1-legacy` into main) approved and opened as a pull request (D-047).
+
 ## 2026-11-08 | S-046 | Merge 1 done; merge 2 pull request (documentation only)
 - main is 634bd63 (merge of shawn571/EmpireIntel#1): EmpireIntel 0.4.0, 244 tests. Pull request shawn571/EmpireIntel#2 (`tp1-legacy-read` into main) opened (D-046).
 

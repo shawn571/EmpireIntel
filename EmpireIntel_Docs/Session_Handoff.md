@@ -4,6 +4,27 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-047 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed; EmpireIntel 0.5.2 installed and checked. No increment open; P3-2, P3-3 locked.
+
+**Approved:** as S-046, plus merge 3 (D-047). **Pending:** merging the merge 3 pull request; Q-T4 (unapproved); Stage 1 (not authorized); what comes next after the merges (no phase or increment approved).
+
+**Branches and pull requests:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | e8a30b3 | merge of #2: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1; 283 tests | is main |
+| p2-3-views | 257c2bb | | merged (#1) |
+| tp1-legacy-read | 1544eb5 | | merged (#2) |
+| p3-1-legacy | this push | plus EmpireIntel 0.5.2 (321 tests) and the newest docs | no: ahead; merge 3 pull request open |
+
+**Installed (as the user has said):** EmpireIntel 0.5.2; EmpireIntelCheck 0.1.8-tp1.
+
+**After merge 3:** main matches the installed versions; new work branches from main; NEXT_SESSION_PROMPT.md should then point at main (docs change, after the merge).
+
+**User's next step:** merge the merge 3 pull request on GitHub ("Create a merge commit") and say so.
+
 ## S-046 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-3 and P3-1 closed; EmpireIntel 0.5.2 installed and checked. No increment open; P3-2, P3-3 locked.

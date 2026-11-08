@@ -309,6 +309,11 @@ The user's words: "PR 1 now shows Merged. Go ahead: check main and open the merg
 - Checked: main is 634bd63, a merge commit (parents 83b3574 and 257c2bb), with the same tree as `p2-3-views`: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.5-tp1; 244 tests pass under Lua 5.1 and 5.3.
 - Pull request https://github.com/shawn571/EmpireIntel/pull/2 opened: `tp1-legacy-read` (1544eb5) into main; GitHub reports it mergeable, clean (22 commits, 18 files). Merge 3 waits for separate approval.
 
+## D-047 Merge 2 done; merge 3 approved | Decided (user, 2026-11-08)
+The user's words: "PR 2 shows Merged. Check main. Merge 3 (p3-1-legacy): [approved, open a PR" (the message ended there; read as the first option of the reply template, "approved, open a PR").
+- Checked: main is e8a30b3, a merge commit (parents 634bd63 and 1544eb5), with the same tree as `tp1-legacy-read`: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1; 283 tests pass under Lua 5.1 and 5.3.
+- Merge 3 pull request opened: `p3-1-legacy` into main (no conflicts, checked with `git merge-tree`). After it is merged, main holds EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1 and the newest docs, matching what the user has installed.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
