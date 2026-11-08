@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-033 | Run 12: the second earned point (documentation only)
+- quantity is confirmed as "available"; spent is consistent with "spent"; maxQuantity and renownCurrency both track earned (EI-E-25). spentInTree stays 0 with the spent tree open, so the selected-tree hypothesis fails. No code changed.
+
 ## 2026-11-08 | S-032 | Run 11: spentInTree stays 0 with the pane open (documentation only)
 - Four reads with the pane open, all spentInTree 0. The selected-tree hypothesis likely fails (which tree each read was on is not recorded). Next test: an unapplied placement once a point is available. No code changed.
 

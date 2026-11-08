@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-033 | 2026-11-08 | Claude
+
+- **Done:** recorded run 12 (TP1_Report_Run1.md section 18, EI-E-25).
+- **WAITING FOR:** the staging test now that a point is available (place without Apply, read, Apply, read); the file, to see which challenge gave the second point.
+
 ## S-032 | 2026-11-08 | Claude
 
 - **Done:** recorded run 11 (TP1_Report_Run1.md section 17). spentInTree stays 0 with the pane open.

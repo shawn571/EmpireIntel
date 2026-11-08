@@ -239,3 +239,23 @@ Remaining hypotheses:
 - (a) It counts points placed in a tree but **not yet applied** ("Apply Changes" commits; `spent` counts committed points). Testable without new calls once a point is available: place it, read, apply, read.
 - (b) It needs a tree argument. Testing that is a call with an argument, under Q-T4, which is unapproved.
 - (c) The pane refreshes the field through `UpdateCurrencyInfo`, which the check never calls, and it was stale.
+
+## 18. Run 12 (0.1.8-tp1, 2026-11-08 00:16 user time): the second earned point
+
+Chat line only: "65 challenges (2 completed, 2 of 65 Legacy points); Explorer 0 of 46 done; Legacy points: maxQuantity 2, quantity 1, renownCurrency 2, spent 1, spentInTree 0". The new point is unspent. The user ran the read with the **Adventure** tree open; the first point had been spent in Adventure.
+
+| Field | Run 9 (earned 1, spent 0) | Run 10 (spent 1) | Run 12 (earned 2) |
+|---|---|---|---|
+| quantity | 1 | 0 | **1** |
+| spent | 0 | 1 | 1 |
+| maxQuantity | 1 | 1 | **2** |
+| renownCurrency | 1 | 1 | **2** |
+| spentInTree | 0 | 0 | 0 |
+| completed challenge points | 1 | 1 | **2** |
+
+- **Available:** `quantity` is the points available to spend. It fell by 1 on a spend and rose by 1 on an earn. **Confirmed** by two opposite moves.
+- **Spent:** `spent` is the points spent. It rose on the spend and did not move on the earn. Consistent; one move observed.
+- **Earned:** `maxQuantity` and `renownCurrency` are both the points earned, and both equal the completed challenges' points in all three reads. Still **indistinguishable**.
+- **Invariant:** quantity + spent = maxQuantity held in all three reads.
+- **spentInTree:** 0 with the Adventure tree open, although the spent point is in Adventure. The selected-tree hypothesis (section 16) **fails**. Remaining hypotheses: (a) points placed but not applied; (b) a tree argument (Q-T4); (c) a stale value. The user now has an unspent point, so (a) can be tested now.
+- Which challenge gave the second point is not in the chat line; the saved file would show it.
