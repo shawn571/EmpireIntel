@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.3.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1 and P2-2 closed (D-029, D-032). P2-3 approved (Q-P2-3, a, b) and built as 0.4.0 (D-033); waiting for its live test.**
+DOC VERSION: 1.4.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). P2-4 planned in section 7, waiting for Q-P2-4 (no code).**
 
 **Phase 2 builds EmpireIntel itself, limited to what works before any character reaches level 25:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). It uses no Legacy API. Everything about Legacy points, perks and the cap waits for the level-25 run and Q-T4.
 
@@ -106,3 +106,155 @@ Illustrative output (C1, C2 stand for character names):
 | Q-P2-3 | Approve increment P2-3 as in section 6? | **Approved** 2026-11-08 (D-033) |
 | Q-P2-3a | Are the 6 crafting skills Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring (no Jewelcrafting or Inscription on Forever)? | **Approved** 2026-11-08; the user will report if the pane lists others |
 | Q-P2-3b | Use the classic rest rule (5% of a level per 8 h resting, a quarter outside, cap 1.5 levels) as the labelled estimate, checked by the gate's rest test? | **Approved** 2026-11-08 |
+| Q-P2-3c | Close P2-3? | **Closed** 2026-11-08 (D-041) |
+| Q-P2-4, a-e | P2-4 "What next": see section 7.8 | Open |
+
+## 7. P2-4 in detail: "What next" (for approval, Q-P2-4)
+
+**Plan only (S-052). No code is written until the user approves Q-P2-4.** Requirements: FR-PLAN-1, FR-PLAN-2, FR-PRE-4, NFR-2, NFR-3. Replaces the draft in Architecture.md section 7 on approval (that draft had a `cap` field, perk goals and `restedBefore`, which this plan drops or defers).
+
+### 7.1 What P2-4 adds
+
+| Part | What it does |
+|---|---|
+| `/ei next` | Up to 10 suggestions, one line each: the goal, where the character is now, the gap, the next step, and what it earns. Read on command only. Nothing is saved |
+| Plan file | A separate addon folder, `EmpireIntel_Plan`, holding `Plan.lua`, which the user edits with a text editor. EmpireIntel updates never touch it (D-014) |
+| Defaults | Without a plan file, the FR-PRE-4 suggestions (7.4) |
+| Validation | Each bad goal is reported as one `UNEXPECTED` line naming its number, and skipped; never guessed (R-17) |
+| Versions | EmpireIntel 0.6.0. EmpireIntel_Plan 1 (format 1). EmpireIntelCheck unchanged |
+
+No new game call: `/ei next` uses the same records as `/ei alts`, `/ei rest` and `/ei milestones` (EmpireIntel's own records plus DataStore through the bridge). Saved-data format 1 is unchanged. Account challenge goals need the Legacy reads of P3-1 (Q-P2-4b).
+
+### 7.2 The plan folder
+
+```
+Interface\AddOns\EmpireIntel_Plan\
+  EmpireIntel_Plan.toc   shipped; never edited
+  Marker.lua             shipped; one line: EmpireIntelPlanFolder = 1
+  Plan.lua               yours; the only file you edit
+```
+
+- The TOC loads `Marker.lua`, then `Plan.lua`. It has `## Interface: 16001` and no dependency on EmpireIntel, so either addon works alone.
+- EmpireIntel reads the global `EmpireIntelPlan` only when you type `/ei next`, so load order does not matter.
+- The marker tells two cases apart without any new game call: marker present but no `EmpireIntelPlan` means Plan.lua did not load (a Lua error in the file); no marker means the folder is not installed.
+- Plan.lua is Lua that the game runs. Only the `EmpireIntelPlan` table is read; anything else in the file is ignored by EmpireIntel.
+- Character names in your Plan.lua stay on your computer. The repository holds only the example with placeholders.
+
+### 7.3 Plan file format 1 (a contract; needs approval)
+
+```lua
+-- EmpireIntel_Plan/Plan.lua: your goals, most important first. Save, then /reload.
+EmpireIntelPlan = {
+  version = 1,
+  goals = {
+    { char = 'C1', level = 45, note = 'Experienced Paladin' },
+    { char = 'C2', level = 25 },
+    { char = 'C2', profession = 'Tailoring', skill = 150 },
+    { char = 'C2', rested = 1.0 },
+    { account = true, challenges = 5 },
+  },
+}
+```
+
+| Goal kind | Keys | Met when | Next step shown |
+|---|---|---|---|
+| Level | `char`, `level` (2-60) | the character's level >= level | levels and XP to go; rested XP now [estimate] |
+| Skill | `char`, `profession` (name as the game shows it), `skill` (1-300) | that profession's skill >= skill | points to go; "train to raise max N" when the cap is in the way |
+| Rested | `char`, `rested` (levels, 0.05-1.5) | rested XP now (live, or the projection) >= rested | about how many hours more in an inn [estimate] |
+| Challenges | `account = true`, `challenges` (1-65) | Legacy challenges completed >= challenges | how many to go and the closest challenges (as `/ei legacy`) |
+
+Rules:
+- **Order is priority.** Goals already met are counted in the header, not listed.
+- `char` is a character name, or `Name-Realm` when two characters share a name. Two matches without a realm: `UNEXPECTED`, goal skipped.
+- `note` (optional, any goal): your own text, shown at the end of the line.
+- A goal whose state cannot be known (for example a DataStore character without that profession recorded) is listed as **unknown**, never as met.
+- **Reported and skipped**, one `UNEXPECTED` line each: an unknown key, a wrong type or out-of-range value, no goal kind or two kinds in one goal, an unknown character, an unknown profession name.
+- **Not in format 1:** perk goals (they need the trait-system reads, Q-T4, unapproved) and per-character spend caps. A goal with `perk` is reported "not supported yet (needs Q-T4)" and skipped. The `version` field lets a later format add them.
+- `version` other than 1, or no `goals` table: one `UNEXPECTED` line; the defaults are shown instead.
+
+### 7.4 What `/ei next` prints
+
+All examples use today's characters (C1 Paladin 27, C2 Priest 6, C3 the stale beta Shaman), illustrative only. Exact wording is fixed in the tests.
+
+**With the example plan above:**
+
+```
+EmpireIntel next (your plan: 5 goals; 0 met, 0 skipped):
+1. C1 Paladin 27 -> level 45: 18 levels to go -> earns Experienced Paladin (1 Legacy point). Experienced Paladin
+2. C2 Priest 6 -> level 25: 19 levels to go; about 0.57 levels rested [estimate] -> earns Novice Priest (1 Legacy point)
+3. C2 Priest 6 -> Tailoring 150: now 56/75, 94 to go; train to raise max 75 -> earns Journeyman Tailor (1 Legacy point)
+4. C2 Priest 6 -> rested 1.00 levels: about 0.57 now; about 69 h more in an inn [estimate]
+5. Account -> 5 Legacy challenges: 2 done, 3 to go; closest: Experienced Spelunker 1 of 10
+```
+
+**With errors in the plan** (goal 2 has `skil = 150`, goal 4 names nobody):
+
+```
+UNEXPECTED plan goal 2: unknown key "skil" (skipped)
+UNEXPECTED plan goal 4: no character named "C9" (skipped)
+EmpireIntel next (your plan: 5 goals; 0 met, 2 skipped):
+1. ...
+```
+
+**Without a plan file** (the FR-PRE-4 defaults, in this order, at most 10 lines):
+
+```
+EmpireIntel next (no plan file: default suggestions):
+1. Class milestone: C3 Shaman 9 -> 25 (16 levels) -> Novice Shaman (1 Legacy point) [datastore, 17 days ago]
+2. Class milestone: C1 Paladin 27 -> 45 (18 levels) -> Experienced Paladin (1 Legacy point)
+3. Class milestone: C2 Priest 6 -> 25 (19 levels) -> Novice Priest (1 Legacy point)
+4. Rested: C2 Priest 6 has about 0.57 levels rested [estimate]: play it next
+5. Crafting: nothing within 25 points of a milestone (closest: C2 Tailoring 56/75 -> 150, 94 to go; train to raise max 75)
+Add EmpireIntel_Plan\Plan.lua to set your own order (README).
+```
+
+- Class milestones: once the account has reached 25 (true now), "reach 25 on the closest character" becomes **the class milestones not yet earned, closest first, at most 3 lines**, for classes that have a character (a new class to 25 is a Novice challenge too) (Q-P2-4e). C3 comes first here because DataStore still lists the stale beta Shaman; once it is deleted in Altoholic, it drops out.
+- Default 3: characters with at least 0.5 levels of rested XP now (live or projected), not at level 60, most rested first (Q-P2-4d).
+- Default 4: crafting milestones (150/225/300) within 25 skill points; when none, one line naming the closest (Q-P2-4d).
+
+**Other cases:**
+
+| Case | Output |
+|---|---|
+| Plan folder installed, Plan.lua has a Lua error | `UNEXPECTED plan file did not load (a Lua error in Plan.lua; BugSack shows the line). Showing default suggestions.` then the defaults |
+| Plan with no goals | `Your plan has no goals.` then the defaults |
+| Every goal met | `All 5 goals in your plan are met.` |
+| More than 10 unmet goals | the first 10, then `... and N more` |
+| A goal on a character only DataStore knows | as usual, with `[datastore]` and its age |
+
+### 7.5 Restart or reload
+
+| Change | Needed | Basis |
+|---|---|---|
+| EmpireIntel 0.5.2 -> 0.6.0 | `/reload` is enough | existing folder, new or changed files (EI-E-19, D-034) |
+| **First install of the `EmpireIntel_Plan` folder** | **full client restart** (stated) | a new addon folder; never observed with `/reload` (D-034). The test tries `/reload` first and records what happens; if `/ei next` still says "no plan file", restart |
+| Editing Plan.lua afterwards | `/reload` | an existing folder's file [inferred from EI-E-19] |
+| Removing the plan folder | `/reload` | [inferred]; `/ei next` then shows the defaults |
+
+If the test shows a new folder loads after `/reload`, D-034's open point closes and later packages say `/reload` for new folders too.
+
+### 7.6 Packaging
+
+- `EmpireIntel_AddOns_v0.6.0.zip`: the EmpireIntel folder only, as before.
+- `EmpireIntel_Plan_v1.zip`: shipped **once**, with `Plan.lua` holding the example above (placeholders C1, C2). Later EmpireIntel packages never contain the plan folder, so your Plan.lua is never overwritten (Q-P2-4c).
+- The README gives the format, the example and the error messages.
+
+### 7.7 Tests (Lua 5.1 and 5.3) and live gate
+
+- **Validator:** each goal kind; each error kind (unknown key, wrong type, out of range, no kind, two kinds, unknown character, duplicate name with and without realm, unknown profession, `perk`); version other than 1; no goals.
+- **Planner:** met, not met and unknown for each kind; order kept; met goals counted and not listed; the 10-line limit; the live character versus records; DataStore-only characters.
+- **Defaults:** before and after the unlock; rested threshold; crafting within 25; nothing to suggest.
+- **Plan folder:** marker without plan (load error); no marker; the example Plan.lua loads in the test harness and validates with no errors.
+- **Static:** no new game call; no saved-data write from `/ei next`; EmpireIntel_Plan's only globals are `EmpireIntelPlan` and `EmpireIntelPlanFolder`; ASCII files.
+- **Live gate:** (1) `/ei next` without the plan folder shows the defaults, matching `/ei rest` and `/ei milestones`. (2) Install the plan folder, try `/reload` (record whether it loads), restart if needed; with a 5-goal plan of your own, every line matches the game. (3) A plan with two deliberate errors: each reported and skipped, the rest listed.
+
+### 7.8 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4 | Approve increment P2-4 as in this section, built as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1, including plan file format 1 (7.3) as a contract? | Approve |
+| Q-P2-4a | Goal kinds in format 1: level, skill, rested and account challenges; perk goals reported "not supported yet" until Q-T4? | Yes |
+| Q-P2-4b | May `/ei next` use P3-1's Legacy reads (already approved code, on command only) for the account challenges goal and the closest challenges? This uses a Legacy read inside a Phase 2 increment (D-027 said Phase 2 uses none). If no, that goal kind is left out of format 1 | Yes: no new call, the reads are proven (P3-1 closed) |
+| Q-P2-4c | Ship the plan folder once, as its own zip with the example plan, and never in EmpireIntel packages? | Yes |
+| Q-P2-4d | Default thresholds: rested at least 0.5 levels; crafting within 25 skill points; at most 10 lines? | Yes; one-line changes later |
+| Q-P2-4e | After the unlock, the "reach 25" default becomes "class milestones not yet earned, closest first" (at most 3, classes with a character only)? | Yes |

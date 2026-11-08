@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-052 | P2-4 plan for approval (documentation only)
+- Phase2_Plan.md section 7: `/ei next`, the `EmpireIntel_Plan` folder and plan file format 1, output with and without a plan, restart or reload rules, tests, live gate, and questions Q-P2-4, a-e. No code.
+
 ## 2026-11-08 | S-051 | Docs-only standing approval covers TODO.md and Changelog.md (documentation only)
 - D-051 recorded in CODE_STANDING_ORDERS.md and NEXT_SESSION_PROMPT.md. TODO.md 1.3.0: the settings pull request (#6) and handoff (#7) ticked. Merged by Claude under the extended approval.
 

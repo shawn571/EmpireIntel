@@ -85,6 +85,7 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] `.claude/settings.json` (REST merge permission, D-050): merged by the user as #6 (5377093)
 - [x] Handoff S-050 merged as #7 (b681e42) under the docs-only standing approval
 - [x] Docs-only standing approval extended to TODO.md and Changelog.md (D-051)
-- [ ] P2-4 What next and the plan file (plan format needs approval)
+- [x] P2-4 plan written: Phase2_Plan.md section 7 (S-052); no code
+- [ ] **User:** Q-P2-4 and Q-P2-4a-e (Phase2_Plan.md section 7.8)
 
 ## Later phases: see Architecture.md section 10 (not approved)
