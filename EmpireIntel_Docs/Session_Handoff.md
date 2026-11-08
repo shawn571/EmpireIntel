@@ -4,6 +4,28 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-042 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 **closed** (D-041) and P3-1 **closed** (D-042). No increment is open. Phase 3 has no further increment approved: P3-2 and P3-3 are locked.
+
+**Done (docs only):** formal inn test recorded and passed (P2-3_Report.md section 3, EI-E-28); 0.5.1 check recorded (P3-1_Report.md section 2); D-041, D-042; TODO and Changelog updated. No code changed, nothing merged. Session renamed "EmpireIntel Code" (user).
+
+**Approved:** as S-041, plus D-041 (close P2-3; narrow the rest label to inn rate checked, outside rate and cap unverified) and D-042 (close P3-1).
+
+**Pending (the user decides):**
+- Go-ahead to build the rest label change (D-041) as EmpireIntel 0.5.2 on `p3-1-legacy` (`/reload`).
+- The `/ei milestones` rules label: keep or drop "not yet confirmed" (EI-E-22 confirmed the class and crafting rules).
+- Merges, one approval each, in this order: `p2-3-views` (EmpireIntel 0.4.0), then `tp1-legacy-read` (EmpireIntelCheck 0.1.8-tp1), then `p3-1-legacy` (EmpireIntel 0.5.1 and the newest docs). Each is a fast-forward of main; tests pass at each head (244, 283, 321, under Lua 5.1 and 5.3).
+- Q-T4: unapproved. P3-2, P3-3: locked. Stage 1: not authorized.
+
+**Branches:** as S-040, except `p3-1-legacy` head is this push. No pull requests.
+
+**Installed (as the user has said):** EmpireIntel 0.5.1 (confirmed 09:50, 2026-11-08); EmpireIntelCheck 0.1.8-tp1; GoldIntel and DataStore/Altoholic. The stale beta Shaman (C3) is still in DataStore.
+
+**Open questions:** the two pending decisions above, the merges, Q-T4.
+
+**User's next step:** approve (or not) the 0.5.2 label build and the milestones label; approve merges one at a time.
+
 ## S-041 | 2026-11-08 | Claude
 
 **Phase and increment:** unchanged from S-040: P3-1 built as EmpireIntel 0.5.1, waiting for the `/ei legacy all` look, then Q-P3-1c; P2-3 built as 0.4.0, waiting for the formal inn test, then Q-P2-3c.

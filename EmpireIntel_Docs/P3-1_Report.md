@@ -1,6 +1,6 @@
 # P3-1 Report: `/ei legacy`, live tests
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-08  |  STATUS: **Live test 1 passed on content; two readability defects in `/ei legacy all`, fixed in 0.5.1. Q-P3-1c open.**
+DOC VERSION: 1.0.0  |  DATE: 2026-11-08  |  STATUS: **Closed (user, 2026-11-08, D-042).** Live test 1 passed on content; the two readability defects were fixed in 0.5.1, which the user checked.
 
 The user's chat lines were read as data; C1 stands for the character.
 
@@ -24,6 +24,10 @@ The user's chat lines were read as data; C1 stands for the character.
 
 Both have tests: a reversed category list keeps the order; 321 tests pass under Lua 5.1 and 5.3.
 
-## 2. Closing P3-1 (Q-P3-1c)
+## 2. 0.5.1 check (2026-11-08 09:50 user time)
 
-Waiting for the user to look at `/ei legacy all` once on 0.5.1. Closing is the user's decision.
+[O] The user installed 0.5.1 over 0.5.0 with `/reload` and reported: "/ei version, /ei legacy all and /gi version all gave the expected output". `/reload` was enough, as the package said (D-034).
+
+## 3. Closing P3-1 (Q-P3-1c)
+
+**Closed** by the user, 2026-11-08: "Q-P3-1c: close P3-1." (D-042). Q-T4 stays unapproved; P3-2 and P3-3 stay locked.

@@ -275,6 +275,17 @@ The user's words: "Item 4: paraphrased early rules are acceptable. Item 5: yes, 
 - Item 5: Project_Bible.md section 5 (v1.2.0) drops "new addon folder or TOC change = restart" and states the D-034 rule, matching CODE_STANDING_ORDERS.md section 3. This settles the conflict noted under D-039.
 - Docs only; no code changed, nothing merged. Pushed on `p3-1-legacy`.
 
+## D-041 P2-3 closed after the inn test; rest label narrowed | Decided (user, 2026-11-08, Q-P2-3c)
+The user's words: "Q-P2-3c: close P2-3, with the label change you propose: drop \"not yet confirmed\" for the inn rate only; keep \"unverified\" for the outside rate and the cap."
+- Inn test passed (P2-3_Report.md section 3, EI-E-28): gap 1.0% (about 0.5% like for like) on C1; C2 within a few XP over about 9.2 h.
+- Label change approved: the rest estimate label states the inn rate as checked on Forever, and keeps "unverified" for the quarter rate outside a rest area and the 1.5-level cap. Not yet built; it ships in the next EmpireIntel package (proposed 0.5.2, `/reload`), which waits for the user's go-ahead.
+- Not covered by this decision: the `/ei milestones` label "[rules from your list; not yet confirmed by the game]", whose class and crafting rules EI-E-22 confirmed. It stays as is until the user decides.
+
+## D-042 P3-1 closed | Decided (user, 2026-11-08, Q-P3-1c)
+The user's words: "Q-P3-1c: close P3-1." and "Q-T4 stays unapproved. P3-2 and P3-3 stay locked. Do not merge anything; I will approve merges separately."
+- 0.5.1 checked live (P3-1_Report.md section 2).
+- Merges: none until the user approves each one. Proposed order: `p2-3-views`, `tp1-legacy-read`, `p3-1-legacy` (each a fast-forward of main).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -301,11 +312,11 @@ The user's words: "Item 4: paraphrased early rules are acceptable. Item 5: yes, 
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
 | Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | **Approved** 2026-11-08, with a and b; built as 0.4.0 (D-033) |
-| Q-P2-3c | Close P2-3 after the live test and the inn test? | Open |
+| Q-P2-3c | Close P2-3 after the live test and the inn test? | **Closed** 2026-11-08, with the rest label change (D-041) |
 | Q-P3 | Authorize Phase 3 for `/ei legacy` (Phase3_Legacy_Plan.md)? | **Approved** 2026-11-08, one approval per increment; **P3-1 only**; P3-2 and P3-3 stay locked (D-037) |
 | Q-P3-1 | Approve P3-1, the live `/ei legacy` (Phase3_Legacy_Plan.md section 3)? | **Approved** 2026-11-08 as written (D-037) |
 | Q-P3-1a | No saved crash guard in EmpireIntel; format 1 unchanged? | **Approved** 2026-11-08 |
-| Q-P3-1c | Close P3-1 after its live gate (Phase3_Legacy_Plan.md section 3)? | Open |
+| Q-P3-1c | Close P3-1 after its live gate (Phase3_Legacy_Plan.md section 3)? | **Closed** 2026-11-08 (D-042) |
 | Q-T9 | Build EmpireIntelCheck 0.1.8 (defects 15, 16): count only achievements whose reward text names a Legacy point (65), take each one's value from that text, and keep the 46 supporting exploration achievements as "supporting"; save each step as text, done and progress only (drop type, asset id, criteria id and quantity text); and trim the discovery leftovers (`latest`, `strongSeen`, `docs`, `undoc`) before any Legacy data. This changes the shape of the check's saved `legacy` section | **Approved** 2026-11-08 with the user's correction: the 46 are the Explorer challenge's steps (done / not done, "X of 46 done"), outside the point count. Built as 0.1.8-tp1 (D-036) |
 | Q-T8 | Build EmpireIntelCheck 0.1.7 (defects 13 and 14), within the Q-T7 limits: read every category `GetCategoryList()` returns, plus their achievements and criteria (all ids from the game); take the points from `LegacySystem.GetCurrencyInfo()`; stop passing `traitCurrencyID` to `C_CurrencyInfo`? Trait-system calls with 4225 stay out (Q-T4) | **Approved** 2026-11-08; built as 0.1.7-tp1 (D-035) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

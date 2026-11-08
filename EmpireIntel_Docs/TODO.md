@@ -52,7 +52,7 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 
 ## Phase 3: Legacy in EmpireIntel (AUTHORIZED for P3-1 only, D-037; Phase3_Legacy_Plan.md)
 - [x] P3-1 built: EmpireIntel 0.5.0 on branch `p3-1-legacy` (S-038, D-038)
-- [ ] **User:** P3-1 live gate (README steps), then Q-P3-1c
+- [x] P3-1 live gate passed; 0.5.1 checked; **closed** (D-042)
 - [ ] P3-2 saved summary: locked (needs approval and a format change)
 - [ ] P3-3 per-tree detail: locked (needs Q-T4)
 - Exit test: Architecture section 9 exit criteria.
@@ -74,7 +74,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-3 plan written: Phase2_Plan.md section 6 (S-023)
 - [x] Q-P2-3, Q-P2-3a, Q-P2-3b approved 2026-11-08
 - [x] P2-3 built: EmpireIntel 0.4.0 on branch `p2-3-views`, 244 tests, 16/16 mutants (S-024, D-033)
-- [ ] **User:** P2-3 live test and inn test, then Q-P2-3c
+- [x] P2-3 live test and inn test passed; **closed** (D-041)
+- [ ] Rest label change (D-041): build in the next package (proposed 0.5.2), after the user's go-ahead
+- [ ] **User:** the `/ei milestones` rules label (confirmed by EI-E-22): keep or drop
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
 ## Later phases: see Architecture.md section 10 (not approved)
