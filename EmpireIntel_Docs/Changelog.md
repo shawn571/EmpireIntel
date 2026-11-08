@@ -5,6 +5,9 @@ Append-only. Newest first.
 ## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
 - Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
 
+## 2026-11-08 | S-022 | P2-2 closed; branch merged
+- The user confirmed `/ei alts` matched the game with DataStore on and approved closing P2-2 (D-032). `p2-2-alts` merged into main. No hide-old-characters rule (user).
+
 ## 2026-11-06 | S-019 | EmpireIntel 0.3.1 (/reload; branch p2-2-alts)
 - Live test 1 of 0.3.0: format 1 unchanged; the DataStore-off path passed. The DataStore-on output is not received yet. P2-2_Report.md.
 - D2: `/ei alts` said "rested unknown" for an own record with no rested XP. It now says "rested none reported", as `/ei` does. 212 tests pass under Lua 5.1 and 5.3.

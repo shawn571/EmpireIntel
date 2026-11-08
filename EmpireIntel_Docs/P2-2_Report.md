@@ -1,6 +1,6 @@
 # P2-2 Report: alts from DataStore, live tests
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-08  |  STATUS: **Gate passed (DataStore off 2026-11-06, DataStore on 2026-11-08). Waiting for Q-P2-2c.**
+DOC VERSION: 1.1.0  |  DATE: 2026-11-08  |  STATUS: **Gate passed. P2-2 closed by the user 2026-11-08 (D-032).**
 
 The user's saved file and chat lines were read as data. No names, GUIDs or account details are copied here: C1 and C2 stand for the two characters.
 

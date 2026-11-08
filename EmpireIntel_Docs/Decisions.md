@@ -185,6 +185,16 @@ The user approved P2-2 as written in Phase2_Plan.md section 5. Built on branch `
 
 P2-2 is not closed: closing needs the live gate and a separate user approval (Q-P2-2c).
 
+## D-032 P2-2 closed | Approved (user, 2026-11-08, Q-P2-2c)
+EmpireIntel 0.3.1 met the P2-2 gate:
+- tests pass under Lua 5.1 and 5.3;
+- `/ei alts` answered with DataStore off (2026-11-06) and on (2026-11-08);
+- the user confirmed every line matched the game (P2-2_Report.md).
+
+Branch `p2-2-alts` merged into main.
+- The stale DataStore character (a beta-client leftover) will be deleted by the user in Altoholic. There is no "hide old characters" rule for now, by the user's decision.
+- P2-3 needs its own approval (Q-P2-3); its plan comes first, with no code.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -209,5 +219,5 @@ P2-2 is not closed: closing needs the live gate and a separate user approval (Q-
 | Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
 | Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
-| Q-P2-2c | Close P2-2 after the live test? | Open: gate passed 2026-11-08 (P2-2_Report.md section 5) |
+| Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |
