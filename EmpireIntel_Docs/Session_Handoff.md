@@ -4,6 +4,47 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-040 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 3, increment P3-1 (`/ei legacy`), built as EmpireIntel 0.5.1; waiting for the user's look at `/ei legacy all`, then Q-P3-1c. Phase 2 increment P2-3 (views) built as 0.4.0; views check passed; formal inn test pending, then Q-P2-3c. TP-1 (EmpireIntelCheck) at 0.1.8-tp1, the Legacy read proven (runs 6-15).
+
+**Approved:**
+- Phase 2 (pre-25 features; D-027): P2-1 closed (D-029), P2-2 closed (D-032), P2-3 built (D-033).
+- Phase 3, P3-1 only (D-037), with no saved crash guard (Q-P3-1a).
+- Q-T7, Q-T8 and Q-T9 (check Legacy reads).
+- The standing orders (D-039).
+
+**Pending (the user decides):**
+- Q-P3-1c: close P3-1, after a look at 0.5.1.
+- Q-P2-3c: close P2-3, after the formal inn test.
+- Q-T4: trait-system reads, after P3-1 passes its live gate.
+- P3-2 and P3-3: locked.
+- Release pipeline Stage 1: not authorized.
+- Merges: none without approval. The order is `p2-3-views`, then `tp1-legacy-read`, then `p3-1-legacy`.
+
+**Branches** (no pull requests exist):
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 83b3574 | EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1, docs to S-022 | is main |
+| p2-1-foundation | ca0d2b6 | merged earlier (P2-1) | contained in main |
+| p2-2-alts | 83b3574 | P2-2 | identical to main |
+| p2-3-views | 257c2bb | EmpireIntel 0.4.0 (P2-3) | no: ahead of main, unmerged |
+| tp1-legacy-read | 1544eb5 | p2-3-views plus EmpireIntelCheck 0.1.6-0.1.8 and docs | no: ahead, unmerged |
+| p3-1-legacy | this push | tp1-legacy-read plus EmpireIntel 0.5.0-0.5.1 and the newest docs | no: ahead, unmerged |
+
+**Installed (as the user has said):**
+- EmpireIntel 0.5.0 (0.5.1 delivered; installation not yet confirmed).
+- EmpireIntelCheck 0.1.8-tp1.
+- GoldIntel and DataStore/Altoholic also installed.
+- The user will delete the stale beta Shaman in Altoholic.
+
+**Open questions:** Q-P3-1c, Q-P2-3c, Q-T4. Conflict to confirm: Project_Bible.md section 5 restart rule vs D-034 (see D-039).
+
+**User's next step:**
+1. Install 0.5.1 with `/reload`, open the Legacy window, type `/ei legacy all`, and say whether it reads well (Q-P3-1c).
+2. Run the formal inn test from the P2-3 README, then decide Q-P2-3c.
+
 ## S-039 | 2026-11-08 | Claude
 
 - **Done:** P3-1 live test 1 recorded; 0.5.1 fixes the `/ei legacy all` order and the Explorer wording.

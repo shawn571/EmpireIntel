@@ -255,6 +255,19 @@ Built on branch `tp1-legacy-read`; `/reload` is enough.
 - **Tests:** `test_ei_legacy.lua` plus the P3-1 static rules; 319 tests pass under Lua 5.1 and 5.3. 20 of 21 guard mutants are caught. The survivor is equivalent: stopping the coroutine early after combat starts, when every remaining call is already refused.
 - Nothing saved; format 1 unchanged (test). `/reload`.
 
+## D-039 Code Standing Orders | Decided (user, 2026-11-08)
+The user's words: "Standing instruction, effective now."
+- "Make it permanent in the repo": CODE_STANDING_ORDERS.md (roles, gates, packages, evidence first, the package block, the end-of-report format) and NEXT_SESSION_PROMPT.md ("always current", "short").
+- "anything I decide in chat gets recorded in the docs with my exact words."
+- "Update Session_Handoff first ... Commit and push it, and say so."
+- "Tell me when to start a new Code session: if your context has been summarized, or a session has run long, and only at a clean stopping point with nothing half-built and nothing unpushed."
+- "End with three short parts: 'What you do' (plain language, numbered), 'Reply to send' (ready to paste), and the package block. Keep reports short; long evidence goes in files in the docs folder."
+- "Do this in your next push, docs only ... Do not change any code or merge anything for it."
+
+Placement: pushed on `p3-1-legacy`, the branch holding the newest docs. Main is not touched (no merge without approval).
+
+Known conflict, kept for the user to confirm: Project_Bible.md section 5 still says "new addon folder or TOC change = restart". D-034 (2026-11-08) revised this from live evidence: new files in an existing folder load on `/reload`. CODE_STANDING_ORDERS.md section 3 follows D-034.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
