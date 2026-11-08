@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-062 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, P2-4b **built** as EmpireIntel 0.7.0 (D-061 approval, D-062 build choices) on branch `p2-4b-window`, pull request open, **not merged**.
+
+**Approved:** through D-061 (the P2-4b plan with the fill path). #16 merged (9cb1d10).
+
+**Pending (the user decides):** the live gate (P2-4b_Report.md section 5; with ElvUI on and off); merging the P2-4b pull request; closing P2-4b; the next check version (D-059, not built); #10 (P3-2 becomes format 3 when next edited; Q-P3-2a later); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window`: main plus 0.7.0, 485 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.0.zip` (sha256 in P2-4b_Report.md section 4); `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1.
+
+**User's next step:** install 0.7.0, run the 8-step live gate with ElvUI on and off, send screenshots, the saved file and the fill-path line.
+
 ## S-061 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-4a **closed** (D-060). Mockup **approved** (D-060). P2-4b **planned** in Phase2_Plan.md section 9 (EmpireIntel 0.7.0), for approval; **no window code**.

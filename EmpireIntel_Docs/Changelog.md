@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-062 | P2-4b built: EmpireIntel 0.7.0, the plan window (branch `p2-4b-window`, not merged)
+- D-061 (plan approved with the fill path), #16 merged (9cb1d10). The window, the Up Next card, both modes, own scrolling, drag, in-place edit, right-click menu, resizing with saved size and place, Escape, the minimap button, the compartment, the DataStore faction getter. One fill path with a SetColorTexture read-back and the white-texture fallback. No format change, no TOC header change. 485 tests (Lua 5.1 and 5.3); 21/21 new mutants. D-062, P2-4b_Report.md.
+
 ## 2026-11-08 | S-061 | P2-4a closed; mockup approved; P2-4b build plan for approval (documentation only)
 - D-060. #15 merged (72f4192). Phase2_Plan.md 1.6.0 section 9: the P2-4b plan (EmpireIntel 0.7.0: files, `/reload`, no saved-data change, tests, live gate, the DataStore faction getter); Q-P2-4b-1..4. No code.
 

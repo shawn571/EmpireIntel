@@ -13,6 +13,10 @@ P.OnReady(function()
     P.Print('saved data is newer than this version; it is left untouched and nothing is saved this session.')
   end
   EI.Snapshot.Start()
+  if EI.MinimapButton then
+    local ok, err = pcall(EI.MinimapButton.Init)
+    if not ok then P.Print('UNEXPECTED: minimap button: ' .. tostring(err)) end
+  end
 end)
 
 P.Events.CheckLateLoad()

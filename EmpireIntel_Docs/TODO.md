@@ -3,9 +3,9 @@
 DOC VERSION: 1.4.0  |  UPDATED: 2026-11-08 (session S-058)
 
 ```
-CURRENT PHASE:            Phase 2: P2-4a closed (D-060); P2-4b build plan written (Phase2_Plan.md section 9), for approval.
-IMPLEMENTATION APPROVED:  none open. P2-4b code waits for Q-P2-4b-1.
-OPEN BLOCKERS:            Q-P2-4b-1..4
+CURRENT PHASE:            Phase 2, increment P2-4b: built (EmpireIntel 0.7.0), branch p2-4b-window, not merged.
+IMPLEMENTATION APPROVED:  P2-4b (D-061).
+OPEN BLOCKERS:            the user's live gate; merge approval
 ```
 
 Rules: work only on the current phase. A phase is complete only when its exit test passes. Mark tasks `[x]` with date and session.
@@ -98,8 +98,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Static mockup of the window (both modes, Up Next card, parts) published for approval (S-060)
 - [x] Mockup approved; P2-4a **closed** (D-060)
 - [x] P2-4b build plan written: Phase2_Plan.md section 9 (S-061)
-- [ ] **User:** Q-P2-4b-1..4 (approve the P2-4b plan); merge the plan pull request
-- [ ] P2-4b build: EmpireIntel 0.7.0 (window, minimap button, compartment, DataStore faction getter), after approval
+- [x] Q-P2-4b-1..4 approved with the fill path (D-061); #16 merged (9cb1d10)
+- [x] P2-4b built: EmpireIntel 0.7.0 on branch `p2-4b-window`; 485 tests, 21/21 mutants (S-062, D-062)
+- [ ] **User:** the live gate (P2-4b_Report.md section 5, ElvUI on and off); merge approval; close P2-4b
 - [ ] Next check version (setter labels "ok, no return value", SetColorTexture read-back, full UI result per character): not built yet (D-059)
 - [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
 - [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later

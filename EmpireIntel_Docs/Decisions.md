@@ -441,6 +441,15 @@ The user's words: "Q-P2-4b-1: yes, with one addition: SetColorTexture isn't prov
 - Q-P2-4b-1..4 **yes**. Merge #16; build P2-4b as EmpireIntel 0.7.0 (Phase2_Plan.md section 9 plus 9.9).
 - **Fill path (9.9):** every colour fill goes through one function in `Platform/UI.lua`. At window creation it tests `SetColorTexture` with a read-back; if that fails, fills use `SetTexture` on our own white texture plus `SetVertexColor`. The path that ran is reported; tests cover both.
 
+## D-062 P2-4b built: EmpireIntel 0.7.0 | Claude (2026-11-08), within D-060 and D-061
+Built on branch `p2-4b-window`, not merged. Report: P2-4b_Report.md. Choices within the approved plan, open to the user's change:
+- **Position saved as TOPLEFT against the screen** (from `GetLeft`/`GetTop`): the game may re-anchor a moved frame to another corner and format 2 keeps no relative point, so this is what restores exactly.
+- **The window draws at once** with "Reading Legacy challenges..." and updates when the read finishes; the window's reads print no chat line.
+- **"Add a step after"** is two menu items (a level step, a skill step) with the next milestone as the target, edited in place afterwards; no form.
+- **Status icons:** a step is "blocked by a gate" when it starts with levelling for a training gate or a dungeon's level; training alone is not a gate.
+- **The compartment** shows our own mark (`Media/Mark.tga`); the minimap button and the window use the same mark.
+- **Faction from DataStore** is shown as "(DataStore)" next to the emblem on the card.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

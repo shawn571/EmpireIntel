@@ -389,9 +389,9 @@ end)
 
 ---------------------------------------------------------------------------
 T.describe('P2-4a: /ei plan and my plan', function()
-  T.it('/ei plan shows the settings and the commands', function()
+  T.it('/ei plan help shows the settings and the commands', function()
     local W = session({ eidb = today() })
-    local out = run(W, 'plan')
+    local out = run(W, 'plan help')
     T.truthy(find(out, 'plan: mode auto (fastest route), target 16, my plan 0 steps, ignored: none'), dump(out))
     T.truthy(find(out, '/ei plan copy'), dump(out))
   end)
@@ -541,17 +541,7 @@ T.describe('P2-4a static rules', function()
     T.truthy(c:find('P.Legacy.Read', 1, true))
     for _, n in ipairs({ 'GetCategoryList', 'GetAchievementInfo', 'LegacySystem' }) do T.falsy(c:find(n, 1, true), n) end
   end)
-  T.it('no window code (D-056): frames only in Platform/Events.lua and Platform/Scheduler.lua; no UI calls', function()
-    local _, files = F.loadAddon(F.new(), 'EmpireIntel')
-    for _, f in ipairs(files) do
-      local c = code(f)
-      if f ~= 'Platform/Events.lua' and f ~= 'Platform/Scheduler.lua' then T.falsy(c:find('CreateFrame', 1, true), f) end
-      for _, ui in ipairs({ 'UIParent', 'SetPoint', 'CreateTexture', 'CreateFontString', 'Minimap', 'UISpecialFrames',
-        'AddonCompartment', 'GameTooltip', 'SetPortraitTexture' }) do
-        T.falsy(c:find(ui, 1, true), ui .. ' in ' .. f)
-      end
-    end
-    local toc = assert(io.open(DIR .. 'EmpireIntel.toc')):read('*a')
-    T.falsy(toc:find('AddonCompartment', 1, true) or toc:find('IconTexture', 1, true), 'no TOC header for P2-4b')
+  T.it('P2-4a had no window code (D-056); from 0.7.0 the P2-4b static rules apply (test_ei_window.lua)', function()
+    T.truthy(io.open(root .. '/Tests/test_ei_window.lua'), 'the P2-4b rules exist')
   end)
 end)

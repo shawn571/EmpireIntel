@@ -4,8 +4,8 @@ local ADDON, EI = ...
 -- PURPOSE
 --   The saved plan, EmpireIntelDB.plan (saved-data format 2, Phase2_Plan.md 8.7, approved D-055):
 --     mode ('auto' | 'mine'), target (16 | 'reward' | 'next'), mine (the edited steps, in order), ignore (GUIDs left
---     out of auto mode, Q-F4), rates (measured XP per hour per GUID, Q-F2). window and minimap belong to P2-4b and
---     are not written here.
+--     out of auto mode, Q-F4), rates (measured XP per hour per GUID, Q-F2), window and minimap (P2-4b: the window's
+--     size and position, the minimap button's angle and hidden flag).
 --   Also: the step checks reused from #11 (kinds, ranges, character matching), and the XP-rate measurement.
 --
 -- RULES
@@ -101,6 +101,31 @@ end
 function Plan.SetMine(list)
   local ok, why = writable(); if not ok then return nil, why end
   Plan.Section().mine = list
+  return true
+end
+
+--- The saved window geometry { point, x, y, w, h } or nil (format 2, plan.window).
+function Plan.Window()
+  local w = Plan.Section().window
+  return type(w) == 'table' and w or nil
+end
+
+function Plan.SetWindow(g)
+  local ok, why = writable(); if not ok then return nil, why end
+  Plan.Section().window = { point = g.point, x = g.x, y = g.y, w = g.w, h = g.h }
+  return true
+end
+
+--- The minimap button state { hide, angle } (format 2, plan.minimap); always a table.
+function Plan.MinimapState()
+  local m = Plan.Section().minimap
+  if type(m) ~= 'table' then return {} end
+  return m
+end
+
+function Plan.SetMinimap(m)
+  local ok, why = writable(); if not ok then return nil, why end
+  Plan.Section().minimap = { hide = m.hide and true or false, angle = tonumber(m.angle) }
   return true
 end
 

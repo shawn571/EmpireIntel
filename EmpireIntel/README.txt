@@ -1,3 +1,52 @@
+EmpireIntel 0.7.0 - the plan window (P2-4b)
+
+WHAT 0.7.0 ADDS (your approval D-060, D-061; Phase2_Plan.md section 9; the approved mockup)
+  /ei plan          opens or closes the plan window. /ei plan help: the settings in chat (what /ei plan did before).
+  The window: Fastest / My plan, the target (click it: 16 -> next reward -> next point), the Up Next card
+    (the played character's portrait; an alt's race icon with its class icon; the game's faction emblem; the
+    ruleset), the steps with status icons, an amber dot for unverified rules, and a tooltip with each rule
+    and its source. Escape closes it. Drag the title area to move it, the lower-right grip to resize it; size
+    and place are kept. Default 560 x 420.
+  My plan: drag a row to reorder; click a row to edit its target (Enter saves, Escape cancels); right-click:
+    Move to top, Add a level or skill step after, Edit note, Ignore in Fastest, Remove step.
+  Fastest: right-click: Copy the route to my plan, Ignore.
+  The minimap button (our own mark): left-click opens the window, right-click switches the mode, drag moves it
+    along the edge (round or ElvUI's square minimap). /ei minimap off | on.
+  The AddOn compartment has an EmpireIntel entry.
+  Alts show their faction from DataStore until they log in once with 0.7.0 (read only, never saved).
+  In combat the window still works; it uses the last Legacy read and says "from before combat".
+  The game's own fonts; no font is shipped. No Blizzard templates, so ElvUI does not restyle the window.
+  Fills: the window tests SetColorTexture once, when it is first opened; if that does not read back, it uses
+    its own white texture. The chat line "window: fills: ..." says which ran (also in /ei plan help).
+
+RESTART OR RELOAD?
+  Update from 0.6.0: /RELOAD IS ENOUGH (new files and textures in the existing folder; no TOC header change).
+  Saved data: unchanged format 2 (the window's size and place and the minimap button use fields format 2
+  already has).
+
+UPDATE AND TEST (the live gate, about 10 minutes; once with ElvUI on and once with ElvUI off)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload.
+     Open the window three ways: /ei plan, the minimap button, the AddOn compartment entry.
+     Expect the window each time; Escape closes it. Note the chat line "window: fills: ...".
+  2. Fastest: the card shows the character you play with its portrait. Log in on your other character (or
+     /ei plan ignore <the played one>): the card shows the other one with its race icon and class icon.
+     Compare both modes with the mockup.
+  3. My plan (/ei plan copy first if it is empty): drag a row to a new place, click a row and change its target,
+     right-click Move to top and Remove step. /reload and open again: the changes are kept.
+  4. Resize the window with the lower-right grip and move it, /reload, open again: same size and place.
+  5. With ElvUI on and with ElvUI off: the window looks the same; the minimap button sits on the edge of the
+     round minimap and of ElvUI's square one; drag it along the edge.
+  6. Open the window in combat: no error; the footer says "Legacy values from before combat".
+  7. Type /ei alts on a character whose alt has not logged in since 0.7.0: that alt's faction comes from
+     DataStore and matches the game (the window's card shows "(DataStore)" next to the emblem).
+  8. Send a screenshot of each mode, the saved file
+       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
+     and any line with UNEXPECTED or any red Lua error.
+
+ROLLBACK TO 0.6.0
+  Put the 0.6.0 folder back and /reload. Saved data stays as it is (0.6.0 reads format 2 and ignores the
+  window and minimap fields).
+
 EmpireIntel 0.6.0 - the Legacy route planner in chat (P2-4a)
 
 WHAT 0.6.0 ADDS (your approval D-055 and D-056; Phase2_Plan.md section 8)

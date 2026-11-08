@@ -3,6 +3,7 @@ local ADDON, EI = ...
 --
 -- PURPOSE
 --   /ei next     the plan in chat: the fastest route (auto mode, Core/Route.lua) or the user's own steps (mine mode)
+--   /ei plan     opens or closes the plan window (P2-4b, Q-P2-4b-2); /ei plan help: the settings in chat
 --   /ei plan ... the plan settings in chat (mode, target, copy, remove, top, clear, ignore, unignore)
 --   /ei rules    the planner's rules with their sources and status (Core/RouteRules.lua)
 --   Phase2_Plan.md 8.1, 8.4-8.7 (approved D-055, D-056). The window (P2-4b) is not built here.
@@ -341,7 +342,7 @@ local function routeFor(rows, legacy, now)
 end
 
 -- gathers rows (and a Legacy read when allowed), then calls fn(rows, legacy, why, now)
-local function withData(forRoute, fn)
+local function withData(forRoute, fn, quiet)
   local rows = EI.Views.Collect()
   local now = (P.Now())
   local mode = EI.Plan.Mode()
@@ -356,10 +357,13 @@ local function withData(forRoute, fn)
   end)
   if not ok then
     fn(rows, nil, why, now, plan)
-  elseif P.Legacy.busy then
+  elseif P.Legacy.busy and not quiet then
     P.Print('next: reading Legacy challenges (about 2 seconds).')
   end
 end
+
+N.Data = withData            -- for the window (UI/Window.lua)
+N.RouteFor = routeFor
 
 --- /ei next
 function N.Command()
@@ -390,8 +394,9 @@ local function settings(rows)
   say(string.format('mode %s, target %s, my plan %s, ignored: %s, measured XP rates: %d.',
     EI.Plan.Mode() == 'auto' and 'auto (fastest route)' or 'mine (my plan)', tostring(t), plural(#EI.Plan.Mine(), 'step'),
     #ign > 0 and table.concat(ign, ', ') or 'none', nr))
-  say('commands: /ei plan mode auto|mine, /ei plan target 16|reward|next, /ei plan copy, /ei plan remove <n>, /ei plan top <n>, /ei plan clear, /ei plan ignore <name>, /ei plan unignore <name>.')
-  say('saved by the game at /reload or logout.')
+  say('commands: /ei plan (the window), /ei plan help, /ei plan mode auto|mine, /ei plan target 16|reward|next, /ei plan copy, /ei plan remove <n>, /ei plan top <n>, /ei plan clear, /ei plan ignore <name>, /ei plan unignore <name>.')
+  say('/ei plan opens the window; /ei minimap on|off. Saved by the game at /reload or logout.')
+  if P.UI then say('window ' .. P.UI.FillText() .. '.') end
 end
 
 local function done(ok, why, text)
@@ -401,7 +406,16 @@ end
 --- /ei plan <args> (args lower case, trimmed)
 function N.PlanCommand(args)
   local cmd, rest = string.match(args or '', '^(%S*)%s*(.-)$')
-  if cmd == '' then settings(EI.Views.Collect()); return end
+  if cmd == '' then
+    if EI.Window then
+      local ok, err = pcall(EI.Window.Toggle)
+      if not ok then P.Print('UNEXPECTED: the window failed: ' .. tostring(err)) end
+    else
+      settings(EI.Views.Collect())
+    end
+    return
+  end
+  if cmd == 'help' then settings(EI.Views.Collect()); return end
   if cmd == 'mode' then
     local ok, why = EI.Plan.SetMode(rest)
     done(ok, why, 'mode ' .. rest .. '. /ei next shows it.')

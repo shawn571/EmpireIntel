@@ -29,10 +29,10 @@ local function luacGlobals(path)
 end
 
 T.describe('EmpireIntel static rules', function()
-  T.it('TOC: Interface 16001, version 0.6.0, one saved variable, forward slashes, files exist', function()
+  T.it('TOC: Interface 16001, version 0.7.0, one saved variable, forward slashes, files exist', function()
     local toc = read(DIR .. 'EmpireIntel.toc')
     T.truthy(toc:find('^## Interface: 16001\n'))
-    T.truthy(toc:find('## Version: 0.6.0', 1, true))
+    T.truthy(toc:find('## Version: 0.7.0', 1, true))
     T.truthy(toc:find('## SavedVariables: EmpireIntelDB\n', 1, true))
     T.falsy(toc:find('SavedVariablesPerCharacter', 1, true), 'format 1 is account-wide only')
     T.falsy(toc:find('Dependencies', 1, true))
@@ -81,7 +81,8 @@ T.describe('EmpireIntel static rules', function()
     local src = read(DIR .. 'Bridge/DataStoreBridge.lua')
     local code = src:gsub('%-%-[^\n]*', '')
     local approved = { 'IterateCharacters', 'GetCharacterLevel', 'GetCharacterClass', 'GetRestXP', 'IsResting', 'GetLastLogout',
-      'GetModuleLastUpdateByKey', 'GetProfession1Name', 'GetProfession1Rank', 'GetProfession2Name', 'GetProfession2Rank' }
+      'GetModuleLastUpdateByKey', 'GetProfession1Name', 'GetProfession1Rank', 'GetProfession2Name', 'GetProfession2Rank',
+      'GetCharacterFaction' }   -- the P2-2 list plus GetCharacterFaction (P2-4b, D-059)
     local ok = {}
     for _, m in ipairs(approved) do ok[m] = true end
     -- the ALLOWED table lists exactly the approved names
