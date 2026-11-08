@@ -61,7 +61,7 @@ local function sortedGroups(s)
 end
 
 -- Explorer (or any challenge with linked steps): the logged-in character's zone progress
-local function explorerLine(out, ch)
+local function explorerLine(out, ch, noName)
   local d, n = stepsOf(ch)
   local started, furthest = 0, {}
   for _, s in ipairs(ch.steps) do
@@ -81,7 +81,8 @@ local function explorerLine(out, ch)
   for i = 1, math.min(2, #furthest) do
     f[#f + 1] = string.gsub(furthest[i].name, '^Explore ', '') .. ' ' .. furthest[i].d .. '/' .. furthest[i].n .. ' areas'
   end
-  local text = string.format('%s %d of %d on this character', tostring(ch.name), d, n)
+  local text = string.format('%d of %d on this character', d, n)
+  if not noName then text = tostring(ch.name) .. ' ' .. text end
   if started > 0 then text = text .. ' (' .. started .. ' zones started; furthest: ' .. table.concat(f, ', ') .. ')' end
   return text
 end
@@ -165,15 +166,30 @@ function V.Lines(out, mode)
   add(table.concat(g, ' | '))
 
   if mode == 'all' then
-    for _, ch in ipairs(out.challenges) do
+    -- group by group (the order of the line above), then by sub-group, then in the game's order (P3-1 live: 0.5.0
+    -- printed the game's internal order, which mixes the groups)
+    local list = {}
+    for i, ch in ipairs(out.challenges) do
       if ch.legacy and not ch.excluded then
+        local cat = out.categoryById and out.categoryById[ch.category]
+        list[#list + 1] = { ch = ch, group = cat and cat.group or 0, cat = ch.category or 0, i = i }
+      end
+    end
+    table.sort(list, function(a, b)
+      if a.group ~= b.group then return a.group < b.group end
+      if a.cat ~= b.cat then return a.cat < b.cat end
+      return a.i < b.i
+    end)
+    for _, e in ipairs(list) do
+      local ch = e.ch
+      do
         local cat = out.categoryById and out.categoryById[ch.category]
         local where = cat and cat.title or '?'
         local text
         if ch.completed == true then
           text = 'done'
         elseif ch.steps then
-          text = explorerLine(out, ch)
+          text = explorerLine(out, ch, true)
         else
           local d, n = stepsOf(ch)
           if n > 1 then text = d .. ' of ' .. n .. ' (left: ' .. leftNames(ch, V.LEFT_NAMES) .. ')' else text = 'not done' end

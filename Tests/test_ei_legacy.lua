@@ -77,7 +77,7 @@ T.describe('P3-1: /ei legacy all', function()
     T.truthy(find(out, '[Paladin] Experienced Paladin: not done'), dump(out))
     T.truthy(find(out, '[Dungeons] Novice Spelunker: 1 of 2 (left: Wailing Caverns)'), dump(out))
     T.truthy(find(out, '[Raids] Conqueror of the Lair: not done'), dump(out))
-    T.truthy(find(out, '[Adventure] Explorer: Explorer 1 of 6 on this character'), dump(out))
+    T.truthy(find(out, '[Adventure] Explorer: 1 of 6 on this character'), dump(out))
     T.falsy(find(out, 'Internal'), 'hidden challenges are not listed')
     local n = 0
     for _, l in ipairs(out) do if l:find('^%[') then n = n + 1 end end
@@ -226,7 +226,7 @@ T.describe('P3-1: edge cases', function()
     end
     local out = legacy(W, 'legacy all')
     T.truthy(find(out, '[Raids] Conqueror of the Lair: not done'), dump(out))
-    T.truthy(find(out, '[Adventure] Explorer: Explorer 1 of 6 on this character'), dump(out))
+    T.truthy(find(out, '[Adventure] Explorer: 1 of 6 on this character'), dump(out))
   end)
   T.it('hidden categories are read only up to their cap', function()
     local W, EI = session({ legacy25 = 'ids' })
@@ -247,5 +247,31 @@ T.describe('P3-1: edge cases', function()
     local W = session({ legacy25 = 'ids', eidb = db })
     local out = legacy(W)
     T.falsy(find(out, 'Experienced Paladin: Pal Adin'), dump(out))
+  end)
+end)
+
+T.describe('P3-1 (0.5.1): /ei legacy all is ordered group by group', function()
+  T.it('every challenge of a group comes before the next group, sub-groups together', function()
+    local W = session({ legacy25 = 'ids' })
+    local out = legacy(W, 'legacy all')
+    local order = {}
+    for _, l in ipairs(out) do local w = l:match('^%[([^%]]+)%]'); if w then order[#order + 1] = w end end
+    -- groups by id: Classes (Paladin) 15568, Dungeons 15593, Raids 15594, Adventure 15596
+    T.eq(order, { 'Paladin', 'Paladin', 'Dungeons', 'Raids', 'Adventure' })
+    T.falsy(find(out, 'Explorer: Explorer'), 'the name is not repeated')
+  end)
+  T.it('the game listing a later group first does not change the order', function()
+    local W = session({ legacy25 = 'ids' })
+    local real = W.env.GetCategoryList
+    W.env.GetCategoryList = function()
+      local t = real()
+      local r = {}
+      for i = #t, 1, -1 do r[#r + 1] = t[i] end           -- reversed: Adventure's sub-groups first
+      return r
+    end
+    local out = legacy(W, 'legacy all')
+    local order = {}
+    for _, l in ipairs(out) do local w = l:match('^%[([^%]]+)%]'); if w then order[#order + 1] = w end end
+    T.eq(order, { 'Paladin', 'Paladin', 'Dungeons', 'Raids', 'Adventure' })
   end)
 end)

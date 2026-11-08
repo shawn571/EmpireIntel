@@ -1,6 +1,12 @@
-EmpireIntel 0.5.0 - Phase 3 increment P3-1 (/ei legacy)
+EmpireIntel 0.5.1 - Phase 3 increment P3-1 (/ei legacy)
 
-WHAT CHANGED IN 0.5.0
+WHAT CHANGED IN 0.5.1 (from your 0.5.0 test)
+  - /ei legacy all is listed group by group (all Classes, then Tradeskills, ...), sub-groups together.
+    0.5.0 printed the game's internal order, which mixed the groups.
+  - The Explorer line no longer repeats its name ("Explorer: 0 of 46 on this character ...").
+  Update from 0.5.0: /RELOAD IS ENOUGH.
+
+WHAT 0.5.0 ADDED
   New command  /ei legacy  (read only when you type it; nothing is saved):
     Legacy: <earned> of 65 points earned; <available> available, <spent> spent. [pane loaded]
     <group counts: Classes, Tradeskills, Dungeons, Raids, Player vs. Player, Adventure>
@@ -16,12 +22,12 @@ WHAT CHANGED IN 0.5.0
   Everything else (/ei, /ei alts, /ei unlock, /ei rest, /ei milestones) is unchanged from 0.4.0.
 
 RESTART OR RELOAD?
-  Update from 0.4.0: /RELOAD IS ENOUGH (two new files load on /reload on WoW Forever, EI-E-19).
+  Update from 0.5.0 or 0.4.0: /RELOAD IS ENOUGH (new files load on /reload on WoW Forever, EI-E-19).
 
 UPDATE AND TEST (about 5 minutes)
   1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip (the game may be running).
   2. Type  /reload  and wait about 5 seconds.
-  3. Type  /ei version          Expect "version 0.5.0, saved data schema 1 (ok)".
+  3. Type  /ei version          Expect "version 0.5.1, saved data schema 1 (ok)".
   4. BEFORE opening the Legacy window, type  /ei legacy
      Expect "Legacy: 2 of 65 points earned; available and spent: open the Legacy window once this session."
      and the group counts and Closest lines.
@@ -36,7 +42,7 @@ UPDATE AND TEST (about 5 minutes)
   Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
 
 ROLLBACK (one step)
-  Put the 0.4.0 folder back and /reload (addon files only; saved data stays as it is).
+  Put the 0.5.0 (or 0.4.0) folder back and /reload (addon files only; saved data stays as it is).
   To no EmpireIntel at all: delete the folder Interface\AddOns\EmpireIntel (or untick it) and /reload.
   GoldIntel, EmpireIntelCheck and DataStore are not affected either way.
 

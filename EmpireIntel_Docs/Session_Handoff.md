@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-039 | 2026-11-08 | Claude
+
+- **Done:** P3-1 live test 1 recorded; 0.5.1 fixes the `/ei legacy all` order and the Explorer wording.
+- **WAITING FOR:** a look at `/ei legacy all` on 0.5.1, then Q-P3-1c; the formal inn test, then Q-P2-3c.
+
 ## S-038 | 2026-11-08 | Claude
 
 - **Done:** built P3-1 as EmpireIntel 0.5.0 on branch `p3-1-legacy` (D-038). `dist/EmpireIntel_AddOns_v0.5.0.zip`.

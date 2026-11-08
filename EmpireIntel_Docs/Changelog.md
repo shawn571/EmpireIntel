@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-039 | EmpireIntel 0.5.1 (/reload; branch p3-1-legacy)
+- P3-1 live test 1 passed on content (P3-1_Report.md). Fixed: `/ei legacy all` is ordered group by group (D1), and the Explorer line no longer repeats its name (D2). 321 tests pass under Lua 5.1 and 5.3.
+
 ## 2026-11-08 | S-038 | EmpireIntel 0.5.0, increment P3-1 (/reload; branch p3-1-legacy)
 - `/ei legacy` and `/ei legacy all`: earned (from the challenges), available and spent (from the pane), group counts, the closest challenges with what is left, Explorer per character, and level and skill hints from EmpireIntel's records. Read on command, spread over frames, never in combat, nothing saved (D-037, D-038).
 - `Platform/Legacy.lua` is the only caller of the 7 achievement getters and `LegacySystem.GetCurrencyInfo()`. 319 tests pass under Lua 5.1 and 5.3; 20 of 21 guard mutants caught (one equivalent).
