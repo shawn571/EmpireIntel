@@ -4,6 +4,25 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-046 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed; EmpireIntel 0.5.2 installed and checked. No increment open; P3-2, P3-3 locked.
+
+**Approved:** as S-044, plus merge 2 (D-045). **Pending:** merging pull request 2; merge 3 (separate approval); Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches and pull requests:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 634bd63 | merge of #1: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.5-tp1; 244 tests | is main |
+| p2-3-views | 257c2bb | EmpireIntel 0.4.0 | merged (#1) |
+| tp1-legacy-read | 1544eb5 | plus EmpireIntelCheck 0.1.8-tp1, docs runs 6-15 | no: ahead; pull request https://github.com/shawn571/EmpireIntel/pull/2 open, clean |
+| p3-1-legacy | this push | plus EmpireIntel 0.5.2 and the newest docs | no: ahead, merge 3 not approved |
+
+**Installed (as the user has said):** EmpireIntel 0.5.2; EmpireIntelCheck 0.1.8-tp1.
+
+**User's next step:** merge #2 on GitHub ("Create a merge commit") and say so; approve merge 3 when ready.
+
 ## S-045 | 2026-11-08 | Claude
 
 **State:** as S-044. Merge 2 approved (D-045). Pull request https://github.com/shawn571/EmpireIntel/pull/1 is **still open, not merged** (GitHub API); main is 83b3574 (0.3.1, 212 tests pass). The merge 2 pull request (`tp1-legacy-read` into main) is held until #1 is merged. Merge 3 waits for separate approval.

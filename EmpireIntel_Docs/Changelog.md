@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-046 | Merge 1 done; merge 2 pull request (documentation only)
+- main is 634bd63 (merge of shawn571/EmpireIntel#1): EmpireIntel 0.4.0, 244 tests. Pull request shawn571/EmpireIntel#2 (`tp1-legacy-read` into main) opened (D-046).
+
 ## 2026-11-08 | S-044 | 0.5.2 checked live; merge 1 pull request (documentation only)
 - D-044: 0.5.2 steps 2-5 match; pull request shawn571/EmpireIntel#1 (`p2-3-views` into main) opened for the user to merge. Restored the Decisions.md "Open questions" heading lost in S-043.
 

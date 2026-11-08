@@ -77,8 +77,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-3 live test and inn test passed; **closed** (D-041)
 - [x] Rest and milestones labels built as EmpireIntel 0.5.2 (D-041, D-043)
 - [x] 0.5.2 live check passed (D-044)
-- [ ] Merge 1 `p2-3-views` into main: pull request shawn571/EmpireIntel#1 open; the user merges it on GitHub (D-044)
-- [ ] Merges 2 (`tp1-legacy-read`) and 3 (`p3-1-legacy`): wait for separate approval
+- [x] Merge 1 `p2-3-views` into main: merged (634bd63, D-046)
+- [ ] Merge 2 `tp1-legacy-read`: pull request shawn571/EmpireIntel#2 open; the user merges it (D-046)
+- [ ] Merge 3 `p3-1-legacy`: waits for separate approval
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
 ## Later phases: see Architecture.md section 10 (not approved)

@@ -304,6 +304,11 @@ The user's words: "PR 1 merged (merge commit). Check main and confirm it’s at 
 - Checked on GitHub at S-045: pull request 1 is still **open, not merged**; main is 83b3574 (EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1, 212 tests pass under Lua 5.1 and 5.3).
 - The merge 2 pull request is held until pull request 1 is merged: opened now against main, it would also carry all of `p2-3-views`, and merging it first would do merges 1 and 2 at once.
 
+## D-046 Merge 1 done; merge 2 pull request | Recorded (user, 2026-11-08)
+The user's words: "PR 1 now shows Merged. Go ahead: check main and open the merge 2 PR."
+- Checked: main is 634bd63, a merge commit (parents 83b3574 and 257c2bb), with the same tree as `p2-3-views`: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.5-tp1; 244 tests pass under Lua 5.1 and 5.3.
+- Pull request https://github.com/shawn571/EmpireIntel/pull/2 opened: `tp1-legacy-read` (1544eb5) into main; GitHub reports it mergeable, clean (22 commits, 18 files). Merge 3 waits for separate approval.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
