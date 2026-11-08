@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-029 | EmpireIntelCheck 0.1.8-tp1 (/reload; branch tp1-legacy-read)
+- Q-T9 with the user's correction (D-036): counts the 65 challenges by their Legacy reward. Explorer's 46 exploration achievements are saved as its steps, linked through the game's own chain, and shown as "X of 46 done". Criteria are saved compactly. The discovery leftovers are trimmed before any Legacy data.
+- The fixture models the Explorer chain, including an area id that equals an achievement id. 283 tests pass under Lua 5.1 and 5.3; 38 of 38 guard mutants caught across the three Legacy sets.
+
 ## 2026-11-08 | S-028 | Run 8, all 65 challenges read (documentation only)
 - 0.1.7 read 111 achievements: the 65 Legacy challenges (reward "Earn 1 Legacy Point.") and 46 supporting exploration achievements. 1 completed, which matches the pane (EI-E-22). Defects 15 (the size cap dropped the steps) and 16 (wrong totals). The class and crafting rules are confirmed by the game. Q-T9 proposed. No code changed.
 

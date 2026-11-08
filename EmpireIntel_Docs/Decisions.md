@@ -228,7 +228,12 @@ Built on branch `tp1-legacy-read`; `/reload` is enough (D-034).
 - Totals: challenges counted, completed, points offered and earned (sums of each challenge's points), categories counted.
 - Within the Q-T7 limits. No trait-system call (Q-T4 stays unapproved).
 
----
+## D-036 Q-T9: EmpireIntelCheck 0.1.8 counts the 65 challenges and keeps Explorer's 46 steps | Approved (user, 2026-11-08, with correction)
+Built on branch `tp1-legacy-read`; `/reload` is enough.
+- **Defect 16:** a challenge is an achievement whose reward text matches "<n> Legacy Point". Its value is n. The achievement-points field is no longer saved. If no reward text is recognized (for example, a non-English client), every shown achievement counts, and the line says UNEXPECTED.
+- **Explorer steps (user correction):** steps are found by following the game's own links, never by position. A criterion links to another achievement when its asset id is that achievement's id and it is of the complete-achievement type (8) or carries that achievement's name. A step is never a Legacy challenge or a hidden achievement. Each challenge with steps saves `steps = { id, name, completed, earnedByMe }`, and the line shows "<challenge> X of N done". Achievements that are neither challenges nor steps are reported as UNEXPECTED.
+- **Defect 15:** criteria are saved as `text`, `completed`, `quantity` and `required` (the last two only when required > 1), plus `achievement` for a link. `type`, `assetID`, `criteriaID` and `quantityString` are no longer saved. The size trim drops `strongSeen`, `undoc` and `docs` before any Legacy data. Then, within Legacy: the steps' own criteria, then all criteria and the category list. Challenges, step lists and points always stay.
+
 
 ## Open questions for the user (updated S-002, 2026-11-03)
 
@@ -255,6 +260,6 @@ Built on branch `tp1-legacy-read`; `/reload` is enough (D-034).
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
 | Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | **Approved** 2026-11-08, with a and b; built as 0.4.0 (D-033) |
 | Q-P2-3c | Close P2-3 after the live test and the inn test? | Open |
-| Q-T9 | Build EmpireIntelCheck 0.1.8 (defects 15, 16): count only achievements whose reward text names a Legacy point (65), take each one's value from that text, and keep the 46 supporting exploration achievements as "supporting"; save each step as text, done and progress only (drop type, asset id, criteria id and quantity text); and trim the discovery leftovers (`latest`, `strongSeen`, `docs`, `undoc`) before any Legacy data. This changes the shape of the check's saved `legacy` section | Open (recommend: yes) |
+| Q-T9 | Build EmpireIntelCheck 0.1.8 (defects 15, 16): count only achievements whose reward text names a Legacy point (65), take each one's value from that text, and keep the 46 supporting exploration achievements as "supporting"; save each step as text, done and progress only (drop type, asset id, criteria id and quantity text); and trim the discovery leftovers (`latest`, `strongSeen`, `docs`, `undoc`) before any Legacy data. This changes the shape of the check's saved `legacy` section | **Approved** 2026-11-08 with the user's correction: the 46 are the Explorer challenge's steps (done / not done, "X of 46 done"), outside the point count. Built as 0.1.8-tp1 (D-036) |
 | Q-T8 | Build EmpireIntelCheck 0.1.7 (defects 13 and 14), within the Q-T7 limits: read every category `GetCategoryList()` returns, plus their achievements and criteria (all ids from the game); take the points from `LegacySystem.GetCurrencyInfo()`; stop passing `traitCurrencyID` to `C_CurrencyInfo`? Trait-system calls with 4225 stay out (Q-T4) | **Approved** 2026-11-08; built as 0.1.7-tp1 (D-035) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

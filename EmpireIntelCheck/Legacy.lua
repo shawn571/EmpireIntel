@@ -1,5 +1,5 @@
 local ADDON, NS = ...
--- EmpireIntelCheck / Legacy.lua                         (0.1.6-tp1, Q-T7 approved 2026-11-07; 0.1.7-tp1, Q-T8 2026-11-08)
+-- EmpireIntelCheck / Legacy.lua                         (0.1.6 Q-T7; 0.1.7 Q-T8; 0.1.8 Q-T9, 2026-11-08)
 -- Part C: read the Legacy values once the system is unlocked (evidence EI-E-16: the challenges are an
 -- achievement category, the points are shown from currency info).
 --
@@ -190,8 +190,9 @@ local function readCriteria(st, achId)
     if c then
       -- criteriaString, criteriaType, completed, quantity, reqQuantity, charName (not saved), flags, assetID,
       -- quantityString, criteriaID, eligible
+      -- type and assetID are kept only until the steps are linked (L.Link), then dropped (L.Compact)
       table.insert(list, { text = val(c[1]), type = val(c[2]), completed = val(c[3]), quantity = val(c[4]),
-        required = val(c[5]), assetID = val(c[8]), quantityString = val(c[9]), criteriaID = val(c[10]) })
+        required = val(c[5]), assetID = val(c[8]) })
     end
   end
   return list, r and val(r[1]) or nil
@@ -202,8 +203,11 @@ local function challengeFrom(st, a, category)
   -- wasEarnedByMe, earnedBy (not saved), isStatistic
   if not a or not isId(a[1]) then return nil end
   reg(st, a[1])
-  local ch = { id = a[1], name = val(a[2]), points = val(a[3]), completed = val(a[4]), description = val(a[8]),
-    reward = val(a[11]), earnedByMe = val(a[13]), category = category }
+  -- the Legacy value comes from the reward text ("Earn 1 Legacy Point."); the achievement-points field is not it (defect 16)
+  local reward = val(a[11])
+  local value = type(reward) == 'string' and tonumber(string.match(reward, '(%d+) Legacy Point')) or nil
+  local ch = { id = a[1], name = val(a[2]), completed = val(a[4]), description = val(a[8]),
+    reward = reward, legacy = value, earnedByMe = val(a[13]), category = category }
   if a[4] == true and isId(a[5]) then ch.date = string.format('%d-%02d-%02d', 2000 + (a[7] or 0), a[5], a[6] or 0) end
   ch.criteria, ch.criteriaCount = readCriteria(st, a[1])
   return ch
@@ -247,6 +251,54 @@ local function currencyFrom(info)
     if ok then c[k] = val(v) end
   end
   return c
+end
+
+-- Steps (Q-T9, user correction): an achievement without a Legacy reward that a challenge needs, directly or through other
+-- such achievements, is a step of that challenge (Explorer -> Explore Azeroth -> Explore Eastern Kingdoms / Kalimdor -> zones).
+-- A criterion links to an achievement when its assetID is that achievement's id and it is of the "complete achievement"
+-- type (8) or carries that achievement's name; an area id that merely equals an achievement id is not a link.
+L.MAX_STEPS = 200
+
+function L.Link(out)
+  local byId = {}
+  for _, ch in ipairs(out.challenges or {}) do byId[ch.id] = ch end
+  local function children(ch)
+    local list = {}
+    for _, c in ipairs(ch.criteria or {}) do
+      local t = isId(c.assetID) and byId[c.assetID] or nil
+      if t and t ~= ch and (c.type == 8 or c.text == t.name) then
+        c.achievement = t.id
+        list[#list + 1] = t
+      end
+    end
+    return list
+  end
+  for _, ch in ipairs(out.challenges or {}) do
+    if ch.legacy and not ch.excluded then
+      local steps, seen, queue, i = {}, { [ch.id] = true }, children(ch), 1
+      while i <= #queue and #steps < L.MAX_STEPS do
+        local s = queue[i]; i = i + 1
+        if not seen[s.id] and not s.legacy and not s.excluded then
+          seen[s.id] = true
+          s.stepOf = ch.id
+          steps[#steps + 1] = { id = s.id, name = s.name, completed = s.completed, earnedByMe = s.earnedByMe }
+          for _, c in ipairs(children(s)) do queue[#queue + 1] = c end
+        end
+      end
+      if #steps > 0 then ch.steps = steps end
+    end
+  end
+end
+
+-- each criterion is saved as name, done, and progress only when it has a count above 1 (Q-T9)
+function L.Compact(out)
+  for _, ch in ipairs(out.challenges or {}) do
+    for i, c in ipairs(ch.criteria or {}) do
+      local k = { text = c.text, completed = c.completed, achievement = c.achievement }
+      if type(c.required) == 'number' and c.required > 1 then k.quantity = c.quantity; k.required = c.required end
+      ch.criteria[i] = k
+    end
+  end
 end
 
 -- the Legacy points: every scalar field of LegacySystem.GetCurrencyInfo(), saved as-is (Q-T8, EI-E-21)
@@ -321,31 +373,49 @@ function L.Read(reason, unlocked)
     end
     local cats = L.ReadCategories(st, out)
     L.ReadChallenges(st, out, cats, extraAch)
+    L.Link(out)
+    L.Compact(out)
     L.ReadCurrency(st, out, currencyIds)
     out.docs = L.DocsStatus()
   end
   -- totals leave out the categories the pane does not show (Q-T8)
-  local counted, done, offered, earned, excluded = 0, 0, 0, 0, 0
+  -- a challenge is an achievement with a Legacy reward; steps and other achievements are not counted (defect 16)
+  local recognized = false
+  for _, ch in ipairs(out.challenges or {}) do if ch.legacy and not ch.excluded then recognized = true end end
+  local counted, done, offered, earned, excluded, linked, unlinked = 0, 0, 0, 0, 0, 0, 0
+  local steps = {}
   for _, ch in ipairs(out.challenges or {}) do
     if ch.excluded then
       excluded = excluded + 1
-    else
+    elseif ch.legacy or not recognized then
       counted = counted + 1
-      local pv = type(ch.points) == 'number' and ch.points or 0
+      local pv = ch.legacy or 1
       offered = offered + pv
       if ch.completed == true then done = done + 1; earned = earned + pv end
+      if ch.steps then
+        local d = 0
+        for _, s in ipairs(ch.steps) do if s.completed == true then d = d + 1 end end
+        steps[#steps + 1] = { name = ch.name, done = d, total = #ch.steps }
+      end
+    elseif ch.stepOf then
+      linked = linked + 1
+    else
+      unlinked = unlinked + 1
     end
   end
   local cats = 0
   for _, c in ipairs(out.categories or {}) do if not c.excluded then cats = cats + 1 end end
   local cur = out.currency and out.currency[1]
   out.summary = { challenges = counted, completed = done, categories = cats, excludedChallenges = excluded,
-    pointsOffered = offered, pointsEarned = earned,
+    pointsOffered = offered, pointsEarned = earned, steps = steps, stepAchievements = linked, unlinked = unlinked,
+    rewardTextRecognized = recognized,
     points = out.points and out.points.quantity or (cur and cur.quantity), max = cur and cur.maxQuantity, currency = cur and cur.name }
   out.calls = { total = st.calls, counts = st.counts, errors = st.errors, refused = st.refused }
   local db = NS.Core.DB()
   local hist = db.legacy and db.legacy.history or {}
-  table.insert(hist, { at = out.at, points = out.summary.points, completed = done, challenges = counted, earned = earned })
+  local h = { at = out.at, points = out.summary.points, completed = done, challenges = counted, earned = earned }
+  for _, s in ipairs(steps) do h[s.name] = s.done end
+  table.insert(hist, h)
   while #hist > 30 do table.remove(hist, 1) end
   out.history = hist
   db.legacy = out
@@ -356,7 +426,9 @@ end
 function L.Line(out)
   local s = out.summary
   local text = 'Legacy read: ' .. s.challenges .. ' challenges (' .. s.completed .. ' completed, ' .. s.pointsEarned .. ' of '
-    .. s.pointsOffered .. ' points) in ' .. s.categories .. ' categories; '
+    .. s.pointsOffered .. ' Legacy points)'
+  for _, st in ipairs(s.steps or {}) do text = text .. '; ' .. tostring(st.name) .. ' ' .. st.done .. ' of ' .. st.total .. ' done' end
+  text = text .. '; in ' .. s.categories .. ' categories; '
   if out.points then
     local parts = {}
     for k, v in pairs(out.points) do
@@ -371,6 +443,8 @@ function L.Line(out)
   end
   if out.system and not out.system.present then text = text .. '; LegacySystem not loaded (open the pane, then /eicheck legacy)' end
   if (out.calls.counts.refused or 0) > 0 then text = text .. '; UNEXPECTED refused ' .. out.calls.counts.refused end
+  if not s.rewardTextRecognized and s.challenges > 0 then text = text .. '; UNEXPECTED no Legacy reward text recognized: every achievement counted' end
+  if (s.unlinked or 0) > 0 then text = text .. '; UNEXPECTED ' .. s.unlinked .. ' achievements are neither challenges nor steps' end
   return text
 end
 
