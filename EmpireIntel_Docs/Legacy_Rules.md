@@ -18,7 +18,7 @@ Sources, strongest first:
 | Exalted with the four battleground factions | 4 | once per account |
 | Season Journey "Field of Honor": week 4, 7, 10 | 3 | once per account |
 | Dungeons: Novice, Experienced, Master Spelunker | 3 | once per account |
-| Raids: Conqueror of the Wilds (Mount Hyjal), of the Deeps (Barrow Deeps), of the Lair (Onyxia) | 3 | once per account |
+| Raids: Conqueror of the Wilds (Hyjal Summit, 13 bosses), of the Deeps (Barrow Deeps, 8 bosses), of the Lair (Onyxia) | 3 | once per account |
 | Adventure: Lord Valthalak Laid to Rest; Explorer (all Azeroth zones) | 2 | once per account |
 | **Total** | **65** | matches the check's estimate model (`ofChallenges = 65`) |
 
@@ -34,7 +34,12 @@ The web lists will be replaced by the criteria the client returns (0.1.6 saves e
 - The pane's total is **65** ("Legacy Points 1 / 65") [screenshot], which matches section 1.
 - The groups and sub-groups are the achievement categories in EI-E-20 [client]. Classes holds the 9 classes; Tradeskills holds exactly Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring (confirms Q-P2-3a); Player vs. Player holds Ranks, Reputations and Season Journey; Adventure holds Explorer, Eastern Kingdoms and Kalimdor; Dungeons; Raids.
 - **Explorer:** "Have a character with the Explore Azeroth achievement" [screenshot]. **Lord Valthalak Laid to Rest:** "Complete the questline beginning with An Earnest Proposition, and ending with Saving the Best for Last" [screenshot].
-- Per-challenge details (criteria such as each dungeon) come with the 0.1.7 read.
+- **Raids** (3 challenges, boss kills) [screenshot, 2026-11-08]:
+  - **Conqueror of the Wilds:** defeat 13 encounters in **Hyjal Summit**: Bandalar, Time-Lost Battalion, Old Gloomlurker, Kathris the Haunted, Elder Minderel, Council of Thorns, The Wild King, Ancient of Decay, Sylvestris Dusksong, Gharalis the Abyssal, Anara Chillwind, Tracker Stillwind, Nythus the Dreambound.
+  - **Conqueror of the Deeps:** defeat 8 encounters in **the Barrow Deeps**: Chillhowl, Khalith the Dreadspinner, Amethrax, Ravus and Darlissa, Elder Tangleclaw, Well of Sorrow, Del'lynar Songwood, Sonya Darkhallow.
+  - **Conqueror of the Lair:** defeat Onyxia.
+- The client also lists a category **"Tier 1 Gear"** under Raids that the pane does not show. It is not a raid challenge; the user confirmed the Raids page holds only the three boss-kill challenges. Like "Do Not Display", it is read but kept out of the totals.
+- Per-challenge details (criteria such as each dungeon or boss) come with the 0.1.7 read; the read's criteria will be checked against these lists.
 
 ## 2. What the screenshots show [screenshot]
 
