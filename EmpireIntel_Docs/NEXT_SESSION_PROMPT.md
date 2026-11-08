@@ -1,4 +1,4 @@
-You are continuing the EmpireIntel project (GitHub: shawn571/EmpireIntel, private). Until the user merges the open branches, the newest docs are on branch `p3-1-legacy`; if Session_Handoff.md names a different branch, use that one.
+You are continuing the EmpireIntel project (GitHub: shawn571/EmpireIntel, private). The newest docs are on `main`; if the newest section of Session_Handoff.md names a different branch, use that one.
 
 1. Fetch the repository and check out the branch named above.
 2. Read EmpireIntel_Docs/CODE_STANDING_ORDERS.md, then the newest section of EmpireIntel_Docs/Session_Handoff.md, then EmpireIntel_Docs/Project_Bible.md.

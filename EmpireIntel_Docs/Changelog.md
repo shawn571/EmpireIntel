@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-048 | All merges done; next-session prompt names main (documentation only)
+- main is c5434a7 (merge of shawn571/EmpireIntel#3): EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests. NEXT_SESSION_PROMPT.md points at main (D-048).
+
 ## 2026-11-08 | S-047 | Merge 2 done; merge 3 pull request (documentation only)
 - main is e8a30b3 (merge of shawn571/EmpireIntel#2): EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1, 283 tests. Merge 3 (`p3-1-legacy` into main) approved and opened as a pull request (D-047).
 

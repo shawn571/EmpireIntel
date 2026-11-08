@@ -4,6 +4,27 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-048 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed. No phase or increment is approved for new work. P3-2 and P3-3 locked.
+
+**Approved:** everything through D-048. **Pending (the user decides):** merging the docs pull request (`docs-after-merges`); what comes next (no increment approved); Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches and pull requests:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | c5434a7 | merge of #3: EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, docs to S-047; 321 tests | is main |
+| p2-1-foundation, p2-2-alts | | | contained in main |
+| p2-3-views (#1), tp1-legacy-read (#2), p3-1-legacy (#3) | | | merged; no new work |
+| docs-after-merges | this push | main plus this handoff, D-048 and the next-session prompt naming main | no: one docs commit ahead; pull request open |
+
+**Installed (as the user has said):** EmpireIntel 0.5.2 and EmpireIntelCheck 0.1.8-tp1, both matching main.
+
+**Open questions:** what to work on next; Q-T4.
+
+**User's next step:** merge the docs pull request; then name the next piece of work (or none).
+
 ## S-047 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-3 and P3-1 closed; EmpireIntel 0.5.2 installed and checked. No increment open; P3-2, P3-3 locked.
