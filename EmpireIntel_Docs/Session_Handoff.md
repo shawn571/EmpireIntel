@@ -4,6 +4,38 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-059 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, P2-4a: live tests received; findings 1-4 answered (P2-4a_Report.md section 6); evidence EI-E-29..31; D-058. Code unchanged since S-058 (the packages are the ones tested).
+
+**Approved:** Q-P2-4a-1 (edit "my plan" in chat); Q-P2-4a-2: merge #14 after findings 2-4 are answered. **The merge was attempted and refused by the session's permission check ("Merge Without Review")**; not worked around. #14 is open, not merged.
+
+**Pending (the user decides):** confirm the merge of #14 after reading the answers (or merge it yourself); Q-P2-4a-3 (DataStore faction getter, open); the next check version (setter labels, a SetColorTexture read-back), only if wanted; the static mockup, then P2-4b; closing P2-4a; #10 (P3-2 becomes format 3 when next edited; Q-P3-2a later); Q-T4; Stage 1.
+
+**User action noted:** "my plan" still holds 6 entries for C3 (copied before the ignore); `/ei plan copy` again replaces them.
+
+**Branches and pull requests:** main 5e37b2d (0.5.2, 0.1.8-tp1). `p2-4a-planner` (#14): ce9786f plus this handoff; 0.6.0, 0.1.9-tp1, 408 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Installed (as the user has said):** EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1 (both from `p2-4a-planner`).
+
+**User's next step:** read the answers; reply "merge #14" to confirm (or merge it on GitHub).
+
+## S-058 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, P2-4a **built** (D-056 approval, D-057 build choices): EmpireIntel 0.6.0 and EmpireIntelCheck 0.1.9-tp1 on branch `p2-4a-planner`, pull request #14, **not merged**. No window code (P2-4b) before the user approves the static mockup.
+
+**Approved:** through D-056. Q-F3 closed (Explorer after 50, counting zones already explored; Spelunker at any level).
+
+**Pending (the user decides):** the live tests of 0.6.0 and 0.1.9-tp1 (P2-4a_Report.md section 4; steps in each package README); merging #14 (after the tests); Q-P2-4a-1..3 (P2-4a_Report.md section 5); then the mockup and P2-4b; #10 (post-25 plan; when next edited, P3-2 becomes format 3; Q-P3-2a later); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 5e37b2d (#13 merged: D-056, S-057, the prompt fix; EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests). `p2-4a-planner` (#14): main plus P2-4a, 408 tests (Lua 5.1 and 5.3), 20/20 mutants; does **not** match main. `p2-4-next` (#11): kept, reference only, not to merge. `p3-post25-plan` (#10): open. Other branches: merged history, kept.
+
+**Packages (built from `p2-4a-planner`):** `EmpireIntel_AddOns_v0.6.0.zip` sha256 fbdbbf0f0856ac43e3853cb879982938cd7d3770a1ea38a9ab5782ece654c598; `EmpireIntelCheck_AddOns.zip` (0.1.9-tp1) sha256 c44702ec149d160ae9ca71813c5118922957773f380ab9b8424fb3dc7f37444f. Both `/reload`. 0.6.0 moves the saved file to schema 2: back up `EmpireIntel.lua` first (README step 1); 0.5.2 opens schema 2 read-only.
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1.
+
+**User's next step:** install both packages, run the README tests, send the two saved files and the chat lines; then approve (or not) merging #14.
+
 ## S-057 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-4a and EmpireIntelCheck 0.1.9-tp1 **approved for building** (D-056). Building on branch `p2-4a-planner` (not yet pushed when this section was written). No window code (P2-4b) before the user approves the static mockup.

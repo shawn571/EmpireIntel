@@ -1,12 +1,48 @@
-EmpireIntelCheck 0.1.8-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.9-tp1 - EmpireIntel Test Package 1: the Legacy check, plus the UI checks
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
-  Legacy system (points, challenges, perks, cap, trees), plus rested XP and professions, and saves it
-  to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
+  Legacy system and, from 0.1.9, which window pieces the client offers, and saves it to SavedVariables.
+  It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  Update from 0.1.7: /RELOAD IS ENOUGH (files changed only).
+  Update from 0.1.8: /RELOAD IS ENOUGH (files changed in the existing folder, and one new texture file).
+
+WHAT CHANGED IN 0.1.9 (your Q-G1 approval, D-055, D-056; Phase2_Plan.md 8.3.4)
+  - Each check run also runs the UI checks for the coming EmpireIntel window (P2-4b), and saves what the game
+    returned for each: present (with the value), returned nothing, absent, or failed (with the error). Nothing is
+    assumed. Checked: plain frames, buttons, edit boxes, scroll frames, textures (colour, a texture file shipped in
+    this folder, coordinates), fonts, dragging and the mouse wheel (presence only); the portrait of the character
+    you play; race, sex, faction; the ruleset (C_GameRules: Hardcore, experience preset, self-found); the realm
+    name; race and class icons and class colours; faction emblems; Escape-to-close; the AddOn compartment (and which
+    installed addons declare it); the minimap shape and cursor position; the tooltip; ElvUI (loaded or not; never
+    called); which DataStore getters exist for alts (never called).
+  - The test widgets are made once per session under one hidden frame. Nothing is shown, placed, moved or clicked,
+    and the edit box can never take the keyboard. Not run in combat.
+  - New command  /eicheck ui  runs the UI checks now and prints one line.
+  - Saved: the full results of the latest UI check (uiLatest), the counts on each run, and per character (by GUID,
+    never by name) the race, sex, faction and ruleset values (uiChars).
+  - The Legacy checks are unchanged from 0.1.8.
+
+UPDATE AND TEST (about 5 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntelCheck with the one in the zip (the game may be running).
+  2. Type  /reload  and wait about 15 seconds (the check runs 10 seconds after login).
+  3. Type  /eicheck ui   Expect one line like:
+     "UI checks: N present, N returned nothing, N absent, N failed; portrait drawn (or not drawn);
+      ruleset hardcore=<value> preset=<value>; ElvUI loaded (or not loaded)"
+     The numbers and values are whatever the game returns: that is the evidence.
+  4. Log out and in on a second character (a different race or faction if you have one), wait 15 seconds and type
+     /eicheck ui  again. This records that character's race, faction and ruleset.
+  5. Optional, only if you use ElvUI: turn ElvUI off, /reload, /eicheck ui; turn it back on, /reload, /eicheck ui.
+  6. Type  /reload  (this saves the file), then send
+       WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua
+     and the "UI checks:" lines. Note any red Lua error, "addon blocked" popup, or anything appearing on screen
+     (nothing should).
+
+ROLLBACK (one step)
+  Put the 0.1.8 folder back and /reload (addon files only; saved data stays as it is; 0.1.8 ignores the UI records).
+  To remove the check: delete the folder Interface\AddOns\EmpireIntelCheck (or untick it) and /reload.
+  EmpireIntel, GoldIntel and DataStore are not affected either way.
 
 WHAT CHANGED IN 0.1.8 (your Q-T9 approval with your Explorer correction; fixes from your 0.1.7 file)
   - Counts only the 65 Legacy challenges (the achievements whose reward says "Earn 1 Legacy Point."), each worth the

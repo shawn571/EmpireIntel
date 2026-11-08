@@ -218,3 +218,34 @@ function Unit.Progress()
     resting = resting,
   }
 end
+
+---------------------------------------------------------------------------
+-- Race, sex, faction and ruleset (P2-4a, saved-data format 2, Phase2_Plan.md 8.7)
+---------------------------------------------------------------------------
+
+local function str(v) if type(v) == 'string' and v ~= '' then return v end return nil end
+
+--- The played character's race (the client's race file token), sex (1 unknown, 2 male, 3 female), faction, and
+-- ruleset: 'hardcore' / 'normal' from C_GameRules.IsHardcoreActive() (documented, EI-E-11), and the experience
+-- preset from C_GameRules.GetForeverExperiencePreset() (EI-E-09). A field is nil when the client gives nothing
+-- usable: unknown is never guessed. EmpireIntelCheck 0.1.9-tp1 records what each call returns on Forever.
+function Unit.Identity()
+  local _, raceFile = call('UnitRace', 'player')
+  local sex = call('UnitSex', 'player')
+  local faction = call('UnitFactionGroup', 'player')
+  local hc = P.CallIn('C_GameRules', 'IsHardcoreActive')
+  local preset = P.CallIn('C_GameRules', 'GetForeverExperiencePreset')
+  local hcv = hc and hc[1]
+  local pv = preset and preset[1]
+  if P.IsSecret(hcv) then hcv = nil end
+  if P.IsSecret(pv) then pv = nil end
+  local ruleset = nil
+  if hcv == true then ruleset = 'hardcore' elseif hcv == false then ruleset = 'normal' end
+  return {
+    race = str(raceFile),
+    sex = (type(sex) == 'number' and sex >= 1 and sex <= 3) and sex or nil,
+    faction = str(faction),
+    ruleset = ruleset,
+    preset = num(pv),
+  }
+end

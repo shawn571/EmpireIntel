@@ -1,11 +1,11 @@
 # EmpireIntel TODO
 
-DOC VERSION: 1.3.0  |  UPDATED: 2026-11-08 (session S-051)
+DOC VERSION: 1.4.0  |  UPDATED: 2026-11-08 (session S-058)
 
 ```
-CURRENT PHASE:            Phase 1: Test Package 1 built (0.1.0-tp1); waiting for the user's launch-build run (task 1.5).
-IMPLEMENTATION APPROVED:  Phase 1, the check package only (D-017). Nothing else.
-OPEN BLOCKERS:            task 1.5 (live run); Q-9 (web hosts still blocked in this session)
+CURRENT PHASE:            Phase 2, increment P2-4a: built (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1), branch p2-4a-planner, not merged.
+IMPLEMENTATION APPROVED:  P2-4a and the 0.1.9-tp1 UI checks (D-055, D-056). P2-4b (window) waits for the 0.1.9 results and an approved mockup.
+OPEN BLOCKERS:            the user's live tests of 0.6.0 and 0.1.9-tp1; merge approval
 ```
 
 Rules: work only on the current phase. A phase is complete only when its exit test passes. Mark tasks `[x]` with date and session.
@@ -92,8 +92,11 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-4 redirected (D-054): #11 kept, not merged
 - [x] Revised P2-4 plan written: Phase2_Plan.md section 8 (route planner and plan window)
 - [x] Q-P2-4r, a, b (after Q-G1), Q-G1, Q-G2, Q-F1-F5 answered (D-055); 8.5 rested fix; window design direction
-- [ ] Build P2-4a (planner, format 2) and EmpireIntelCheck 0.1.9-tp1 (UI checks), next session
-- [ ] Static mockup of the window (both modes, Up Next card) for approval, before any P2-4b code
-- [ ] **User:** zone Explorer timing (Q-F3, open)
+- [x] P2-4a and 0.1.9-tp1 approved; Q-F3 answered: Explorer after 50, counting zones already explored (D-056)
+- [x] P2-4a built: EmpireIntel 0.6.0 (format 2) and EmpireIntelCheck 0.1.9-tp1 on branch `p2-4a-planner`; 408 tests, 20/20 mutants (S-058, D-057)
+- [ ] **User:** live tests of 0.6.0 and 0.1.9-tp1 (P2-4a_Report.md section 4); merge approval
+- [ ] Static mockup of the window (both modes, Up Next card) from the 0.1.9 results, for approval, before any P2-4b code
+- [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
+- [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later
 
 ## Later phases: see Architecture.md section 10 (not approved)

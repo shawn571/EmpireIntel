@@ -1,10 +1,13 @@
 local ADDON, EI = ...
--- EmpireIntel / Core / Commands.lua                                      (Phase 2, increments P2-1..P2-3; Phase 3, P3-1)
+-- EmpireIntel / Core / Commands.lua                                      (Phase 2, increments P2-1..P2-4a; Phase 3, P3-1)
 --
 -- /ei            this character: level, XP, rested XP, professions, last saved; characters known
 -- /ei alts       every character, own records merged with DataStore (Core/Alts.lua, P2-2)
 -- /ei unlock | rest | milestones   views over the same characters (Core/Views.lua, P2-3)
 -- /ei legacy [all]  Legacy points and challenges, read on command (Core/LegacyView.lua, P3-1)
+-- /ei next      the plan: the fastest route to the Legacy target, or my plan (Core/Next.lua, P2-4a)
+-- /ei plan ...  the plan settings (mode, target, copy, remove, top, clear, ignore, unignore) (Core/Next.lua)
+-- /ei rules     the planner's rules, sources and status (Core/RouteRules.lua)
 -- /ei version    addon version, saved-data schema, store state
 -- /ei off | on   stop or resume all snapshots (kept across logins)
 -- /ei help
@@ -74,6 +77,15 @@ function C.Handle(msg)
   elseif msg == 'legacy' or msg == 'legacy all' then
     local ok, err = pcall(EI.LegacyView.Command, msg == 'legacy all' and 'all' or nil)
     if not ok then P.Print('UNEXPECTED: /ei legacy failed: ' .. tostring(err)) end
+  elseif msg == 'next' then
+    local ok, err = pcall(EI.Next.Command)
+    if not ok then P.Print('UNEXPECTED: /ei next failed: ' .. tostring(err)) end
+  elseif msg == 'plan' or string.sub(msg, 1, 5) == 'plan ' then
+    local ok, err = pcall(EI.Next.PlanCommand, string.sub(msg, 6))
+    if not ok then P.Print('UNEXPECTED: /ei plan failed: ' .. tostring(err)) end
+  elseif msg == 'rules' then
+    local ok, err = pcall(EI.Next.RulesCommand)
+    if not ok then P.Print('UNEXPECTED: /ei rules failed: ' .. tostring(err)) end
   elseif msg == 'version' then
     local st = EI.Store.Status() or {}
     P.Print('version ' .. P.VERSION .. ', saved data schema ' .. tostring(st.schema) .. ' (' .. tostring(st.state) .. ')')
@@ -86,7 +98,7 @@ function C.Handle(msg)
     EI.Snapshot.Start()
     P.Print('ON. This character is saved in about 2 seconds.')
   else
-    P.Print('commands: /ei (this character), /ei alts, /ei unlock, /ei rest, /ei milestones, /ei legacy, /ei version, /ei off, /ei on')
+    P.Print('commands: /ei (this character), /ei alts, /ei unlock, /ei rest, /ei milestones, /ei legacy, /ei next, /ei plan, /ei rules, /ei version, /ei off, /ei on')
   end
 end
 

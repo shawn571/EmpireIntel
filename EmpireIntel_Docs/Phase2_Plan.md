@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.4.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). P2-4 approved (section 7, D-052), built on branch `p2-4-next` (D-053, not merged), then **redirected by the user (D-054): section 8 is the revised plan, for approval.** Section 7 is superseded.**
+DOC VERSION: 1.5.0  |  DATE: 2026-11-08 (S-058)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). Section 7 superseded (D-054). Section 8 approved (D-055, D-056): P2-4a built on branch `p2-4a-planner`, not merged (D-057); P2-4b waits for the UI-check results and the mockup.**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -278,6 +278,8 @@ If the test shows a new folder loads after `/reload`, D-034's open point closes 
 
 ## 8. P2-4 revised: the Legacy route planner (approved 2026-11-08, D-055; P2-4b after Q-G1 and the mockup)
 
+**Build status (S-058):** P2-4a built as EmpireIntel 0.6.0 and the UI checks as EmpireIntelCheck 0.1.9-tp1 on branch `p2-4a-planner` (D-057, P2-4a_Report.md), not merged. No window code (D-056).
+
 The user's direction (2026-11-08, D-054): no plan text file; an in-game window to view and edit the plan; a default plan that is the most efficient path to Legacy points across the characters; rules from route guides, each with its source and labelled unverified until the game confirms it; two modes, the user's edited plan or automatic. Branch `p2-4-next` (pull request #11) is kept, not merged.
 
 ### 8.1 Proposed split
@@ -385,7 +387,7 @@ Every rule has an id, its source tags (Project_Bible section 6: [file], [reporte
 | L-8 | Dungeon level ranges (for example Experienced: Blackfathom Deeps, Gnomeregan, Scarlet Monastery, Razorfen Kraul at about 24-45) | [inherited] classic levels; Forever's new dungeons (Hall of Thanes, Ruins of Lordaeron, Krol'dok Stronghold, ...) have no known ranges | unverified |
 | L-9 | PvP challenges (ranks 3/7/10/13/14, four battleground reputations, Field of Honor weeks 4/7/10) are **not planned before level 60** | user (D-054); Method suggests Rank 3 or 7 early [web: method.gg] | user rule; Method's view noted |
 | L-10 | Raids (Hyjal Summit, Barrow Deeps, Onyxia) and Lord Valthalak are level-60 content | [web: warcraft.wiki.gg "[60D]"]; [inherited] | unverified |
-| L-11 | Explorer needs one character to explore every zone; long; planned after a character reaches 50 | EI-E-22 [file] for the requirement; the timing is [assumed] | requirement confirmed; timing assumed |
+| L-11 | Explorer needs one character to explore every zone; long; planned after a character reaches 50, counting zones already explored on the way (D-056) | EI-E-22 [file] for the requirement; the timing is the user's rule (D-056) | requirement confirmed; timing: user rule |
 | L-12 | Spending cap: 16 points per character at launch; trees are per character, points account-wide | [web: warcraft.wiki.gg, icy-veins.com, method.gg]; client text says a seasonal cap "in total" (EI-E-04) [file]; Hated Legacy shows spending per character [web: curseforge.com] | unverified (Q-P3-2a checks per character) |
 | L-13 | Reward track: 15 Air Rifle, 25 Spectral Bear Cub, 40 Spectral Bear Tabard, 55 Reins of the Spectral Bear | Legacy_Rules.md section 2 [screenshot]; [web: warcraft.wiki.gg] | confirmed |
 | L-14 | Rested XP: 5% of a level per 8 h in an inn | EI-E-28 [file] | confirmed (inn rate only) |
@@ -481,7 +483,7 @@ No new addon folder.
 | Q-G3 | Do you use ElvUI on Forever? Should the window take ElvUI's look when it is loaded, or stay plain? | **Replaced** by the design direction, 8.3.1 (D-055) |
 | Q-F1 | Target: 16 earned (default), with next reward and next point selectable? | **16** (D-055) |
 | Q-F2 | Cost model: assumed hours per level, skill and dungeon, labelled [estimate]; may EmpireIntel learn each character's own XP-per-hour from the levels it sees across sessions (no new game call; saved in `plan.rates`)? | **Yes** (D-055) |
-| Q-F3 | PvP not planned before 60 (your rule), raids and Valthalak at 60, Explorer after a character reaches 50? | **No PvP before 60; raids and Valthalak at 60; Spelunker challenges at any level** (D-055). Zone Explorer: **open** (the answer kept the template "[after 50 / other]") |
+| Q-F3 | PvP not planned before 60 (your rule), raids and Valthalak at 60, Explorer after a character reaches 50? | **No PvP before 60; raids and Valthalak at 60; Spelunker challenges at any level** (D-055). Zone Explorer: **after 50, counting zones already explored on the way; Spelunker stays at any level** (D-056) |
 | Q-F4 | Ignore characters in auto mode (for example the stale beta Shaman), saved per GUID? | **Yes** (D-055) |
 | Q-F5 | When a guide and the game disagree, the game wins and the rule is marked confirmed with the game's value; when two guides disagree (L-5), the plan uses the more cautious value until the game confirms? | **Yes** (D-055) |
 

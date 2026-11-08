@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: EmpireIntel
-## Notes: Your characters' progress toward the Forever Legacy unlock. Phase 3 increment P3-1.
-## Version: 0.5.2
+## Notes: Your characters' Legacy progress and the fastest route to the next points (/ei next). Phase 2 increment P2-4a.
+## Version: 0.6.0
 ## SavedVariables: EmpireIntelDB
 
 Platform/Platform.lua
@@ -21,4 +21,8 @@ Core/Commands.lua
 Core/Alts.lua
 Core/Views.lua
 Core/LegacyView.lua
+Core/RouteRules.lua
+Core/Route.lua
+Core/Plan.lua
+Core/Next.lua
 Core/Boot.lua

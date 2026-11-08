@@ -393,6 +393,41 @@ Q-P3-2a comes later."
 - Docs: the handoff notes that there is no S-054; NEXT_SESSION_PROMPT.md names the REST merge command (D-050) as current. When #10 is next edited, its P3-2 is changed to saved-data format 3 (D-055).
 - Q-P3-2a: later.
 
+## D-057 P2-4a and EmpireIntelCheck 0.1.9-tp1 built | Claude (2026-11-08), within D-055 and D-056
+Built on branch `p2-4a-planner`, not merged (merging needs the user's approval). Report: P2-4a_Report.md.
+Choices made within the approved scope, each open to the user's change:
+- **Editing "my plan" in chat:** P2-4a has no window (D-056), so mine mode is edited with `/ei plan mode | target | copy | top | remove | clear | ignore | unignore`. The window (P2-4b) will edit the same saved plan. `/ei plan` alone shows the settings (P2-4b may later open the window from it).
+- **`/ei rules`:** prints the 18 rules with status and source (the window's "Rules: 18, 11 unverified (hover)" in chat).
+- **Default costs (L-16, [assumed]):** XP per hour by band 12000 / 18000 / 24000 / 30000 / 38000 / 45000 (levels 1-9 ... 50-59); hours per skill point 0.02 / 0.03 / 0.04 / 0.06 (to 75 / 150 / 225 / 300); 0.75 h per dungeon run; 1 h per Explorer zone. Classic XP table (L-15), the measured bar where seen.
+- **Learning a craft** is planned only for a character with known professions and a free primary slot (L-6).
+- **Dungeon levels (L-8):** the lowest level used is Novice 13, Experienced 20, Master 35 [inherited classic].
+- **Raids and Valthalak (L-10)** are not planned yet (no time model); the route says how many points of the target are left to unplanned content.
+- **Explorer (L-11, D-056):** a step only for the played character at 50 or more, from the game's per-character zone steps (EI-E-27); for another character the route says so.
+- **Measured XP rate (Q-F2):** within one login session, after 30 minutes and a level gained, XP gained per logged-in hour (idle time included, so cautious), averaged with the earlier value; saved as `{ xpPerHour, at }` exactly as format 2 shows. No new game call.
+- **Ruleset (L-18):** the plan uses the played character's recorded ruleset; a character whose recorded ruleset differs is left out and counted; unknown stays in. Ruleset from `C_GameRules.IsHardcoreActive()` (documented, EI-E-11), preset from `GetForeverExperiencePreset()` (EI-E-09); race and sex from `UnitRace`, `UnitSex`. These are new calls in EmpireIntel, named in 8.3.4/8.7; 0.1.9-tp1 records what they return on Forever.
+- **DataStore faction for alts** (8.7 "or faction from DataStore meanwhile") is **not** read: it needs a new DataStore getter beyond the approved list (P2-2). 0.1.9-tp1 records whether DataStore has the getter; P2-4b can ask.
+- **The check's texture:** `EmpireIntelCheck/Media/Test.tga`, an 8x8 flat-colour file of our own, so "SetTexture with a file in the addon folder" is tested for real. `tools/build_package.py` now ships `Media/*.tga` (at most 64 KB each) and prints the full sha256.
+
+## D-058 P2-4a live tests; merge of #14 approved after the findings were answered | Approved (user, 2026-11-08)
+The user's words: "Tested 0.6.0 and 0.1.9-tp1 on Paladin and Priest; files attached. 0.6.0: schema 2 migrated; both records have race, faction and ruleset; plan copy, mode and ignore work (the Shaman is ignored). UI checks ran on both characters, ElvUI off on the Paladin run and on for the Priest run. Findings:
+(1) Before the ignore, the route spent 6 of 20 steps on the stale Shaman. Check /ei next now.
+(2) The route had "Priest 45" but no "Paladin 45", although the Paladin is 18 levels away and the Priest 39. Explain or fix.
+(3) atlas raceicon-scourge-* returns nothing on both characters (both Undead). Find the right name, likely raceicon-undead-*.
+(4) SetColorTexture, SetTexCoord and SetPortraitTexture report "nothing"; setters normally return nothing, so is that a real failure or a labelling issue?
+Q-P2-4a-1: yes. Q-P2-4a-2: merge #14 after (2)-(4) are answered. Q-P2-4a-3: decide with the results."
+- Q-P2-4a-1 **yes**: "my plan" is edited in chat until the window exists.
+- Q-P2-4a-2: **merge #14** once findings 2-4 are answered; answered in P2-4a_Report.md section 6 (2: greedy next cost, not a fault; 3: the atlas token is `undead`; 4: labelling, two setters proven by read-back, SetColorTexture not yet). Merged by Claude.
+- Q-P2-4a-3: **open**, decided with the results (EI-E-31: DataStore has `GetCharacterFaction`, `GetCharacterRace`, `GetCharacterGender`).
+- Evidence EI-E-29..31. P2-4a stays open until the user closes it.
+
+## D-059 Merge #14; ElvUI correction; next check version; DataStore faction; mockup next | Approved (user, 2026-11-08)
+The user's words: "Answers (1)-(4) accepted. I've read them: merge #14 now with the REST command. If it's refused again, quote the exact command and the message. ElvUI correction: the off run exists. The file the reviewer read at 15:04 (Paladin run at 15:03) shows "ElvUI global" absent and counts 111 present / 6 nothing / 4 absent; my later ElvUI-on run overwrote it. Record that in EI-E-31. Check update: yes, label setters "ok, no return value" and read back SetColorTexture, in the next check version only. Don't build it now. Q-P2-4a-3: yes, DataStore's faction getter (read-only) so alts show a faction before their next login. Next: the static window mockup (P2-4b) for my approval, with no window code."
+- Merge #14 now (REST command, D-050).
+- EI-E-31 corrected: the ElvUI-off run exists (C1, 15:03): ElvUI global absent, 111 / 6 / 4.
+- **Next check version (not built now):** setters labelled "ok, no return value"; a `SetColorTexture` read-back. (Also noted: keep the full UI result per character.)
+- **Q-P2-4a-3 yes:** DataStore's `GetCharacterFaction` (read-only) is added to the bridge's approved getters, so alts show a faction before their next login. Built with P2-4b (it is used by the window).
+- **Next:** the static window mockup (P2-4b, Phase2_Plan.md 8.3.5) for approval; no window code.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

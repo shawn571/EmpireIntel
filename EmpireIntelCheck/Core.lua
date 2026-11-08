@@ -321,6 +321,11 @@ function C.Slash(msg)
     if NS.Discover then C.Say('undoc: ' .. tostring(NS.Discover.CallUndocumented()), true) end
   elseif msg == 'legacy' then
     if NS.Legacy then C.Say('legacy: ' .. tostring(NS.Legacy.Command()), true) end
+  elseif msg == 'ui' then
+    if NS.UI then
+      local guid = NS.Run and NS.Run.state and NS.Run.state.guid
+      C.Say(NS.UI.Command(guid), true)
+    end
   elseif msg == 'docs' then
     if NS.Discover then
       local r = NS.Discover.LoadDocs()
@@ -329,7 +334,7 @@ function C.Slash(msg)
   else
     local last = db.runs[#db.runs]
     C.Say('status: ' .. (last and (tostring(last.verdict) .. ' (run ' .. tostring(last.id) .. ', ' .. tostring(last.reason) .. ')') or 'no run yet')
-      .. '. Commands: off, on, run, pane, docs, undoc, legacy', true)
+      .. '. Commands: off, on, run, pane, docs, undoc, legacy, ui', true)
   end
 end
 
