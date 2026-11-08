@@ -80,7 +80,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Merge 1 `p2-3-views` into main: merged (634bd63, D-046)
 - [x] Merge 2 `tp1-legacy-read`: merged (e8a30b3, D-047)
 - [x] Merge 3 `p3-1-legacy`: merged (c5434a7, D-048). Main matches the installed versions
-- [ ] Docs pull request (`docs-after-merges`: next-session prompt names main): the user merges it (D-048)
+- [x] Docs pull request (`docs-after-merges`): merged as #4 (5091f39)
+- [x] Merge standing order and docs-only standing approval recorded (D-049); REST merge command (D-050); #5 merged
+- [ ] **User:** merge the `claude-settings` pull request (`.claude/settings.json`, D-049)
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
 ## Later phases: see Architecture.md section 10 (not approved)
