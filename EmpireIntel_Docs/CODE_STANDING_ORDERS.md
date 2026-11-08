@@ -1,6 +1,6 @@
 # Code Standing Orders
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-08  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
+DOC VERSION: 1.1.0  |  DATE: 2026-11-08  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
 
 Quotes in "double quotes" are the user's exact words.
 
@@ -14,6 +14,11 @@ Quotes in "double quotes" are the user's exact words.
 
 - "never start the next increment before I approve it." Every phase and every increment needs its own approval. Planning is not implementation: no code before approval.
 - "Do not merge anything until I approve" (2026-11-08). Branches stay unmerged until the user approves each merge.
+- **Merging (D-049, 2026-11-08):** “Once I approve a merge in chat, you merge it yourself through its pull request (gh pr merge <n> --merge; no squash, no rebase, no direct push to main), then check main and report the merge commit and the test result. Approval is still required for every merge except the docs-only standing approval. Commits and pushes to work branches need no approval. Never force-push or delete branches.”
+  - Steps: `gh pr merge <n> --merge`; then fetch main, report the merge commit, and run `lua5.1 Tests/run.lua` and `lua5.3 Tests/run.lua` on it.
+  - If a merge is blocked (by a permission check or the tool), report the exact message and do not work around it.
+- **Docs-only standing approval (D-049, EmpireIntel only, the same as GoldIntel D-105):** “you may merge docs-only pull requests that change only Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md or the recording of my decisions; tell me each time.”
+  - It covers a pull request whose every changed file is Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md or Decisions.md (or a report's section recording a decision). Any other file in the pull request means it needs the user's approval.
 - Saved-data format changes always wait for the user's approval.
 - Closing an increment is the user's decision, after its live gate.
 
@@ -74,4 +79,4 @@ Quotes in "double quotes" are the user's exact words.
 
 ## 8. New sessions
 
-A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before changing code.
+A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before changing code or merging (except under the docs-only standing approval, section 2).

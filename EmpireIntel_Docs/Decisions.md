@@ -320,6 +320,16 @@ The user's words: "PR 3 shows Merged. Check main and point NEXT_SESSION_PROMPT a
 - NEXT_SESSION_PROMPT.md now names `main`. Pushing to main directly is blocked by the session's permission check, so this change is on branch `docs-after-merges`, opened as a pull request for the user to merge.
 - The merged branches (`p2-3-views`, `tp1-legacy-read`, `p3-1-legacy`) take no new work; new work branches from main.
 
+## D-049 Merge standing order and docs-only standing approval | Decided (user, 2026-11-08)
+The user's words: "Standing order, effective now. Record it in CODE_STANDING_ORDERS.md and NEXT_SESSION_PROMPT.md with my words, and as a decision:"
+“Once I approve a merge in chat, you merge it yourself through its pull request (gh pr merge <n> --merge; no squash, no rebase, no direct push to main), then check main and report the merge commit and the test result. Approval is still required for every merge except the docs-only standing approval. Commits and pushes to work branches need no approval. Never force-push or delete branches.”
+"For EmpireIntel only, add the same docs-only standing approval GoldIntel has (D-105): you may merge docs-only pull requests that change only Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md or the recording of my decisions; tell me each time."
+"Also add .claude/settings.json with {"permissions":{"allow":["Bash(gh pr merge *)"]}} on a docs branch and open a PR. I’ll merge that one myself. If a merge is still blocked after that, tell me the exact message and don’t work around it."
+"PR 4: I’ll merge it now. Next: nothing for now"
+- Recorded in CODE_STANDING_ORDERS.md section 2 (v1.1.0) and NEXT_SESSION_PROMPT.md.
+- GoldIntel is not changed (D-018/D-020); D-105 is cited only.
+- Known limit: in Claude Code cloud sessions the `gh` CLI cannot use GitHub GraphQL, which `gh pr merge` uses; if the merge fails for that reason, the session reports the exact message and stops (the user's rule).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
