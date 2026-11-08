@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-059 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, P2-4a: live tests received; findings 1-4 answered (P2-4a_Report.md section 6); evidence EI-E-29..31; D-058. Code unchanged since S-058 (the packages are the ones tested).
+
+**Approved:** Q-P2-4a-1 (edit "my plan" in chat); Q-P2-4a-2: merge #14 after findings 2-4 are answered. **The merge was attempted and refused by the session's permission check ("Merge Without Review")**; not worked around. #14 is open, not merged.
+
+**Pending (the user decides):** confirm the merge of #14 after reading the answers (or merge it yourself); Q-P2-4a-3 (DataStore faction getter, open); the next check version (setter labels, a SetColorTexture read-back), only if wanted; the static mockup, then P2-4b; closing P2-4a; #10 (P3-2 becomes format 3 when next edited; Q-P3-2a later); Q-T4; Stage 1.
+
+**User action noted:** "my plan" still holds 6 entries for C3 (copied before the ignore); `/ei plan copy` again replaces them.
+
+**Branches and pull requests:** main 5e37b2d (0.5.2, 0.1.8-tp1). `p2-4a-planner` (#14): ce9786f plus this handoff; 0.6.0, 0.1.9-tp1, 408 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Installed (as the user has said):** EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1 (both from `p2-4a-planner`).
+
+**User's next step:** read the answers; reply "merge #14" to confirm (or merge it on GitHub).
+
 ## S-058 | 2026-11-08 | Claude
 
 **Phase and increment:** Phase 2, P2-4a **built** (D-056 approval, D-057 build choices): EmpireIntel 0.6.0 and EmpireIntelCheck 0.1.9-tp1 on branch `p2-4a-planner`, pull request #14, **not merged**. No window code (P2-4b) before the user approves the static mockup.
