@@ -1,6 +1,6 @@
 # EmpireIntel TODO
 
-DOC VERSION: 1.2.0  |  UPDATED: 2026-11-03 (session S-003)
+DOC VERSION: 1.3.0  |  UPDATED: 2026-11-08 (session S-051)
 
 ```
 CURRENT PHASE:            Phase 1: Test Package 1 built (0.1.0-tp1); waiting for the user's launch-build run (task 1.5).
@@ -82,7 +82,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Merge 3 `p3-1-legacy`: merged (c5434a7, D-048). Main matches the installed versions
 - [x] Docs pull request (`docs-after-merges`): merged as #4 (5091f39)
 - [x] Merge standing order and docs-only standing approval recorded (D-049); REST merge command (D-050); #5 merged
-- [ ] **User:** merge the `claude-settings` pull request (`.claude/settings.json`, D-049)
+- [x] `.claude/settings.json` (REST merge permission, D-050): merged by the user as #6 (5377093)
+- [x] Handoff S-050 merged as #7 (b681e42) under the docs-only standing approval
+- [x] Docs-only standing approval extended to TODO.md and Changelog.md (D-051)
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
 ## Later phases: see Architecture.md section 10 (not approved)

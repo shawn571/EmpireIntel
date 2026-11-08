@@ -336,6 +336,11 @@ The user's words: "Use the REST merge command (gh api -X PUT repos/shawn571/Empi
 - The REST command makes the same merge commit through the pull request; the rest of D-049 is unchanged.
 - `.claude/settings.json` (pull request 6) allows `Bash(gh api -X PUT repos/shawn571/EmpireIntel/pulls/*/merge *)` in place of `Bash(gh pr merge *)`.
 
+## D-051 Docs-only standing approval extended to TODO.md and Changelog.md | Decided (user, 2026-11-08)
+The user's words: "Extend the docs-only standing approval to also cover TODO.md and Changelog.md. Record it with my words, then update TODO.md now and merge it under that approval."
+- The D-049 docs-only standing approval now covers pull requests that change only Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md, Decisions.md (the recording of the user's decisions), TODO.md and Changelog.md. Claude tells the user each time.
+- Recorded in CODE_STANDING_ORDERS.md section 2 and NEXT_SESSION_PROMPT.md. First use: this pull request.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

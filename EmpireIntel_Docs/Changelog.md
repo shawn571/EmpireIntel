@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-051 | Docs-only standing approval covers TODO.md and Changelog.md (documentation only)
+- D-051 recorded in CODE_STANDING_ORDERS.md and NEXT_SESSION_PROMPT.md. TODO.md 1.3.0: the settings pull request (#6) and handoff (#7) ticked. Merged by Claude under the extended approval.
+
 ## 2026-11-08 | S-049 | Merge standing order; Claude Code merge permission
 - D-049 (pull request from `docs-merge-standing-order`): Claude merges approved pull requests itself through the pull request; docs-only standing approval for EmpireIntel. D-050: the merge command is `gh api -X PUT repos/shawn571/EmpireIntel/pulls/<n>/merge -f merge_method=merge` (`gh pr merge` is refused here). Pull request #5 merged by Claude under the docs-only standing approval. `.claude/settings.json` allows `Bash(gh api -X PUT repos/shawn571/EmpireIntel/pulls/*/merge *)` (this pull request, merged by the user).
 
