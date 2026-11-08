@@ -29,10 +29,10 @@ local function luacGlobals(path)
 end
 
 T.describe('EmpireIntel static rules', function()
-  T.it('TOC: Interface 16001, version 0.3.1, one saved variable, forward slashes, files exist', function()
+  T.it('TOC: Interface 16001, version 0.4.0, one saved variable, forward slashes, files exist', function()
     local toc = read(DIR .. 'EmpireIntel.toc')
     T.truthy(toc:find('^## Interface: 16001\n'))
-    T.truthy(toc:find('## Version: 0.3.1', 1, true))
+    T.truthy(toc:find('## Version: 0.4.0', 1, true))
     T.truthy(toc:find('## SavedVariables: EmpireIntelDB\n', 1, true))
     T.falsy(toc:find('SavedVariablesPerCharacter', 1, true), 'format 1 is account-wide only')
     T.falsy(toc:find('Dependencies', 1, true))
@@ -99,5 +99,18 @@ T.describe('EmpireIntel static rules', function()
     end
     T.falsy(code:find('ds%s*%.[%w_]+%s*=[^=]') or code:find('ds%s*%b[]%s*=[^=]') or code:find('guids%s*%b[]%s*=[^=]'))
     T.falsy(code:find('EmpireIntelDB', 1, true) or code:find('Store%.'), 'the bridge never touches saved data')
+  end)
+end)
+
+T.describe('P2-3 static rules', function()
+  T.it('Core/Views.lua and Core/Rules.lua make no game call and never touch saved data', function()
+    for _, f in ipairs({ 'Core/Views.lua', 'Core/Rules.lua' }) do
+      local code = read(DIR .. f):gsub('%-%-[^\n]*', '')
+      for _, bad in ipairs({ 'P.Call', 'P.CallIn', 'P.env', 'P.fn', 'Store.', 'EmpireIntelDB', 'DataStoreBridge' }) do
+        T.falsy(code:find(bad, 1, true), bad .. ' in ' .. f)
+      end
+    end
+    local rules = read(DIR .. 'Core/Rules.lua'):gsub('%-%-[^\n]*', '')
+    T.falsy(rules:find('P%.'), 'Rules.lua is pure')
   end)
 end)

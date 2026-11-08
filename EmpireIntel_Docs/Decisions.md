@@ -195,6 +195,14 @@ Branch `p2-2-alts` merged into main.
 - The stale DataStore character (a beta-client leftover) will be deleted by the user in Altoholic. There is no "hide old characters" rule for now, by the user's decision.
 - P2-3 needs its own approval (Q-P2-3); its plan comes first, with no code.
 
+## D-033 P2-3 built: EmpireIntel 0.4.0 | Approved design (user, 2026-11-08, Q-P2-3, Q-P2-3a, Q-P2-3b)
+Built as Phase2_Plan.md section 6, on branch `p2-3-views`:
+- `Core/Rules.lua` (pure rules table with sources) and `Core/Views.lua` (`/ei unlock`, `/ei rest`, `/ei milestones`).
+- The views read the merged list from `Alts.Collect` (refactored out of `/ei alts`, same behaviour). Merge rows gained `xp` and `restAt`, the projection baseline. Neither field is stored.
+- The crafting skills are the user's six (Q-P2-3a); the user will report if the Legacy pane lists others.
+- The classic rest rule is used as a labelled estimate (Q-P2-3b), checked by the inn test. Unknown resting uses the outside rate (lower bound). An own record with no rest reported projects from 0; DataStore without a rest value gets no projection.
+- No saved-data change; no new game or DataStore call (static test). Full client restart (two new files).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -220,5 +228,6 @@ Branch `p2-2-alts` merged into main.
 | Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
-| Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | Open |
+| Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | **Approved** 2026-11-08, with a and b; built as 0.4.0 (D-033) |
+| Q-P2-3c | Close P2-3 after the live test and the inn test? | Open |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |
