@@ -436,6 +436,11 @@ The user's words: "Merge #15 under the docs-only approval. Close P2-4a. Mockup:a
 - Faction: the game's emblem atlases (`HordeEmblem`, `AllianceEmblem`, EI-E-30). Fonts: the game's built-in fonts; no font shipped. Window: resizable, size and position remembered, moderate default (proposed 560 x 420).
 - P2-4b build plan written for approval: Phase2_Plan.md section 9 (Q-P2-4b-1..4). **No window code until it is approved.**
 
+## D-061 P2-4b plan approved with one addition (the fill path); build as 0.7.0 | Approved (user, 2026-11-08, Q-P2-4b-1..4)
+The user's words: "Q-P2-4b-1: yes, with one addition: SetColorTexture isn't proven on Forever (no read-back yet). Draw fills through one path in Theme or UI, test SetColorTexture with a read-back at window creation, and if it fails, fall back to SetTexture on our own white texture plus SetVertexColor (proven by 0.1.9's texture). Report which path ran, and cover both in tests. 2: yes. 3: yes. 4: yes. Merge #16 and build P2-4b as EmpireIntel 0.7.0. End with the package block and the 8-step live gate. I'll test with ElvUI on and off."
+- Q-P2-4b-1..4 **yes**. Merge #16; build P2-4b as EmpireIntel 0.7.0 (Phase2_Plan.md section 9 plus 9.9).
+- **Fill path (9.9):** every colour fill goes through one function in `Platform/UI.lua`. At window creation it tests `SetColorTexture` with a read-back; if that fails, fills use `SetTexture` on our own white texture plus `SetVertexColor`. The path that ran is reported; tests cover both.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

@@ -575,3 +575,11 @@ The approved mockup (D-060): https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1 (
 | Q-P2-4b-2 | `/ei plan` alone opens the window, and the settings text moves to `/ei plan help`? | Yes (8.3.2 already names `/ei plan` as the way to open it) |
 | Q-P2-4b-3 | The compartment registered at run time, not through TOC fields (so `/reload` is enough)? | Yes |
 | Q-P2-4b-4 | Default 560 x 420, limits 440 x 300 to 900 x 800? | Yes |
+
+### 9.9 The fill path (D-061)
+
+- Every colour fill (window, card, rows, badges, menu) goes through **one function**, `UI.Fill`, in `Platform/UI.lua`.
+- At window creation a hidden test texture is filled with `SetColorTexture` and read back (`GetTexture` must return a value, and no error). If the read-back passes, fills use `SetColorTexture`.
+- Otherwise fills use `SetTexture` on our own `Media/White8.tga` (an 8x8 white file; our shipped texture loaded in 0.1.9, EI-E-29) plus `SetVertexColor`, read back with `GetVertexColor`. If both fail: one `UNEXPECTED` line, and the window still opens with text only.
+- The path that ran is reported: once in chat when the window first opens, and in `/ei plan help`. Not saved (no format change).
+- Tests cover both paths and the double failure.
