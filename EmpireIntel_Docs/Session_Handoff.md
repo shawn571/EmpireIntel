@@ -4,6 +4,18 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-050 | 2026-11-08 | Claude
+
+**Phase and increment:** none open; P2-3 and P3-1 closed. User: "Nothing else for now."
+
+**Approved:** everything through D-050. **Pending (the user decides):** the next piece of work (none named); Q-T4 (unapproved); P3-2, P3-3 (locked); Stage 1 (not authorized).
+
+**Main:** 5377093 (merge of #6, user): EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, `.claude/settings.json` allowing the REST merge command (D-050); 321 tests pass under Lua 5.1 and 5.3. All earlier branches are merged (#1-#6); no open pull requests except this handoff's, which Claude merges under the docs-only standing approval (D-049). TODO.md still lists "merge the claude-settings pull request" as open; it is done (#6) and is ticked in the next non-docs-only change.
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1; both match main.
+
+**User's next step:** none for now. A new session starts from NEXT_SESSION_PROMPT.md on main.
+
 ## S-049 | 2026-11-08 | Claude
 
 **Phase and increment:** none open; P2-3 and P3-1 closed. Next: "nothing for now" (user).
