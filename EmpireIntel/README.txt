@@ -1,4 +1,44 @@
-EmpireIntel 0.4.0 - Phase 2 increment P2-3 (views: unlock, rest, milestones)
+EmpireIntel 0.5.0 - Phase 3 increment P3-1 (/ei legacy)
+
+WHAT CHANGED IN 0.5.0
+  New command  /ei legacy  (read only when you type it; nothing is saved):
+    Legacy: <earned> of 65 points earned; <available> available, <spent> spent. [pane loaded]
+    <group counts: Classes, Tradeskills, Dungeons, Raids, Player vs. Player, Adventure>
+    Closest: the challenges with several steps that are furthest along, with what is left
+             Explorer X of 46 on this character (zones started, the furthest ones)
+             the nearest class level and crafting skill challenge, from EmpireIntel's records
+  /ei legacy all   one line per challenge: done, what is left, or not done.
+  - Earned comes from the completed challenges. Available and spent come from the Legacy window's own data, so open
+    the Legacy window once each session; before that the line tells you so and the challenges still show.
+  - Explorer progress is the character you are logged in on (the game keeps exploration per character).
+  - It only reads: the same achievement read functions the check proved, and the Legacy window's points. No talent
+    tree reads. No reads in combat. Spread over a second or two.
+  Everything else (/ei, /ei alts, /ei unlock, /ei rest, /ei milestones) is unchanged from 0.4.0.
+
+RESTART OR RELOAD?
+  Update from 0.4.0: /RELOAD IS ENOUGH (two new files load on /reload on WoW Forever, EI-E-19).
+
+UPDATE AND TEST (about 5 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip (the game may be running).
+  2. Type  /reload  and wait about 5 seconds.
+  3. Type  /ei version          Expect "version 0.5.0, saved data schema 1 (ok)".
+  4. BEFORE opening the Legacy window, type  /ei legacy
+     Expect "Legacy: 2 of 65 points earned; available and spent: open the Legacy window once this session."
+     and the group counts and Closest lines.
+  5. Open the Legacy window (any page), then type  /ei legacy  again.
+     Expect "Legacy: 2 of 65 points earned; 0 available, 2 spent. [pane loaded]" (with your current numbers).
+  6. Compare with the window: earned with "Legacy Points 2 / 65", available with "Available points",
+     the group counts with the Challenges list, and one challenge's steps (for example Experienced Spelunker).
+  7. Type  /ei legacy all  and check a few lines against the window.
+  8. Optional: log in on another character and type  /ei legacy : Explorer shows that character's zones.
+  9. Copy the lines (or screenshots) and say whether they match. Note any line with UNEXPECTED.
+  The inn test for P2-3 (/ei rest) works the same in 0.5.0.
+  Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
+
+ROLLBACK (one step)
+  Put the 0.4.0 folder back and /reload (addon files only; saved data stays as it is).
+  To no EmpireIntel at all: delete the folder Interface\AddOns\EmpireIntel (or untick it) and /reload.
+  GoldIntel, EmpireIntelCheck and DataStore are not affected either way.
 
 WHAT CHANGED IN 0.4.0
   Three new commands, over the same characters /ei alts lists (EmpireIntel's records plus DataStore):
@@ -11,32 +51,6 @@ WHAT CHANGED IN 0.4.0
                     "train to raise max" when the skill cap is in the way. Then an ESTIMATE of the Legacy points
                     from these two groups. Rules come from your list and are labelled as not yet confirmed by the game.
   Nothing new is saved, and no new game or DataStore function is called. /ei, /ei alts and the rest are unchanged.
-
-RESTART OR RELOAD?
-  Update from 0.3.x: /RELOAD IS ENOUGH. The two new files (Core/Rules.lua, Core/Views.lua) load on /reload on
-  WoW Forever (seen 2026-11-08, EI-E-19). First-ever install of the EmpireIntel folder: full client restart.
-
-UPDATE AND TEST (about 5 minutes, plus the inn test over 8 hours or more)
-  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip (the game may be running).
-  2. Type  /reload  and wait about 5 seconds.
-  3. Type  /ei version      Expect "version 0.4.0, saved data schema 1 (ok)".
-  4. Type  /ei unlock       Expect "Legacy is unlocked: <your Paladin> ... reached 25".
-  5. Type  /ei milestones   Check one line per class and per crafting skill against your characters
-                            (levels, skills, max skills), and the "About N Legacy points ... [estimate]" line.
-  6. Type  /ei rest         Check the live line for this character, and the measured values of the others.
-  7. Inn test (for the rest estimate):
-     a. Log in on your Priest, stand in an inn until you see the "resting" message, type /ei rest and note its line,
-        then log out there.
-     b. After 8 hours or more, log in on ANOTHER character and type /ei rest: note the Priest's "now about ..." line.
-     c. Log in on the Priest and type /ei rest: note its live value.
-     Send me the three lines; if b and c differ by less than 10%, the rule holds on Forever.
-  8. Copy the lines of steps 4 to 6 (or take screenshots) and say whether they match the game.
-  Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
-
-ROLLBACK (one step)
-  Put the 0.3.1 folder back and /reload (addon files only; saved data stays as it is).
-  To no EmpireIntel at all: quit the game, then delete the folder Interface\AddOns\EmpireIntel (or untick it).
-  GoldIntel, EmpireIntelCheck and DataStore are not affected either way.
 
 WHAT 0.3.0 AND 0.3.1 ADDED (P2-2)
   - New command  /ei alts : one line per character, this character first, then newest first.

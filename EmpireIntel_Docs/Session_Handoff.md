@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-038 | 2026-11-08 | Claude
+
+- **Done:** built P3-1 as EmpireIntel 0.5.0 on branch `p3-1-legacy` (D-038). `dist/EmpireIntel_AddOns_v0.5.0.zip`.
+- **Branch stack:** `p3-1-legacy` is built on `tp1-legacy-read`, which is built on `p2-3-views`. Nothing is merged; merge order on approval: P2-3, then TP-1, then P3-1.
+- **WAITING FOR:** the P3-1 live gate, then Q-P3-1c; the formal inn test, then Q-P2-3c.
+
 ## S-037 | 2026-11-08 | Claude
 
 - **Done:** run 15 recorded (TP1_Report_Run1.md section 22, EI-E-27); P2-3_Report.md; D-037 (Phase 3, P3-1 only).

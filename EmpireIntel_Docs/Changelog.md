@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-038 | EmpireIntel 0.5.0, increment P3-1 (/reload; branch p3-1-legacy)
+- `/ei legacy` and `/ei legacy all`: earned (from the challenges), available and spent (from the pane), group counts, the closest challenges with what is left, Explorer per character, and level and skill hints from EmpireIntel's records. Read on command, spread over frames, never in combat, nothing saved (D-037, D-038).
+- `Platform/Legacy.lua` is the only caller of the 7 achievement getters and `LegacySystem.GetCurrencyInfo()`. 319 tests pass under Lua 5.1 and 5.3; 20 of 21 guard mutants caught (one equivalent).
+
 ## 2026-11-08 | S-037 | Run 15; P2-3 views check; Phase 3 approvals (documentation only)
 - spentInTree closed as unusable without a tree argument (counter 2 on the open tree, value 0). Exploration areas are per character; challenges and dungeon steps are account-wide (EI-E-27).
 - P2-3_Report.md: the views check passed; the rest projection was within 0.5% (supporting, not the formal inn test).

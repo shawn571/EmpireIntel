@@ -291,7 +291,7 @@ function F.new(opts)
     end
     env.GetCategoryInfo = function(id)
       arg(id); rec('GetCategoryInfo')
-      W.inFlightSeen = env.EmpireIntelCheckDB.inFlight and env.EmpireIntelCheckDB.inFlight.name
+      W.inFlightSeen = env.EmpireIntelCheckDB and env.EmpireIntelCheckDB.inFlight and env.EmpireIntelCheckDB.inFlight.name
       local c = cats[id]; if c then return c[1], c[2], 0 end
     end
     env.GetCategoryNumAchievements = function(id)
