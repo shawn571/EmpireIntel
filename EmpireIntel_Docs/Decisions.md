@@ -221,15 +221,15 @@ EI-E-19: on Forever, `/reload` loads files newly added to an existing addon's TO
 - The P2-4 plan folder will be the first test of a new folder after `/reload`, with a restart as the stated fallback.
 - The 0.4.0 and 0.1.6-tp1 READMEs said "full restart"; that was safe but unnecessary. The repository copy of the 0.4.0 README is corrected.
 
----
-
-
 ## D-035 Q-T8: EmpireIntelCheck 0.1.7 reads all challenge categories and the pane's points | Approved (user, 2026-11-08)
 Built on branch `tp1-legacy-read`; `/reload` is enough (D-034).
 - **Defect 13:** every category `GetCategoryList()` returns is read (EI-E-20). Categories titled "Tier 1 Gear" or "Do Not Display", and anything under them, are read and saved with `excluded = true`, at most 30 challenges each, and are left out of every total.
 - **Defect 14:** the points are every scalar field of `LegacySystem.GetCurrencyInfo()`, saved as-is in `legacy.points`. `C_CurrencyInfo.GetCurrencyInfo` gets an id only from a key named exactly `currencyID`, never `traitCurrencyID`. The currency list is scanned only when the pane gave no points.
 - Totals: challenges counted, completed, points offered and earned (sums of each challenge's points), categories counted.
 - Within the Q-T7 limits. No trait-system call (Q-T4 stays unapproved).
+
+---
+
 ## Open questions for the user (updated S-002, 2026-11-03)
 
 | ID | Question | Status |
