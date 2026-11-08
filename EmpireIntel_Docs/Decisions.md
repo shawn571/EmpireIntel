@@ -341,6 +341,12 @@ The user's words: "Extend the docs-only standing approval to also cover TODO.md 
 - The D-049 docs-only standing approval now covers pull requests that change only Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md, Decisions.md (the recording of the user's decisions), TODO.md and Changelog.md. Claude tells the user each time.
 - Recorded in CODE_STANDING_ORDERS.md section 2 and NEXT_SESSION_PROMPT.md. First use: this pull request.
 
+## D-052 P2-4 approved with the Legacy lock rule | Approved (user, 2026-11-08, Q-P2-4, a-e)
+The user's words: "Q-P2-4: approved, with one change. Add the Legacy lock rule to section 7 and to the tests: “Before any character on the account reaches 25, Legacy is not available: the challenges goal shows ‘Legacy not unlocked yet’ (never met) and the defaults lead with reach 25. Once any character has reached 25, Legacy is available on every character, including ones below 25.” Also fix the header lines that say Phase 2 uses no Legacy API. a: yes. b: yes, under that rule. c: yes. d: yes. e: yes. Merge #9: approved once those edits are in. Then build P2-4 as 0.6.0 plus EmpireIntel_Plan 1."
+And: "Separately, plan only and no code: write a post-25 plan (Phase 3) covering P3-2 saved summary, P3-3 per-tree detail with what Q-T4 would need, and perk goals for the plan file, with questions for me. I’ll approve one increment at a time."
+- Phase2_Plan.md section 7 (plan file format 1 is a contract), with the lock rule in 7.3, 7.4 and 7.7; header lines corrected: P2-1 to P2-3 use no Legacy API; P2-4 uses the P3-1 reads on command only. This narrows D-027 for P2-4 only.
+- Unlocked = any known character at level 25 or higher (EI-E-02).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

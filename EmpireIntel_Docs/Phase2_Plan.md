@@ -1,10 +1,10 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.4.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). P2-4 planned in section 7, waiting for Q-P2-4 (no code).**
+DOC VERSION: 1.4.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). P2-4 approved (section 7, D-052).**
 
-**Phase 2 builds EmpireIntel itself, limited to what works before any character reaches level 25:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). It uses no Legacy API. Everything about Legacy points, perks and the cap waits for the level-25 run and Q-T4.
+**Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
-Out of scope for Phase 2: any Legacy API, trait-system calls, UI windows (commands only), the release pipeline (Stage 1 not authorized), GoldIntel (handled elsewhere).
+Out of scope for Phase 2: any Legacy call beyond the P3-1 reads (used by P2-4 only, D-052), trait-system calls, UI windows (commands only), the release pipeline (Stage 1 not authorized), GoldIntel (handled elsewhere).
 
 ## 1. Increments
 
@@ -81,7 +81,7 @@ What changed since section 1 was written: C1 reached level 25 on 2026-11-07, so 
 | `/ei rest` | One line per character, as in the example below. **Measured:** the rested XP at the last reading, with its source and age. **Projected now:** measured + rate x time since, capped. Rate: 5% of the level's XP bar per 8 hours while resting, a quarter of that outside a rest area; cap 1.5 levels (classic rule, **unverified on Forever**, labelled "estimate"). Shown in XP and levels. The projection needs the XP bar at that level, measured by EmpireIntel. Without it the line says "no projection: XP bar not measured at level N". The character you are playing shows the live value, not a projection |
 | `/ei milestones` | **Classes:** one line per class of the 9 (best character and level, next milestone, levels to go, "all done", or "no character yet"), with a count "N of 27 reached". **Crafting:** one line per crafting skill of the 6 (best character, skill and max skill, next milestone, gap, and "train to raise max" when the max skill blocks it), with "N of 18 reached". **Footer:** "About N Legacy points from these two groups (estimate). PvP, dungeons, raids and adventure (20 points) are not tracked in Phase 2." Gathering and secondary skills are not shown (they are not crafting milestones in the user's list) |
 | Labels | Rules from the user's list read "[rule from your list; not yet confirmed by the game]" until a 0.1.6 read confirms them; then a later version changes the label only. Every projection or estimate says "estimate" |
-| Not in P2-3 | Real Legacy values (points, challenges) in EmpireIntel: they need the Legacy reads the check is testing, and Phase 2 uses no Legacy API (D-027). The plan file and `/ei next`: P2-4 |
+| Not in P2-3 | Real Legacy values (points, challenges) in EmpireIntel: they need the Legacy reads the check is testing, and P2-1 to P2-3 use no Legacy API (D-027; P2-4 uses the P3-1 reads, D-052). The plan file and `/ei next`: P2-4 |
 | Install | **Full client restart** (two new files in the TOC). Version 0.4.0 |
 | Tests (Lua 5.1 and 5.3) | The rules table; each view with own records only, with DataStore, with a DataStore-only character, and with no characters. Rest projection: resting, not resting, the cap, unknown XP bar, a clock that went backwards (never negative), and the live character. Milestones: exactly on a milestone, between milestones, all done, max skill blocking. Every estimate line carries its label (test). Static: no new game call, no DataStore call outside the bridge, no saved-data write from the views |
 | Gate | Tests pass. Live: (1) `/ei unlock`, `/ei milestones` and `/ei rest` match the game for every character. (2) Rest check: log out C2 in an inn and note `/ei rest`. After 8 hours or more, log in and compare the projection with the measured value. Within 10%: the rule is recorded as holding on Forever. Otherwise: the difference is recorded, and the label stays "unverified" |
@@ -107,11 +107,11 @@ Illustrative output (C1, C2 stand for character names):
 | Q-P2-3a | Are the 6 crafting skills Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring (no Jewelcrafting or Inscription on Forever)? | **Approved** 2026-11-08; the user will report if the pane lists others |
 | Q-P2-3b | Use the classic rest rule (5% of a level per 8 h resting, a quarter outside, cap 1.5 levels) as the labelled estimate, checked by the gate's rest test? | **Approved** 2026-11-08 |
 | Q-P2-3c | Close P2-3? | **Closed** 2026-11-08 (D-041) |
-| Q-P2-4, a-e | P2-4 "What next": see section 7.8 | Open |
+| Q-P2-4, a-e | P2-4 "What next": see section 7.8 | **Approved** 2026-11-08, with the Legacy lock rule (D-052) |
 
 ## 7. P2-4 in detail: "What next" (for approval, Q-P2-4)
 
-**Plan only (S-052). No code is written until the user approves Q-P2-4.** Requirements: FR-PLAN-1, FR-PLAN-2, FR-PRE-4, NFR-2, NFR-3. Replaces the draft in Architecture.md section 7 on approval (that draft had a `cap` field, perk goals and `restedBefore`, which this plan drops or defers).
+**Approved 2026-11-08 with the Legacy lock rule (D-052); built as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1.** Requirements: FR-PLAN-1, FR-PLAN-2, FR-PRE-4, NFR-2, NFR-3. Replaces the draft in Architecture.md section 7 on approval (that draft had a `cap` field, perk goals and `restedBefore`, which this plan drops or defers).
 
 ### 7.1 What P2-4 adds
 
@@ -123,7 +123,7 @@ Illustrative output (C1, C2 stand for character names):
 | Validation | Each bad goal is reported as one `UNEXPECTED` line naming its number, and skipped; never guessed (R-17) |
 | Versions | EmpireIntel 0.6.0. EmpireIntel_Plan 1 (format 1). EmpireIntelCheck unchanged |
 
-No new game call: `/ei next` uses the same records as `/ei alts`, `/ei rest` and `/ei milestones` (EmpireIntel's own records plus DataStore through the bridge). Saved-data format 1 is unchanged. Account challenge goals need the Legacy reads of P3-1 (Q-P2-4b).
+No new game call: `/ei next` uses the same records as `/ei alts`, `/ei rest` and `/ei milestones` (EmpireIntel's own records plus DataStore through the bridge), and, for the challenges goal, the Legacy reads of P3-1 (`Platform/Legacy.lua`, on command only; Q-P2-4b approved under the lock rule). Saved-data format 1 is unchanged.
 
 ### 7.2 The plan folder
 
@@ -163,6 +163,11 @@ EmpireIntelPlan = {
 | Rested | `char`, `rested` (levels, 0.05-1.5) | rested XP now (live, or the projection) >= rested | about how many hours more in an inn [estimate] |
 | Challenges | `account = true`, `challenges` (1-65) | Legacy challenges completed >= challenges | how many to go and the closest challenges (as `/ei legacy`) |
 
+**Legacy lock rule (user, 2026-11-08, D-052):** “Before any character on the account reaches 25, Legacy is not available: the challenges goal shows ‘Legacy not unlocked yet’ (never met) and the defaults lead with reach 25. Once any character has reached 25, Legacy is available on every character, including ones below 25.”
+- Unlocked means: any character EmpireIntel or DataStore knows is level 25 or higher (the same test as `/ei unlock`, EI-E-02).
+- Locked: a challenges goal prints `Legacy not unlocked yet` and is never counted as met; `/ei next` makes no Legacy read.
+- Unlocked: the challenges goal is read and shown on any character, whatever its level.
+
 Rules:
 - **Order is priority.** Goals already met are counted in the header, not listed.
 - `char` is a character name, or `Name-Realm` when two characters share a name. Two matches without a realm: `UNEXPECTED`, goal skipped.
@@ -196,7 +201,18 @@ EmpireIntel next (your plan: 5 goals; 0 met, 2 skipped):
 1. ...
 ```
 
-**Without a plan file** (the FR-PRE-4 defaults, in this order, at most 10 lines):
+**Without a plan file, before the unlock** (no character at 25 yet; Legacy not available):
+
+```
+EmpireIntel next (no plan file: default suggestions; Legacy not unlocked yet):
+1. Reach 25: C1 Paladin 22 -> 25 (3 levels to go; illustrative) unlocks Legacy for the account
+2. Rested: ...
+3. Crafting: ...
+```
+
+With a plan before the unlock, a challenges goal reads: `5. Account -> 5 Legacy challenges: Legacy not unlocked yet`.
+
+**Without a plan file, after the unlock** (today; the FR-PRE-4 defaults, in this order, at most 10 lines):
 
 ```
 EmpireIntel next (no plan file: default suggestions):
@@ -243,6 +259,7 @@ If the test shows a new folder loads after `/reload`, D-034's open point closes 
 
 - **Validator:** each goal kind; each error kind (unknown key, wrong type, out of range, no kind, two kinds, unknown character, duplicate name with and without realm, unknown profession, `perk`); version other than 1; no goals.
 - **Planner:** met, not met and unknown for each kind; order kept; met goals counted and not listed; the 10-line limit; the live character versus records; DataStore-only characters.
+- **Legacy lock rule (D-052):** before the unlock, the challenges goal shows "Legacy not unlocked yet", is never met, and no Legacy function is called; the defaults lead with reach 25. After the unlock (one character at 25 or higher, from EmpireIntel's records or DataStore), the challenges goal is read and shown when typed on a character below 25 as well.
 - **Defaults:** before and after the unlock; rested threshold; crafting within 25; nothing to suggest.
 - **Plan folder:** marker without plan (load error); no marker; the example Plan.lua loads in the test harness and validates with no errors.
 - **Static:** no new game call; no saved-data write from `/ei next`; EmpireIntel_Plan's only globals are `EmpireIntelPlan` and `EmpireIntelPlanFolder`; ASCII files.
@@ -252,9 +269,9 @@ If the test shows a new folder loads after `/reload`, D-034's open point closes 
 
 | ID | Question | Recommendation |
 |---|---|---|
-| Q-P2-4 | Approve increment P2-4 as in this section, built as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1, including plan file format 1 (7.3) as a contract? | Approve |
-| Q-P2-4a | Goal kinds in format 1: level, skill, rested and account challenges; perk goals reported "not supported yet" until Q-T4? | Yes |
-| Q-P2-4b | May `/ei next` use P3-1's Legacy reads (already approved code, on command only) for the account challenges goal and the closest challenges? This uses a Legacy read inside a Phase 2 increment (D-027 said Phase 2 uses none). If no, that goal kind is left out of format 1 | Yes: no new call, the reads are proven (P3-1 closed) |
-| Q-P2-4c | Ship the plan folder once, as its own zip with the example plan, and never in EmpireIntel packages? | Yes |
-| Q-P2-4d | Default thresholds: rested at least 0.5 levels; crafting within 25 skill points; at most 10 lines? | Yes; one-line changes later |
-| Q-P2-4e | After the unlock, the "reach 25" default becomes "class milestones not yet earned, closest first" (at most 3, classes with a character only)? | Yes |
+| Q-P2-4 | Approve increment P2-4 as in this section, built as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1, including plan file format 1 (7.3) as a contract? | Approve; **approved** 2026-11-08 |
+| Q-P2-4a | Goal kinds in format 1: level, skill, rested and account challenges; perk goals reported "not supported yet" until Q-T4? | Yes; **approved** 2026-11-08 |
+| Q-P2-4b | May `/ei next` use P3-1's Legacy reads (already approved code, on command only) for the account challenges goal and the closest challenges? This uses a Legacy read inside a Phase 2 increment (D-027 said Phase 2 uses none). If no, that goal kind is left out of format 1 | Yes: no new call, the reads are proven (P3-1 closed); **approved** 2026-11-08 |
+| Q-P2-4c | Ship the plan folder once, as its own zip with the example plan, and never in EmpireIntel packages? | Yes; **approved** 2026-11-08 |
+| Q-P2-4d | Default thresholds: rested at least 0.5 levels; crafting within 25 skill points; at most 10 lines? | Yes; one-line changes later; **approved** 2026-11-08 |
+| Q-P2-4e | After the unlock, the "reach 25" default becomes "class milestones not yet earned, closest first" (at most 3, classes with a character only)? | Yes; **approved** 2026-11-08 |
