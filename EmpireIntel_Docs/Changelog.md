@@ -3,7 +3,7 @@
 Append-only. Newest first.
 
 ## 2026-11-08 | S-036 | spentInTree inventory; `/ei legacy` plan (documentation only)
-- TP1_Report_Run1.md section 21: spentInTree was 0 in all 16 known reads. No file records which tree was open. One single test settles it: a read with the tree page open on a tree whose counter is 1 or more, plus a screenshot.
+- TP1_Report_Run1.md section 21: spentInTree was 0 in all 14 known reads. No file records which tree was open. One single test settles it: a read with the tree page open on a tree whose counter is 1 or more, plus a screenshot.
 - Phase3_Legacy_Plan.md 0.1.0: P3-1 `/ei legacy` (live, on command, no saved data), P3-2 saved summary (optional, needs format approval), P3-3 per-tree detail (needs Q-T4; can wait). Questions Q-P3, Q-P3-1, Q-P3-1a. No code. Phase 3 not authorized.
 
 ## 2026-11-08 | S-035 | Run 14: the second point was Novice Spelunker (documentation only)
