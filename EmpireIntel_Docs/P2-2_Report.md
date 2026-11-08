@@ -1,6 +1,6 @@
 # P2-2 Report: alts from DataStore, live tests
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-06  |  STATUS: **Gate partly passed. DataStore off: pass. DataStore on: not yet seen.**
+DOC VERSION: 1.1.0  |  DATE: 2026-11-08  |  STATUS: **Gate passed (DataStore off 2026-11-06, DataStore on 2026-11-08). Waiting for Q-P2-2c.**
 
 The user's saved file and chat lines were read as data. No names, GUIDs or account details are copied here: C1 and C2 stand for the two characters.
 
@@ -30,6 +30,22 @@ C1's line said "rested unknown". In EmpireIntel's own record, an empty rest mean
 - Saved data is still format 1 with no new key; `meta.version` = 0.3.0, so 0.3.1 was not installed yet.
 - The `/ei alts` lines themselves were not sent.
 
-## 5. Still needed to close P2-2 (Q-P2-2c)
+## 5. Live test 2 (EmpireIntel 0.3.1, DataStore on, build 70862)
 
-`/ei alts` with DataStore ticked, on 0.3.1: every line copied or a screenshot, plus the user's word that the lines match the game.
+The user typed `/ei version` and `/ei alts` and confirmed that everything matched the game.
+
+| Gate item | Result |
+|---|---|
+| `/ei version` | **Pass**: "version 0.3.1, saved data schema 1 (ok)" |
+| DataStore on, header | **Pass**: "3 characters (2 recorded by EmpireIntel, 1 from DataStore only). DataStore read live, not stored." |
+| C1 (this character) | **Pass**: Paladin 25, [self], 308 rested XP (0.01 levels of 34000), resting, four professions including the secondary ones |
+| C2 | **Pass**: Priest 6, **[datastore]**, 10 h ago. DataStore's logout value (1506 XP) is newer than EmpireIntel's last record (1512 XP, read earlier), so DataStore is the base, as the merge rule says. Levels (0.42) come from EmpireIntel's XP bar measured at the same level. Professions are the two primaries DataStore keeps |
+| C3 | **Pass**, as data: Shaman 9, [datastore], another realm, 17 days ago. The user identified it as a **leftover from the beta client** that DataStore/Altoholic never removed. EmpireIntel shows DataStore's data faithfully; the entry is stale, not wrong |
+| D2 fix | **Pass**: no "rested unknown" on own records |
+| No UNEXPECTED or Note line; no Lua error | **Pass** |
+
+Observation O1 (not a defect): DataStore can hold stale characters, such as beta leftovers. The age and realm on the line make them recognizable. They can be removed in Altoholic (the character's delete option), which EmpireIntel then stops showing. Hiding old entries in EmpireIntel would be a new rule and needs the user's decision.
+
+## 6. Closing P2-2 (Q-P2-2c)
+
+Every gate item has passed. Closing is the user's decision (Q-P2-2c). On approval, `p2-2-alts` merges into main.

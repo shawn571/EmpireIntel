@@ -220,5 +220,5 @@ Built as EmpireIntelCheck 0.1.6-tp1 (`Legacy.lua`, Part C) on branch `tp1-legacy
 | Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
 | Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
-| Q-P2-2c | Close P2-2 after the live test? | Open |
+| Q-P2-2c | Close P2-2 after the live test? | Open: gate passed 2026-11-08 (P2-2_Report.md section 5) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |
