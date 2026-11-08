@@ -85,6 +85,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] `.claude/settings.json` (REST merge permission, D-050): merged by the user as #6 (5377093)
 - [x] Handoff S-050 merged as #7 (b681e42) under the docs-only standing approval
 - [x] Docs-only standing approval extended to TODO.md and Changelog.md (D-051)
-- [ ] P2-4 What next and the plan file (plan format needs approval)
+- [x] P2-4 plan written: Phase2_Plan.md section 7 (S-052); no code
+- [x] Q-P2-4, a-e approved with the Legacy lock rule (D-052)
+- [ ] P2-4 build: EmpireIntel 0.6.0 plus EmpireIntel_Plan 1
+- [ ] Post-25 plan (Phase 3: P3-2, P3-3, perk goals), plan only
 
 ## Later phases: see Architecture.md section 10 (not approved)

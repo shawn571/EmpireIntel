@@ -4,6 +4,28 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-053 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, increment P2-4 **approved** with the Legacy lock rule (D-052); build next as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1. Also asked: a post-25 plan (Phase 3: P3-2, P3-3, perk goals), plan only.
+
+**Approved:** through D-052, including merging the plan pull request #9 after the lock-rule edits (done in this push).
+
+**Pending:** the P2-4 build and its live gate; the post-25 plan and its questions; Q-T4; Stage 1.
+
+**Installed:** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1.
+
+## S-052 | 2026-11-08 | Claude
+
+**Phase and increment:** none open. P2-4 ("What next") **planned** in Phase2_Plan.md section 7, at the user's request ("Plan only, no code and no build"). Waiting for Q-P2-4 and Q-P2-4a-e.
+
+**Pending (the user decides):** Q-P2-4 (approve P2-4 as 0.6.0 plus EmpireIntel_Plan 1, with plan file format 1); a (goal kinds); b (Legacy reads in a Phase 2 increment); c (plan folder shipped once); d (default thresholds); e (default after the unlock). Merging the plan pull request (`p2-4-plan`): it changes Phase2_Plan.md, outside the docs-only standing approval, so it waits for the user. Q-T4, P3-2, P3-3, Stage 1 as before.
+
+**Main:** a9dca1d (EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests). Branch `p2-4-plan`: main plus this plan, pull request open.
+
+**Installed:** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1; both match main.
+
+**User's next step:** read Phase2_Plan.md section 7, answer Q-P2-4 and a-e, and approve (or not) merging the plan pull request.
+
 ## S-051 | 2026-11-08 | Claude
 
 **State:** as S-050, plus D-051: the docs-only standing approval also covers TODO.md and Changelog.md. TODO.md updated (1.3.0). This pull request is merged by Claude under that approval. No open pull requests after it. Nothing pending; next step: none for now.
