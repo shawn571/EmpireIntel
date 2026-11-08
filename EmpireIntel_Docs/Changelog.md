@@ -2,6 +2,12 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-056 | Revised P2-4 approved; rested fix; window design direction (documentation only)
+- D-055. Phase2_Plan.md section 8: rested XP saves R in full (L-17, sourced); Spelunker at any level; Hardcore kept apart (L-18); window design direction, Up Next card, extended UI checks, mockup gate; format 2 roster fields; answers in 8.9.
+
+## 2026-11-08 | S-055 | P2-4 redirected; revised plan for approval (documentation only)
+- D-054. Phase2_Plan.md section 8: P2-4a route planner (rules table with sources, "fastest" in estimated hours, target 16, both modes, saved-data format 2) and P2-4b plan window (minimap button, ElvUI, UI API checks first). Section 7 superseded; #11 kept unmerged.
+
 ## 2026-11-08 | S-053 | P2-4 approved with the Legacy lock rule (documentation only)
 - D-052. Phase2_Plan.md 1.4.0: the lock rule in sections 7.3, 7.4 and 7.7; the header lines now say P2-1 to P2-3 use no Legacy API and P2-4 uses the P3-1 reads.
 

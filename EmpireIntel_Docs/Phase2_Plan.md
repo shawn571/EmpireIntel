@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.4.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). P2-4 approved (section 7, D-052).**
+DOC VERSION: 1.4.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). P2-4 approved (section 7, D-052), built on branch `p2-4-next` (D-053, not merged), then **redirected by the user (D-054): section 8 is the revised plan, for approval.** Section 7 is superseded.**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -109,7 +109,7 @@ Illustrative output (C1, C2 stand for character names):
 | Q-P2-3c | Close P2-3? | **Closed** 2026-11-08 (D-041) |
 | Q-P2-4, a-e | P2-4 "What next": see section 7.8 | **Approved** 2026-11-08, with the Legacy lock rule (D-052) |
 
-## 7. P2-4 in detail: "What next" (for approval, Q-P2-4)
+## 7. P2-4 in detail: "What next" (for approval, Q-P2-4) -- SUPERSEDED by section 8 (D-054)
 
 **Approved 2026-11-08 with the Legacy lock rule (D-052); built as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1.** Requirements: FR-PLAN-1, FR-PLAN-2, FR-PRE-4, NFR-2, NFR-3. Replaces the draft in Architecture.md section 7 on approval (that draft had a `cap` field, perk goals and `restedBefore`, which this plan drops or defers).
 
@@ -275,3 +275,215 @@ If the test shows a new folder loads after `/reload`, D-034's open point closes 
 | Q-P2-4c | Ship the plan folder once, as its own zip with the example plan, and never in EmpireIntel packages? | Yes; **approved** 2026-11-08 |
 | Q-P2-4d | Default thresholds: rested at least 0.5 levels; crafting within 25 skill points; at most 10 lines? | Yes; one-line changes later; **approved** 2026-11-08 |
 | Q-P2-4e | After the unlock, the "reach 25" default becomes "class milestones not yet earned, closest first" (at most 3, classes with a character only)? | Yes; **approved** 2026-11-08 |
+
+## 8. P2-4 revised: the Legacy route planner (approved 2026-11-08, D-055; P2-4b after Q-G1 and the mockup)
+
+The user's direction (2026-11-08, D-054): no plan text file; an in-game window to view and edit the plan; a default plan that is the most efficient path to Legacy points across the characters; rules from route guides, each with its source and labelled unverified until the game confirms it; two modes, the user's edited plan or automatic. Branch `p2-4-next` (pull request #11) is kept, not merged.
+
+### 8.1 Proposed split
+
+| Increment | Delivers | Why separate |
+|---|---|---|
+| **P2-4a Planner** | The rules table, the route engine (8.4, 8.5), the saved plan (format 2, 8.7), both modes, and `/ei next` in chat | Testable offline; no new UI calls |
+| **P2-4b Plan window** | The window to view and edit the plan, the optional minimap button, ElvUI support (8.3) | Needs the UI API checks first (8.3.4); its own live test |
+
+One approval each (Q-P2-4r-a, Q-P2-4r-b). P2-4a is useful on its own; P2-4b reads and writes the same saved plan.
+
+### 8.2 What is reused from #11 (`p2-4-next`)
+
+| From #11 | In the revised plan |
+|---|---|
+| `Core/Next.lua` goal lines: gap, rested now, "earns ...", unknown never met, the 10-line limit, `[datastore, age]` | **Reused** for each step of the route, in chat and in the window |
+| The Legacy lock rule (D-052) and its tests | **Reused unchanged** |
+| `Core/Plan.lua` goal checks (kinds, ranges, character matching, perk "not supported yet") | **Reused** to check each edited step before it is saved; the text-file loader is dropped |
+| `LegacyView.Closest`, the challenge-name tables (`CLASS_TITLES`, `CRAFT_TITLES`, `CRAFT_PERSON`) | **Reused** |
+| `/ei next` defaults (class milestones, rested, crafting within 25) | **Replaced** by the route engine (auto mode) |
+| The `EmpireIntel_Plan` folder, `Marker.lua`, plan file format 1, `P.PlanGlobals` | **Dropped** (never merged or installed) |
+| Tests (43) | About 30 carry over (goal lines, lock rule, checks); the file-loading tests are dropped |
+
+### 8.3 The plan window (P2-4b)
+
+#### 8.3.1 Design direction (the user, 2026-11-08, D-055)
+
+1. **Unique to EmpireIntel.** Own textures and fonts on plain frames; **no Blizzard templates** (no `BackdropTemplate`, `UIPanelButtonTemplate`, scroll-frame or dropdown templates), so ElvUI, which reskins Blizzard templates, does not change the window. Art is original: flat colour fills, our own small icon sheet shipped in the EmpireIntel folder. Nothing from Linear's branding.
+2. **Look and feel inspired by Linear:** dark, dense, calm list rows with status icons; drag to reorder; click to edit in place; right-click for actions; **no forms**.
+3. **"Up Next" card on top:** the next character's portrait, class colour, faction banner and ruleset badge; then the step, the points it earns and the estimated time, so the user sees what to play at a glance.
+4. **A static mockup first** (8.3.5): no window code until the user approves it.
+
+#### 8.3.2 Layout (to be refined in the mockup)
+
+```
++-------------------------------------------------------------------------+
+|  EmpireIntel        [ Fastest | My plan ]           2 / 16   x          |
+|  +-------------------------------------------------------------------+  |
+|  | UP NEXT                                                           |  |
+|  | [portrait]  C2  Priest 6        [Alliance banner] [Normal]        |  |
+|  |  (class-     Reach level 10, then Tailoring 150                   |  |
+|  |   coloured   +1 Legacy point (Journeyman Tailor)   ~2 h [estimate]|  |
+|  |   ring)      gate: Journeyman needs level 10  [web, unverified]   |  |
+|  +-------------------------------------------------------------------+  |
+|   o  C2 Priest 6      Enchanting 150            28/75   +1   ~3 h     |
+|   o  C1 Paladin 27    Experienced Spelunker      1/10    +1   ~9 h     |
+|   o  C2 Priest 6      Level 25                   6       +1   ~6 h     |
+|   *  C1 Paladin 27    Level 45                   27      +1   ~14 h    |
+|   ...                                                                   |
+|  Next reward 15: Air Rifle          Rules: 18, 12 unverified (hover)    |
++-------------------------------------------------------------------------+
+```
+
+- **Rows:** one line each, about 22 px high: a status icon (open, in progress, done, blocked by a gate, unknown), the character in class colour, the step, now, points, estimated time. Unverified rules show a small dot; hover shows the rules and their sources.
+- **Fastest mode:** read only; rows cannot be dragged. Right-click: "Copy to my plan", "Ignore this character".
+- **My plan mode:** drag a row to reorder; click a cell to edit it in place (a target number, a note); right-click: move to top, remove, ignore character, add a step after (character, kind and target chosen from a short inline list, not a form).
+- **Open:** `/ei plan`, the minimap button, or the AddOn compartment if present. Escape closes it; position and size are remembered (format 2).
+- **Combat:** works in combat (not a secure frame), with no Legacy read in combat ("values from before combat").
+- **Saved:** edits are saved by the game at `/reload` or logout; the window says once that a crash loses edits since the last `/reload`.
+
+#### 8.3.3 Minimap button and AddOn compartment (Q-G2: own button plus the compartment)
+
+- Our own round button with our own icon: left-click opens the window, right-click switches the mode, drag moves it along the edge; `/ei minimap off` hides it.
+- Placed using `GetMinimapShape` when present, so it sits on the edge of ElvUI's square minimap too.
+- An AddOn compartment entry if the client has one (8.3.4).
+- **ElvUI:** because the window uses no Blizzard templates, ElvUI leaves it alone; no call into ElvUI is needed. Live test with ElvUI on and off.
+
+#### 8.3.4 API checks needed first (a check package, Q-G1)
+
+No UI code has run in EmpireIntel yet; GoldIntel's evidence covers events and frames for data, not windows. **Approved (Q-G1, D-055):** EmpireIntelCheck 0.1.9-tp1 runs these checks alongside the P2-4a build. Existence checks, plus hidden test frames and textures inside `pcall`, hidden and never shown. Each result is recorded as present, absent or failed, with evidence (the value, or a screenshot the user sends):
+
+| Check | Why |
+|---|---|
+| Plain widgets with no template: `Frame`, `Button`, `EditBox`, `ScrollFrame`; `Texture:SetColorTexture`, `SetTexture` with a file in the addon folder, `SetTexCoord`; `CreateFont` / `SetFont`; `SetMovable`, `RegisterForDrag`, `StartMoving`, mouse wheel | the window, rows, in-place edit, drag to reorder, own scrolling (no templates, 8.3.1) |
+| **Portrait of the live character:** `SetPortraitTexture(texture, 'player')` | the Up Next card |
+| **Race and gender icons for logged-out alts:** `UnitRace('player')`, `UnitSex('player')` and their ids for the live character (to record per character); the race-icon art (atlas names such as `raceicon-<race>-<gender>` via `C_Texture.GetAtlasInfo`, or the classic race-icon texture and coordinates) | a portrait stand-in for alts, which the game cannot draw |
+| **Class icons:** `CLASS_ICON_TCOORDS` with the class-icon texture, or atlas `classicon-<class>`; class colours: `C_ClassColor.GetClassColor` or `RAID_CLASS_COLORS` | the card and the rows |
+| **Faction emblems:** `UnitFactionGroup('player')`; emblem art (atlas or `Interface\TargetingFrame\UI-PVP-<Faction>`) | the faction banner |
+| **Ruleset and realm type, per character:** `C_GameRules.IsHardcoreActive()`, `GetForeverExperiencePreset()` (EI-E-09, EI-E-11 [file]), `IsSelfFoundAllowed()`; the realm name and, if exposed, its type; and what DataStore keeps (faction yes, ruleset unknown, Reference_DataStore_Altoholic.md) | the ruleset badge, and L-18 (never mix Hardcore and normal points) |
+| `UISpecialFrames` | Escape closes the window |
+| `AddonCompartmentFrame` and the TOC fields `AddonCompartmentFunc` | the compartment entry, as Hated Legacy uses |
+| `Minimap`, `GetMinimapShape`, `GetCursorPosition` | the minimap button and dragging |
+| `GameTooltip` | row tooltips |
+| `C_AddOns.IsAddOnLoaded('ElvUI')` and ElvUI's global `ElvUI` (presence only) | the ElvUI look |
+
+No other call. The results decide which art the card can show for alts; anything absent falls back to the class icon and class colour.
+
+#### 8.3.5 Static mockup before any window code
+
+Before P2-4b code: a static mockup (an image or page, not the addon) of the window in both modes, with the Up Next card, built from today's characters (names replaced) and the P2-4a route. The user approves it, or asks for changes, before any window code is written.
+
+### 8.4 The rules table and its sources
+
+Every rule has an id, its source tags (Project_Bible section 6: [file], [reported], [inferred], [assumed], [inherited], plus [web: site, date]), and a status: **confirmed** (the client or the user showed it) or **unverified**. Unverified rules are labelled in chat and in the window. A rule becomes confirmed only by a game read or a user report, recorded in Compatibility_Notes.md.
+
+| Id | Rule | Source | Status |
+|---|---|---|---|
+| L-1 | The first character to 25 unlocks Legacy for the account; after that, Legacy is available on every character (D-052) | EI-E-02 [file]; user (D-052) | confirmed |
+| L-2 | Class challenges at 25, 45, 60 per class, once per account; a second character of the same class earns nothing | EI-E-22 [file]; [web: warcraft.wiki.gg, 2026-11-02] | confirmed (ids); "nothing for a second" [web] unverified |
+| L-3 | Craft challenges at 150, 225, 300 for the six crafts; gathering and secondary skills give none | EI-E-22 [file] | confirmed |
+| L-4 | Training gates: Journeyman needs character level 10, Expert level 20, Artisan level 35 | [web: wow-professions.com, epiccarry.com]; [inherited] classic | unverified |
+| L-5 | Skill needed to train the next rank: 50 / 125 / 200 (sources disagree: 75 / 150 / 225) | [web: epiccarry.com, wow-professions.com; rankedboost.com] | unverified, conflicting |
+| L-6 | Two primary professions per character, so all six crafts at 225 need three characters at level 20 or more | [inherited] classic; matches Method's "3 level 20 characters" [web: method.gg, 2026-10-08] | unverified |
+| L-7 | Dungeon challenges: Novice 6, Experienced 10, Master 17 dungeons (the game's lists); progress is account-wide | EI-E-23, EI-E-27 [file] | confirmed |
+| L-8 | Dungeon level ranges (for example Experienced: Blackfathom Deeps, Gnomeregan, Scarlet Monastery, Razorfen Kraul at about 24-45) | [inherited] classic levels; Forever's new dungeons (Hall of Thanes, Ruins of Lordaeron, Krol'dok Stronghold, ...) have no known ranges | unverified |
+| L-9 | PvP challenges (ranks 3/7/10/13/14, four battleground reputations, Field of Honor weeks 4/7/10) are **not planned before level 60** | user (D-054); Method suggests Rank 3 or 7 early [web: method.gg] | user rule; Method's view noted |
+| L-10 | Raids (Hyjal Summit, Barrow Deeps, Onyxia) and Lord Valthalak are level-60 content | [web: warcraft.wiki.gg "[60D]"]; [inherited] | unverified |
+| L-11 | Explorer needs one character to explore every zone; long; planned after a character reaches 50 | EI-E-22 [file] for the requirement; the timing is [assumed] | requirement confirmed; timing assumed |
+| L-12 | Spending cap: 16 points per character at launch; trees are per character, points account-wide | [web: warcraft.wiki.gg, icy-veins.com, method.gg]; client text says a seasonal cap "in total" (EI-E-04) [file]; Hated Legacy shows spending per character [web: curseforge.com] | unverified (Q-P3-2a checks per character) |
+| L-13 | Reward track: 15 Air Rifle, 25 Spectral Bear Cub, 40 Spectral Bear Tabard, 55 Reins of the Spectral Bear | Legacy_Rules.md section 2 [screenshot]; [web: warcraft.wiki.gg] | confirmed |
+| L-14 | Rested XP: 5% of a level per 8 h in an inn | EI-E-28 [file] | confirmed (inn rate only) |
+| L-15 | XP per level (the bar) | EI-E-14 for the levels measured [file]; [inherited] classic table for the rest | partly confirmed |
+| L-16 | Time costs (8.5): hours per level by level band, per 25 skill points, per dungeon run | [assumed] defaults, tuned by the user's own measured rates where available | unverified (estimates) |
+| L-17 | While rested, kills give double XP and the pool drops by the bonus given, so a pool of R saves R of kill XP; quest and exploration XP get no bonus | [web: warcraft.wiki.gg "Experience": "double XP from killing monsters", quests not listed]; [web: wowhead.com classic rested guide: kills use the pool, other XP does not]; [inherited] classic server behaviour: the bonus taken from the pool equals the bonus given; the user's statement (D-055). Accrual matches the Classic display (EI-E-28) | unverified on Forever. **Check (no code):** note `/ei` (XP and rested) before and after one kill while rested: XP should rise by twice the kill's normal XP and rested should fall by the kill's normal XP |
+| L-18 | Hardcore characters' Legacy points are kept apart from the normal ruleset's | [web: warcraft.wiki.gg "account-wide, with the exception of Hardcore characters"; warcrafttavern.com "Legacy Rewards Will Be Separate on the WoW Forever Hardcore Ruleset"] | unverified; the planner never mixes rulesets (8.3.4 reads each character's ruleset) |
+
+**What the guides say (inputs, not rules):**
+- **Method**, "The Fastest Way to Get Legacy Points in WoW Forever" (Old Guardian, 2026-10-08): "It is faster to use multiple characters." Multi-character route to 16: level 60 on the first character (3), two alts of other classes to 25 (2), PvP Rank 3 (1), four crafts to 225 (8), Novice and Experienced Spelunker (2). It also says all crafts at 225 "gives you 12", which contradicts its own list (8); the plan uses the rules above, not the guide's totals.
+- **Hated Legacy** (HatedGaming, v0.1.0-forever, 2026-10-10, All Rights Reserved): shows challenges, a zone-based "Here & Now" list, closest challenges, per-character perk spending and the reward track. **It does not plan routes**, and has no minimap button (it uses the AddOn compartment). Its source is not read or copied (D-003); its overlap with `/ei legacy` is noted.
+- Icy Veins and Mobalytics refused automated reading (HTTP 403); not used.
+
+### 8.5 How "fastest" is measured
+
+- **Unit: estimated play hours** to the next Legacy point, labelled [estimate].
+- **Leveling:** (XP to go - XP saved by rest) divided by an XP-per-hour rate for that level band. Default rates are [assumed]; once EmpireIntel has seen a character gain levels across sessions, it uses that character's measured rate (Q-F2, approved).
+- **Rested XP (corrected, D-055):** a rested pool of R saves **R of kill XP in full**, not half (L-17). While rested, each kill gives its XP twice and the pool drops by the bonus; so the pool lasts until R bonus XP has been given, and the time to level falls by R / (XP per hour). Quest and exploration XP get no bonus, so the saving is min(R, the kill XP still needed); without a measured kill share, the plan assumes kills give at least R of the XP to go [assumed] and says so on the row.
+- **Professions:** skill points to go times hours per point for that band [assumed], plus any level gate (L-4) first.
+- **Dungeon challenges:** planned at any level (D-055): dungeons left times hours per run [assumed]. The level ranges (L-8) only pick which character fits a dungeon best and raise the estimate for a character far outside the range.
+- **Rules that make a step impossible now** (a gate, PvP before 60 under L-9, level-60 content) are not counted; the gate itself (for example "C2 to level 10") becomes the step.
+- **Auto mode** is greedy: from the current state, take the cheapest next point (including its gates), apply it, repeat until the target. It is recomputed from the real values every time, so it adjusts as the user plays.
+- **Ties:** prefer steps on the character being played; then a step that also opens a gate for later points.
+
+### 8.6 The target
+
+| Option | Meaning | Recommendation |
+|---|---|---|
+| **A. 16 earned** | Enough for one character to fill the launch cap (L-12); passes the 15 reward on the way | **Default** |
+| B. Next reward | 15, then 25, 40, 55 (L-13) | Selectable in the window |
+| C. Next point only | Just the cheapest next point | Selectable |
+
+The window shows the target and the progress to it ("2 of 16; next reward at 15").
+
+**Illustrative auto route** from today's values (C1 Paladin 27 with Mining and Skinning; C2 Priest 6 with Tailoring 56/75 and Enchanting 28/75; 2 earned; C3 ignored); the order and hours depend on L-4, L-5 and L-16, all unverified:
+
+1. C2 to level 10 (gate for Journeyman, L-4), then Tailoring to 150: +1 (Journeyman Tailor)
+2. C2 Enchanting to 150: +1 (Journeyman Enchanter)
+3. C1 Experienced Spelunker (9 dungeons left, in level range now, L-8): +1
+4. C2 to 25: +1 (Novice Priest)
+5. C1 to 45: +1 (Experienced Paladin)
+6. C2 Tailoring and Enchanting to 225 (gate: level 20): +2
+7. ... until 16
+
+### 8.7 Saved-data format change (format 2; needs approval, D-019)
+
+```
+EmpireIntelDB = {
+  schema = 2,
+  ...                                        -- format 1, unchanged
+  plan = {                                   -- new
+    mode = 'auto' | 'mine',
+    target = 16 | 'reward' | 'next',
+    mine = {                                 -- the edited plan, in order
+      { kind = 'level', guid = '<GUID>', level = 25, note = 'optional' },
+      { kind = 'skill', guid = '<GUID>', profession = 'Tailoring', skill = 150 },
+      { kind = 'challenge', id = 62032 },    -- a challenge by its game id (for example Experienced Spelunker)
+      { kind = 'rested', guid = '<GUID>', rested = 1.0 },
+    },
+    ignore = { ['<GUID>'] = true },          -- characters left out of auto mode
+    rates = { ['<GUID>'] = { xpPerHour = <n>, at = <time> } },   -- measured, only if Q-F2 is approved
+    window = { point = 'CENTER', x = 0, y = 0, w = 520, h = 360 },
+    minimap = { hide = false, angle = 225 },
+  },
+}
+```
+
+- **Roster records gain** `race`, `sex`, `faction` and `ruleset` (`normal` / `hardcore` / unknown, and the experience preset), recorded for the live character at each snapshot (8.3.4 decides the calls). Alts get them at their next login, or `faction` from DataStore meanwhile.
+- Characters are stored by GUID, never by name, so a rename does not break the plan. GUIDs stay on the user's computer, as now.
+- **Format numbering (D-055):** this is format 2; P3-2's saved summary becomes format 3.
+- Migration 1 to 2 adds an empty `plan`; nothing is converted. Opening format 2 with 0.5.2 or 0.6.x: the Store's readonly state leaves it untouched (already built and tested).
+
+### 8.8 Restart or reload
+
+| Change | Needed | Basis |
+|---|---|---|
+| P2-4a (new Lua files in EmpireIntel) | `/reload` | EI-E-19, D-034 |
+| P2-4b window code and any embedded libraries (files in the EmpireIntel folder) | `/reload` | EI-E-19 |
+| P2-4b adding TOC header fields (`AddonCompartmentFunc`, `IconTexture`) | **full client restart** stated, `/reload` tried first | TOC headers may be read only at start [inferred]; never observed |
+| The check package for 8.3.4 (EmpireIntelCheck, existing folder) | `/reload` | EI-E-19 |
+
+No new addon folder.
+
+### 8.9 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4r | Approve the revised direction: the plan lives in saved data and the window, plan file format 1 and the `EmpireIntel_Plan` folder are retired, and #11 stays unmerged as reference? | **Yes** (D-055) |
+| Q-P2-4r-a | Approve P2-4a (rules table, route engine, both modes, `/ei next` in chat) with saved-data format 2 (8.7)? | **Yes**, format 2 for the plan; P3-2 becomes format 3 (D-055) |
+| Q-P2-4r-b | Approve P2-4b (window, minimap button, ElvUI) after the UI checks? | **After Q-G1** (D-055) |
+| Q-G1 | Let EmpireIntelCheck 0.1.9-tp1 run the UI checks of 8.3.4 (existence checks and hidden test frames only)? | **Yes**, in EmpireIntelCheck alongside the P2-4a build; checks extended in 8.3.4 (D-055) |
+| Q-G2 | Minimap button: our own (no dependency), or embedded LibDataBroker and LibDBIcon (a dependency, license to be checked)? Plus the AddOn compartment if present | **Own button plus the AddOn compartment** (D-055) |
+| Q-G3 | Do you use ElvUI on Forever? Should the window take ElvUI's look when it is loaded, or stay plain? | **Replaced** by the design direction, 8.3.1 (D-055) |
+| Q-F1 | Target: 16 earned (default), with next reward and next point selectable? | **16** (D-055) |
+| Q-F2 | Cost model: assumed hours per level, skill and dungeon, labelled [estimate]; may EmpireIntel learn each character's own XP-per-hour from the levels it sees across sessions (no new game call; saved in `plan.rates`)? | **Yes** (D-055) |
+| Q-F3 | PvP not planned before 60 (your rule), raids and Valthalak at 60, Explorer after a character reaches 50? | **No PvP before 60; raids and Valthalak at 60; Spelunker challenges at any level** (D-055). Zone Explorer: **open** (the answer kept the template "[after 50 / other]") |
+| Q-F4 | Ignore characters in auto mode (for example the stale beta Shaman), saved per GUID? | **Yes** (D-055) |
+| Q-F5 | When a guide and the game disagree, the game wins and the rule is marked confirmed with the game's value; when two guides disagree (L-5), the plan uses the more cautious value until the game confirms? | **Yes** (D-055) |
+
+Sources: [Method](https://www.method.gg/wow-forever/the-fastest-way-to-get-legacy-points-in-wow-forever), [Hated Legacy on CurseForge](https://www.curseforge.com/wow/addons/hated-legacy), [warcraft.wiki.gg Legacy System](https://warcraft.wiki.gg/wiki/Legacy_System), [wow-professions.com trainers](https://www.wow-professions.com/forever/blacksmithing-trainers), [epiccarry.com tailoring](https://epiccarry.com/blogs/wow-forever-tailoring-guide/), [rankedboost.com](https://rankedboost.com/world-of-warcraft/forever/professions/blacksmithing-leveling/).
+

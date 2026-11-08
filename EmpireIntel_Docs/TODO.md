@@ -88,6 +88,12 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-4 plan written: Phase2_Plan.md section 7 (S-052); no code
 - [x] Q-P2-4, a-e approved with the Legacy lock rule (D-052)
 - [ ] P2-4 build: EmpireIntel 0.6.0 plus EmpireIntel_Plan 1
-- [ ] Post-25 plan (Phase 3: P3-2, P3-3, perk goals), plan only
+- [x] Post-25 plan written (Phase3_Legacy_Plan.md sections 7-12, #10)
+- [x] P2-4 redirected (D-054): #11 kept, not merged
+- [x] Revised P2-4 plan written: Phase2_Plan.md section 8 (route planner and plan window)
+- [x] Q-P2-4r, a, b (after Q-G1), Q-G1, Q-G2, Q-F1-F5 answered (D-055); 8.5 rested fix; window design direction
+- [ ] Build P2-4a (planner, format 2) and EmpireIntelCheck 0.1.9-tp1 (UI checks), next session
+- [ ] Static mockup of the window (both modes, Up Next card) for approval, before any P2-4b code
+- [ ] **User:** zone Explorer timing (Q-F3, open)
 
 ## Later phases: see Architecture.md section 10 (not approved)

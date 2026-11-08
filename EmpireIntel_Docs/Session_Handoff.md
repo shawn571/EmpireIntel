@@ -4,6 +4,34 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-056 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-4 revised and **approved** (D-055). Next: build **P2-4a** (rules table, route engine, both modes, `/ei next`, saved-data format 2 for the plan) and **EmpireIntelCheck 0.1.9-tp1** with the UI checks (Phase2_Plan.md 8.3.4). **P2-4b** (the window) waits for the check's results and an approved static mockup (8.3.5). No code yet for any of these.
+
+**Approved:** through D-055. #12 (the revised plan) merged by Claude under the user's approval.
+
+**Pending (the user decides):** zone Explorer timing (Q-F3, left as "[after 50 / other]"); the mockup (later); P2-4b; the post-25 plan #10 (Q-P3-2a first; P3-2 is now format 3); Q-T4; Stage 1. #11 (`p2-4-next`) stays open, not merged, reference only.
+
+**Facts to carry:** a rested pool of R saves R of kill XP (L-17, unverified on Forever; check: `/ei` before and after one rested kill). Rules L-1..L-18 in Phase2_Plan.md 8.4 with sources. Method and Hated Legacy findings in 8.4.
+
+**Main:** after #12, EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests. Open pull requests: #10 (post-25 plan), #11 (reference).
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1.
+
+**User's next step:** start a new Code session from NEXT_SESSION_PROMPT.md on main; approve the start of the P2-4a and 0.1.9-tp1 build there.
+
+## S-055 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-4 **redirected** by the user (D-054): no plan text file; an in-game window and a route planner. #11 (`p2-4-next`: 0.6.0, EmpireIntel_Plan 1) is kept, not merged, not to be installed. Revised plan: Phase2_Plan.md section 8 (P2-4a planner, P2-4b window), for approval. No code.
+
+**Pending (the user decides):** Q-P2-4r, Q-P2-4r-a, Q-P2-4r-b, Q-G1-3, Q-F1-5 (Phase2_Plan.md 8.9); merging this plan pull request (it changes Phase2_Plan.md, outside the docs-only approval); the post-25 plan (#10) and its questions, first Q-P3-2a; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 90cb234 (EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests). `p2-4-next` (#11, kept, not to merge). `p3-post25-plan` (#10, open). `p2-4-planner-plan` (this plan, open).
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1.
+
+**User's next step:** read Phase2_Plan.md section 8 and answer 8.9; answer Q-P3-2a when convenient.
+
 ## S-053 | 2026-11-08 | Claude
 
 **Phase and increment:** Phase 2, increment P2-4 **approved** with the Legacy lock rule (D-052); build next as EmpireIntel 0.6.0 plus EmpireIntel_Plan 1. Also asked: a post-25 plan (Phase 3: P3-2, P3-3, perk goals), plan only.
