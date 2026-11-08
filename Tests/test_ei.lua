@@ -55,15 +55,16 @@ T.describe('P2-1: snapshot of the logged-in character (format 1)', function()
   T.it('holds professions with skill, max and skill line', function()
     T.eq(r.professions, { { name = 'Tailoring', skill = 75, max = 300, line = 197 }, { name = 'Herbalism', skill = 60, max = 300, line = 182 } })
   end)
-  T.it('uses exactly the approved fields (format 1 plus realm), nothing else', function()
+  T.it('uses exactly the approved fields (format 1 plus realm; format 2 identity fields), nothing else', function()
     local allowed = { name = 1, realm = 1, class = 1, level = 1, xp = 1, xpMax = 1, rest = 1, resting = 1, restAt = 1,
-      professions = 1, lastSeen = 1, src = 1 }
+      professions = 1, lastSeen = 1, src = 1, race = 1, sex = 1, faction = 1, ruleset = 1, preset = 1 }
     for k in pairs(r) do T.truthy(allowed[k], 'unexpected roster field ' .. k) end
     local db = W.env.EmpireIntelDB
-    for k in pairs(db) do T.truthy(({ schema = 1, meta = 1, roster = 1, off = 1 })[k], 'unexpected top-level key ' .. k) end
+    for k in pairs(db) do T.truthy(({ schema = 1, meta = 1, roster = 1, off = 1, plan = 1 })[k], 'unexpected top-level key ' .. k) end
+    T.eq(db.plan, {}, 'format 2: the plan section starts empty')
     for k in pairs(db.meta) do T.truthy(({ created = 1, opens = 1, version = 1, build = 1 })[k], 'unexpected meta key ' .. k) end
-    T.eq(db.schema, 1)
-    T.eq(db.meta.version, '0.5.2')
+    T.eq(db.schema, 2)
+    T.eq(db.meta.version, '0.6.0')
     T.eq(db.meta.build, '1.60.1/70450')
   end)
 end)
@@ -220,7 +221,7 @@ end)
 
 T.describe('P2-1: saved data (Store, ported)', function()
   T.it('a newer schema is left untouched and nothing is saved', function()
-    local newer = { schema = 2, roster = { [GUID] = { level = 50 } }, meta = {}, future = 'x' }
+    local newer = { schema = 3, roster = { [GUID] = { level = 50 } }, meta = {}, future = 'x' }
     local W = session({ char = char(), eidb = newer })
     T.eq(W.env.EmpireIntelDB.roster[GUID].level, 50)
     T.eq(W.env.EmpireIntelDB.future, 'x')
@@ -228,10 +229,10 @@ T.describe('P2-1: saved data (Store, ported)', function()
     for _, l in ipairs(W.prints) do if l:find('newer than this version', 1, true) then saw = true end end
     T.truthy(saw, 'the user is told')
   end)
-  T.it('saved data without a schema is migrated to schema 1; its keys survive', function()
+  T.it('saved data without a schema is migrated to schema 2; its keys survive', function()
     local W, EI = session({ char = char(), eidb = { leftover = { a = 1 } } })
     T.eq(EI.Store.Status().state, 'migrated')
-    T.eq(W.env.EmpireIntelDB.schema, 1)
+    T.eq(W.env.EmpireIntelDB.schema, 2)
     T.eq(W.env.EmpireIntelDB.leftover, { a = 1 })
     T.truthy(rec(W))
   end)
@@ -269,7 +270,7 @@ T.describe('P2-1: commands', function()
   T.it('/ei version shows version and schema', function()
     local W = session({ char = char() })
     ei(W, 'version')
-    T.truthy(lastPrint(W):find('version 0.5.2, saved data schema 1', 1, true), lastPrint(W))
+    T.truthy(lastPrint(W):find('version 0.6.0, saved data schema 2', 1, true), lastPrint(W))
   end)
 end)
 

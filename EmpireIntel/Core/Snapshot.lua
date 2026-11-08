@@ -1,8 +1,9 @@
 local ADDON, EI = ...
--- EmpireIntel / Core / Snapshot.lua                                      (Phase 2, increment P2-1)
+-- EmpireIntel / Core / Snapshot.lua                                      (Phase 2, increments P2-1, P2-4a)
 --
 -- PURPOSE
---   Passive snapshot of the logged-in character into EmpireIntelDB.roster[GUID] (saved-data format 1).
+--   Passive snapshot of the logged-in character into EmpireIntelDB.roster[GUID] (saved-data format 1; format 2 adds
+--   race, sex, faction, ruleset and preset, P2-4a). Each write also feeds the XP-rate measurement (Core/Plan.lua, Q-F2).
 --
 -- WHEN (no 0.5 s tick: events plus one 5-minute timer, user Q-P2-1)
 --   * 2 s after login              * on level-up (P_LEVEL)        * on a profession change (P_PROFS)
@@ -24,6 +25,7 @@ local Snap = {}
 EI.Snapshot = Snap
 
 Snap.INTERVAL = 300
+Snap.IDENTITY = { 'race', 'sex', 'faction', 'ruleset', 'preset' }
 Snap.FIRST_DELAY = 2
 
 local cancelTimer = nil
@@ -79,10 +81,16 @@ function Snap.Write(reason)
   rec.restAt = t
   local profs = P.Unit.ProfessionList()
   if profs then rec.professions = profs end
+  -- format 2 (P2-4a): race, sex, faction, ruleset, preset; a value the client could not read keeps the previous one
+  local okId, id = pcall(P.Unit.Identity)
+  if okId and type(id) == 'table' then
+    for _, f in ipairs(Snap.IDENTITY) do if id[f] ~= nil then rec[f] = id[f] end end
+  end
   rec.lastSeen = t
   rec.src = 'self'
   roster[player.guid] = rec
   if type(rec.level) == 'number' then lastLevel = rec.level end
+  if EI.Plan and reason ~= 'logout' then pcall(EI.Plan.ObserveRate, player.guid, rec.level, rec.xp, t) end
   local meta = EI.Store.Section('meta')
   local build = buildString()
   if build then meta.build = build end

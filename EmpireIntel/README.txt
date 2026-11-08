@@ -1,3 +1,67 @@
+EmpireIntel 0.6.0 - the Legacy route planner in chat (P2-4a)
+
+WHAT 0.6.0 ADDS (your approval D-055 and D-056; Phase2_Plan.md section 8)
+  /ei next     The fastest route to your Legacy target, one step per line (up to 10), for example:
+                 1. C2 Priest 6: level 10, then Tailoring 56 -> 150 (train Journeyman): +1 (Journeyman Tailor), ~4.1 h
+                    [estimate; unverified: L-4 L-5 L-15 L-16 L-17]
+               The header says the target (16 by default), how many points are earned ([game] after the Legacy read,
+               or [inferred] before the unlock or in combat) and how many rules are unverified.
+               Times are play-time ESTIMATES. Each step lists the unverified rules it depends on.
+               After the unlock, /ei next reads the Legacy challenges (the same read as /ei legacy, about 2 seconds).
+               Before any character reaches 25 it calls no Legacy function and starts with a character to 25.
+  /ei rules    The 18 rules the planner uses, each with its status (confirmed, partly, user, unverified) and source.
+  /ei plan     Your plan settings and commands:
+                 /ei plan mode auto | mine     auto = the fastest route; mine = your own saved steps
+                 /ei plan target 16 | reward | next
+                 /ei plan copy                 copy the fastest route into your own plan
+                 /ei plan top <n> | remove <n> | clear
+                 /ei plan ignore <name> | unignore <name>   leave a character out of the fastest route
+  Rested XP counts in full (a pool of R saves R of kill XP, L-17). Explorer is planned from level 50, counting zones
+  explored before (D-056). PvP is not planned before 60; raids and Valthalak are not planned yet.
+  Characters on another ruleset (Hardcore) are never mixed in (L-18).
+  The window (P2-4b) is NOT in this version: it waits for the UI checks (EmpireIntelCheck 0.1.9-tp1) and your
+  approval of the mockup.
+
+SAVED DATA: FORMAT 2 (approved, D-055)
+  The file gains a "plan" section (mode, target, your steps, ignored characters, measured XP rates). Characters are
+  stored by GUID, never by name. Each character's record also gains race, sex, faction and ruleset at its next login.
+  Your existing data is kept; nothing is converted. EmpireIntel 0.5.2 opens a format-2 file read-only (it saves
+  nothing), so keep the backup from step 1 below if you may roll back.
+  Measured XP rate (Q-F2): after 30 minutes played in one session with a level gained, EmpireIntel saves that
+  character's XP per hour and uses it in place of the default. No new game call.
+
+RESTART OR RELOAD?
+  Update from 0.5.2: /RELOAD IS ENOUGH (new files in the existing folder load on /reload, EI-E-19).
+
+UPDATE AND TEST (about 5 minutes)
+  1. Exit to the character screen or close the game, then copy
+       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
+     to a safe place (the backup for rollback).
+  2. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip. Log in (or /reload).
+  3. Type  /ei version      Expect "version 0.6.0, saved data schema 2 (migrated)" the first time,
+                            "(ok)" after the next /reload.
+  4. Type  /ei next         On an unlocked account expect "next: reading Legacy challenges (about 2 seconds)." then
+                            "next (fastest route to 16 Legacy points; N earned [game]; 18 rules, 11 unverified: /ei rules):"
+                            and up to 10 numbered steps. Check N against "Legacy Points N / 65" in the Legacy window.
+  5. Type  /ei rules        Expect 19 lines: a header and L-1 to L-18.
+  6. Type  /ei plan copy    Expect "plan: copied the fastest route into my plan: ... steps."
+     Type  /ei plan mode mine   then  /ei next     Expect "next (my plan: ...)" and your steps with estimates.
+     Type  /ei plan mode auto   to go back.
+  7. Optional: /ei plan ignore <a character's name>, then /ei next: the header says "(1 character ignored)".
+     /ei plan unignore <name> to undo.
+  8. Optional rested check (L-17, no code): on a rested character note "/ei" (XP and rested), kill one monster,
+     type "/ei" again. Expected: XP up by twice the kill's normal XP, rested down by the kill's normal XP.
+  9. Type  /reload  (this saves the file), then send
+       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
+     and the chat lines of steps 3, 4 and 6. Note any line with UNEXPECTED or any red Lua error.
+
+ROLLBACK TO 0.5.2
+  1. Close the game (or exit to the character screen).
+  2. Put the 0.5.2 folder back in Interface\AddOns\EmpireIntel.
+  3. Put the backup EmpireIntel.lua from step 1 back in WTF\Account\<your account>\SavedVariables\.
+  4. Log in. "/ei version" says "version 0.5.2, saved data schema 1 (ok)".
+  Without the backup, 0.5.2 still runs but keeps the format-2 file read-only and saves nothing new.
+
 EmpireIntel 0.5.2 - labels after the inn test (P2-3 and P3-1 closed)
 
 WHAT CHANGED IN 0.5.2 (text only; no new reads, nothing new saved)

@@ -78,6 +78,8 @@ function A.Merge(roster, ds)
       row[f] = v
     end
     row.rest, row.resting = base.rest, base.resting
+    -- format 2 (P2-4a): ruleset, faction, race and sex, from EmpireIntel's own record only
+    if own then row.ruleset, row.faction, row.race, row.sex = own.ruleset, own.faction, own.race, own.sex end
     -- when the rest was read: EmpireIntel's restAt, or DataStore's time (P2-3 projections start here)
     if row.src == 'self' then row.restAt = type(own.restAt) == 'number' and own.restAt or ownAt else row.restAt = dsAt end
     -- the XP bar only from EmpireIntel's own record, and only when it was measured at the level shown

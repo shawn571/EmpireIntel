@@ -9,8 +9,8 @@ local ADDON, EI = ...
 --   Migrations.Plan(from, to) / Run(db, from, to) / Sections() / Check(db) / EnsureShape(db)
 --
 -- PORTED from GoldIntel GoldIntel/Store/Migrations.lua at commit a21e071 (read-only; GoldIntel unchanged).
--- Changes: sections are those of saved-data format 1 (meta, roster); the GoldIntel schema steps (Phase 1 compat
--- adoption, ledger) are replaced by one step 0 -> 1; no `compat` section.
+-- Changes: sections are those of saved-data format 1 (meta, roster) and format 2 (plan, P2-4a); the GoldIntel schema
+-- steps (Phase 1 compat adoption, ledger) are replaced by the steps 0 -> 1 and 1 -> 2; no `compat` section.
 --
 -- RULES
 --   * A migration only mutates the table it is given. Store runs it on a COPY and commits only when the whole
@@ -183,5 +183,16 @@ function Mig.Remove(from) steps[from] = nil end
 Mig.Register(0, function(db)
   Mig.EnsureShape(db)
 end, 'format 1: meta and roster')
+
+---------------------------------------------------------------------------
+-- Saved-data format 2 (P2-4a; approved D-055, Phase2_Plan.md 8.7): adds the plan section, empty. Nothing is
+-- converted; roster records gain race, sex, faction, ruleset and preset at the character's next snapshot.
+---------------------------------------------------------------------------
+
+Mig.DefineSection('plan', function() return {} end)
+
+Mig.Register(1, function(db)
+  if type(db.plan) ~= 'table' then db.plan = {} end
+end, 'format 2: plan')
 
 if EI.Core then EI.Core.Service('migrations', Mig) end

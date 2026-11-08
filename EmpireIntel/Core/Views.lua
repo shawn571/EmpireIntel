@@ -42,6 +42,8 @@ local function collect()
   return rows, ds, live
 end
 
+V.Collect = collect
+
 local function sayer(lines)
   return function(s) lines[#lines + 1] = s; P.Print(s) end
 end

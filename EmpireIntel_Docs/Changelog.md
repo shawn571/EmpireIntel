@@ -2,6 +2,14 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-058 | P2-4a built: EmpireIntel 0.6.0 and EmpireIntelCheck 0.1.9-tp1 (branch `p2-4a-planner`, not merged)
+- EmpireIntel 0.6.0: the route planner in chat (`/ei next`, `/ei plan ...`, `/ei rules`), the rules table L-1..L-18, saved-data format 2 (`plan` section; roster race, sex, faction, ruleset, preset), the measured XP rate (Q-F2). No window code (D-056).
+- EmpireIntelCheck 0.1.9-tp1: the UI checks of Phase2_Plan.md 8.3.4 (`UI.lua`, `/eicheck ui`, `Media/Test.tga`).
+- `tools/build_package.py`: ships `Media/*.tga`, prints the full sha256. 408 tests pass (Lua 5.1 and 5.3); 20 of 20 mutants caught. D-057, P2-4a_Report.md; Phase2_Plan.md 1.5.0 (Q-F3 closed in L-11 and 8.9).
+
+## 2026-11-08 | S-057 | D-056 recorded; no S-054 on main noted; REST merge command in the prompt (documentation only)
+- Decisions.md D-056; Session_Handoff.md S-057; NEXT_SESSION_PROMPT.md names the REST merge command (D-050). Merged as #13 (5e37b2d) under the docs-only standing approval.
+
 ## 2026-11-08 | S-056 | Revised P2-4 approved; rested fix; window design direction (documentation only)
 - D-055. Phase2_Plan.md section 8: rested XP saves R in full (L-17, sourced); Spelunker at any level; Hardcore kept apart (L-18); window design direction, Up Next card, extended UI checks, mockup gate; format 2 roster fields; answers in 8.9.
 

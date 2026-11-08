@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Builds and VERIFIES an AddOns zip (pattern from GoldIntel tools/build_package.py).
 
-Checks every file the TOC names exists, every shipped file is ASCII with LF endings, and nothing outside
-the addon folder is packaged.
+Checks every file the TOC names exists, every shipped text file is ASCII with LF endings, and nothing outside
+the addon folder is packaged. Media/*.tga files (our own textures, binary) are shipped as they are, at most 64 KB each.
 Usage (from the repository root):
   python3 tools/build_package.py                -> dist/EmpireIntelCheck_AddOns.zip   (the check package)
   python3 tools/build_package.py EmpireIntel    -> dist/EmpireIntel_AddOns_v<version>.zip (versioned)
@@ -27,6 +27,15 @@ def main():
                 fail('backslash in TOC path: ' + line)
             files.append(line)
     shipped = [ADDON + '.toc', 'README.txt'] + files
+    media = []
+    mdir = os.path.join(folder, 'Media')
+    if os.path.isdir(mdir):
+        for n in sorted(os.listdir(mdir)):
+            if not n.lower().endswith('.tga'):
+                fail('only .tga files may be in Media/: ' + n)
+            if os.path.getsize(os.path.join(mdir, n)) > 65536:
+                fail('texture larger than 64 KB: ' + n)
+            media.append('Media/' + n)
     for rel in shipped:
         path = os.path.join(folder, rel)
         if not os.path.isfile(path):
@@ -43,6 +52,7 @@ def main():
     os.makedirs(os.path.join(ROOT, 'dist'), exist_ok=True)
     name = ADDON + '_AddOns.zip' if ADDON == 'EmpireIntelCheck' else ADDON + '_AddOns_v' + str(version) + '.zip'
     out = os.path.join(ROOT, 'dist', name)
+    shipped = shipped + media
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         for rel in shipped:
             z.write(os.path.join(folder, rel), ADDON + '/' + rel)
@@ -54,7 +64,7 @@ def main():
             src = open(os.path.join(folder, n.split('/', 1)[1]), 'rb').read()
             if z.read(n) != src:
                 fail('zip copy differs for ' + n)
-    digest = hashlib.sha256(open(out, 'rb').read()).hexdigest()[:16]
+    digest = hashlib.sha256(open(out, 'rb').read()).hexdigest()
     print('built', os.path.relpath(out, ROOT), 'version', version, len(names), 'files, sha256', digest)
     for n in sorted(names):
         print('  ', n)

@@ -393,6 +393,21 @@ Q-P3-2a comes later."
 - Docs: the handoff notes that there is no S-054; NEXT_SESSION_PROMPT.md names the REST merge command (D-050) as current. When #10 is next edited, its P3-2 is changed to saved-data format 3 (D-055).
 - Q-P3-2a: later.
 
+## D-057 P2-4a and EmpireIntelCheck 0.1.9-tp1 built | Claude (2026-11-08), within D-055 and D-056
+Built on branch `p2-4a-planner`, not merged (merging needs the user's approval). Report: P2-4a_Report.md.
+Choices made within the approved scope, each open to the user's change:
+- **Editing "my plan" in chat:** P2-4a has no window (D-056), so mine mode is edited with `/ei plan mode | target | copy | top | remove | clear | ignore | unignore`. The window (P2-4b) will edit the same saved plan. `/ei plan` alone shows the settings (P2-4b may later open the window from it).
+- **`/ei rules`:** prints the 18 rules with status and source (the window's "Rules: 18, 11 unverified (hover)" in chat).
+- **Default costs (L-16, [assumed]):** XP per hour by band 12000 / 18000 / 24000 / 30000 / 38000 / 45000 (levels 1-9 ... 50-59); hours per skill point 0.02 / 0.03 / 0.04 / 0.06 (to 75 / 150 / 225 / 300); 0.75 h per dungeon run; 1 h per Explorer zone. Classic XP table (L-15), the measured bar where seen.
+- **Learning a craft** is planned only for a character with known professions and a free primary slot (L-6).
+- **Dungeon levels (L-8):** the lowest level used is Novice 13, Experienced 20, Master 35 [inherited classic].
+- **Raids and Valthalak (L-10)** are not planned yet (no time model); the route says how many points of the target are left to unplanned content.
+- **Explorer (L-11, D-056):** a step only for the played character at 50 or more, from the game's per-character zone steps (EI-E-27); for another character the route says so.
+- **Measured XP rate (Q-F2):** within one login session, after 30 minutes and a level gained, XP gained per logged-in hour (idle time included, so cautious), averaged with the earlier value; saved as `{ xpPerHour, at }` exactly as format 2 shows. No new game call.
+- **Ruleset (L-18):** the plan uses the played character's recorded ruleset; a character whose recorded ruleset differs is left out and counted; unknown stays in. Ruleset from `C_GameRules.IsHardcoreActive()` (documented, EI-E-11), preset from `GetForeverExperiencePreset()` (EI-E-09); race and sex from `UnitRace`, `UnitSex`. These are new calls in EmpireIntel, named in 8.3.4/8.7; 0.1.9-tp1 records what they return on Forever.
+- **DataStore faction for alts** (8.7 "or faction from DataStore meanwhile") is **not** read: it needs a new DataStore getter beyond the approved list (P2-2). 0.1.9-tp1 records whether DataStore has the getter; P2-4b can ask.
+- **The check's texture:** `EmpireIntelCheck/Media/Test.tga`, an 8x8 flat-colour file of our own, so "SetTexture with a file in the addon folder" is tested for real. `tools/build_package.py` now ships `Media/*.tga` (at most 64 KB each) and prints the full sha256.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

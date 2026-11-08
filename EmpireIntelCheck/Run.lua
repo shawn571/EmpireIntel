@@ -259,6 +259,17 @@ function R.Start(reason, manual)
     run.partA.T5 = safe(run, 'T5', A.T5, run, ident); C.Checkpoint()
     run.partA.T6 = safe(run, 'T6', A.T6, run); C.Checkpoint()
     run.partA.T8 = safe(run, 'T8', A.T8, run); C.Checkpoint()
+    -- 0.1.9: the UI checks for P2-4b (Phase2_Plan.md 8.3.4, Q-G1); full results in db.uiLatest, counts on the run
+    if NS.UI then
+      local okU, ui = pcall(NS.UI.Run)
+      if okU then
+        local okS, short = pcall(NS.UI.Store, ui, run.guid)
+        run.ui = okS and short or nil
+      else
+        R.Unexpected('probe_error', 'ui: ' .. tostring(ui), run)
+      end
+      C.Checkpoint()
+    end
     -- R-1, P-1 and the snapshot used by E-1
     local okS, snap, rest, profs = pcall(Ch.Snapshot, run.guid)
     if okS then
