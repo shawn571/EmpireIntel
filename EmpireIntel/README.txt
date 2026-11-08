@@ -13,29 +13,28 @@ WHAT CHANGED IN 0.4.0
   Nothing new is saved, and no new game or DataStore function is called. /ei, /ei alts and the rest are unchanged.
 
 RESTART OR RELOAD?
-  FULL CLIENT RESTART. 0.4.0 adds two files (Core/Rules.lua, Core/Views.lua); the game reads an addon's file list
-  only at start. After a /reload alone the new commands answer with the help line.
+  Update from 0.3.x: /RELOAD IS ENOUGH. The two new files (Core/Rules.lua, Core/Views.lua) load on /reload on
+  WoW Forever (seen 2026-11-08, EI-E-19). First-ever install of the EmpireIntel folder: full client restart.
 
-INSTALL AND TEST (about 5 minutes, plus the inn test over 8 hours or more)
-  1. Quit the game fully.
-  2. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip.
-  3. Start the game and log in on any character. Wait about 5 seconds.
-  4. Type  /ei version      Expect "version 0.4.0, saved data schema 1 (ok)".
-  5. Type  /ei unlock       Expect "Legacy is unlocked: <your Paladin> ... reached 25".
-  6. Type  /ei milestones   Check one line per class and per crafting skill against your characters
+UPDATE AND TEST (about 5 minutes, plus the inn test over 8 hours or more)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip (the game may be running).
+  2. Type  /reload  and wait about 5 seconds.
+  3. Type  /ei version      Expect "version 0.4.0, saved data schema 1 (ok)".
+  4. Type  /ei unlock       Expect "Legacy is unlocked: <your Paladin> ... reached 25".
+  5. Type  /ei milestones   Check one line per class and per crafting skill against your characters
                             (levels, skills, max skills), and the "About N Legacy points ... [estimate]" line.
-  7. Type  /ei rest         Check the live line for this character, and the measured values of the others.
-  8. Inn test (for the rest estimate):
+  6. Type  /ei rest         Check the live line for this character, and the measured values of the others.
+  7. Inn test (for the rest estimate):
      a. Log in on your Priest, stand in an inn until you see the "resting" message, type /ei rest and note its line,
         then log out there.
      b. After 8 hours or more, log in on ANOTHER character and type /ei rest: note the Priest's "now about ..." line.
      c. Log in on the Priest and type /ei rest: note its live value.
      Send me the three lines; if b and c differ by less than 10%, the rule holds on Forever.
-  9. Copy the lines of steps 5 to 7 (or take screenshots) and say whether they match the game.
+  8. Copy the lines of steps 4 to 6 (or take screenshots) and say whether they match the game.
   Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
 
 ROLLBACK (one step)
-  Quit the game, put the 0.3.1 folder back, start the game (addon files only; saved data stays as it is).
+  Put the 0.3.1 folder back and /reload (addon files only; saved data stays as it is).
   To no EmpireIntel at all: quit the game, then delete the folder Interface\AddOns\EmpireIntel (or untick it).
   GoldIntel, EmpireIntelCheck and DataStore are not affected either way.
 

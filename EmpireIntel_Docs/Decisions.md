@@ -201,7 +201,14 @@ Built as Phase2_Plan.md section 6, on branch `p2-3-views`:
 - The views read the merged list from `Alts.Collect` (refactored out of `/ei alts`, same behaviour). Merge rows gained `xp` and `restAt`, the projection baseline. Neither field is stored.
 - The crafting skills are the user's six (Q-P2-3a); the user will report if the Legacy pane lists others.
 - The classic rest rule is used as a labelled estimate (Q-P2-3b), checked by the inn test. Unknown resting uses the outside rate (lower bound). An own record with no rest reported projects from 0; DataStore without a rest value gets no projection.
-- No saved-data change; no new game or DataStore call (static test). Full client restart (two new files).
+- No saved-data change; no new game or DataStore call (static test). Full client restart (two new files). *Superseded by D-034: `/reload` was enough.*
+
+## D-034 Restart rule revised from live evidence | Claude (2026-11-08), within the packaging rules
+EI-E-19: on Forever, `/reload` loads files newly added to an existing addon's TOC.
+- From now on, a package that only changes or adds files inside an existing addon folder says **`/reload` is enough**.
+- A **full client restart** is still stated for a first install of a new addon folder (not yet observed), and for TOC header changes that the AddOns list shows (the version label refreshes only at start; harmless).
+- The P2-4 plan folder will be the first test of a new folder after `/reload`, with a restart as the stated fallback.
+- The 0.4.0 and 0.1.6-tp1 READMEs said "full restart"; that was safe but unnecessary. The repository copy of the 0.4.0 README is corrected.
 
 ---
 
