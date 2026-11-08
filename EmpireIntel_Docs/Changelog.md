@@ -2,8 +2,46 @@
 
 Append-only. Newest first.
 
-## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
-- Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
+## 2026-11-08 | S-037 | Run 15; P2-3 views check; Phase 3 approvals (documentation only)
+- spentInTree closed as unusable without a tree argument (counter 2 on the open tree, value 0). Exploration areas are per character; challenges and dungeon steps are account-wide (EI-E-27).
+- P2-3_Report.md: the views check passed; the rest projection was within 0.5% (supporting, not the formal inn test).
+- Q-P3, Q-P3-1 and Q-P3-1a approved: Phase 3, P3-1 only (D-037).
+
+## 2026-11-08 | S-036 | spentInTree inventory; `/ei legacy` plan (documentation only)
+- TP1_Report_Run1.md section 21: spentInTree was 0 in all 14 known reads. No file records which tree was open. One single test settles it: a read with the tree page open on a tree whose counter is 1 or more, plus a screenshot.
+- Phase3_Legacy_Plan.md 0.1.0: P3-1 `/ei legacy` (live, on command, no saved data), P3-2 saved summary (optional, needs format approval), P3-3 per-tree detail (needs Q-T4; can wait). Questions Q-P3, Q-P3-1, Q-P3-1a. No code. Phase 3 not authorized.
+
+## 2026-11-08 | S-035 | Run 14: the second point was Novice Spelunker (documentation only)
+- Excavation Site: Wetlands completed Novice Spelunker, the step the read had shown as missing. TP1_Report_Run1.md section 20. No code changed.
+
+## 2026-11-08 | S-034 | Run 13: unapplied placement test (documentation only)
+- GetCurrencyInfo counts applied points only; spent is confirmed (EI-E-26). spentInTree is not an unapplied placement; it stays unexplained and is left out of `/ei legacy`. No code changed.
+
+## 2026-11-08 | S-033 | Run 12: the second earned point (documentation only)
+- quantity is confirmed as "available"; spent is consistent with "spent"; maxQuantity and renownCurrency both track earned (EI-E-25). spentInTree stays 0 with the spent tree open, so the selected-tree hypothesis fails. No code changed.
+
+## 2026-11-08 | S-032 | Run 11: spentInTree stays 0 with the pane open (documentation only)
+- Four reads with the pane open, all spentInTree 0. The selected-tree hypothesis likely fails (which tree each read was on is not recorded). Next test: an unapplied placement once a point is available. No code changed.
+
+## 2026-11-08 | S-031 | Run 10: the first point spent (documentation only)
+- After one spend, quantity went from 1 to 0 and spent from 0 to 1; the other fields were unchanged (EI-E-24). Field meanings are recorded as inferred. Challenge and step data did not change because of the spend (two zone sub-areas were explored in between). spentInTree is analysed, not explained (TP1_Report_Run1.md section 16). Legacy_Rules.md section 4: the `/ei legacy` plan note. No code changed.
+
+## 2026-11-08 | S-030 | Run 9: the Legacy read is complete (documentation only)
+- 0.1.8 matches the pane: 65 challenges, 1 of 65 points, Explorer 0 of 46, nothing trimmed, nothing unlinked. The game's dungeon lists confirm the web lists, and the master list has Dire Maul East, North and West (EI-E-23). TP1_Report_Run1.md section 14. No code changed.
+
+## 2026-11-08 | S-029 | EmpireIntelCheck 0.1.8-tp1 (/reload; branch tp1-legacy-read)
+- Q-T9 with the user's correction (D-036): counts the 65 challenges by their Legacy reward. Explorer's 46 exploration achievements are saved as its steps, linked through the game's own chain, and shown as "X of 46 done". Criteria are saved compactly. The discovery leftovers are trimmed before any Legacy data.
+- The fixture models the Explorer chain, including an area id that equals an achievement id. 283 tests pass under Lua 5.1 and 5.3; 38 of 38 guard mutants caught across the three Legacy sets.
+
+## 2026-11-08 | S-028 | Run 8, all 65 challenges read (documentation only)
+- 0.1.7 read 111 achievements: the 65 Legacy challenges (reward "Earn 1 Legacy Point.") and 46 supporting exploration achievements. 1 completed, which matches the pane (EI-E-22). Defects 15 (the size cap dropped the steps) and 16 (wrong totals). The class and crafting rules are confirmed by the game. Q-T9 proposed. No code changed.
+
+## 2026-11-08 | S-027 | EmpireIntelCheck 0.1.7-tp1 (/reload; branch tp1-legacy-read)
+- Q-T8 (D-035). Defect 13: reads every category the game lists. "Tier 1 Gear" and "Do Not Display" (and children) are saved but left out of the totals. Defect 14: the points come from `LegacySystem.GetCurrencyInfo()`, all fields as-is, and the trait currency is never sent to `C_CurrencyInfo`. The chat line shows the points earned of those offered.
+- The fixture now mirrors run 7. 274 tests pass under Lua 5.1 and 5.3; 11 of 11 new and 13 of 13 earlier guard mutants caught.
+
+## 2026-11-08 | S-026 | Run 7, the first Legacy read (documentation only)
+- On Forever, the achievement categories are the 29 Legacy challenge categories (EI-E-20). The points are a trait currency, read by `LegacySystem.GetCurrencyInfo()` (EI-E-21). Check defects 13 and 14 (title matcher; points source). The pane confirms the six crafts and the 65 total. Q-T8 proposed. No code changed.
 
 ## 2026-11-08 | S-025 | Restart rule revised (documentation only)
 - EI-E-19: `/reload` loads new TOC files on Forever (0.4.0 and 0.1.6 both worked after a reload). D-034: packages that change or add files in an existing addon say `/reload`; a new addon folder still says restart until observed. The repository's 0.4.0 README is corrected; the zip is unchanged.
@@ -18,6 +56,15 @@ Append-only. Newest first.
 
 ## 2026-11-08 | S-022 | P2-2 closed; branch merged
 - The user confirmed `/ei alts` matched the game with DataStore on and approved closing P2-2 (D-032). `p2-2-alts` merged into main. No hide-old-characters rule (user).
+
+## 2026-11-07 | S-021 | EmpireIntelCheck 0.1.6-tp1 (FULL CLIENT RESTART; branch tp1-legacy-read)
+- Q-T7 approved (D-031). New Part C, `Legacy.lua`: reads the Legacy challenges (achievement category, with criteria) and points (currency) once unlocked. Arguments are allowed only from the game's own answers, to 9 allowed getters. Denylist and crash guard stay. New command `/eicheck legacy`.
+- Saves the values of the `LegacySystem` zero-argument calls and its constants. Defect 12 fixed (the size trim erased a run's Legacy call values).
+- Legacy_Rules.md: the user's challenge list (65 points), screenshot facts (EI-E-18), web lists marked provisional.
+- 238 tests pass under Lua 5.1 and 5.3; 15 of 15 guard mutants caught.
+
+## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
+- Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
 
 ## 2026-11-06 | S-019 | EmpireIntel 0.3.1 (/reload; branch p2-2-alts)
 - Live test 1 of 0.3.0: format 1 unchanged; the DataStore-off path passed. The DataStore-on output is not received yet. P2-2_Report.md.

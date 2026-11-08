@@ -185,6 +185,17 @@ The user approved P2-2 as written in Phase2_Plan.md section 5. Built on branch `
 
 P2-2 is not closed: closing needs the live gate and a separate user approval (Q-P2-2c).
 
+## D-031 Q-T7: the check reads Legacy challenges and points | Approved (user, 2026-11-07)
+- (a) The check saves the values of the zero-argument `LegacySystem` calls it already made, and the table's non-function fields (read, not called).
+- (b) Calls with arguments are allowed only to documented achievement and currency getters, and only with numbers the game itself returned. The denylist and crash guard stay.
+
+Built as EmpireIntelCheck 0.1.6-tp1 (`Legacy.lua`, Part C) on branch `tp1-legacy-read`. Full client restart (new file).
+- The allowed list has 9 names: the 7 from the Q-T7 text, plus `C_CurrencyInfo.GetCurrencyListSize` and `GetCurrencyListInfo`, which find the currency by name if `LegacySystem` names no id. Both are documented currency getters, so they fall under the approval's wording.
+- "Documented" means the public WoW API reference. The check also records which of the 9 the in-client docs list, when those docs are loaded.
+- Saved data: the check's format 2 gains one section, `legacy`, the latest read with a 30-entry history. The user approved saving these values with (a); the shape is recorded here.
+- Character names the game returns with achievements are not saved.
+- Defect 12 fixed: run results shared their tables with `db.latest.results`, so the size trim erased the Legacy call values of a run.
+
 ## D-032 P2-2 closed | Approved (user, 2026-11-08, Q-P2-2c)
 EmpireIntel 0.3.1 met the P2-2 gate:
 - tests pass under Lua 5.1 and 5.3;
@@ -210,6 +221,30 @@ EI-E-19: on Forever, `/reload` loads files newly added to an existing addon's TO
 - The P2-4 plan folder will be the first test of a new folder after `/reload`, with a restart as the stated fallback.
 - The 0.4.0 and 0.1.6-tp1 READMEs said "full restart"; that was safe but unnecessary. The repository copy of the 0.4.0 README is corrected.
 
+## D-035 Q-T8: EmpireIntelCheck 0.1.7 reads all challenge categories and the pane's points | Approved (user, 2026-11-08)
+Built on branch `tp1-legacy-read`; `/reload` is enough (D-034).
+- **Defect 13:** every category `GetCategoryList()` returns is read (EI-E-20). Categories titled "Tier 1 Gear" or "Do Not Display", and anything under them, are read and saved with `excluded = true`, at most 30 challenges each, and are left out of every total.
+- **Defect 14:** the points are every scalar field of `LegacySystem.GetCurrencyInfo()`, saved as-is in `legacy.points`. `C_CurrencyInfo.GetCurrencyInfo` gets an id only from a key named exactly `currencyID`, never `traitCurrencyID`. The currency list is scanned only when the pane gave no points.
+- Totals: challenges counted, completed, points offered and earned (sums of each challenge's points), categories counted.
+- Within the Q-T7 limits. No trait-system call (Q-T4 stays unapproved).
+
+## D-036 Q-T9: EmpireIntelCheck 0.1.8 counts the 65 challenges and keeps Explorer's 46 steps | Approved (user, 2026-11-08, with correction)
+Built on branch `tp1-legacy-read`; `/reload` is enough.
+- **Defect 16:** a challenge is an achievement whose reward text matches "<n> Legacy Point". Its value is n. The achievement-points field is no longer saved. If no reward text is recognized (for example, a non-English client), every shown achievement counts, and the line says UNEXPECTED.
+- **Explorer steps (user correction):** steps are found by following the game's own links, never by position. A criterion links to another achievement when its asset id is that achievement's id and it is of the complete-achievement type (8) or carries that achievement's name. A step is never a Legacy challenge or a hidden achievement. Each challenge with steps saves `steps = { id, name, completed, earnedByMe }`, and the line shows "<challenge> X of N done". Achievements that are neither challenges nor steps are reported as UNEXPECTED.
+- **Defect 15:** criteria are saved as `text`, `completed`, `quantity` and `required` (the last two only when required > 1), plus `achievement` for a link. `type`, `assetID`, `criteriaID` and `quantityString` are no longer saved. The size trim drops `strongSeen`, `undoc` and `docs` before any Legacy data. Then, within Legacy: the steps' own criteria, then all criteria and the category list. Challenges, step lists and points always stay.
+
+## D-037 Phase 3 authorized for `/ei legacy`, P3-1 only | Approved (user, 2026-11-08, Q-P3, Q-P3-1, Q-P3-1a)
+- Phase 3 is authorized with one approval per increment. **P3-1 only**: P3-2 (saved summary) and P3-3 (per-tree detail) stay locked. Q-T4 stays unapproved until P3-1 passes its live gate.
+- P3-1 as in Phase3_Legacy_Plan.md section 3. No saved crash guard; saved-data format 1 unchanged.
+- **Branches (user: keep P2-3 separate; merge nothing without approval):** P3-1 is built on its own branch, `p3-1-legacy`, started from `tp1-legacy-read`.
+  - That branch already holds P2-3 (EmpireIntel 0.4.0, unchanged), so the P3-1 package still has `/ei rest` for the pending inn test. It also holds the check code that P3-1 ports.
+  - `p2-3-views` is not touched.
+  - Merge order, each step only on the user's approval: `p2-3-views`, then `tp1-legacy-read`, then `p3-1-legacy`.
+- Version 0.5.0. `/reload` (new files in an existing folder, D-034).
+- The plan's call list is narrowed, not widened. The 7 achievement getters plus `LegacySystem.GetCurrencyInfo()` with no argument. The three `C_CurrencyInfo` getters are dropped: on Forever the Legacy points are not an ordinary currency (EI-E-21), so they add nothing.
+- Explorer progress is shown as the logged-in character's (EI-E-27). The other challenges' progress is the account's.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -227,14 +262,19 @@ EI-E-19: on Forever, `/reload` loads files newly added to an existing addon's TO
 | Q-T1 | Approve EmpireIntelCheck 0.1.1-tp1 with fixes 1 to 7, including the check's saved-data format change? | **Approved** (D-021) |
 | Q-T2 | D-005: adopt DataStore Characters and Containers now, Crafts later? | **Approved** (D-005 update) |
 | Q-T3 (**approved with limits, D-025**) | Let the next check list the members of the 20 undocumented namespaces, and call their zero-argument Get/Is/Has names under the existing limits, for `C_Seasons`, `C_Reincarnation` and `C_Trophy` only? (The service, debug and store namespaces would be listed, never called.) | Approved 2026-11-05 |
-| Q-T4 | After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | **Deferred** by the user until after the level-25 run |
+| Q-T4 | (Still unapproved 2026-11-08: the user will decide after P3-1 passes its live gate.) After the unlock, allow a read-only call chain **with arguments** into the trait system: get the active config id, then read that config's trees and points (`C_ClassTalents` / `C_Traits` getters only, with ids the client itself returned)? This goes beyond the zero-argument rule of Q-7 | **Deferred** by the user until after the level-25 run |
 | Q-T5 | C_Reincarnation: call the two read names, or leave the namespace uncalled? | **Leave uncalled**; blocklist changed to whole words plus the stem Reincarnat (D-026) |
 | Q-T6 | Authorize Phase 2 and/or Stage 1? | **Phase 2 for pre-25 features only** (D-027); Stage 1 **not** authorized |
-| Q-T7 | After run 6 (EI-E-16): (a) let the check save the values returned by the zero-argument Legacy calls it already makes, plus the non-function fields of the `LegacySystem` table (no new calls); (b) allow read-only calls with arguments to documented getters only: `C_CurrencyInfo.GetCurrencyInfo(id)`, `GetCategoryList()`, `GetCategoryInfo(id)`, `GetCategoryNumAchievements(id)`, `GetAchievementInfo(category, index)`, `GetAchievementNumCriteria(id)`, `GetAchievementCriteriaInfo(id, i)`, with ids the client itself returned? This replaces Q-T4's trait chain as the first step | Open (recommend: yes to both) |
+| Q-T7 | After run 6 (EI-E-16): (a) let the check save the values returned by the zero-argument Legacy calls it already makes, plus the non-function fields of the `LegacySystem` table (no new calls); (b) allow read-only calls with arguments to documented getters only: `C_CurrencyInfo.GetCurrencyInfo(id)`, `GetCategoryList()`, `GetCategoryInfo(id)`, `GetCategoryNumAchievements(id)`, `GetAchievementInfo(category, index)`, `GetAchievementNumCriteria(id)`, `GetAchievementCriteriaInfo(id, i)`, with ids the client itself returned? This replaces Q-T4's trait chain as the first step | **Approved** 2026-11-07, both (a) and (b), with the denylist and crash guard (D-031) |
 | Q-P2-1 | Approve increment P2-1 including saved-data format 1? | **Approved** with realm field and no P_TICK (D-028) |
 | Q-P2-1c | Close P2-1 after the live test? | **Approved**: closed (D-029) |
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
 | Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | **Approved** 2026-11-08, with a and b; built as 0.4.0 (D-033) |
 | Q-P2-3c | Close P2-3 after the live test and the inn test? | Open |
+| Q-P3 | Authorize Phase 3 for `/ei legacy` (Phase3_Legacy_Plan.md)? | **Approved** 2026-11-08, one approval per increment; **P3-1 only**; P3-2 and P3-3 stay locked (D-037) |
+| Q-P3-1 | Approve P3-1, the live `/ei legacy` (Phase3_Legacy_Plan.md section 3)? | **Approved** 2026-11-08 as written (D-037) |
+| Q-P3-1a | No saved crash guard in EmpireIntel; format 1 unchanged? | **Approved** 2026-11-08 |
+| Q-T9 | Build EmpireIntelCheck 0.1.8 (defects 15, 16): count only achievements whose reward text names a Legacy point (65), take each one's value from that text, and keep the 46 supporting exploration achievements as "supporting"; save each step as text, done and progress only (drop type, asset id, criteria id and quantity text); and trim the discovery leftovers (`latest`, `strongSeen`, `docs`, `undoc`) before any Legacy data. This changes the shape of the check's saved `legacy` section | **Approved** 2026-11-08 with the user's correction: the 46 are the Explorer challenge's steps (done / not done, "X of 46 done"), outside the point count. Built as 0.1.8-tp1 (D-036) |
+| Q-T8 | Build EmpireIntelCheck 0.1.7 (defects 13 and 14), within the Q-T7 limits: read every category `GetCategoryList()` returns, plus their achievements and criteria (all ids from the game); take the points from `LegacySystem.GetCurrencyInfo()`; stop passing `traitCurrencyID` to `C_CurrencyInfo`? Trait-system calls with 4225 stay out (Q-T4) | **Approved** 2026-11-08; built as 0.1.7-tp1 (D-035) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

@@ -139,3 +139,187 @@ C1 (Paladin) reached level 25 on client build **1.60.1/70862** (Nov 6; new since
 - BugGrabber: 34 entries, none from EmpireIntel or the check.
 
 **Lead for the next step (Q-T7):** the Legacy values look readable through two documented, read-only APIs: achievements (the challenges) and `C_CurrencyInfo` (the points). Both need an id argument, which the zero-argument rule does not allow.
+
+## 12. Run 7 (0.1.6-tp1, 2026-11-08): the first Legacy read
+
+The user installed 0.1.6 with a `/reload` (EI-E-19), opened the pane, typed `/eicheck legacy` and sent the file and two screenshots of the Challenges page.
+
+- **Result:** "0 challenges in 0 categories; points not found" before and after the pane opened. 32 calls, all ok; no error, no refusal, no crash-guard hit.
+- **The points are there (EI-E-21):** `LegacySystem.GetCurrencyInfo()` (zero-argument, approved) returned `{ quantity = 1, maxQuantity = 1, renownCurrency = 1, spent = 0, spentInTree = 0, traitCurrencyID = 4225 }`. The Legacy points are a **trait currency** (4225), not a `C_CurrencyInfo` currency. So `C_CurrencyInfo.GetCurrencyInfo(4225)` gave nothing, and the currency list holds no Legacy entry (size 0).
+- **The challenges are there (EI-E-20):** `GetCategoryList()` returned 29 categories, and they are exactly the pane's groups. On Forever the achievement categories **are** the Legacy challenge categories. None has "Legacy" in its title, so the 0.1.6 matcher (title contains "legacy") selected none.
+- `LegacySystem.GetFilteredChallenges()` returned an empty table (it likely depends on the pane's filter state). `LegacySystem` has no plain fields; its functions are `GetChallengeIndices`, `GetCurrencyInfo`, `GetFilteredChallenges`, `IsChallengeVisible`, `RegisterCurrencyInfoCallback` and `UpdateCurrencyInfo`.
+- **Screenshots:** "Legacy Points 1 / 65"; the group list matches the categories exactly; the Adventure page shows "Lord Valthalak Laid to Rest" and "Explorer" ("Have a character with the Explore Azeroth achievement"), 1 point each.
+
+**Check defects found:**
+- **Defect 13:** the category matcher assumed a "Legacy" title.
+- **Defect 14:** the points were not taken from `LegacySystem.GetCurrencyInfo`, and `traitCurrencyID` was wrongly passed to `C_CurrencyInfo`.
+
+Fix proposed as 0.1.7 (Q-T8), within the Q-T7 limits.
+
+## 13. Run 8 (0.1.7-tp1, 2026-11-08): the full challenge list
+
+The user installed 0.1.7 with `/reload`, opened the pane and typed `/eicheck legacy`. 955 calls, all ok; no error, no refusal.
+
+- **All 65 Legacy challenges are readable (EI-E-22).** The 27 shown categories hold 111 achievements. Exactly **65** have the reward text "Earn 1 Legacy Point." The other **46** have no reward: Explore Azeroth, Explore Eastern Kingdoms, Explore Kalimdor, and the 43 "Explore <zone>" achievements that make up the Explorer challenge.
+- **Completed:** 1 (Novice Paladin), which matches the pane's "Legacy Points 1 / 65". "Tier 1 Gear" and "Do Not Display" hold no achievements.
+- **Points:** `LegacySystem.GetCurrencyInfo()` gave the same six fields as run 7 (quantity 1, maxQuantity 1, renownCurrency 1, spent 0, spentInTree 0, traitCurrencyID 4225).
+- **Defect 15 (size):** the read did not fit under the 256 KB cap. The trim removed every challenge's steps and the category list. The largest sections are now discovery leftovers: `latest` 42 KB, `strongSeen` 39 KB, `docs` 24 KB, `undoc` 11 KB.
+- **Defect 16 (totals):** 0.1.7 counted all 111 achievements and summed the achievement-points field. That field is not the Legacy value (only Onyxia, id 684, carries 1), so the line said "111 challenges, 0 of 1 points" instead of "65 challenges, 1 of 65 points".
+
+Fix proposed as 0.1.8 (Q-T9).
+
+## 14. Run 9 (0.1.8-tp1, 2026-11-08): the Legacy read is complete
+
+The user installed 0.1.8 with `/reload`, opened the pane and typed `/eicheck legacy`. 955 calls, all ok. Nothing was trimmed (file 233 KB of the 256 KB cap).
+
+- **The line matches the pane:** "65 challenges (1 completed, 1 of 65 Legacy points); Explorer 0 of 46 done". No achievement left unlinked; the reward text was recognized.
+- **Explorer's 46 steps** were linked through the game's own chain: Explorer, then Explore Azeroth (2 steps), then Explore Eastern Kingdoms (23 zones) and Explore Kalimdor (20 zones). This matches the grouping the user asked about.
+- **Zone progress (current character):** 11 zones partly explored, for example Silverpine Forest 13/15, Tirisfal Glades 13/16 and The Barrens 15/25. No zone is complete yet.
+- **Dungeons:**
+  - Novice Spelunker has 5 of 6 done; only Excavation Site: Wetlands is missing.
+  - Experienced Spelunker has Blackfathom Deeps done.
+  - The game's Master Spelunker list names **Dire Maul East, North and West**, which settles the web guides' disagreement.
+- Lord Valthalak, Conqueror of the Lair, PvP ranks and Explorer have no counted steps of their own; reputations and Field of Honor have one each.
+
+**TP-1 status:** the client now answers the Legacy data questions:
+- **Points:** `LegacySystem.GetCurrencyInfo()`, available once the pane has loaded.
+- **Challenges, their steps and their completion:** the achievement functions, from login.
+
+Still open:
+- what `quantity`, `maxQuantity` and `renownCurrency` each mean, which needs a run after spending or earning a point;
+- the tree perks (Q-T4, not approved);
+- whether zone progress is per character.
+
+## 15. Run 10 (0.1.8-tp1, 2026-11-08 04:09 UTC = 2026-11-07 23:09 user time): after spending the first point
+
+The user spent 1 Legacy point in a tree on C1 (Paladin 25). The check's next read used the same zero-argument call as before, with no new call.
+
+| Field of `LegacySystem.GetCurrencyInfo()` | Before (run 9, 04:02 UTC) | After (run 10, 04:09 UTC) |
+|---|---|---|
+| quantity | 1 | **0** |
+| maxQuantity | 1 | 1 |
+| renownCurrency | 1 | 1 |
+| spent | 0 | **1** |
+| spentInTree | 0 | 0 |
+| traitCurrencyID | 4225 | 4225 |
+
+- **Raw result:** saved as-is in `legacy.system.GetCurrencyInfo.values[1]`: six numeric fields, none truncated, nothing secret. `legacy.points` holds the same six plus the `source` label.
+- **The spend happened** between the 04:04:26 and 04:09:37 reads (from `legacy.history`).
+- **Challenges and steps:** all 111 achievements were compared field by field with run 9. 65 challenges, 1 completed, Explorer 0 of 46, categories identical. The only differences are two zone sub-areas explored while playing between the reads: Thoradin's Wall (Arathi Highlands) and Durnholde Keep (Hillsbrad Foothills). Nothing changed because of the spend.
+- **Size:** 229 KB, nothing trimmed. 955 calls, all ok.
+- **spentInTree** stayed 0 after a spend. See section 16.
+
+## 16. Why spentInTree is 0 (analysis, not confirmed)
+
+The file cannot settle this.
+- **No tree is recorded:** the check makes no trait-system call (Q-T4), so the file has no record of which tree the point went into. The user's message left the tree and perk blank.
+- **No parameter list:** `LegacySystem` is pane Lua code, not a documented API. WoW's Lua 5.1 cannot report a Lua function's parameter count, so the file cannot say whether `GetCurrencyInfo` takes a tree argument.
+
+What the file does show:
+- **Zero arguments work:** `GetCurrencyInfo()` called with no argument succeeds every time and returns a number for `spentInTree`.
+- **It looks like a cache:** `LegacySystem` also has `UpdateCurrencyInfo` and `RegisterCurrencyInfoCallback`, never called by the check. That suggests `GetCurrencyInfo` returns a table the pane keeps up to date: it holds data only once the pane has loaded, and it changed after the spend.
+
+Leading hypothesis: `spentInTree` is the points spent in the tree the pane currently has selected (or was given when the pane updated), and 0 when that tree has none or none is selected. A tree argument is possible but unproven.
+
+**Test without any new call:** open the pane on the tree where the point was spent, leave it open, and type `/eicheck legacy`. Then do the same on another tree.
+- spentInTree 1, then 0: it follows the selected tree.
+- 0 both times: it needs something the pane does not pass to `GetCurrencyInfo()`, such as a tree argument. Calling it with one stays under Q-T4 and needs the user's approval.
+
+## 17. Run 11 (0.1.8-tp1, 2026-11-07 23:15-23:16 user time): the selected-tree test
+
+Chat lines only (no file):
+- two automatic reads when the pane loaded;
+- two `/eicheck legacy` reads at 23:15:54 and 23:16:08, which the user ran as the test from section 16.
+
+All four reads were identical: maxQuantity 1, quantity 0, renownCurrency 1, spent 1, **spentInTree 0**. The lines do not say which tree was open for each read, or whether a tree page (not Challenges) was showing.
+
+**Provisional reading:** if the 23:15:54 read was on the tree holding the spent point, spentInTree does **not** follow the pane's selected tree when `GetCurrencyInfo()` is called with no argument. The leading hypothesis of section 16 then fails.
+
+Remaining hypotheses:
+- (a) It counts points placed in a tree but **not yet applied** ("Apply Changes" commits; `spent` counts committed points). Testable without new calls once a point is available: place it, read, apply, read.
+- (b) It needs a tree argument. Testing that is a call with an argument, under Q-T4, which is unapproved.
+- (c) The pane refreshes the field through `UpdateCurrencyInfo`, which the check never calls, and it was stale.
+
+## 18. Run 12 (0.1.8-tp1, 2026-11-08 00:16 user time): the second earned point
+
+Chat line only: "65 challenges (2 completed, 2 of 65 Legacy points); Explorer 0 of 46 done; Legacy points: maxQuantity 2, quantity 1, renownCurrency 2, spent 1, spentInTree 0". The new point is unspent. The user ran the read with the **Adventure** tree open; the first point had been spent in Adventure.
+
+| Field | Run 9 (earned 1, spent 0) | Run 10 (spent 1) | Run 12 (earned 2) |
+|---|---|---|---|
+| quantity | 1 | 0 | **1** |
+| spent | 0 | 1 | 1 |
+| maxQuantity | 1 | 1 | **2** |
+| renownCurrency | 1 | 1 | **2** |
+| spentInTree | 0 | 0 | 0 |
+| completed challenge points | 1 | 1 | **2** |
+
+- **Available:** `quantity` is the points available to spend. It fell by 1 on a spend and rose by 1 on an earn. **Confirmed** by two opposite moves.
+- **Spent:** `spent` is the points spent. It rose on the spend and did not move on the earn. Consistent; one move observed.
+- **Earned:** `maxQuantity` and `renownCurrency` are both the points earned, and both equal the completed challenges' points in all three reads. Still **indistinguishable**.
+- **Invariant:** quantity + spent = maxQuantity held in all three reads.
+- **spentInTree:** 0 with the Adventure tree open, although the spent point is in Adventure. The selected-tree hypothesis (section 16) **fails**. Remaining hypotheses: (a) points placed but not applied; (b) a tree argument (Q-T4); (c) a stale value. The user now has an unspent point, so (a) can be tested now.
+- Which challenge gave the second point is not in the chat line; the saved file would show it.
+
+## 19. Run 13 (0.1.8-tp1, 2026-11-08 00:19-00:20 user time): placed but not applied, then applied
+
+Chat lines only. Per the test steps, the first read was taken with the point placed and not applied, the second after "Apply Changes".
+
+| Field | Placed, not applied (00:19:49) | Applied (00:20:05) |
+|---|---|---|
+| quantity | 1 | **0** |
+| spent | 1 | **2** |
+| maxQuantity | 2 | 2 |
+| renownCurrency | 2 | 2 |
+| spentInTree | 0 | 0 |
+
+- **Committed points only:** `GetCurrencyInfo()` does not see a placed point until it is applied.
+- **Hypothesis (a) fails:** spentInTree is not "placed but not applied".
+- **Spent confirmed:** `spent` rose by exactly one on each applied spend, two moves, and never moved on an earn.
+- **Invariant:** quantity + spent = maxQuantity held in every read (5 reads).
+- **spentInTree:** 0 in every read, with the spent tree open or not, placed or applied. Remaining explanations:
+  - (b) it needs a tree argument;
+  - (c) it is filled only by the pane's own `UpdateCurrencyInfo`, never called by the check;
+  - it may also be unused on Forever.
+
+Testing (b) needs a tree id from the game, which only the trait system gives (Q-T4, unapproved). The check has no game-returned tree id to pass, so even an approved argument call would first need Q-T4.
+
+## 20. Run 14 (0.1.8-tp1, file after runs 12 and 13)
+
+- **The second point came from Novice Spelunker:** its last step, Excavation Site: Wetlands, is now done (the one step run 9 showed missing). The challenge is completed and earned by the logged-in character. The completed challenges are Novice Paladin and Novice Spelunker.
+- The history shows it: completed went from 1 to 2 between the 04:16 UTC and 05:16 UTC reads. The pane points fields match runs 12 and 13.
+- The only other changes since run 10 are two explored zone areas: Hammerfall (Arathi Highlands) and Dun Algaz (Wetlands).
+- 230 KB, nothing trimmed. All 955 calls ok.
+- The step data predicted the next point: run 9 showed "only Excavation Site: Wetlands left", and completing it gave the point. This is the kind of hint `/ei legacy` is meant to give (Legacy_Rules.md section 4).
+
+## 21. spentInTree: every known read (2026-11-08 inventory)
+
+[O] = observed (file or chat line). [I] = inferred. [U] = user's statement. A file keeps the point fields only for its **latest** read, and `legacy.history` does not store spentInTree, so earlier reads come from chat lines. No file records whether the Legacy window was open, or which tree or page it showed: `paneSeen` only says the pane's code had loaded.
+
+| Read (user time) | Source | spentInTree | quantity / spent / earned | Window and tree at the read |
+|---|---|---|---|---|
+| Run 7, 2026-11-07 20:39 | file [O] | 0 | 1 / 0 / 1 | not recorded; the user had opened the pane that session [U] |
+| Run 8, 21:08 (3 reads) | chat [O]; file holds the last [O] | 0 | 1 / 0 / 1 | not recorded |
+| Run 9, 23:04 (2 reads) | chat [O]; file holds the last [O] | 0 | 1 / 0 / 1 | not recorded |
+| Run 10, 23:09 (after the first spend) | file [O] | 0 | 0 / 1 / 1 | not recorded; tree of the spend not given |
+| Run 11, 23:15-23:16 (4 reads) | chat [O] | 0 | 0 / 1 / 1 | the user ran the selected-tree test; which tree each read was on not given [U] |
+| Run 12, 00:16 (after the second earn) | chat [O] | 0 | 1 / 1 / 2 | **Adventure tree open; the first point is in Adventure** [U] |
+| Run 13, 00:19 (placed, not applied) | chat [O] | 0 | 1 / 1 / 2 | tree not given [U] |
+| Run 13, 00:20 (applied) | chat [O]; latest in run 14's file [O] | 0 | 0 / 2 / 2 | tree not given |
+
+- [O] spentInTree was **0 in every read (14 in all: 1 + 3 + 2 + 1 + 4 + 1 + 2)**: before any spend, after one and after two applied spends, and with a point placed but unapplied.
+- [O] **Nothing in the data supports "follows the selected tree".** It never took a value other than 0.
+- [U, I] The one read with a stated tree (run 12, Adventure open, where a point is) shows 0, which argues against it. But "Adventure" is also a page on the Challenges list. It is not recorded whether the tree page itself was showing, so this read cannot settle it alone.
+- [I] The pane's tree page shows a counter under each tree's name (the "0" circle in the 2026-11-07 screenshots). That is the pane's own per-tree spent value, the natural reference for spentInTree.
+- **The single test that settles it** (no new call): open the Legacy window on the **tree page** of a tree whose counter shows 1 or more, leave it open, type `/eicheck legacy`, and take a screenshot of the window at that moment. If spentInTree equals the counter, it follows the selected tree. If it shows 0 while the counter shows 1 or more, it does not, at least not with no argument, and only Q-T4 could go further.
+
+## 22. Run 15 (0.1.8-tp1, 2026-11-08 00:35-00:41 user time): the selected-tree test, and a second character
+
+**spentInTree: closed.**
+- [O, U] With the Legacy window on the **Adventure tree page**, whose counter shows **2** (screenshot: "Available points: 0"; the node at 2/5), `spentInTree` read **0**. It also read 0 on every other tree.
+- [O] The file matches: in the reads at 05:35-05:36 UTC, quantity 0, earned 2. `legacy.history` does not store spentInTree; the value is from the user's chat report.
+- **Conclusion (observed):** spentInTree does not follow the selected tree when `GetCurrencyInfo()` is called with no argument. **Closed: not usable without a tree argument; left out** (user, 2026-11-08). A tree argument would need tree ids from the trait system (Q-T4, unapproved).
+
+**Second character (the file's last read, a login on C2 Priest 6, pane not loaded, so no point fields):**
+- [O] **Exploration areas are per character.** On C2 only Tirisfal Glades has areas explored (4/16). On C1 (run 14), 13 zones had areas explored; for example, Ashenvale's and The Barrens' areas read done on C1 and not done on C2.
+- [O] **Completed challenges and dungeon steps are account-wide.** C2 sees Novice Paladin and Novice Spelunker completed (earnedByMe true), all 6 Novice Spelunker steps done, and Experienced Spelunker's Blackfathom Deeps done. C2 (level 6) has never been there.
+- [I] Explorer progress must be shown per character ("Explore Eastern Kingdoms on a single character"); the other challenges' progress is the account's.

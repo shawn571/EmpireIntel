@@ -9,6 +9,7 @@ Options (all optional):
                                       LegacyFixtureFrame, an Enum and a string. These names are test
                                       fixtures only; they never appear in shipped code.
   datastore = nil | 'good' | 'faulty' | 'throws' | 'nolist' | 'charsonly'
+  legacy25  = 'ids' | 'list'          unlocked level-25 profile with achievement and currency getters (use with launch)
   docs      = true                    a loadable Blizzard API documentation addon with one Legacy system
   precise   = number                  provide debugprofilestop; each call advances it by this many ms
   char      = table                   overrides for the character
@@ -231,6 +232,107 @@ function F.new(opts)
     env.Enum.NamePlateStyle = { Modern = 1, Legacy = 5 }
     env.Enum.RespecType = { Talents = 1, Legacy = 4 }
     env.Enum.BnetAccountFlag = { IsLegacy = 131072 }
+  end
+  if opts.legacy25 then
+    -- the level-25 profile as run 7 saw it (EI-E-20, EI-E-21): GetCategoryList returns only the Legacy categories, none
+    -- titled "Legacy", plus two the pane hides; the points are a trait currency from LegacySystem.GetCurrencyInfo().
+    -- 'ids': with the LegacySystem table (pane opened); 'list': without it (pane not opened yet).
+    -- run 8 (EI-E-22): Legacy challenges carry the reward "Earn 1 Legacy Point."; the Explorer challenge is a chain of
+    -- achievements, each a step of the one above (criteria type 8 = complete achievement, assetID = its id).
+    local LP = 'Earn 1 Legacy Point.'
+    local cats = { [15568] = { 'Classes', -1 }, [15580] = { 'Paladin', 15568 }, [15593] = { 'Dungeons', -1 }, [15594] = { 'Raids', -1 },
+      [15626] = { 'Tier 1 Gear', 15594 }, [15425] = { 'Do Not Display', -1 }, [15430] = { 'Odd Child', 15425 },
+      [15596] = { 'Adventure', -1 }, [15607] = { 'Explorer', 15596 }, [14777] = { 'Eastern Kingdoms', 15596 }, [14778] = { 'Kalimdor', 15596 } }
+    local ach = {
+      [61997] = { 61997, 'Novice Paladin', 0, true, 11, 7, 26, 'Reach level 25 for the first time on a Paladin.', 0, 1, LP, false, true, 'Someone Name', false },
+      [61998] = { 61998, 'Experienced Paladin', 0, false, nil, nil, nil, 'Reach level 45 for the first time on a Paladin.', 0, 1, LP, false, false, nil, false },
+      [62031] = { 62031, 'Novice Spelunker', 0, false, nil, nil, nil, 'Complete the following dungeons.', 0, 1, LP, false, false, nil, false },
+      [684] = { 684, 'Conqueror of the Lair', 1, false, nil, nil, nil, 'Defeat Onyxia.', 0, 1, LP, false, false, nil, false },
+      [62382] = { 62382, 'Explorer', 0, false, nil, nil, nil, 'Have a character with the Explore Azeroth achievement.', 0, 1, LP, false, false, nil, false },
+      [62053] = { 62053, 'Explore Azeroth', 0, false, nil, nil, nil, 'Complete the zone map for all existing zones.', 0, 1, '', false, false, nil, false },
+      [62353] = { 62353, 'Explore Eastern Kingdoms', 0, false, nil, nil, nil, 'Complete the maps of Eastern Kingdoms on a single character:', 0, 1, '', false, false, nil, false },
+      [62355] = { 62355, 'Explore Kalimdor', 0, false, nil, nil, nil, 'Complete the maps of Kalimdor on a single character:', 0, 1, '', false, false, nil, false },
+      [776] = { 776, 'Explore Elwynn Forest', 0, true, 11, 8, 26, 'Explore Elwynn Forest.', 0, 1, '', false, true, 'Someone Name', false },
+      [627] = { 627, 'Explore Dun Morogh', 0, false, nil, nil, nil, 'Explore Dun Morogh.', 0, 1, '', false, false, nil, false },
+      [728] = { 728, 'Explore Durotar', 0, false, nil, nil, nil, 'Explore Durotar.', 0, 1, '', false, false, nil, false },
+      [50030] = { 50030, 'Tier 1 Helm', 0, true, 11, 8, 26, 'hidden', 0, 1, '', false, true, nil, false },
+      [50040] = { 50040, 'Internal', 5, true, 11, 8, 26, 'hidden', 0, 1, LP, false, true, nil, false },
+      [50050] = { 50050, 'Internal child', 2, false, nil, nil, nil, 'hidden', 0, 1, '', false, false, nil, false },
+    }
+    local inCat = { [15580] = { 61997, 61998 }, [15593] = { 62031 }, [15594] = { 684 }, [15596] = { 62382 },
+      [15607] = { 62053, 62353, 62355 }, [14777] = { 776, 627 }, [14778] = { 728 },
+      [15626] = { 50030 }, [15425] = { 50040 }, [15430] = { 50050 } }
+    -- criteriaString, type, completed, quantity, reqQuantity, charName, flags, assetID, quantityString, criteriaID, eligible
+    local crit = {
+      [62031] = { { 'Ragefire Chasm', 0, true, 1, 1, 'Someone Name', 0, 389, '1/1', 777, true }, { 'Wailing Caverns', 0, false, 0, 1, nil, 0, 43, '0/1', 778, true } },
+      [62382] = { { 'Explore Azeroth', 8, false, 0, 1, nil, 0, 62053, '0/1', 9001, true } },
+      [62053] = { { 'Explore Eastern Kingdoms', 8, false, 0, 1, nil, 0, 62353, '0/1', 9002, true }, { 'Explore Kalimdor', 8, false, 0, 1, nil, 0, 62355, '0/1', 9003, true } },
+      [62353] = { { 'Explore Elwynn Forest', 8, true, 1, 1, nil, 0, 776, '1/1', 9004, true }, { 'Explore Dun Morogh', 8, false, 0, 1, nil, 0, 627, '0/1', 9005, true } },
+      [62355] = { { 'Explore Durotar', 8, false, 0, 1, nil, 0, 728, '0/1', 9006, true } },
+      -- a zone step whose area id happens to equal an achievement id: it must NOT be linked
+      [776] = { { 'Goldshire', 43, true, 1, 1, 'Someone Name', 0, 87, '1/1', 9101, true }, { 'Northshire', 43, false, 0, 1, nil, 0, 627, '0/1', 9102, true } },
+      [627] = { { 'Kharanos', 43, false, 0, 1, nil, 0, 131, '0/1', 9103, true } },
+      [728] = { { 'Razor Hill', 43, false, 0, 1, nil, 0, 362, '0/1', 9104, true } },
+      [684] = { { 'Onyxia', 0, false, 0, 1, nil, 0, 10184, '0/1', 9200, true } },
+    }
+    local known = {}
+    for id in pairs(cats) do known[id] = true end
+    for id in pairs(ach) do known[id] = true end
+    local function arg(v, max)
+      W.argCalls = W.argCalls + 1
+      if type(v) ~= 'number' or not (known[v] or (max and v >= 1 and v <= max)) then W.badArgs = W.badArgs + 1 end
+    end
+    W.unlocked = true
+    W.badArgs, W.argCalls = 0, 0
+    local function unpackT(t, i, n) if i > n then return end return t[i], unpackT(t, i + 1, n) end
+    env.GetCategoryList = function()
+      rec('GetCategoryList')
+      return { 15425, 15580, 15568, 15593, 15594, 15626, 15430, 15596, 15607, 14777, 14778 }
+    end
+    env.GetCategoryInfo = function(id)
+      arg(id); rec('GetCategoryInfo')
+      W.inFlightSeen = env.EmpireIntelCheckDB.inFlight and env.EmpireIntelCheckDB.inFlight.name
+      local c = cats[id]; if c then return c[1], c[2], 0 end
+    end
+    env.GetCategoryNumAchievements = function(id)
+      arg(id); rec('GetCategoryNumAchievements')
+      local l = inCat[id] or {}
+      local done = 0
+      for _, a in ipairs(l) do if ach[a][4] then done = done + 1 end end
+      return #l, done, #l - done
+    end
+    env.GetAchievementInfo = function(a, b)
+      rec('GetAchievementInfo')
+      local id
+      if b ~= nil then arg(a); arg(b, 3); id = inCat[a] and inCat[a][b] else arg(a); id = a end
+      local t = id and ach[id]
+      if t then return unpackT(t, 1, 15) end
+    end
+    env.GetAchievementNumCriteria = function(id) arg(id); rec('GetAchievementNumCriteria'); return crit[id] and #crit[id] or 0 end
+    env.GetAchievementCriteriaInfo = function(id, i)
+      arg(id); arg(i, 2); rec('GetAchievementCriteriaInfo')
+      local c = crit[id] and crit[id][i]
+      if c then return unpackT(c, 1, 11) end
+    end
+    local legacyPoints = { name = 'Legacy Points', quantity = 1, maxQuantity = 16, totalEarned = 1, isAccountWide = true, iconFileID = 4567 }
+    env.C_CurrencyInfo = {
+      GetCurrencyInfo = function(id) arg(id); rec('C_CurrencyInfo.GetCurrencyInfo'); if id == 4225 then W.traitToCurrency = true end end,
+      GetCurrencyListSize = function() rec('C_CurrencyInfo.GetCurrencyListSize'); return 2 end,
+      GetCurrencyListInfo = function(i)
+        arg(i, 2); rec('C_CurrencyInfo.GetCurrencyListInfo')
+        if i == 1 then return { name = 'Honor', quantity = 50 } end
+        if i == 2 then return legacyPoints end
+      end,
+      SetCurrencyBackpack = function() rec('SetCurrencyBackpack!') end,
+    }
+    if opts.legacy25 == 'ids' then
+      env.LegacySystem = {
+        GetCurrencyInfo = function() rec('LegacySystem.GetCurrencyInfo')
+          return { quantity = 1, maxQuantity = 1, renownCurrency = 1, spent = 0, spentInTree = 0, traitCurrencyID = 4225 } end,
+        GetFilteredChallenges = function() rec('LegacySystem.GetFilteredChallenges'); return {} end,
+        GetChallengeIndices = function() error('Usage: GetCategoryNumAchievements(categoryID, includeSuperceded)') end,
+      }
+    end
   end
   if opts.undoc then
     -- undocumented namespaces (EI-E-12); fixture behaviour only

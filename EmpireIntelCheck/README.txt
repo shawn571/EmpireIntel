@@ -1,4 +1,4 @@
-EmpireIntelCheck 0.1.5-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.8-tp1 - EmpireIntel Test Package 1: the Legacy check
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
@@ -6,9 +6,64 @@ WHAT IT IS
   to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  Update from any 0.1.x: /RELOAD IS ENOUGH (no files added or removed; the TOC changes only its Version line).
-  The AddOns list keeps showing the old version until your next full restart; that is only the label.
-  First-ever install (no EmpireIntelCheck folder yet): FULL CLIENT RESTART.
+  Update from 0.1.7: /RELOAD IS ENOUGH (files changed only).
+
+WHAT CHANGED IN 0.1.8 (your Q-T9 approval with your Explorer correction; fixes from your 0.1.7 file)
+  - Counts only the 65 Legacy challenges (the achievements whose reward says "Earn 1 Legacy Point."), each worth the
+    points its reward names. 0.1.7 counted all 111 achievements and used the wrong points field.
+  - The 46 exploration achievements are saved as the steps of the Explorer challenge, found through the game's own
+    chain (Explorer -> Explore Azeroth -> Explore Eastern Kingdoms / Explore Kalimdor -> the zones), each done or not.
+    They are not counted as points. The line shows "Explorer X of 46 done".
+  - Each step of a challenge (dungeon, raid boss, zone area) is saved as its name, done or not, and its progress
+    when it has a count.
+  - Old test leftovers in the saved file (the discovery lists and the API docs) are dropped before any Legacy data,
+    so the challenge steps are no longer lost to the size limit.
+  - Same limits as before: only achievement and currency read functions, only numbers the game returned, blocked
+    words and crash guard as before. No talent-tree (trait) calls.
+
+UPDATE AND TEST (about 3 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntelCheck with the one in the zip (the game may be running).
+  2. Type  /reload  and wait about 15 seconds.
+  3. Open the Legacy window (the pane) for a moment.
+  4. Type  /eicheck legacy   Expect something like:
+     "Legacy read: 65 challenges (1 completed, 1 of 65 Legacy points); Explorer 0 of 46 done; in 27 categories;
+      Legacy points: maxQuantity 1, quantity 1, renownCurrency 1, spent 0, spentInTree 0"
+     (Explorer may already show some zones done: the number counts zones the game marks as explored.)
+  5. Compare with the pane: "1 of 65" should match "Legacy Points 1 / 65". Note any line with UNEXPECTED.
+  6. Type  /reload  (this saves the file), or exit the game.
+  7. Send  WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua  and the "Legacy read:" line.
+  Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
+
+ROLLBACK (one step)
+  Put the 0.1.7 folder back and /reload (addon files only; saved data stays as it is).
+  To remove the check: delete the folder Interface\AddOns\EmpireIntelCheck (or untick it) and /reload.
+  EmpireIntel, GoldIntel and DataStore are not affected either way.
+
+WHAT CHANGED IN 0.1.7 (your Q-T8 approval; fixes from your 0.1.6 file)
+  - Reads every challenge category the game lists. On Forever these ARE the Legacy categories (Classes, Tradeskills,
+    Player vs. Player, Adventure, Dungeons, Raids and their sub-groups); 0.1.6 wrongly looked for "Legacy" in a title.
+  - "Tier 1 Gear" and "Do Not Display" (not shown in the pane) are read and saved but kept out of the totals.
+  - Each challenge is saved with its steps (each dungeon, each raid boss) and whether each is done.
+  - Legacy points come from the pane's own LegacySystem.GetCurrencyInfo(), all its fields saved as they are.
+    The trait-currency number (4225) is no longer sent to the ordinary currency functions.
+  - The same limits as 0.1.6: only achievement and currency read functions, only numbers the game returned,
+    blocked words and crash guard as before. No talent-tree (trait) calls.
+
+WHAT CHANGED IN 0.1.6 (your Q-T7 approval)
+  - Once Legacy is unlocked, each check also reads the Legacy values the game shows:
+      * the challenges, from the Legacy achievement category: name, completed or not, and each step
+        (for example each dungeon of a Spelunker challenge) with its progress;
+      * the Legacy points, from the currency the pane uses (amount and cap).
+  - Calls with an argument go only to the game's achievement and currency getters (GetCategoryList, GetCategoryInfo,
+    GetCategoryNumAchievements, GetAchievementInfo, GetAchievementNumCriteria, GetAchievementCriteriaInfo,
+    C_CurrencyInfo.GetCurrencyInfo, GetCurrencyListSize, GetCurrencyListInfo), and only with numbers the game itself
+    returned. Any other name or number is refused before the call. The blocked words still apply to every call.
+  - Crash guard as before: each name is written to saved data during its call and cleared after.
+  - Saves what the Legacy pane's own LegacySystem functions return when called with no argument (0.1.4 saved only
+    "it answered"), and its constants (read, not called).
+  - Fixed: the size limit could erase the values of the Legacy calls in a run (your level-25 file lost them).
+  - Character names the game returns with achievements are not saved.
+  - New command  /eicheck legacy : read again now (for example after opening the Legacy pane).
 
 WHAT CHANGED IN 0.1.5 (your Q-T5 rule)
   - Blocked words are matched as whole words: SetSeason, IsSeasonOpen, ShowFrame stay blocked; IsShown, GetClaimable,

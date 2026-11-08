@@ -37,7 +37,18 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.9g 0.1.4 run: C_Seasons no active season; C_Trophy unrelated; C_Reincarnation list shown to the user (S-012)
 - [x] 1.9h Q-T5 and Q-T6 decided (2026-11-05); 0.1.5-tp1 built (whole-word blocklist, Reincarnat stem, defect 11) (S-013)
 - [x] 1.10 Level-25 run received 2026-11-07 (pane opened; build 70862); TP1_Report_Run1.md section 11 (S-020)
-- [ ] 1.11 **User:** Q-T7, plus the Legacy point number shown in the pane (screenshot)
+- [x] 1.11 Q-T7 approved; screenshots received (1 point; Legacy_Rules.md) (2026-11-07)
+- [x] 1.12 EmpireIntelCheck 0.1.6-tp1 built: Part C Legacy read, defect 12 (S-021)
+- [x] 1.13 0.1.6 run received (run 7): categories and points found; defects 13, 14 (S-026)
+- [x] 1.14 Q-T8 approved; EmpireIntelCheck 0.1.7-tp1 built (S-027, D-035)
+- [x] 1.15 0.1.7 run received (run 8): 65 challenges and 46 exploration achievements; defects 15, 16 (S-028)
+- [x] 1.16 Q-T9 approved with correction; EmpireIntelCheck 0.1.8-tp1 built (S-029, D-036)
+- [x] 1.17 0.1.8 run (run 9): matches the pane; all 46 Explorer steps linked; nothing trimmed (S-030)
+- [x] 1.18 Run 10 after the first spend recorded (S-031)
+- [x] 1.19 Selected-tree test run (run 11): spentInTree 0 in all reads; which tree each read was on is not recorded (S-032)
+- [x] 1.19a Unapplied placement test (run 13): not counted until applied; spentInTree still 0 (S-034)
+- [x] 1.20 Second earned point (run 12) and a second character (run 15) read (S-037)
+- [ ] 1.21 **User:** decide what comes after TP-1 (see the S-030 handoff)
 - Exit test: Architecture section 9 exit criteria.
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0

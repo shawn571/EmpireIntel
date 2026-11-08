@@ -4,6 +4,75 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-037 | 2026-11-08 | Claude
+
+- **Done:** run 15 recorded (TP1_Report_Run1.md section 22, EI-E-27); P2-3_Report.md; D-037 (Phase 3, P3-1 only).
+- **NEXT:** build P3-1 as 0.5.0 on branch `p3-1-legacy`.
+- **WAITING FOR:** the formal inn test, then Q-P2-3c.
+
+## S-036 | 2026-11-08 | Claude
+
+- **Done:** spentInTree inventory (TP1_Report_Run1.md section 21); `/ei legacy` plan (Phase3_Legacy_Plan.md). No code.
+- **WAITING FOR:** Q-P3, Q-P3-1, Q-P3-1a; the P2-3 views check and the inn test, then Q-P2-3c; optionally the spentInTree screenshot test.
+
+## S-035 | 2026-11-08 | Claude
+
+- **Done:** run 14 recorded: the second point came from Novice Spelunker (Excavation Site: Wetlands).
+- **Open for the user:** spentInTree (leave out, or Q-T4); whether to plan `/ei legacy` (Phase 3, not authorized); P2-3 confirmation and the inn test, then Q-P2-3c.
+
+## S-034 | 2026-11-08 | Claude
+
+- **Done:** recorded run 13 (TP1_Report_Run1.md section 19, EI-E-26). Available, spent and earned are settled; spentInTree is unexplained.
+- **Open for the user:** keep spentInTree out (recommended), or approve Q-T4 to read the trees; the file showing which challenge gave point 2; P2-3 confirmation and the inn test.
+
+## S-033 | 2026-11-08 | Claude
+
+- **Done:** recorded run 12 (TP1_Report_Run1.md section 18, EI-E-25).
+- **WAITING FOR:** the staging test now that a point is available (place without Apply, read, Apply, read); the file, to see which challenge gave the second point.
+
+## S-032 | 2026-11-08 | Claude
+
+- **Done:** recorded run 11 (TP1_Report_Run1.md section 17). spentInTree stays 0 with the pane open.
+- **WAITING FOR:** which tree each read was on; which tree and perk hold the spent point; the staging test at the next available point; P2-3 confirmation and the inn test.
+
+## S-031 | 2026-11-08 | Claude
+
+- **Done:** recorded run 10 (TP1_Report_Run1.md sections 15 and 16, EI-E-24, Legacy_Rules.md section 4). No code changed; 0.1.8-tp1 stays current.
+- **WAITING FOR:**
+  - which tree and perk the point went into;
+  - the selected-tree test for spentInTree;
+  - the next earned point;
+  - a read on a second character;
+  - P2-3 confirmation and the inn test, then Q-P2-3c.
+
+## S-030 | 2026-11-08 | Claude
+
+- **Done:** read run 9 (TP1_Report_Run1.md section 14, EI-E-23). The check reads the challenges, steps and points correctly.
+- **Open for the user:**
+  - the P2-3 confirmation and the inn test, then Q-P2-3c;
+  - the next step for Legacy data in EmpireIntel itself: Phase 3 is not authorized, and Phase 2 uses no Legacy API (D-027);
+  - Q-T4 (trees) is still unapproved.
+
+## S-029 | 2026-11-08 | Claude
+
+- **Done:** built EmpireIntelCheck 0.1.8-tp1 (Q-T9, D-036). 283 tests; 38/38 mutants. `dist/EmpireIntelCheck_AddOns_v0.1.8-tp1.zip` (sha256 below in the package block).
+- **WAITING FOR:** the 0.1.8 file and line; the user's check of the Explorer grouping in the pane; the P2-3 live and inn tests, then Q-P2-3c.
+
+## S-028 | 2026-11-08 | Claude
+
+- **Done:** read run 8 (TP1_Report_Run1.md section 13, EI-E-22, Legacy_Rules.md 1b). Proposed Q-T9 (0.1.8). No code changed.
+- **WAITING FOR:** Q-T9; the P2-3 live and inn tests, then Q-P2-3c.
+
+## S-027 | 2026-11-08 | Claude
+
+- **Done:** built EmpireIntelCheck 0.1.7-tp1 (Q-T8, D-035) on `tp1-legacy-read`. 274 tests; all mutants caught. `dist/EmpireIntelCheck_AddOns_v0.1.7-tp1.zip` (sha256 c71ba1b5...).
+- **WAITING FOR:** the 0.1.7 file and the Legacy read line; the P2-3 live and inn tests, then Q-P2-3c.
+
+## S-026 | 2026-11-08 | Claude
+
+- **Done:** read run 7 (TP1_Report_Run1.md section 12, EI-E-20/21, Legacy_Rules.md 1a). Proposed Q-T8 (0.1.7 fixes defects 13 and 14). No code changed.
+- **WAITING FOR:** Q-T8; the P2-3 live and inn tests, then Q-P2-3c.
+
 ## S-024 | 2026-11-08 | Claude
 
 - **Done:** built P2-3 as EmpireIntel 0.4.0 on branch `p2-3-views` (D-033). 244 tests pass under 5.1 and 5.3; 16 of 16 mutants caught. `dist/EmpireIntel_AddOns_v0.4.0.zip` (sha256 9ae2ac1b...).
@@ -18,6 +87,12 @@ Append the newest section at the TOP. The newest section wins.
 
 - **Done:** P2-2 closed (D-032); `p2-2-alts` merged into main (fast-forward).
 - **NEXT:** the P2-3 plan for approval (no code). **WAITING FOR:** the EmpireIntelCheck 0.1.6 run with the pane open, plus the user's Legacy Points line.
+
+## S-021 | 2026-11-07 | Claude
+
+- **Done:** Q-T7 approved; built EmpireIntelCheck 0.1.6-tp1 on branch `tp1-legacy-read` (stacked on `p2-2-alts`). Legacy_Rules.md written. 238 tests; 15/15 mutants. `dist/EmpireIntelCheck_AddOns_v0.1.6-tp1.zip`.
+- **WAITING FOR:** the 0.1.6 run (full restart, pane opened, `/eicheck legacy`, file); the `/ei alts` lines on 0.3.1, then Q-P2-2c.
+- **Open:** tree node names need the trait system (Q-T4) or tooltips; not part of Q-T7.
 
 ## S-020 | 2026-11-07 | Claude
 

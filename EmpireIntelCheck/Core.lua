@@ -121,6 +121,29 @@ function C.Trim()
       again()
     end
   end
+  -- Q-T9: the discovery leftovers go before any Legacy data (their findings are in TP1_Report_Run1.md sections 9-12)
+  if over() and type(db.strongSeen) == 'table' then
+    local n = 0
+    for _ in pairs(db.strongSeen) do n = n + 1 end
+    db.strongSeen = {}; db.strongSeenDropped = n .. ' names, over size cap'; again()
+  end
+  if over() and type(db.undoc) == 'table' and db.undoc.namespaces then
+    db.undoc = { dropped = 'over size cap', at = db.undoc.at, calledAt = db.undoc.calledAt }; again()
+  end
+  if over() and type(db.docs) == 'table' and (db.docs.args or db.docs.events or db.docs.systems) then
+    db.docs = { dropped = 'over size cap', systemCount = db.docs.systemCount, at = db.docs.at }; again()
+  end
+  -- last resort, in this order: the steps' own criteria (zone sub-areas), then every criteria list, then the category list.
+  -- The challenges, their step lists (done / not done) and the points always stay.
+  if over() and db.legacy then
+    for _, ch in ipairs(db.legacy.challenges or {}) do if ch.stepOf or not ch.legacy then ch.criteria = nil end end
+    db.legacy.trimmed = 'criteria of steps dropped: over size cap'; again()
+  end
+  if over() and db.legacy then
+    for _, ch in ipairs(db.legacy.challenges or {}) do ch.criteria = nil end
+    db.legacy.categories = nil
+    db.legacy.trimmed = 'criteria and category list dropped: over size cap'; again()
+  end
   db.sizeEstimate = size
   return size
 end
@@ -296,6 +319,8 @@ function C.Slash(msg)
     C.Say('noted: Legacy pane open. Rerun queued.', true)
   elseif msg == 'undoc' then
     if NS.Discover then C.Say('undoc: ' .. tostring(NS.Discover.CallUndocumented()), true) end
+  elseif msg == 'legacy' then
+    if NS.Legacy then C.Say('legacy: ' .. tostring(NS.Legacy.Command()), true) end
   elseif msg == 'docs' then
     if NS.Discover then
       local r = NS.Discover.LoadDocs()
@@ -304,7 +329,7 @@ function C.Slash(msg)
   else
     local last = db.runs[#db.runs]
     C.Say('status: ' .. (last and (tostring(last.verdict) .. ' (run ' .. tostring(last.id) .. ', ' .. tostring(last.reason) .. ')') or 'no run yet')
-      .. '. Commands: off, on, run, pane, docs, undoc', true)
+      .. '. Commands: off, on, run, pane, docs, undoc, legacy', true)
   end
 end
 

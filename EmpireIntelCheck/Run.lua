@@ -215,7 +215,12 @@ local function storeRun(db, run, rec)
   local strongResults = {}
   for full, res in pairs(run.calls and run.calls.results or {}) do
     local c = rec.candidates[full]
-    if c and c.strong then strongResults[full] = res end
+    if c and c.strong then
+      -- own copy (defect 12): Trim drops values from db.latest.results, which shared these tables
+      local copy = {}
+      for k, v in pairs(res) do copy[k] = v end
+      strongResults[full] = copy
+    end
     local old = prev and prev.results and prev.results[full]
     if old and old.code ~= res.code and #changed < 100 then table.insert(changed, { name = full, from = old.code, to = res.code }) end
   end
@@ -301,6 +306,14 @@ function R.Start(reason, manual)
     run.discovery_candidateCount = cc
     run.scheduler = { ticks = C.stats.ticks, maxStepsPerFrame = C.stats.maxSteps }
     S.lastRelevant = v.counts.total
+    -- Part C (Q-T7): read the Legacy values once the system is unlocked
+    local legacyOut = nil
+    if v.unlocked == true and NS.Legacy then
+      -- not under pcall (it yields); a failure fails this run visibly through the job's error handler
+      run.legacyStarted = true
+      legacyOut = NS.Legacy.Read('run ' .. run.id, true)
+      run.legacy = legacyOut.summary
+    end
     watchFrames(rec, false)
     storeRun(db, run, rec)
     local size = C.Trim()
@@ -310,13 +323,16 @@ function R.Start(reason, manual)
     if db.docs and db.docs.systems then docsHint = '; docs saved'
     elseif rec.addons and rec.addons.docsAvailable then docsHint = '; docs available: /eicheck docs' end
     C.Say(v.text .. '. Run ' .. run.id .. ' (' .. tostring(reason) .. ')' .. docsHint .. '. Data in EmpireIntelCheckDB.')
+    local second = legacyOut and NS.Legacy.Line(legacyOut) or nil
     if #run.unexpected > 0 then
       local codes, seen = {}, {}
       for _, u in ipairs(run.unexpected) do
         if not seen[u.code] then seen[u.code] = true; table.insert(codes, u.code) end
       end
-      C.Say('UNEXPECTED ' .. #run.unexpected .. ': ' .. table.concat(codes, ', ') .. ' (details saved)')
+      local u = 'UNEXPECTED ' .. #run.unexpected .. ': ' .. table.concat(codes, ', ') .. ' (details saved)'
+      second = second and (second .. '. ' .. u) or u
     end
+    if second then C.Say(second) end      -- limit 6: still at most two lines per run
     R.Finish()
   end, 'run', function(err)
     -- a run failed part way: keep what it has, mark it, and let later runs happen
