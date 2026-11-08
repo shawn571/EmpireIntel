@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-049 | Merge standing order; Claude Code merge permission
+- D-049 (pull request from `docs-merge-standing-order`): Claude merges approved pull requests itself with `gh pr merge <n> --merge`; docs-only standing approval for EmpireIntel. `.claude/settings.json` allows `Bash(gh pr merge *)` (this pull request, merged by the user).
+
 ## 2026-11-08 | S-048 | All merges done; next-session prompt names main (documentation only)
 - main is c5434a7 (merge of shawn571/EmpireIntel#3): EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests. NEXT_SESSION_PROMPT.md points at main (D-048).
 
