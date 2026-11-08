@@ -189,3 +189,38 @@ Still open:
 - what `quantity`, `maxQuantity` and `renownCurrency` each mean, which needs a run after spending or earning a point;
 - the tree perks (Q-T4, not approved);
 - whether zone progress is per character.
+
+## 15. Run 10 (0.1.8-tp1, 2026-11-08 04:09 UTC = 2026-11-07 23:09 user time): after spending the first point
+
+The user spent 1 Legacy point in a tree on C1 (Paladin 25). The check's next read used the same zero-argument call as before, with no new call.
+
+| Field of `LegacySystem.GetCurrencyInfo()` | Before (run 9, 04:02 UTC) | After (run 10, 04:09 UTC) |
+|---|---|---|
+| quantity | 1 | **0** |
+| maxQuantity | 1 | 1 |
+| renownCurrency | 1 | 1 |
+| spent | 0 | **1** |
+| spentInTree | 0 | 0 |
+| traitCurrencyID | 4225 | 4225 |
+
+- **Raw result:** saved as-is in `legacy.system.GetCurrencyInfo.values[1]`: six numeric fields, none truncated, nothing secret. `legacy.points` holds the same six plus the `source` label.
+- **The spend happened** between the 04:04:26 and 04:09:37 reads (from `legacy.history`).
+- **Challenges and steps:** all 111 achievements were compared field by field with run 9. 65 challenges, 1 completed, Explorer 0 of 46, categories identical. The only differences are two zone sub-areas explored while playing between the reads: Thoradin's Wall (Arathi Highlands) and Durnholde Keep (Hillsbrad Foothills). Nothing changed because of the spend.
+- **Size:** 229 KB, nothing trimmed. 955 calls, all ok.
+- **spentInTree** stayed 0 after a spend. See section 16.
+
+## 16. Why spentInTree is 0 (analysis, not confirmed)
+
+The file cannot settle this.
+- **No tree is recorded:** the check makes no trait-system call (Q-T4), so the file has no record of which tree the point went into. The user's message left the tree and perk blank.
+- **No parameter list:** `LegacySystem` is pane Lua code, not a documented API. WoW's Lua 5.1 cannot report a Lua function's parameter count, so the file cannot say whether `GetCurrencyInfo` takes a tree argument.
+
+What the file does show:
+- **Zero arguments work:** `GetCurrencyInfo()` called with no argument succeeds every time and returns a number for `spentInTree`.
+- **It looks like a cache:** `LegacySystem` also has `UpdateCurrencyInfo` and `RegisterCurrencyInfoCallback`, never called by the check. That suggests `GetCurrencyInfo` returns a table the pane keeps up to date: it holds data only once the pane has loaded, and it changed after the spend.
+
+Leading hypothesis: `spentInTree` is the points spent in the tree the pane currently has selected (or was given when the pane updated), and 0 when that tree has none or none is selected. A tree argument is possible but unproven.
+
+**Test without any new call:** open the pane on the tree where the point was spent, leave it open, and type `/eicheck legacy`. Then do the same on another tree.
+- spentInTree 1, then 0: it follows the selected tree.
+- 0 both times: it needs something the pane does not pass to `GetCurrencyInfo()`, such as a tree argument. Calling it with one stays under Q-T4 and needs the user's approval.

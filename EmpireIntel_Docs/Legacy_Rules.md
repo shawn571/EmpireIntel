@@ -72,3 +72,26 @@ Explorer needs the Explore Azeroth achievement on one character: Eastern Kingdom
 | Points earned, cap | Legacy currency (`C_CurrencyInfo`) | 0.1.6 reads it |
 | Each challenge done or not, with its steps | Legacy achievement category | 0.1.6 reads it |
 | Tree node names, ranks spent, effects | trait system (Q-T4) or tooltips | Not covered by Q-T7; the screenshots give ranks only |
+
+## 4. Plan note: `/ei legacy` (NOT authorized; Phase 2 uses no Legacy API, D-027)
+
+What a future `/ei legacy` could show from the reads proven by the check:
+
+| Shown as | Source | Status |
+|---|---|---|
+| **Earned** | Sum of completed challenges' reward points: 1 | **Confirmed**: read from the achievements, and it matches the pane's "1 / 65" |
+| Earned (pane field) | `maxQuantity` or `renownCurrency`: both 1 | **Inferred**: both equal the earned count so far; which one is "earned" is not yet known |
+| **Available to spend** | `quantity`: 1, then 0 after one spend | **Inferred, 1 data point**: it fell by exactly the point spent |
+| **Spent** | `spent`: 0, then 1 | **Inferred, 1 data point**: it rose by exactly the point spent |
+| Spent in a tree | `spentInTree`: 0 after a spend | **Unknown** (TP1_Report_Run1.md section 16); not shown |
+| Challenges and steps | Achievements (65 challenges, Explorer's 46 steps) | **Confirmed** (runs 8-10) |
+
+The line would also show "Available / spent", and the challenge list with "what is left", for example "Novice Spelunker: Excavation Site: Wetlands left".
+- **Points need the pane:** `GetCurrencyInfo()` holds data only after the pane has loaded in that session. Before that, `/ei legacy` would say "open the Legacy pane once to read points", and challenges still work.
+- **Cross-check:** if "earned" from the challenges and from the pane field ever differ, the line shows UNEXPECTED.
+
+What a **second earned point** settles:
+- **Available:** quantity should become 1 (0 + 1) while spent stays 1. That confirms "available" (and that earning adds to it).
+- **Earned:** maxQuantity and renownCurrency should both become 2. If they differ, the one that equals the challenge sum (2) is "earned".
+  - If both are 2, they stay indistinguishable. A difference may only show at the per-character spending cap (16 according to web sources, unconfirmed), for example if maxQuantity stops at the cap and renownCurrency does not.
+- **The invariant:** quantity + spent = maxQuantity should still hold.

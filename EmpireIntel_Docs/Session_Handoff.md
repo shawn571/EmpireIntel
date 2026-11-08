@@ -4,6 +4,16 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-031 | 2026-11-08 | Claude
+
+- **Done:** recorded run 10 (TP1_Report_Run1.md sections 15 and 16, EI-E-24, Legacy_Rules.md section 4). No code changed; 0.1.8-tp1 stays current.
+- **WAITING FOR:**
+  - which tree and perk the point went into;
+  - the selected-tree test for spentInTree;
+  - the next earned point;
+  - a read on a second character;
+  - P2-3 confirmation and the inn test, then Q-P2-3c.
+
 ## S-030 | 2026-11-08 | Claude
 
 - **Done:** read run 9 (TP1_Report_Run1.md section 14, EI-E-23). The check reads the challenges, steps and points correctly.

@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-031 | Run 10: the first point spent (documentation only)
+- After one spend, quantity went from 1 to 0 and spent from 0 to 1; the other fields were unchanged (EI-E-24). Field meanings are recorded as inferred. Challenge and step data did not change because of the spend (two zone sub-areas were explored in between). spentInTree is analysed, not explained (TP1_Report_Run1.md section 16). Legacy_Rules.md section 4: the `/ei legacy` plan note. No code changed.
+
 ## 2026-11-08 | S-030 | Run 9: the Legacy read is complete (documentation only)
 - 0.1.8 matches the pane: 65 challenges, 1 of 65 points, Explorer 0 of 46, nothing trimmed, nothing unlinked. The game's dungeon lists confirm the web lists, and the master list has Dire Maul East, North and West (EI-E-23). TP1_Report_Run1.md section 14. No code changed.
 

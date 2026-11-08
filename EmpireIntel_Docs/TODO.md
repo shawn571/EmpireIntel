@@ -44,7 +44,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.15 0.1.7 run received (run 8): 65 challenges and 46 exploration achievements; defects 15, 16 (S-028)
 - [x] 1.16 Q-T9 approved with correction; EmpireIntelCheck 0.1.8-tp1 built (S-029, D-036)
 - [x] 1.17 0.1.8 run (run 9): matches the pane; all 46 Explorer steps linked; nothing trimmed (S-030)
-- [ ] 1.18 **User:** decide what comes after TP-1 (see the S-030 handoff)
+- [x] 1.18 Run 10 after the first spend recorded (S-031)
+- [ ] 1.19 **User:** the selected-tree test for spentInTree (pane open on the spent tree, `/eicheck legacy`, then another tree)
+- [ ] 1.20 **User:** a read after the next earned point; a read on a second character
+- [ ] 1.21 **User:** decide what comes after TP-1 (see the S-030 handoff)
 - Exit test: Architecture section 9 exit criteria.
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0
