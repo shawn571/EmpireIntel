@@ -167,3 +167,25 @@ The user installed 0.1.7 with `/reload`, opened the pane and typed `/eicheck leg
 - **Defect 16 (totals):** 0.1.7 counted all 111 achievements and summed the achievement-points field. That field is not the Legacy value (only Onyxia, id 684, carries 1), so the line said "111 challenges, 0 of 1 points" instead of "65 challenges, 1 of 65 points".
 
 Fix proposed as 0.1.8 (Q-T9).
+
+## 14. Run 9 (0.1.8-tp1, 2026-11-08): the Legacy read is complete
+
+The user installed 0.1.8 with `/reload`, opened the pane and typed `/eicheck legacy`. 955 calls, all ok. Nothing was trimmed (file 233 KB of the 256 KB cap).
+
+- **The line matches the pane:** "65 challenges (1 completed, 1 of 65 Legacy points); Explorer 0 of 46 done". No achievement left unlinked; the reward text was recognized.
+- **Explorer's 46 steps** were linked through the game's own chain: Explorer, then Explore Azeroth (2 steps), then Explore Eastern Kingdoms (23 zones) and Explore Kalimdor (20 zones). This matches the grouping the user asked about.
+- **Zone progress (current character):** 11 zones partly explored, for example Silverpine Forest 13/15, Tirisfal Glades 13/16 and The Barrens 15/25. No zone is complete yet.
+- **Dungeons:**
+  - Novice Spelunker has 5 of 6 done; only Excavation Site: Wetlands is missing.
+  - Experienced Spelunker has Blackfathom Deeps done.
+  - The game's Master Spelunker list names **Dire Maul East, North and West**, which settles the web guides' disagreement.
+- Lord Valthalak, Conqueror of the Lair, PvP ranks and Explorer have no counted steps of their own; reputations and Field of Honor have one each.
+
+**TP-1 status:** the client now answers the Legacy data questions:
+- **Points:** `LegacySystem.GetCurrencyInfo()`, available once the pane has loaded.
+- **Challenges, their steps and their completion:** the achievement functions, from login.
+
+Still open:
+- what `quantity`, `maxQuantity` and `renownCurrency` each mean, which needs a run after spending or earning a point;
+- the tree perks (Q-T4, not approved);
+- whether zone progress is per character.

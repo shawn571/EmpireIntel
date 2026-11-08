@@ -24,10 +24,10 @@ Sources, strongest first:
 
 Spelunker dungeon lists:
 - **Novice** [user]: Ragefire Chasm or Hall of Thanes; Wailing Caverns; Shadowfang Keep; Ruins of Lordaeron; The Deadmines; Excavation Site: Wetlands.
-- **Experienced (10)** [web]: City of Dalaran; Blackfathom Deeps; Gnomeregan; The Drowned City; the four Scarlet Monastery wings; Razorfen Kraul; Krol'dok Stronghold.
-- **Master (17)** [web]: Razorfen Downs; Uldaman; Zul'Farrak; Maraudon; Alcaz Prison; Temple of Atal'Hakkar; Blackrock Depths; Blackmaw Hold; Lower and Upper Blackrock Spire; Scholomance; Stratholme (Live and Dead); three Dire Maul wings (North vs South differs between sources); The Shaper's Terrace.
+- **Experienced (10)** [client, EI-E-23; same as web]: City of Dalaran; Blackfathom Deeps; Gnomeregan; The Drowned City; the four Scarlet Monastery wings; Razorfen Kraul; Krol'dok Stronghold.
+- **Master (17)** [client, EI-E-23: Dire Maul East, North and West]: Razorfen Downs; Uldaman; Zul'Farrak; Maraudon; Alcaz Prison; Temple of Atal'Hakkar; Blackrock Depths; Blackmaw Hold; Lower and Upper Blackrock Spire; Scholomance; Stratholme (Live and Dead); Dire Maul East, North and West; The Shaper's Terrace.
 
-The web lists will be replaced by the criteria the client returns (0.1.6 saves each criterion's text and progress).
+These lists are now confirmed by the client (run 9).
 
 ## 1b. Confirmed by the client: the 65 challenges (run 8, EI-E-22)
 

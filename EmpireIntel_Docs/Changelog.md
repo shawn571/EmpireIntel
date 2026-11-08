@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-030 | Run 9: the Legacy read is complete (documentation only)
+- 0.1.8 matches the pane: 65 challenges, 1 of 65 points, Explorer 0 of 46, nothing trimmed, nothing unlinked. The game's dungeon lists confirm the web lists, and the master list has Dire Maul East, North and West (EI-E-23). TP1_Report_Run1.md section 14. No code changed.
+
 ## 2026-11-08 | S-029 | EmpireIntelCheck 0.1.8-tp1 (/reload; branch tp1-legacy-read)
 - Q-T9 with the user's correction (D-036): counts the 65 challenges by their Legacy reward. Explorer's 46 exploration achievements are saved as its steps, linked through the game's own chain, and shown as "X of 46 done". Criteria are saved compactly. The discovery leftovers are trimmed before any Legacy data.
 - The fixture models the Explorer chain, including an area id that equals an achievement id. 283 tests pass under Lua 5.1 and 5.3; 38 of 38 guard mutants caught across the three Legacy sets.

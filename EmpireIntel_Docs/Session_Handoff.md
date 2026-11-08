@@ -4,6 +4,14 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-030 | 2026-11-08 | Claude
+
+- **Done:** read run 9 (TP1_Report_Run1.md section 14, EI-E-23). The check reads the challenges, steps and points correctly.
+- **Open for the user:**
+  - the P2-3 confirmation and the inn test, then Q-P2-3c;
+  - the next step for Legacy data in EmpireIntel itself: Phase 3 is not authorized, and Phase 2 uses no Legacy API (D-027);
+  - Q-T4 (trees) is still unapproved.
+
 ## S-029 | 2026-11-08 | Claude
 
 - **Done:** built EmpireIntelCheck 0.1.8-tp1 (Q-T9, D-036). 283 tests; 38/38 mutants. `dist/EmpireIntelCheck_AddOns_v0.1.8-tp1.zip` (sha256 below in the package block).
