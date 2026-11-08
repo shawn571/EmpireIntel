@@ -29,6 +29,13 @@ Spelunker dungeon lists:
 
 The web lists will be replaced by the criteria the client returns (0.1.6 saves each criterion's text and progress).
 
+## 1a. Confirmed by the client and the pane (2026-11-08)
+
+- The pane's total is **65** ("Legacy Points 1 / 65") [screenshot], which matches section 1.
+- The groups and sub-groups are the achievement categories in EI-E-20 [client]. Classes holds the 9 classes; Tradeskills holds exactly Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring (confirms Q-P2-3a); Player vs. Player holds Ranks, Reputations and Season Journey; Adventure holds Explorer, Eastern Kingdoms and Kalimdor; Dungeons; Raids.
+- **Explorer:** "Have a character with the Explore Azeroth achievement" [screenshot]. **Lord Valthalak Laid to Rest:** "Complete the questline beginning with An Earnest Proposition, and ending with Saving the Best for Last" [screenshot].
+- Per-challenge details (criteria such as each dungeon) come with the 0.1.7 read.
+
 ## 2. What the screenshots show [screenshot]
 
 - **Progress Track:** "Legacy Points 1" (C1 Paladin 25: the class-25 challenge, as the estimate predicted). Rewards at **15** (Holstered Replica Ironforge Air Rifle), **25** (Spectral Bear Cub), **40** (Spectral Bear Tabard) and **55** (Reins of the Spectral Bear).

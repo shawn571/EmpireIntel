@@ -139,3 +139,19 @@ C1 (Paladin) reached level 25 on client build **1.60.1/70862** (Nov 6; new since
 - BugGrabber: 34 entries, none from EmpireIntel or the check.
 
 **Lead for the next step (Q-T7):** the Legacy values look readable through two documented, read-only APIs: achievements (the challenges) and `C_CurrencyInfo` (the points). Both need an id argument, which the zero-argument rule does not allow.
+
+## 12. Run 7 (0.1.6-tp1, 2026-11-08): the first Legacy read
+
+The user installed 0.1.6 with a `/reload` (EI-E-19), opened the pane, typed `/eicheck legacy` and sent the file and two screenshots of the Challenges page.
+
+- **Result:** "0 challenges in 0 categories; points not found" before and after the pane opened. 32 calls, all ok; no error, no refusal, no crash-guard hit.
+- **The points are there (EI-E-21):** `LegacySystem.GetCurrencyInfo()` (zero-argument, approved) returned `{ quantity = 1, maxQuantity = 1, renownCurrency = 1, spent = 0, spentInTree = 0, traitCurrencyID = 4225 }`. The Legacy points are a **trait currency** (4225), not a `C_CurrencyInfo` currency. So `C_CurrencyInfo.GetCurrencyInfo(4225)` gave nothing, and the currency list holds no Legacy entry (size 0).
+- **The challenges are there (EI-E-20):** `GetCategoryList()` returned 29 categories, and they are exactly the pane's groups. On Forever the achievement categories **are** the Legacy challenge categories. None has "Legacy" in its title, so the 0.1.6 matcher (title contains "legacy") selected none.
+- `LegacySystem.GetFilteredChallenges()` returned an empty table (it likely depends on the pane's filter state). `LegacySystem` has no plain fields; its functions are `GetChallengeIndices`, `GetCurrencyInfo`, `GetFilteredChallenges`, `IsChallengeVisible`, `RegisterCurrencyInfoCallback` and `UpdateCurrencyInfo`.
+- **Screenshots:** "Legacy Points 1 / 65"; the group list matches the categories exactly; the Adventure page shows "Lord Valthalak Laid to Rest" and "Explorer" ("Have a character with the Explore Azeroth achievement"), 1 point each.
+
+**Check defects found:**
+- **Defect 13:** the category matcher assumed a "Legacy" title.
+- **Defect 14:** the points were not taken from `LegacySystem.GetCurrencyInfo`, and `traitCurrencyID` was wrongly passed to `C_CurrencyInfo`.
+
+Fix proposed as 0.1.7 (Q-T8), within the Q-T7 limits.

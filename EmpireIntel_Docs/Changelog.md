@@ -14,6 +14,9 @@ Append-only. Newest first.
 ## 2026-11-08 | S-025 | Restart rule revised (documentation only)
 - EI-E-19: `/reload` loads new TOC files on Forever (0.4.0 and 0.1.6 both worked after a reload). D-034: packages that change or add files in an existing addon say `/reload`; a new addon folder still says restart until observed. The repository's 0.4.0 README is corrected; the zip is unchanged.
 
+## 2026-11-08 | S-026 | Run 7, the first Legacy read (documentation only)
+- On Forever, the achievement categories are the 29 Legacy challenge categories (EI-E-20). The points are a trait currency, read by `LegacySystem.GetCurrencyInfo()` (EI-E-21). Check defects 13 and 14 (title matcher; points source). The pane confirms the six crafts and the 65 total. Q-T8 proposed. No code changed.
+
 ## 2026-11-08 | S-024 | EmpireIntel 0.4.0, increment P2-3 (FULL CLIENT RESTART; branch p2-3-views)
 - New `Core/Rules.lua` and `Core/Views.lua`: `/ei unlock`, `/ei rest` (measured, plus a projected value under the classic rule, labelled estimate), `/ei milestones` (9 classes, 6 crafting skills, estimated Legacy points from both groups).
 - `Alts.Collect` shared by `/ei alts` and the views; merge rows gained `xp` and `restAt` (not stored). No saved-data change.

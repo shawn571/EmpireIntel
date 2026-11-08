@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-026 | 2026-11-08 | Claude
+
+- **Done:** read run 7 (TP1_Report_Run1.md section 12, EI-E-20/21, Legacy_Rules.md 1a). Proposed Q-T8 (0.1.7 fixes defects 13 and 14). No code changed.
+- **WAITING FOR:** Q-T8; the P2-3 live and inn tests, then Q-P2-3c.
+
 ## S-024 | 2026-11-08 | Claude
 
 - **Done:** built P2-3 as EmpireIntel 0.4.0 on branch `p2-3-views` (D-033). 244 tests pass under 5.1 and 5.3; 16 of 16 mutants caught. `dist/EmpireIntel_AddOns_v0.4.0.zip` (sha256 9ae2ac1b...).
