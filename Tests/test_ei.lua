@@ -63,7 +63,7 @@ T.describe('P2-1: snapshot of the logged-in character (format 1)', function()
     for k in pairs(db) do T.truthy(({ schema = 1, meta = 1, roster = 1, off = 1 })[k], 'unexpected top-level key ' .. k) end
     for k in pairs(db.meta) do T.truthy(({ created = 1, opens = 1, version = 1, build = 1 })[k], 'unexpected meta key ' .. k) end
     T.eq(db.schema, 1)
-    T.eq(db.meta.version, '0.5.2')
+    T.eq(db.meta.version, '0.6.0')
     T.eq(db.meta.build, '1.60.1/70450')
   end)
 end)
@@ -269,7 +269,7 @@ T.describe('P2-1: commands', function()
   T.it('/ei version shows version and schema', function()
     local W = session({ char = char() })
     ei(W, 'version')
-    T.truthy(lastPrint(W):find('version 0.5.2, saved data schema 1', 1, true), lastPrint(W))
+    T.truthy(lastPrint(W):find('version 0.6.0, saved data schema 1', 1, true), lastPrint(W))
   end)
 end)
 

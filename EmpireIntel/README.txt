@@ -1,4 +1,67 @@
-EmpireIntel 0.5.2 - labels after the inn test (P2-3 and P3-1 closed)
+EmpireIntel 0.6.0 - Phase 2 increment P2-4: /ei next ("what next") and the plan file
+
+WHAT 0.6.0 ADDS (read only when you type it; nothing is saved; no new game function)
+  /ei next   up to 10 suggestions, one line each: where the character is now, the gap, the next step, and what it
+             earns. From your plan file if you have one, else default suggestions:
+               - before any character reaches 25: reach 25 on the closest character (Legacy not unlocked yet);
+               - after: the class milestones not yet earned, closest first (at most 3);
+               - characters with at least 0.5 levels of rested XP [estimate];
+               - crafting milestones within 25 skill points (or the closest one).
+  Legacy lock rule: before any character on the account reaches 25, Legacy is not available, so a challenges goal
+  says "Legacy not unlocked yet" and is never met. Once any character has reached 25, Legacy is available on every
+  character, including ones below 25. A challenges goal reads the Legacy challenges (as /ei legacy) when you type
+  /ei next; no other goal reads Legacy.
+
+THE PLAN FILE (folder EmpireIntel_Plan, its own zip, installed once)
+  Interface\AddOns\EmpireIntel_Plan\
+    EmpireIntel_Plan.toc   do not edit
+    Marker.lua             do not edit (tells EmpireIntel the folder is installed)
+    Plan.lua               your goals: edit with a text editor, save, then /reload
+  Format 1 (Plan.lua):
+    EmpireIntelPlan = {
+      version = 1,
+      goals = {                                             -- most important first
+        { char = 'C1', level = 45, note = 'Experienced Paladin' },   -- a level (2-60)
+        { char = 'C2', profession = 'Tailoring', skill = 150 },     -- a skill (1-300)
+        { char = 'C2', rested = 1.0 },                              -- levels of rested XP (0.05-1.5)
+        { account = true, challenges = 5 },                         -- Legacy challenges done (1-65)
+      },
+    }
+  char is the character's name, or Name-Realm when two share a name. note is optional.
+  A goal with a mistake (unknown key, wrong value, unknown name or profession) prints one line
+  "UNEXPECTED plan goal N: ... (skipped)" and the other goals still show. Perk goals are not supported yet.
+  Later EmpireIntel packages never contain this folder, so your Plan.lua is never overwritten.
+
+RESTART OR RELOAD?
+  EmpireIntel 0.5.2 -> 0.6.0: /RELOAD IS ENOUGH (existing folder, EI-E-19).
+  EmpireIntel_Plan, first install: a NEW addon folder. Officially a FULL CLIENT RESTART; the test below tries
+  /reload first so we learn whether a new folder loads without a restart on Forever (D-034).
+  Editing Plan.lua later: /reload.
+
+UPDATE AND TEST (about 10 minutes)
+  A. EmpireIntel 0.6.0, no plan folder yet
+   1. Replace the folder Interface\AddOns\EmpireIntel with the one in EmpireIntel_AddOns_v0.6.0.zip. /reload.
+   2. /ei version   Expect "version 0.6.0, saved data schema 1 (ok)".
+   3. /ei next      Expect "next (no plan file: default suggestions):", then numbered lines: class milestones
+                    (C3 Shaman 9 -> 25 first while DataStore still lists it), rested characters, crafting, and last
+                    "Add EmpireIntel_Plan\Plan.lua to set your own order (README)."
+   4. Compare with /ei milestones and /ei rest: the same characters, levels and rested values.
+  B. The plan folder (first install)
+   5. Copy the folder EmpireIntel_Plan from EmpireIntel_Plan_AddOns_v1.zip into Interface\AddOns.
+   6. Open Plan.lua, replace C1 and C2 with your Paladin's and Priest's names, save.
+   7. /reload, then /ei next. If it starts "next (your plan: 5 goals; ...", the new folder loaded with /reload:
+      tell me. If it still says "no plan file", quit the game fully, start it again, and type /ei next.
+  C. Your own plan
+   8. Change Plan.lua to 5 goals you care about. /reload. /ei next: check each line against the game.
+  D. Mistakes are reported
+   9. In one goal change "level" to "levle", and in another use a name that does not exist. /reload. /ei next.
+      Expect two lines "UNEXPECTED plan goal N: ... (skipped)", then the other goals. Put the goals back afterwards.
+  10. Send me the lines from steps 3, 7, 8 and 9 (names replaced is fine), and whether step 7 needed a restart.
+  Any red Lua error: note it (BugSack shows the text) and tell me.
+
+ROLLBACK TO 0.5.2
+  Put the 0.5.2 EmpireIntel folder back and /reload. Saved data is unchanged (format 1).
+  The EmpireIntel_Plan folder can stay (0.5.2 ignores it) or be deleted.
 
 WHAT CHANGED IN 0.5.2 (text only; no new reads, nothing new saved)
   - /ei rest header now reads:
@@ -8,7 +71,7 @@ WHAT CHANGED IN 0.5.2 (text only; no new reads, nothing new saved)
     (the game's own challenge list confirmed them, EI-E-22). The Legacy points line keeps [estimate].
   Update from 0.5.1: /RELOAD IS ENOUGH.
 
-UPDATE AND TEST (about 2 minutes)
+0.5.2 LIVE CHECK (passed; kept for reference)
   1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip (the game may be running).
   2. Type  /reload  and wait about 5 seconds.
   3. Type  /ei version      Expect "version 0.5.2, saved data schema 1 (ok)".
@@ -19,7 +82,7 @@ UPDATE AND TEST (about 2 minutes)
   6. Type  /ei legacy       Expect the same output as 0.5.1.
   7. Say whether 3-6 match. Note any line with UNEXPECTED or any red Lua error.
 
-ROLLBACK TO 0.5.1
+ROLLBACK FROM 0.5.2 TO 0.5.1
   Put the 0.5.1 folder back and /reload. Saved data is unchanged between 0.5.1 and 0.5.2.
 
 WHAT CHANGED IN 0.5.1 (from your 0.5.0 test)

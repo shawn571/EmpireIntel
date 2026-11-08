@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-054 | EmpireIntel 0.6.0 and EmpireIntel_Plan 1, increment P2-4 (/reload; plan folder: restart stated; branch p2-4-next)
+- `/ei next`: the plan file's goals (format 1: level, skill, rested, account challenges) or the FR-PRE-4 defaults, with the Legacy lock rule (D-052, D-053). 364 tests pass under Lua 5.1 and 5.3; 15 of 15 mutants caught.
+
 ## 2026-11-08 | S-053 | P2-4 approved with the Legacy lock rule (documentation only)
 - D-052. Phase2_Plan.md 1.4.0: the lock rule in sections 7.3, 7.4 and 7.7; the header lines now say P2-1 to P2-3 use no Legacy API and P2-4 uses the P3-1 reads.
 

@@ -28,7 +28,7 @@ EI = EI or {}   -- real clients always pass the addon table; plain-Lua tests pas
 local P = EI.Platform or {}
 EI.Platform = P
 
-P.VERSION = '0.5.2'
+P.VERSION = '0.6.0'
 P.CONTRACT_VERSION = 'EI-1'
 P.env = P.env or _G
 P.debug = P.debug or false
@@ -164,6 +164,11 @@ function P.IsAddonLoaded(name)
   if type(f) ~= 'function' then return false end
   local ok, loaded = pcall(f, name)
   return ok and loaded and true or false
+end
+
+--- The plan folder's two globals (EmpireIntel_Plan, P2-4): the plan table and the folder marker. Read only.
+function P.PlanGlobals()
+  return P.env.EmpireIntelPlan, P.env.EmpireIntelPlanFolder
 end
 
 --- Is `name` a valid event name in this client? Returns true, false, or nil when the
