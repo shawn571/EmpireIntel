@@ -420,6 +420,14 @@ Q-P2-4a-1: yes. Q-P2-4a-2: merge #14 after (2)-(4) are answered. Q-P2-4a-3: deci
 - Q-P2-4a-3: **open**, decided with the results (EI-E-31: DataStore has `GetCharacterFaction`, `GetCharacterRace`, `GetCharacterGender`).
 - Evidence EI-E-29..31. P2-4a stays open until the user closes it.
 
+## D-059 Merge #14; ElvUI correction; next check version; DataStore faction; mockup next | Approved (user, 2026-11-08)
+The user's words: "Answers (1)-(4) accepted. I've read them: merge #14 now with the REST command. If it's refused again, quote the exact command and the message. ElvUI correction: the off run exists. The file the reviewer read at 15:04 (Paladin run at 15:03) shows "ElvUI global" absent and counts 111 present / 6 nothing / 4 absent; my later ElvUI-on run overwrote it. Record that in EI-E-31. Check update: yes, label setters "ok, no return value" and read back SetColorTexture, in the next check version only. Don't build it now. Q-P2-4a-3: yes, DataStore's faction getter (read-only) so alts show a faction before their next login. Next: the static window mockup (P2-4b) for my approval, with no window code."
+- Merge #14 now (REST command, D-050).
+- EI-E-31 corrected: the ElvUI-off run exists (C1, 15:03): ElvUI global absent, 111 / 6 / 4.
+- **Next check version (not built now):** setters labelled "ok, no return value"; a `SetColorTexture` read-back. (Also noted: keep the full UI result per character.)
+- **Q-P2-4a-3 yes:** DataStore's `GetCharacterFaction` (read-only) is added to the bridge's approved getters, so alts show a faction before their next login. Built with P2-4b (it is used by the window).
+- **Next:** the static window mockup (P2-4b, Phase2_Plan.md 8.3.5) for approval; no window code.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
