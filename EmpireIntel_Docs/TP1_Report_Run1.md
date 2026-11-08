@@ -311,3 +311,15 @@ Testing (b) needs a tree id from the game, which only the trait system gives (Q-
 - [U, I] The one read with a stated tree (run 12, Adventure open, where a point is) shows 0, which argues against it. But "Adventure" is also a page on the Challenges list. It is not recorded whether the tree page itself was showing, so this read cannot settle it alone.
 - [I] The pane's tree page shows a counter under each tree's name (the "0" circle in the 2026-11-07 screenshots). That is the pane's own per-tree spent value, the natural reference for spentInTree.
 - **The single test that settles it** (no new call): open the Legacy window on the **tree page** of a tree whose counter shows 1 or more, leave it open, type `/eicheck legacy`, and take a screenshot of the window at that moment. If spentInTree equals the counter, it follows the selected tree. If it shows 0 while the counter shows 1 or more, it does not, at least not with no argument, and only Q-T4 could go further.
+
+## 22. Run 15 (0.1.8-tp1, 2026-11-08 00:35-00:41 user time): the selected-tree test, and a second character
+
+**spentInTree: closed.**
+- [O, U] With the Legacy window on the **Adventure tree page**, whose counter shows **2** (screenshot: "Available points: 0"; the node at 2/5), `spentInTree` read **0**. It also read 0 on every other tree.
+- [O] The file matches: in the reads at 05:35-05:36 UTC, quantity 0, earned 2. `legacy.history` does not store spentInTree; the value is from the user's chat report.
+- **Conclusion (observed):** spentInTree does not follow the selected tree when `GetCurrencyInfo()` is called with no argument. **Closed: not usable without a tree argument; left out** (user, 2026-11-08). A tree argument would need tree ids from the trait system (Q-T4, unapproved).
+
+**Second character (the file's last read, a login on C2 Priest 6, pane not loaded, so no point fields):**
+- [O] **Exploration areas are per character.** On C2 only Tirisfal Glades has areas explored (4/16). On C1 (run 14), 13 zones had areas explored; for example, Ashenvale's and The Barrens' areas read done on C1 and not done on C2.
+- [O] **Completed challenges and dungeon steps are account-wide.** C2 sees Novice Paladin and Novice Spelunker completed (earnedByMe true), all 6 Novice Spelunker steps done, and Experienced Spelunker's Blackfathom Deeps done. C2 (level 6) has never been there.
+- [I] Explorer progress must be shown per character ("Explore Eastern Kingdoms on a single character"); the other challenges' progress is the account's.

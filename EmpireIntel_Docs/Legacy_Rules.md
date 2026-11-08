@@ -83,7 +83,7 @@ What a future `/ei legacy` could show from the reads proven by the check:
 | Earned (pane field) | `maxQuantity` and `renownCurrency`: 1, then 2 | **Both track earned** (equal to the challenge sum in three reads); which one is the "earned" field cannot be told apart yet |
 | **Available to spend** | `quantity`: 1, then 0 after a spend, then 1 after an earn | **Confirmed** by two opposite moves |
 | **Spent** | `spent`: 0, 1, 1 (earn), 2 (second spend) | **Confirmed**: +1 on each applied spend, unchanged on an earn. A placed but unapplied point is not counted until "Apply Changes" |
-| Spent in a tree | `spentInTree`: 0 in all 7 reads (runs 10-13) | **Unknown**; not the selected tree and not an unapplied placement. Left out of `/ei legacy`. Only the trait system (Q-T4) could test further |
+| Spent in a tree | `spentInTree`: 0 in every read, including with the tree page open on a tree whose counter is 2 (run 15) | **Closed: not usable without a tree argument; left out** (user, 2026-11-08) |
 | Challenges and steps | Achievements (65 challenges, Explorer's 46 steps) | **Confirmed** (runs 8-10) |
 
 The line would also show "Available / spent", and the challenge list with "what is left", for example "Novice Spelunker: Excavation Site: Wetlands left".
