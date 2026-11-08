@@ -2,15 +2,6 @@
 
 Append-only. Newest first.
 
-## 2026-11-07 | S-021 | EmpireIntelCheck 0.1.6-tp1 (FULL CLIENT RESTART; branch tp1-legacy-read)
-- Q-T7 approved (D-031). New Part C, `Legacy.lua`: reads the Legacy challenges (achievement category, with criteria) and points (currency) once unlocked. Arguments are allowed only from the game's own answers, to 9 allowed getters. Denylist and crash guard stay. New command `/eicheck legacy`.
-- Saves the values of the `LegacySystem` zero-argument calls and its constants. Defect 12 fixed (the size trim erased a run's Legacy call values).
-- Legacy_Rules.md: the user's challenge list (65 points), screenshot facts (EI-E-18), web lists marked provisional.
-- 238 tests pass under Lua 5.1 and 5.3; 15 of 15 guard mutants caught.
-
-## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
-- Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
-
 ## 2026-11-08 | S-026 | Run 7, the first Legacy read (documentation only)
 - On Forever, the achievement categories are the 29 Legacy challenge categories (EI-E-20). The points are a trait currency, read by `LegacySystem.GetCurrencyInfo()` (EI-E-21). Check defects 13 and 14 (title matcher; points source). The pane confirms the six crafts and the 65 total. Q-T8 proposed. No code changed.
 
@@ -27,6 +18,15 @@ Append-only. Newest first.
 
 ## 2026-11-08 | S-022 | P2-2 closed; branch merged
 - The user confirmed `/ei alts` matched the game with DataStore on and approved closing P2-2 (D-032). `p2-2-alts` merged into main. No hide-old-characters rule (user).
+
+## 2026-11-07 | S-021 | EmpireIntelCheck 0.1.6-tp1 (FULL CLIENT RESTART; branch tp1-legacy-read)
+- Q-T7 approved (D-031). New Part C, `Legacy.lua`: reads the Legacy challenges (achievement category, with criteria) and points (currency) once unlocked. Arguments are allowed only from the game's own answers, to 9 allowed getters. Denylist and crash guard stay. New command `/eicheck legacy`.
+- Saves the values of the `LegacySystem` zero-argument calls and its constants. Defect 12 fixed (the size trim erased a run's Legacy call values).
+- Legacy_Rules.md: the user's challenge list (65 points), screenshot facts (EI-E-18), web lists marked provisional.
+- 238 tests pass under Lua 5.1 and 5.3; 15 of 15 guard mutants caught.
+
+## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
+- Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
 
 ## 2026-11-06 | S-019 | EmpireIntel 0.3.1 (/reload; branch p2-2-alts)
 - Live test 1 of 0.3.0: format 1 unchanged; the DataStore-off path passed. The DataStore-on output is not received yet. P2-2_Report.md.
