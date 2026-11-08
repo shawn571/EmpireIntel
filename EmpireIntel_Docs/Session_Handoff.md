@@ -4,6 +4,24 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-049 | 2026-11-08 | Claude
+
+**Phase and increment:** none open; P2-3 and P3-1 closed. Next: "nothing for now" (user).
+
+**Approved:** everything through D-050: the merge standing order, the REST merge command and the docs-only standing approval (CODE_STANDING_ORDERS.md section 2). This pull request (#5) is merged by Claude under the docs-only standing approval.
+
+**Merges done:** #1 (634bd63), #2 (e8a30b3), #3 (c5434a7), #4 (5091f39, docs). Main 5091f39: EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1; 321 tests pass under Lua 5.1 and 5.3.
+
+**Open pull requests:**
+- `docs-merge-standing-order`: D-049, standing orders 1.1.0, next-session prompt, this handoff. Docs-only within D-049: Claude merges it and tells the user.
+- `claude-settings` (#6): `.claude/settings.json` allowing `Bash(gh api -X PUT repos/shawn571/EmpireIntel/pulls/*/merge *)` (D-050), plus Changelog and TODO. The user merges it.
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1; both match main.
+
+**Open questions:** Q-T4 (unapproved); Stage 1 (not authorized); none on merging: `gh pr merge` cannot work here (GraphQL refused), so merges use the REST command (D-050).
+
+**User's next step:** merge the settings pull request; nothing else for now.
+
 ## S-048 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-3 and P3-1 closed. No phase or increment is approved for new work. P3-2 and P3-3 locked.
