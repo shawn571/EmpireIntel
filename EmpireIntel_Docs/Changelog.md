@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-061 | P2-4a closed; mockup approved; P2-4b build plan for approval (documentation only)
+- D-060. #15 merged (72f4192). Phase2_Plan.md 1.6.0 section 9: the P2-4b plan (EmpireIntel 0.7.0: files, `/reload`, no saved-data change, tests, live gate, the DataStore faction getter); Q-P2-4b-1..4. No code.
+
 ## 2026-11-08 | S-059, S-060 | P2-4a merged; findings answered; window mockup for approval
 - Live-test findings 1-4 answered (P2-4a_Report.md section 6); EI-E-29..31 (ElvUI-off run corrected by the user); D-058, D-059. #14 merged (70da547); main has EmpireIntel 0.6.0 and EmpireIntelCheck 0.1.9-tp1.
 - P2-4b static mockup published (private Artifact), no window code.

@@ -1,6 +1,6 @@
 # P2-4a Report: the route planner (EmpireIntel 0.6.0) and the UI checks (EmpireIntelCheck 0.1.9-tp1)
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-08 (S-058)  |  STATUS: **Live tests received (section 6); merge approved by the user after findings 2-4 were answered (D-058).** Approved by the user (D-056); build choices in D-057. Branch `p2-4a-planner`.
+DOC VERSION: 1.0.0  |  DATE: 2026-11-08 (S-058)  |  STATUS: **Closed (user, 2026-11-08, D-060).** Live tests in section 6; merged as #14 (70da547). Approved by the user (D-056); build choices in D-057. Branch `p2-4a-planner`.
 
 ## 1. What was built
 

@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.5.0  |  DATE: 2026-11-08 (S-058)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2 and P2-3 closed (D-029, D-032, D-041). Section 7 superseded (D-054). Section 8 approved (D-055, D-056): P2-4a built on branch `p2-4a-planner`, not merged (D-057); P2-4b waits for the UI-check results and the mockup.**
+DOC VERSION: 1.6.0  |  DATE: 2026-11-08 (S-061)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9: the P2-4b build plan, for approval (Q-P2-4b).**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -489,3 +489,89 @@ No new addon folder.
 
 Sources: [Method](https://www.method.gg/wow-forever/the-fastest-way-to-get-legacy-points-in-wow-forever), [Hated Legacy on CurseForge](https://www.curseforge.com/wow/addons/hated-legacy), [warcraft.wiki.gg Legacy System](https://warcraft.wiki.gg/wiki/Legacy_System), [wow-professions.com trainers](https://www.wow-professions.com/forever/blacksmithing-trainers), [epiccarry.com tailoring](https://epiccarry.com/blogs/wow-forever-tailoring-guide/), [rankedboost.com](https://rankedboost.com/world-of-warcraft/forever/professions/blacksmithing-leveling/).
 
+
+## 9. P2-4b build plan: the plan window (for approval, Q-P2-4b; mockup approved D-060)
+
+The approved mockup (D-060): https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1 (private; Fastest mode, My plan mode, parts). The user's rules (D-060): **faction emblems are the game's own** (atlases `HordeEmblem`, `AllianceEmblem`, EI-E-30); **fonts are the game's built-in fonts, none shipped**; the window is **resizable, size and position remembered, moderate default**. No window code before this plan is approved.
+
+### 9.1 What P2-4b delivers (EmpireIntel 0.7.0)
+
+- The plan window as in the mockup: header (route mark, Fastest / My plan switch, target, close), the **Up Next** card, the route or my-plan rows, the footer (next reward, rules count, route total).
+- **Up Next card:** the played character gets its live portrait (`SetPortraitTexture`, EI-E-30); an alt gets its race icon (`raceicon-<race>-<sex>` atlas; race file `Scourge` maps to `undead`, EI-E-30) with a small class icon (`classicon-<class>`), in a class-coloured ring (`C_ClassColor`, EI-E-30). No race recorded: the class icon alone. Faction: the game's emblem atlas; ruleset badge Normal / Hardcore / unknown.
+- **Rows:** status icon (open, in progress, done, blocked by a gate, unknown), character in class colour, step, now, points, time; the amber dot for unverified rules; hover shows the tooltip with each rule, its source and status.
+- **Fastest mode:** read only. Right-click: Copy to my plan, Ignore this character.
+- **My plan mode:** drag a row to reorder; click a target or a note to edit it in place (Enter saves, Escape cancels, each edit checked by `Plan.Check`); right-click: Move to top, Add a step after (character, kind and target from a short inline list), Edit note, Ignore in Fastest, Remove.
+- **Window:** movable, **resizable** (own grip in the lower right), position and size saved in `plan.window` (format 2, already approved, 8.7). Default **560 x 420**; limits 440 x 300 to 900 x 800; kept on screen. Escape closes it (`UISpecialFrames`, EI-E-29). Works in combat (not a secure frame); no Legacy read in combat (the last read is shown, labelled "from before combat").
+- **Minimap button** (our own route mark): left-click opens, right-click switches the mode, drag moves it along the edge (`GetMinimapShape`: round, or square under ElvUI, EI-E-31); angle and hidden state in `plan.minimap` (format 2); `/ei minimap on|off`.
+- **AddOn compartment:** registered at run time with `AddonCompartmentFrame:RegisterAddon` (present, EI-E-29), so **no TOC header change**.
+- **DataStore faction for alts (Q-P2-4a-3, D-059):** see 9.4.
+- **No Blizzard templates** anywhere (8.3.1): plain `Frame`, `Button`, `EditBox`, `ScrollFrame`, own textures and colour fills; ElvUI leaves the window alone.
+
+### 9.2 Files
+
+| File | New / changed | What it does |
+|---|---|---|
+| `Platform/UI.lua` | new | **The only file that creates frames, textures and font strings or names a UI call** (static test): thin wrappers under `pcall` for `CreateFrame`, `SetPortraitTexture`, `C_Texture.GetAtlasInfo`, `GetCursorPosition`, `GetMinimapShape`, `UISpecialFrames`, `AddonCompartmentFrame:RegisterAddon`, `GameTooltip`. A call that fails gives one `UNEXPECTED` line and a plain fallback (for example a fixed-size window if resizing fails) |
+| `Core/PlanView.lua` | new, pure | The window's view model from the route or my plan: the card, the rows, the footer, the tooltip lines, the art to use (portrait / race atlas / class icon; emblem). Offline-testable; the window only draws what it returns |
+| `UI/Theme.lua` | new, pure data | Colours from the mockup, sizes, the built-in font paths (`Fonts\FRIZQT__.TTF`, checked in EI-E-29; `Fonts\ARIALN.TTF` for the dense rows, falling back to FRIZQT if `SetFont` refuses it), the race-to-atlas map |
+| `UI/Window.lua` | new | Frame, header, mode switch, target, close, resize grip, saving position and size, Escape |
+| `UI/UpNext.lua` | new | The Up Next card |
+| `UI/Rows.lua` | new | Row pool, own scrolling (mouse wheel, no scroll-frame template), status icons, tooltip, drag to reorder, in-place edit, the right-click menu (our own, not the dropdown template) |
+| `UI/Minimap.lua` | new | Minimap button and the compartment entry |
+| `Media/Icons.tga` | new | Our own small icon sheet (route mark, status icons, drag handle, close, resize grip, menu check); flat shapes, original |
+| `Bridge/DataStoreBridge.lua` | changed | `GetCharacterFaction` added to the approved getters (9.4) |
+| `Core/Alts.lua` | changed | Faction: the own record's, else DataStore's, marked "from datastore" |
+| `Core/Next.lua`, `Core/Commands.lua` | changed | `/ei plan` alone opens or closes the window; the settings text moves to `/ei plan help` (Q-P2-4b-2); `/ei minimap on|off` |
+| `EmpireIntel.toc` | changed | New files listed; version 0.7.0; **no new header fields** |
+| `tools/build_package.py` | none | Already ships `Media/*.tga` |
+
+### 9.3 Restart or reload
+
+| Change | Needed | Basis |
+|---|---|---|
+| New Lua files in the EmpireIntel folder | `/reload` | EI-E-19, D-034 |
+| New texture file `Media/Icons.tga` in the existing folder | `/reload` | EI-E-29: the check's new `Media/Test.tga` loaded after a `/reload` |
+| TOC header fields | none (the compartment is registered at run time) | 9.1 |
+
+**`/reload` is enough.** No new addon folder.
+
+### 9.4 The DataStore faction getter (Q-P2-4a-3, approved D-059)
+
+- `GetCharacterFaction` joins the bridge's approved read-only getters (P2-2 list plus one). It exists on the user's client (EI-E-31, presence only; never called yet). DataStore keeps the faction the game reported for that character (Reference_DataStore_Altoholic.md) [inferred from the source, unverified on Forever].
+- Read only in `/ei alts` and when the window opens, like the other DataStore values; **never stored** (the P2-2 rule). Accepted only as `Alliance` or `Horde`; anything else is ignored and counted in the existing `UNEXPECTED` DataStore line.
+- The own record's faction (recorded at the character's own login) wins; DataStore's is used until then and shown as "faction from DataStore" (the dashed badge in the mockup).
+- The live test compares it with the faction each character records at its next login.
+
+### 9.5 Saved data
+
+**No format change.** `plan.window` and `plan.minimap` are already in format 2 (8.7). Nothing from DataStore is stored.
+
+### 9.6 Tests (Lua 5.1 and 5.3; target about 60 new)
+
+- A shared fake UI layer (`Tests/helpers/fakeui.lua`, from the 0.1.9 tests): widgets with their methods, atlases, colours, portrait, compartment, minimap shape, tooltip; it records shows, anchors, sizes and saves.
+- **PlanView (pure):** the played character's card uses the portrait, an alt's the race atlas (`Scourge` to `undead`), unknown race the class icon; emblem by faction, none when unknown; ruleset badge; row statuses (open, in progress from the game's steps, done, gate, unknown); unverified dots and tooltip lines with sources; both modes; empty plan; Legacy not unlocked yet; "from before combat".
+- **Window:** made once and hidden until opened; Escape registration; position and size saved, restored, clamped to the limits and the screen; resizing refused by the client falls back to a fixed size with one `UNEXPECTED` line; mode switch; reorder by drag writes `plan.mine`; in-place edit saves only a valid value (`Plan.Check`); right-click actions; edits refused and said when the store is read-only; works in combat without a Legacy read.
+- **Minimap and compartment:** angle saved; round and square placement; hidden by `/ei minimap off`; compartment registered once; nothing breaks when it is absent.
+- **DataStore faction:** the allowed list is exactly the P2-2 list plus `GetCharacterFaction`; only `Alliance` or `Horde` accepted; the own record wins; nothing stored.
+- **Static rules:** only `Platform/UI.lua` creates frames or names UI calls; no `Template` argument and no Blizzard template name anywhere; no TOC header change; Core files stay free of UI calls.
+- A mutation check over the new guards, as for P2-4a.
+
+### 9.7 Live gate (the user's test)
+
+1. `/ei plan`, the minimap button and the compartment each open the window; Escape closes it.
+2. Both modes match the mockup; the card shows the played character's portrait; on the other character it shows the race icon and class icon.
+3. My plan: drag a row, edit a target, right-click Move to top and Remove; `/reload`; the changes are kept.
+4. Resize and move the window, `/reload`: same size and place.
+5. With ElvUI on and off: the window looks the same; the minimap button sits on the edge of the round and the square minimap.
+6. Open the window in combat: no error, "from before combat" shown.
+7. `/ei alts` on a character whose other character has not logged in since 0.7.0: its faction shows "from datastore" and matches the game.
+8. A screenshot of each mode; the saved file; any `UNEXPECTED` line or Lua error.
+
+### 9.8 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4b-1 | Approve this build plan (EmpireIntel 0.7.0, 9.1-9.7)? | Yes |
+| Q-P2-4b-2 | `/ei plan` alone opens the window, and the settings text moves to `/ei plan help`? | Yes (8.3.2 already names `/ei plan` as the way to open it) |
+| Q-P2-4b-3 | The compartment registered at run time, not through TOC fields (so `/reload` is enough)? | Yes |
+| Q-P2-4b-4 | Default 560 x 420, limits 440 x 300 to 900 x 800? | Yes |

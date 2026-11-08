@@ -428,6 +428,14 @@ The user's words: "Answers (1)-(4) accepted. I've read them: merge #14 now with 
 - **Q-P2-4a-3 yes:** DataStore's `GetCharacterFaction` (read-only) is added to the bridge's approved getters, so alts show a faction before their next login. Built with P2-4b (it is used by the window).
 - **Next:** the static window mockup (P2-4b, Phase2_Plan.md 8.3.5) for approval; no window code.
 
+## D-060 P2-4a closed; window mockup approved; emblems, fonts, window size; plan P2-4b | Approved (user, 2026-11-08)
+The user's words: "Merge #15 under the docs-only approval. Close P2-4a. Mockup:approved. Faction emblems: the game's own. Font: the game's built-in fonts, none shipped. Window: resizable, size and position remembered, moderate default. After I approve the mockup, plan the P2-4b build for my approval: files, reload or restart, tests, and the DataStore faction getter. No window code until then."
+- #15 merged (72f4192) under the docs-only standing approval.
+- **P2-4a closed.**
+- **Mockup approved** (https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1, private).
+- Faction: the game's emblem atlases (`HordeEmblem`, `AllianceEmblem`, EI-E-30). Fonts: the game's built-in fonts; no font shipped. Window: resizable, size and position remembered, moderate default (proposed 560 x 420).
+- P2-4b build plan written for approval: Phase2_Plan.md section 9 (Q-P2-4b-1..4). **No window code until it is approved.**
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
