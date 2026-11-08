@@ -408,6 +408,18 @@ Choices made within the approved scope, each open to the user's change:
 - **DataStore faction for alts** (8.7 "or faction from DataStore meanwhile") is **not** read: it needs a new DataStore getter beyond the approved list (P2-2). 0.1.9-tp1 records whether DataStore has the getter; P2-4b can ask.
 - **The check's texture:** `EmpireIntelCheck/Media/Test.tga`, an 8x8 flat-colour file of our own, so "SetTexture with a file in the addon folder" is tested for real. `tools/build_package.py` now ships `Media/*.tga` (at most 64 KB each) and prints the full sha256.
 
+## D-058 P2-4a live tests; merge of #14 approved after the findings were answered | Approved (user, 2026-11-08)
+The user's words: "Tested 0.6.0 and 0.1.9-tp1 on Paladin and Priest; files attached. 0.6.0: schema 2 migrated; both records have race, faction and ruleset; plan copy, mode and ignore work (the Shaman is ignored). UI checks ran on both characters, ElvUI off on the Paladin run and on for the Priest run. Findings:
+(1) Before the ignore, the route spent 6 of 20 steps on the stale Shaman. Check /ei next now.
+(2) The route had "Priest 45" but no "Paladin 45", although the Paladin is 18 levels away and the Priest 39. Explain or fix.
+(3) atlas raceicon-scourge-* returns nothing on both characters (both Undead). Find the right name, likely raceicon-undead-*.
+(4) SetColorTexture, SetTexCoord and SetPortraitTexture report "nothing"; setters normally return nothing, so is that a real failure or a labelling issue?
+Q-P2-4a-1: yes. Q-P2-4a-2: merge #14 after (2)-(4) are answered. Q-P2-4a-3: decide with the results."
+- Q-P2-4a-1 **yes**: "my plan" is edited in chat until the window exists.
+- Q-P2-4a-2: **merge #14** once findings 2-4 are answered; answered in P2-4a_Report.md section 6 (2: greedy next cost, not a fault; 3: the atlas token is `undead`; 4: labelling, two setters proven by read-back, SetColorTexture not yet). Merged by Claude.
+- Q-P2-4a-3: **open**, decided with the results (EI-E-31: DataStore has `GetCharacterFaction`, `GetCharacterRace`, `GetCharacterGender`).
+- Evidence EI-E-29..31. P2-4a stays open until the user closes it.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

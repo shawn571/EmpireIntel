@@ -1,6 +1,6 @@
 # P2-4a Report: the route planner (EmpireIntel 0.6.0) and the UI checks (EmpireIntelCheck 0.1.9-tp1)
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-08 (S-058)  |  STATUS: **Built, not merged, waiting for the live tests.** Approved by the user (D-056); build choices in D-057. Branch `p2-4a-planner`.
+DOC VERSION: 1.0.0  |  DATE: 2026-11-08 (S-058)  |  STATUS: **Live tests received (section 6); merge approved by the user after findings 2-4 were answered (D-058).** Approved by the user (D-056); build choices in D-057. Branch `p2-4a-planner`.
 
 ## 1. What was built
 
@@ -60,3 +60,24 @@ This matches the illustrative order in 8.6 (C2 to 10 then Tailoring 150, then En
 | Q-P2-4a-1 | Keep editing "my plan" in chat (`/ei plan ...`) until the window exists (D-057)? | Yes |
 | Q-P2-4a-2 | Merge `p2-4a-planner` after the live tests pass? | After the live tests |
 | Q-P2-4a-3 | Later, for P2-4b: allow DataStore's faction getter (if 0.1.9 finds it) so alts show a faction before their next login? | Decide with the 0.1.9 results |
+
+## 6. Live tests (2026-11-08, build 70862; C1 Paladin 27, C2 Priest 6, C3 the stale beta Shaman)
+
+The user's files and words were read as data. Names, GUIDs and the realm are not copied here.
+
+| Item | Result |
+|---|---|
+| Migration | **Pass** [reported, file]: schema 2, `plan` section; both records have race (`Scourge`), sex 2, faction Horde, ruleset `normal`, preset 1 |
+| `/ei plan copy`, mode, ignore | **Pass** [reported]: C3 is ignored (saved by GUID) |
+| UI checks | **Ran** on both characters [file]: 113 present, 6 returned nothing, 2 absent, 0 failed; evidence EI-E-29..31 |
+| UNEXPECTED, Lua errors | None reported |
+
+**Finding 1 (C3 took 6 of 20 steps before the ignore).** C3 is known only to DataStore, from another realm (the beta). By design (Q-F4) the user leaves such a character out with `/ei plan ignore`. Replayed offline from the user's two files (EmpireIntel's records, the check's Legacy read) [inferred, not the live command]: with C3 ignored the route has **no C3 step**: "2 earned [game]", 14 steps to 16; step 3 is "C1 Paladin 27: Experienced Spelunker: 9 dungeons left". **But the saved "my plan" was copied before the ignore and still holds 6 C3 entries**: the ignore applies to the fastest route only (Q-F4). `/ei plan copy` again replaces them.
+
+**Finding 2 ("Priest 45" but no "Paladin 45").** Not a fault: the route is greedy on the *next* cost. By the time Experienced Priest comes up, the route has already taken C2 to 35 for its craft gates (Artisan needs 35, L-4), so C2 35 -> 45 costs about 26 h, against about 40 h for C1 27 -> 45 (classic XP table, default rates [assumed]). In the replay, C2 to 45 is step 10 and **C1 to 45 is step 11**; the copied plan stopped earlier because C3's steps reached 16 first. Without C3 the route takes both.
+
+**Finding 3 (`raceicon-scourge-*` returns nothing).** Confirmed by the same run: `raceicon-undead-male` and `raceicon-undead-female` exist. The client's race file is `Scourge`, the atlas token is `undead` (EI-E-30). P2-4b maps Scourge to undead; every other race file lowercased matches its atlas.
+
+**Finding 4 (`SetColorTexture`, `SetTexCoord`, `SetPortraitTexture` report "nothing").** A labelling issue, not a failure. These are setters: they return nothing and raised no error. The read-backs prove two of them: `GetTexCoord` returned the coordinates set, and `GetTexture` after `SetPortraitTexture` returned `RTPortrait1`. `SetColorTexture` has no read-back in 0.1.9 (it ran without error; that it colours is not yet shown). Proposed for the next check version: label setters "ok, no return value" and read back `SetColorTexture` with `GetVertexColor`.
+
+**Also seen [inferred from counts]:** the C1 run (said to be with ElvUI off) has the same counts as the C2 run with ElvUI on (2 absent), so ElvUI's global and `GetMinimapShape` were probably present on the C1 run too. Only counts are kept per run, so this cannot be checked further; repeat with ElvUI off if the window's look without ElvUI matters.
