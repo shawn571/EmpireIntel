@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-045 | 2026-11-08 | Claude
+
+**State:** as S-044. Merge 2 approved (D-045). Pull request https://github.com/shawn571/EmpireIntel/pull/1 is **still open, not merged** (GitHub API); main is 83b3574 (0.3.1, 212 tests pass). The merge 2 pull request (`tp1-legacy-read` into main) is held until #1 is merged. Merge 3 waits for separate approval.
+
+**User's next step:** merge #1 on GitHub ("Create a merge commit"), say so; then the main check and the merge 2 pull request follow.
+
 ## S-044 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-3 and P3-1 closed. EmpireIntel 0.5.2 checked live (D-044). No increment open; P3-2, P3-3 locked.

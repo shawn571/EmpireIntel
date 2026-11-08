@@ -299,6 +299,11 @@ The user's words: "0.5.2 is installed (the reviewer chat copied the files from d
 - Test count: still 321 because the test runner counts `T.it` blocks, not assertions; 0.5.2 added assertions inside the two existing label tests (each fails when its label is undone).
 - Repair: the S-043 edit of this file dropped the "---" line and the "## Open questions for the user" heading before the table below; restored here (text only, no entry changed).
 
+## D-045 Merge 2 approved | Decided (user, 2026-11-08)
+The user's words: "PR 1 merged (merge commit). Check main and confirm it’s at 0.4.0 with 244 tests passing. Merge 2 (tp1-legacy-read): approved, open a PR. Merge 3 waits for separate approval."
+- Checked on GitHub at S-045: pull request 1 is still **open, not merged**; main is 83b3574 (EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1, 212 tests pass under Lua 5.1 and 5.3).
+- The merge 2 pull request is held until pull request 1 is merged: opened now against main, it would also carry all of `p2-3-views`, and merging it first would do merges 1 and 2 at once.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
