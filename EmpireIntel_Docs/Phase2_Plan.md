@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.3.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1 and P2-2 closed (D-029, D-032). P2-3 detailed in section 6, waiting for Q-P2-3.**
+DOC VERSION: 1.3.0  |  DATE: 2026-11-08  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1 and P2-2 closed (D-029, D-032). P2-3 approved (Q-P2-3, a, b) and built as 0.4.0 (D-033); waiting for its live test.**
 
 **Phase 2 builds EmpireIntel itself, limited to what works before any character reaches level 25:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). It uses no Legacy API. Everything about Legacy points, perks and the cap waits for the level-25 run and Q-T4.
 
@@ -103,6 +103,6 @@ Illustrative output (C1, C2 stand for character names):
 | Q-P2-1 | Approve increment P2-1, including saved-data format 1 (section 2)? | **Approved**; P2-1 closed (D-029) |
 | Q-P2-2 | Approve increment P2-2 as in section 5? | **Approved** 2026-11-06; built as 0.3.0 (D-030) |
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08; closed (D-032) |
-| Q-P2-3 | Approve increment P2-3 as in section 6? | Yes |
-| Q-P2-3a | Are the 6 crafting skills Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring (no Jewelcrafting or Inscription on Forever)? | Yes, as far as known; the 0.1.6 read will show the game's own list |
-| Q-P2-3b | Use the classic rest rule (5% of a level per 8 h resting, a quarter outside, cap 1.5 levels) as the labelled estimate, checked by the gate's rest test? | Yes |
+| Q-P2-3 | Approve increment P2-3 as in section 6? | **Approved** 2026-11-08 (D-033) |
+| Q-P2-3a | Are the 6 crafting skills Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking and Tailoring (no Jewelcrafting or Inscription on Forever)? | **Approved** 2026-11-08; the user will report if the pane lists others |
+| Q-P2-3b | Use the classic rest rule (5% of a level per 8 h resting, a quarter outside, cap 1.5 levels) as the labelled estimate, checked by the gate's rest test? | **Approved** 2026-11-08 |

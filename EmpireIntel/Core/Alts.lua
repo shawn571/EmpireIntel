@@ -78,7 +78,13 @@ function A.Merge(roster, ds)
       row[f] = v
     end
     row.rest, row.resting = base.rest, base.resting
-    if own and type(own.xpMax) == 'number' and own.xpMax > 0 and own.level == row.level then row.xpMax = own.xpMax end
+    -- when the rest was read: EmpireIntel's restAt, or DataStore's time (P2-3 projections start here)
+    if row.src == 'self' then row.restAt = type(own.restAt) == 'number' and own.restAt or ownAt else row.restAt = dsAt end
+    -- the XP bar only from EmpireIntel's own record, and only when it was measured at the level shown
+    if own and type(own.xpMax) == 'number' and own.xpMax > 0 and own.level == row.level then
+      row.xpMax = own.xpMax
+      if type(own.xp) == 'number' then row.xp = own.xp end
+    end
   end
   return rows, dup
 end
@@ -128,10 +134,9 @@ local function sortRows(rows, playerGuid)
   end)
 end
 
---- /ei alts. Returns the lines printed (for tests).
-function A.Show()
-  local lines = {}
-  local function say(s) lines[#lines + 1] = s; P.Print(s) end
+--- The merged, sorted character list (shared by /ei alts and the P2-3 views). Reads only.
+-- Returns rows, the bridge result, duplicates, the player's GUID.
+function A.Collect()
   local roster = EI.Store.Section('roster')
   local okR, ds = pcall(EI.DataStoreBridge.Read)
   if not okR then ds = { present = true, list = {}, errors = 1, firstError = tostring(ds), missing = {} } end
@@ -139,6 +144,14 @@ function A.Show()
   local player = P.Player()
   local playerGuid = player and player.guid
   sortRows(rows, playerGuid)
+  return rows, ds, dup, playerGuid
+end
+
+--- /ei alts. Returns the lines printed (for tests).
+function A.Show()
+  local lines = {}
+  local function say(s) lines[#lines + 1] = s; P.Print(s) end
+  local rows, ds, dup, playerGuid = A.Collect()
 
   local own, dsOnly = 0, 0
   for _, r in ipairs(rows) do if r.own then own = own + 1 else dsOnly = dsOnly + 1 end end
