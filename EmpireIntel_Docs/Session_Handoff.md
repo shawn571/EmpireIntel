@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-035 | 2026-11-08 | Claude
+
+- **Done:** run 14 recorded: the second point came from Novice Spelunker (Excavation Site: Wetlands).
+- **Open for the user:** spentInTree (leave out, or Q-T4); whether to plan `/ei legacy` (Phase 3, not authorized); P2-3 confirmation and the inn test, then Q-P2-3c.
+
 ## S-034 | 2026-11-08 | Claude
 
 - **Done:** recorded run 13 (TP1_Report_Run1.md section 19, EI-E-26). Available, spent and earned are settled; spentInTree is unexplained.

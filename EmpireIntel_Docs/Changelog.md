@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-035 | Run 14: the second point was Novice Spelunker (documentation only)
+- Excavation Site: Wetlands completed Novice Spelunker, the step the read had shown as missing. TP1_Report_Run1.md section 20. No code changed.
+
 ## 2026-11-08 | S-034 | Run 13: unapplied placement test (documentation only)
 - GetCurrencyInfo counts applied points only; spent is confirmed (EI-E-26). spentInTree is not an unapplied placement; it stays unexplained and is left out of `/ei legacy`. No code changed.
 

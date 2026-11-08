@@ -282,3 +282,11 @@ Chat lines only. Per the test steps, the first read was taken with the point pla
   - it may also be unused on Forever.
 
 Testing (b) needs a tree id from the game, which only the trait system gives (Q-T4, unapproved). The check has no game-returned tree id to pass, so even an approved argument call would first need Q-T4.
+
+## 20. Run 14 (0.1.8-tp1, file after runs 12 and 13)
+
+- **The second point came from Novice Spelunker:** its last step, Excavation Site: Wetlands, is now done (the one step run 9 showed missing). The challenge is completed and earned by the logged-in character. The completed challenges are Novice Paladin and Novice Spelunker.
+- The history shows it: completed went from 1 to 2 between the 04:16 UTC and 05:16 UTC reads. The pane points fields match runs 12 and 13.
+- The only other changes since run 10 are two explored zone areas: Hammerfall (Arathi Highlands) and Dun Algaz (Wetlands).
+- 230 KB, nothing trimmed. All 955 calls ok.
+- The step data predicted the next point: run 9 showed "only Excavation Site: Wetlands left", and completing it gave the point. This is the kind of hint `/ei legacy` is meant to give (Legacy_Rules.md section 4).
