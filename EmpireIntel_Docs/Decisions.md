@@ -314,6 +314,12 @@ The user's words: "PR 2 shows Merged. Check main. Merge 3 (p3-1-legacy): [approv
 - Checked: main is e8a30b3, a merge commit (parents 634bd63 and 1544eb5), with the same tree as `tp1-legacy-read`: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1; 283 tests pass under Lua 5.1 and 5.3.
 - Merge 3 pull request opened: `p3-1-legacy` into main (no conflicts, checked with `git merge-tree`). After it is merged, main holds EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1 and the newest docs, matching what the user has installed.
 
+## D-048 All three merges done; next-session prompt points at main | Decided (user, 2026-11-08)
+The user's words: "PR 3 shows Merged. Check main and point NEXT_SESSION_PROMPT at main."
+- Checked: main is c5434a7, a merge commit (parents e8a30b3 and da98dca), with the same tree as `p3-1-legacy`: EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1; 321 tests pass under Lua 5.1 and 5.3. A zip built from main has the same files as the delivered 0.5.2 zip.
+- NEXT_SESSION_PROMPT.md now names `main`. Pushing to main directly is blocked by the session's permission check, so this change is on branch `docs-after-merges`, opened as a pull request for the user to merge.
+- The merged branches (`p2-3-views`, `tp1-legacy-read`, `p3-1-legacy`) take no new work; new work branches from main.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
