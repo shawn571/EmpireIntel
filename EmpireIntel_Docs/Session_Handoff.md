@@ -4,6 +4,20 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-061 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-4a **closed** (D-060). Mockup **approved** (D-060). P2-4b **planned** in Phase2_Plan.md section 9 (EmpireIntel 0.7.0), for approval; **no window code**.
+
+**Approved:** through D-060: the game's faction emblems; the game's built-in fonts, none shipped; resizable window, size and position remembered, moderate default.
+
+**Pending (the user decides):** Q-P2-4b-1..4 (Phase2_Plan.md 9.8); merging this plan pull request (`p2-4b-plan`; it changes Phase2_Plan.md, outside the docs-only approval); the next check version (D-059, not built); #10 (P3-2 becomes format 3 when next edited; Q-P3-2a later); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 72f4192 (#15 merged; EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-plan`: main plus this plan, pull request open. #11 reference only; #10 open.
+
+**Installed (as the user has said):** EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1; both match main.
+
+**User's next step:** read Phase2_Plan.md section 9, answer Q-P2-4b-1..4, approve (or not) merging the plan pull request.
+
 ## S-060 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-4a merged (#14, merge commit 70da547; main: EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests on Lua 5.1 and 5.3). P2-4a stays open until the user closes it. **P2-4b: static mockup published for approval** (private Artifact: https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1): Fastest mode, My plan mode (in-place edit, drag, right-click menu), parts (Up Next card for an alt, badges, row icons, rules tooltip, minimap button, compartment). **No window code.**

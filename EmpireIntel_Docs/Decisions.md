@@ -428,6 +428,19 @@ The user's words: "Answers (1)-(4) accepted. I've read them: merge #14 now with 
 - **Q-P2-4a-3 yes:** DataStore's `GetCharacterFaction` (read-only) is added to the bridge's approved getters, so alts show a faction before their next login. Built with P2-4b (it is used by the window).
 - **Next:** the static window mockup (P2-4b, Phase2_Plan.md 8.3.5) for approval; no window code.
 
+## D-060 P2-4a closed; window mockup approved; emblems, fonts, window size; plan P2-4b | Approved (user, 2026-11-08)
+The user's words: "Merge #15 under the docs-only approval. Close P2-4a. Mockup:approved. Faction emblems: the game's own. Font: the game's built-in fonts, none shipped. Window: resizable, size and position remembered, moderate default. After I approve the mockup, plan the P2-4b build for my approval: files, reload or restart, tests, and the DataStore faction getter. No window code until then."
+- #15 merged (72f4192) under the docs-only standing approval.
+- **P2-4a closed.**
+- **Mockup approved** (https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1, private).
+- Faction: the game's emblem atlases (`HordeEmblem`, `AllianceEmblem`, EI-E-30). Fonts: the game's built-in fonts; no font shipped. Window: resizable, size and position remembered, moderate default (proposed 560 x 420).
+- P2-4b build plan written for approval: Phase2_Plan.md section 9 (Q-P2-4b-1..4). **No window code until it is approved.**
+
+## D-061 P2-4b plan approved with one addition (the fill path); build as 0.7.0 | Approved (user, 2026-11-08, Q-P2-4b-1..4)
+The user's words: "Q-P2-4b-1: yes, with one addition: SetColorTexture isn't proven on Forever (no read-back yet). Draw fills through one path in Theme or UI, test SetColorTexture with a read-back at window creation, and if it fails, fall back to SetTexture on our own white texture plus SetVertexColor (proven by 0.1.9's texture). Report which path ran, and cover both in tests. 2: yes. 3: yes. 4: yes. Merge #16 and build P2-4b as EmpireIntel 0.7.0. End with the package block and the 8-step live gate. I'll test with ElvUI on and off."
+- Q-P2-4b-1..4 **yes**. Merge #16; build P2-4b as EmpireIntel 0.7.0 (Phase2_Plan.md section 9 plus 9.9).
+- **Fill path (9.9):** every colour fill goes through one function in `Platform/UI.lua`. At window creation it tests `SetColorTexture` with a read-back; if that fails, fills use `SetTexture` on our own white texture plus `SetVertexColor`. The path that ran is reported; tests cover both.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

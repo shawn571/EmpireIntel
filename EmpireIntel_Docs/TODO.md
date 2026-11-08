@@ -3,9 +3,9 @@
 DOC VERSION: 1.4.0  |  UPDATED: 2026-11-08 (session S-058)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4a: built (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1), branch p2-4a-planner, not merged.
-IMPLEMENTATION APPROVED:  P2-4a and the 0.1.9-tp1 UI checks (D-055, D-056). P2-4b (window) waits for the 0.1.9 results and an approved mockup.
-OPEN BLOCKERS:            the user's live tests of 0.6.0 and 0.1.9-tp1; merge approval
+CURRENT PHASE:            Phase 2: P2-4a closed (D-060); P2-4b build plan written (Phase2_Plan.md section 9), for approval.
+IMPLEMENTATION APPROVED:  none open. P2-4b code waits for Q-P2-4b-1.
+OPEN BLOCKERS:            Q-P2-4b-1..4
 ```
 
 Rules: work only on the current phase. A phase is complete only when its exit test passes. Mark tasks `[x]` with date and session.
@@ -96,8 +96,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-4a built: EmpireIntel 0.6.0 (format 2) and EmpireIntelCheck 0.1.9-tp1 on branch `p2-4a-planner`; 408 tests, 20/20 mutants (S-058, D-057)
 - [x] Live tests of 0.6.0 and 0.1.9-tp1 received; findings answered; #14 merged (70da547, D-058, D-059)
 - [x] Static mockup of the window (both modes, Up Next card, parts) published for approval (S-060)
-- [ ] **User:** approve or change the mockup; close P2-4a
-- [ ] P2-4b build (window, minimap button, compartment, DataStore faction getter), after the mockup is approved
+- [x] Mockup approved; P2-4a **closed** (D-060)
+- [x] P2-4b build plan written: Phase2_Plan.md section 9 (S-061)
+- [ ] **User:** Q-P2-4b-1..4 (approve the P2-4b plan); merge the plan pull request
+- [ ] P2-4b build: EmpireIntel 0.7.0 (window, minimap button, compartment, DataStore faction getter), after approval
 - [ ] Next check version (setter labels "ok, no return value", SetColorTexture read-back, full UI result per character): not built yet (D-059)
 - [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
 - [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later
