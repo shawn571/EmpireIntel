@@ -276,7 +276,7 @@ If the test shows a new folder loads after `/reload`, D-034's open point closes 
 | Q-P2-4d | Default thresholds: rested at least 0.5 levels; crafting within 25 skill points; at most 10 lines? | Yes; one-line changes later; **approved** 2026-11-08 |
 | Q-P2-4e | After the unlock, the "reach 25" default becomes "class milestones not yet earned, closest first" (at most 3, classes with a character only)? | Yes; **approved** 2026-11-08 |
 
-## 8. P2-4 revised: the Legacy route planner (for approval, Q-P2-4r; plan only, no code)
+## 8. P2-4 revised: the Legacy route planner (approved 2026-11-08, D-055; P2-4b after Q-G1 and the mockup)
 
 The user's direction (2026-11-08, D-054): no plan text file; an in-game window to view and edit the plan; a default plan that is the most efficient path to Legacy points across the characters; rules from route guides, each with its source and labelled unverified until the game confirms it; two modes, the user's edited plan or automatic. Branch `p2-4-next` (pull request #11) is kept, not merged.
 
@@ -303,58 +303,71 @@ One approval each (Q-P2-4r-a, Q-P2-4r-b). P2-4a is useful on its own; P2-4b read
 
 ### 8.3 The plan window (P2-4b)
 
-#### 8.3.1 Layout
+#### 8.3.1 Design direction (the user, 2026-11-08, D-055)
+
+1. **Unique to EmpireIntel.** Own textures and fonts on plain frames; **no Blizzard templates** (no `BackdropTemplate`, `UIPanelButtonTemplate`, scroll-frame or dropdown templates), so ElvUI, which reskins Blizzard templates, does not change the window. Art is original: flat colour fills, our own small icon sheet shipped in the EmpireIntel folder. Nothing from Linear's branding.
+2. **Look and feel inspired by Linear:** dark, dense, calm list rows with status icons; drag to reorder; click to edit in place; right-click for actions; **no forms**.
+3. **"Up Next" card on top:** the next character's portrait, class colour, faction banner and ruleset badge; then the step, the points it earns and the estimated time, so the user sees what to play at a glance.
+4. **A static mockup first** (8.3.5): no window code until the user approves it.
+
+#### 8.3.2 Layout (to be refined in the mockup)
 
 ```
-+ EmpireIntel plan --------------------------------------------- [x] +
-| Mode: (o) Fastest (auto)   ( ) My plan        Target: 16 points [v] |
-| Legacy: 2 earned | next reward at 15 (Air Rifle) | C1 spent 2 of 16  |
-|-------------------------------------------------------------------- |
-| #  Character      Step                          Now      Gives  Est. |
-| 1  C2 Priest 6    Reach level 10 (Journeyman     6        gate   2 h  |
-|                   training) [web, unverified]                         |
-| 2  C2 Priest 10   Tailoring 150                  56/75    +1     3 h  |
-| 3  C1 Paladin 27  Experienced Spelunker (9 left) 1/10     +1     9 h  |
-| ...                                                                  |
-|-------------------------------------------------------------------- |
-| [Copy to my plan]   [Ignore character v]   Rules: 18 (11 unverified) |
-+---------------------------------------------------------------------+
++-------------------------------------------------------------------------+
+|  EmpireIntel        [ Fastest | My plan ]           2 / 16   x          |
+|  +-------------------------------------------------------------------+  |
+|  | UP NEXT                                                           |  |
+|  | [portrait]  C2  Priest 6        [Alliance banner] [Normal]        |  |
+|  |  (class-     Reach level 10, then Tailoring 150                   |  |
+|  |   coloured   +1 Legacy point (Journeyman Tailor)   ~2 h [estimate]|  |
+|  |   ring)      gate: Journeyman needs level 10  [web, unverified]   |  |
+|  +-------------------------------------------------------------------+  |
+|   o  C2 Priest 6      Enchanting 150            28/75   +1   ~3 h     |
+|   o  C1 Paladin 27    Experienced Spelunker      1/10    +1   ~9 h     |
+|   o  C2 Priest 6      Level 25                   6       +1   ~6 h     |
+|   *  C1 Paladin 27    Level 45                   27      +1   ~14 h    |
+|   ...                                                                   |
+|  Next reward 15: Air Rifle          Rules: 18, 12 unverified (hover)    |
++-------------------------------------------------------------------------+
 ```
 
-- **Open:** `/ei plan` (and `/ei window`), the minimap button, or the AddOn compartment if the client has one (8.3.4). Escape closes it. Position and size are remembered (format 2).
-- **Fastest (auto):** read only; recomputed every time the window opens or a character's values change (level up, skill up, challenge done). Each row says why it is next ("cheapest point now", "gate: level 10 needed for Journeyman").
-- **My plan:** the same rows, editable: move up or down, remove, add (character, kind, target), and a note. "Copy to my plan" starts it from the current auto route. A row that is met shows as done and drops off at the next open.
-- **Ignore character:** leaves a character out of auto mode (for example the stale beta Shaman).
-- **Labels:** every row carries the source tags of the rules it used; any unverified rule shows "unverified" (8.4). Hovering a row shows the rules and their sources.
-- **Combat:** the window works in combat (it is not a secure frame) but does no Legacy read in combat; it says "values from before combat".
-- **Saved:** edits are saved by the game at `/reload` or logout (SavedVariables). A crash loses edits since the last `/reload`; the window says so once.
+- **Rows:** one line each, about 22 px high: a status icon (open, in progress, done, blocked by a gate, unknown), the character in class colour, the step, now, points, estimated time. Unverified rules show a small dot; hover shows the rules and their sources.
+- **Fastest mode:** read only; rows cannot be dragged. Right-click: "Copy to my plan", "Ignore this character".
+- **My plan mode:** drag a row to reorder; click a cell to edit it in place (a target number, a note); right-click: move to top, remove, ignore character, add a step after (character, kind and target chosen from a short inline list, not a form).
+- **Open:** `/ei plan`, the minimap button, or the AddOn compartment if present. Escape closes it; position and size are remembered (format 2).
+- **Combat:** works in combat (not a secure frame), with no Legacy read in combat ("values from before combat").
+- **Saved:** edits are saved by the game at `/reload` or logout; the window says once that a crash loses edits since the last `/reload`.
 
-#### 8.3.2 Minimap button (optional)
+#### 8.3.3 Minimap button and AddOn compartment (Q-G2: own button plus the compartment)
 
-- A small round button on the minimap: left-click opens the window, right-click toggles the mode, drag moves it around the edge. Hidden with `/ei minimap off`.
-- **ElvUI** squares the minimap; the button uses the minimap's shape (`GetMinimapShape`, if present) to place itself on the edge, as LibDBIcon does. Two ways to build it (Q-G2): our own button (no dependency), or the LibDataBroker and LibDBIcon libraries embedded in the EmpireIntel folder (ElvUI and many minimap-bar addons pick these up). Their licenses must allow embedding; checked before use.
-
-#### 8.3.3 ElvUI
-
-- Standard frame templates only, no Blizzard frame repositioned, no hooks on ElvUI or Blizzard frames.
-- If ElvUI is loaded, the window can optionally take ElvUI's look through ElvUI's skinning functions. That is a call into another addon, so it goes in `Bridge/` (design principle 4) and fails safe: no ElvUI, or an error, gives the plain look (Q-G3).
-- Live test with ElvUI on and off.
+- Our own round button with our own icon: left-click opens the window, right-click switches the mode, drag moves it along the edge; `/ei minimap off` hides it.
+- Placed using `GetMinimapShape` when present, so it sits on the edge of ElvUI's square minimap too.
+- An AddOn compartment entry if the client has one (8.3.4).
+- **ElvUI:** because the window uses no Blizzard templates, ElvUI leaves it alone; no call into ElvUI is needed. Live test with ElvUI on and off.
 
 #### 8.3.4 API checks needed first (a check package, Q-G1)
 
-No UI code has run in EmpireIntel yet; GoldIntel's evidence covers events and frames for data, not windows. Before P2-4b, EmpireIntelCheck 0.1.9-tp1 would record (existence checks, plus one hidden test frame per template inside `pcall`, destroyed at once):
+No UI code has run in EmpireIntel yet; GoldIntel's evidence covers events and frames for data, not windows. **Approved (Q-G1, D-055):** EmpireIntelCheck 0.1.9-tp1 runs these checks alongside the P2-4a build. Existence checks, plus hidden test frames and textures inside `pcall`, hidden and never shown. Each result is recorded as present, absent or failed, with evidence (the value, or a screenshot the user sends):
 
 | Check | Why |
 |---|---|
-| `CreateFrame` with `BackdropTemplate`, `UIPanelButtonTemplate`, `UIPanelScrollFrameTemplate`, `InputBoxTemplate`, `UICheckButtonTemplate` | the window, buttons, list, edit boxes |
-| Menu API: `MenuUtil` (modern) or `UIDropDownMenu_*` (older) | the target and character pickers |
+| Plain widgets with no template: `Frame`, `Button`, `EditBox`, `ScrollFrame`; `Texture:SetColorTexture`, `SetTexture` with a file in the addon folder, `SetTexCoord`; `CreateFont` / `SetFont`; `SetMovable`, `RegisterForDrag`, `StartMoving`, mouse wheel | the window, rows, in-place edit, drag to reorder, own scrolling (no templates, 8.3.1) |
+| **Portrait of the live character:** `SetPortraitTexture(texture, 'player')` | the Up Next card |
+| **Race and gender icons for logged-out alts:** `UnitRace('player')`, `UnitSex('player')` and their ids for the live character (to record per character); the race-icon art (atlas names such as `raceicon-<race>-<gender>` via `C_Texture.GetAtlasInfo`, or the classic race-icon texture and coordinates) | a portrait stand-in for alts, which the game cannot draw |
+| **Class icons:** `CLASS_ICON_TCOORDS` with the class-icon texture, or atlas `classicon-<class>`; class colours: `C_ClassColor.GetClassColor` or `RAID_CLASS_COLORS` | the card and the rows |
+| **Faction emblems:** `UnitFactionGroup('player')`; emblem art (atlas or `Interface\TargetingFrame\UI-PVP-<Faction>`) | the faction banner |
+| **Ruleset and realm type, per character:** `C_GameRules.IsHardcoreActive()`, `GetForeverExperiencePreset()` (EI-E-09, EI-E-11 [file]), `IsSelfFoundAllowed()`; the realm name and, if exposed, its type; and what DataStore keeps (faction yes, ruleset unknown, Reference_DataStore_Altoholic.md) | the ruleset badge, and L-18 (never mix Hardcore and normal points) |
 | `UISpecialFrames` | Escape closes the window |
 | `AddonCompartmentFrame` and the TOC fields `AddonCompartmentFunc` | the compartment entry, as Hated Legacy uses |
 | `Minimap`, `GetMinimapShape`, `GetCursorPosition` | the minimap button and dragging |
 | `GameTooltip` | row tooltips |
 | `C_AddOns.IsAddOnLoaded('ElvUI')` and ElvUI's global `ElvUI` (presence only) | the ElvUI look |
 
-Each check is recorded as present, absent or failed, with no other call. The results decide the templates used.
+No other call. The results decide which art the card can show for alts; anything absent falls back to the class icon and class colour.
+
+#### 8.3.5 Static mockup before any window code
+
+Before P2-4b code: a static mockup (an image or page, not the addon) of the window in both modes, with the Up Next card, built from today's characters (names replaced) and the P2-4a route. The user approves it, or asks for changes, before any window code is written.
 
 ### 8.4 The rules table and its sources
 
@@ -378,6 +391,8 @@ Every rule has an id, its source tags (Project_Bible section 6: [file], [reporte
 | L-14 | Rested XP: 5% of a level per 8 h in an inn | EI-E-28 [file] | confirmed (inn rate only) |
 | L-15 | XP per level (the bar) | EI-E-14 for the levels measured [file]; [inherited] classic table for the rest | partly confirmed |
 | L-16 | Time costs (8.5): hours per level by level band, per 25 skill points, per dungeon run | [assumed] defaults, tuned by the user's own measured rates where available | unverified (estimates) |
+| L-17 | While rested, kills give double XP and the pool drops by the bonus given, so a pool of R saves R of kill XP; quest and exploration XP get no bonus | [web: warcraft.wiki.gg "Experience": "double XP from killing monsters", quests not listed]; [web: wowhead.com classic rested guide: kills use the pool, other XP does not]; [inherited] classic server behaviour: the bonus taken from the pool equals the bonus given; the user's statement (D-055). Accrual matches the Classic display (EI-E-28) | unverified on Forever. **Check (no code):** note `/ei` (XP and rested) before and after one kill while rested: XP should rise by twice the kill's normal XP and rested should fall by the kill's normal XP |
+| L-18 | Hardcore characters' Legacy points are kept apart from the normal ruleset's | [web: warcraft.wiki.gg "account-wide, with the exception of Hardcore characters"; warcrafttavern.com "Legacy Rewards Will Be Separate on the WoW Forever Hardcore Ruleset"] | unverified; the planner never mixes rulesets (8.3.4 reads each character's ruleset) |
 
 **What the guides say (inputs, not rules):**
 - **Method**, "The Fastest Way to Get Legacy Points in WoW Forever" (Old Guardian, 2026-10-08): "It is faster to use multiple characters." Multi-character route to 16: level 60 on the first character (3), two alts of other classes to 25 (2), PvP Rank 3 (1), four crafts to 225 (8), Novice and Experienced Spelunker (2). It also says all crafts at 225 "gives you 12", which contradicts its own list (8); the plan uses the rules above, not the guide's totals.
@@ -387,9 +402,10 @@ Every rule has an id, its source tags (Project_Bible section 6: [file], [reporte
 ### 8.5 How "fastest" is measured
 
 - **Unit: estimated play hours** to the next Legacy point, labelled [estimate].
-- **Leveling:** XP to go (the bar, L-15) divided by an XP-per-hour rate for that level band, less the rested XP the character has now (rested doubles kill XP, so it counts at half). Default rates are [assumed]; once EmpireIntel has seen a character gain levels across sessions, it can use that character's measured rate (Q-F2).
+- **Leveling:** (XP to go - XP saved by rest) divided by an XP-per-hour rate for that level band. Default rates are [assumed]; once EmpireIntel has seen a character gain levels across sessions, it uses that character's measured rate (Q-F2, approved).
+- **Rested XP (corrected, D-055):** a rested pool of R saves **R of kill XP in full**, not half (L-17). While rested, each kill gives its XP twice and the pool drops by the bonus; so the pool lasts until R bonus XP has been given, and the time to level falls by R / (XP per hour). Quest and exploration XP get no bonus, so the saving is min(R, the kill XP still needed); without a measured kill share, the plan assumes kills give at least R of the XP to go [assumed] and says so on the row.
 - **Professions:** skill points to go times hours per point for that band [assumed], plus any level gate (L-4) first.
-- **Dungeon challenges:** dungeons left times hours per run [assumed], only when a character is in the dungeon's level range (L-8).
+- **Dungeon challenges:** planned at any level (D-055): dungeons left times hours per run [assumed]. The level ranges (L-8) only pick which character fits a dungeon best and raise the estimate for a character far outside the range.
 - **Rules that make a step impossible now** (a gate, PvP before 60 under L-9, level-60 content) are not counted; the gate itself (for example "C2 to level 10") becomes the step.
 - **Auto mode** is greedy: from the current state, take the cheapest next point (including its gates), apply it, repeat until the target. It is recomputed from the real values every time, so it adjusts as the user plays.
 - **Ties:** prefer steps on the character being played; then a step that also opens a gate for later points.
@@ -437,9 +453,10 @@ EmpireIntelDB = {
 }
 ```
 
+- **Roster records gain** `race`, `sex`, `faction` and `ruleset` (`normal` / `hardcore` / unknown, and the experience preset), recorded for the live character at each snapshot (8.3.4 decides the calls). Alts get them at their next login, or `faction` from DataStore meanwhile.
 - Characters are stored by GUID, never by name, so a rename does not break the plan. GUIDs stay on the user's computer, as now.
+- **Format numbering (D-055):** this is format 2; P3-2's saved summary becomes format 3.
 - Migration 1 to 2 adds an empty `plan`; nothing is converted. Opening format 2 with 0.5.2 or 0.6.x: the Store's readonly state leaves it untouched (already built and tested).
-- **Coordination:** P3-2 (post-25 plan, #10) also proposes a format 2. Whichever is approved first is format 2; the other becomes format 3.
 
 ### 8.8 Restart or reload
 
@@ -456,17 +473,17 @@ No new addon folder.
 
 | ID | Question | Recommendation |
 |---|---|---|
-| Q-P2-4r | Approve the revised direction: the plan lives in saved data and the window, plan file format 1 and the `EmpireIntel_Plan` folder are retired, and #11 stays unmerged as reference? | Yes |
-| Q-P2-4r-a | Approve P2-4a (rules table, route engine, both modes, `/ei next` in chat) with saved-data format 2 (8.7)? | Yes, first |
-| Q-P2-4r-b | Approve P2-4b (window, minimap button, ElvUI) after the UI checks? | After Q-G1's results |
-| Q-G1 | Let EmpireIntelCheck 0.1.9-tp1 run the UI checks of 8.3.4 (existence checks and hidden test frames only)? | Yes |
-| Q-G2 | Minimap button: our own (no dependency), or embedded LibDataBroker and LibDBIcon (a dependency, license to be checked)? Plus the AddOn compartment if present | Our own, plus the compartment |
-| Q-G3 | Do you use ElvUI on Forever? Should the window take ElvUI's look when it is loaded, or stay plain? | Plain first, ElvUI look as an option |
-| Q-F1 | Target: 16 earned (default), with next reward and next point selectable? | Yes |
-| Q-F2 | Cost model: assumed hours per level, skill and dungeon, labelled [estimate]; may EmpireIntel learn each character's own XP-per-hour from the levels it sees across sessions (no new game call; saved in `plan.rates`)? | Yes |
-| Q-F3 | PvP not planned before 60 (your rule), raids and Valthalak at 60, Explorer after a character reaches 50? | Yes for PvP and raids; Explorer your call |
-| Q-F4 | Ignore characters in auto mode (for example the stale beta Shaman), saved per GUID? | Yes |
-| Q-F5 | When a guide and the game disagree, the game wins and the rule is marked confirmed with the game's value; when two guides disagree (L-5), the plan uses the more cautious value until the game confirms? | Yes |
+| Q-P2-4r | Approve the revised direction: the plan lives in saved data and the window, plan file format 1 and the `EmpireIntel_Plan` folder are retired, and #11 stays unmerged as reference? | **Yes** (D-055) |
+| Q-P2-4r-a | Approve P2-4a (rules table, route engine, both modes, `/ei next` in chat) with saved-data format 2 (8.7)? | **Yes**, format 2 for the plan; P3-2 becomes format 3 (D-055) |
+| Q-P2-4r-b | Approve P2-4b (window, minimap button, ElvUI) after the UI checks? | **After Q-G1** (D-055) |
+| Q-G1 | Let EmpireIntelCheck 0.1.9-tp1 run the UI checks of 8.3.4 (existence checks and hidden test frames only)? | **Yes**, in EmpireIntelCheck alongside the P2-4a build; checks extended in 8.3.4 (D-055) |
+| Q-G2 | Minimap button: our own (no dependency), or embedded LibDataBroker and LibDBIcon (a dependency, license to be checked)? Plus the AddOn compartment if present | **Own button plus the AddOn compartment** (D-055) |
+| Q-G3 | Do you use ElvUI on Forever? Should the window take ElvUI's look when it is loaded, or stay plain? | **Replaced** by the design direction, 8.3.1 (D-055) |
+| Q-F1 | Target: 16 earned (default), with next reward and next point selectable? | **16** (D-055) |
+| Q-F2 | Cost model: assumed hours per level, skill and dungeon, labelled [estimate]; may EmpireIntel learn each character's own XP-per-hour from the levels it sees across sessions (no new game call; saved in `plan.rates`)? | **Yes** (D-055) |
+| Q-F3 | PvP not planned before 60 (your rule), raids and Valthalak at 60, Explorer after a character reaches 50? | **No PvP before 60; raids and Valthalak at 60; Spelunker challenges at any level** (D-055). Zone Explorer: **open** (the answer kept the template "[after 50 / other]") |
+| Q-F4 | Ignore characters in auto mode (for example the stale beta Shaman), saved per GUID? | **Yes** (D-055) |
+| Q-F5 | When a guide and the game disagree, the game wins and the rule is marked confirmed with the game's value; when two guides disagree (L-5), the plan uses the more cautious value until the game confirms? | **Yes** (D-055) |
 
 Sources: [Method](https://www.method.gg/wow-forever/the-fastest-way-to-get-legacy-points-in-wow-forever), [Hated Legacy on CurseForge](https://www.curseforge.com/wow/addons/hated-legacy), [warcraft.wiki.gg Legacy System](https://warcraft.wiki.gg/wiki/Legacy_System), [wow-professions.com trainers](https://www.wow-professions.com/forever/blacksmithing-trainers), [epiccarry.com tailoring](https://epiccarry.com/blogs/wow-forever-tailoring-guide/), [rankedboost.com](https://rankedboost.com/world-of-warcraft/forever/professions/blacksmithing-leveling/).
 

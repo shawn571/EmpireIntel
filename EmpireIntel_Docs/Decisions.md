@@ -357,6 +357,22 @@ Plan only, no code. Write it as a revised P2-4 (or a new increment if that fits 
 - #11 (`p2-4-next`, 0.6.0 and EmpireIntel_Plan 1) is kept, not merged. Plan file format 1 is not adopted.
 - The revised plan is Phase2_Plan.md section 8 (for approval, Q-P2-4r and the questions in 8.9). Section 7 is superseded.
 
+## D-055 Revised P2-4 approved; rested fix; window design direction | Approved (user, 2026-11-08, Phase2_Plan.md 8.9)
+The user's words: "Answers to section 8.9 (record with my words):
+Q-P2-4r: yes. a: yes (format 2 for the plan; P3-2 becomes format 3). b: after Q-G1. Q-G1: yes, run the UI checks in EmpireIntelCheck alongside the P2-4a build. Q-G2: own minimap button plus the AddOn compartment. Q-G3: replaced by the design direction below. Q-F1: 16. Q-F2: yes. Q-F3: no PvP before 60; raids and Valthalak at 60; zone Explorer [after 50 / other]; Spelunker challenges are planned at any level. Q-F4: yes. Q-F5: yes.
+Fix before building: section 8.5 counts rested XP “at half”. In Classic, a rested pool of R saves R of kill XP in full. Source it or fix it.
+Design direction for the P2-4b window:
+1. Unique to EmpireIntel. Own textures, no Blizzard templates that ElvUI reskins, so ElvUI doesn’t change our window.
+2. Look and feel inspired by Linear: dark, dense, calm list rows with status icons; drag to reorder; click to edit; right-click actions; no forms. On top, an “Up Next” card: the next character’s portrait, class color, faction banner and ruleset badge, then the step, the points it earns and the estimated time, so I see what to play at a glance. Original art only, nothing from Linear’s branding.
+3. Add to the Q-G1 UI checks: portrait drawing for the live character; race/gender portrait icons and class icons for logged-out alts; faction emblems; how to read each character’s ruleset/realm type (game or DataStore), with evidence.
+4. Before any window code, give me a static mockup of the window (both modes plus the Up Next card) for approval.
+Merge #12: approved after the 8.5 fix and the design direction are added to section 8. Then update the handoff and tell me when to start a new session."
+- Approved: the revised direction; **P2-4a** (planner, saved-data format 2 for the plan); **Q-G1** (UI checks in EmpireIntelCheck 0.1.9-tp1, built alongside P2-4a). **P2-4b** waits for Q-G1's results and the approved mockup.
+- P3-2's saved summary becomes format 3.
+- 8.5 corrected: a rested pool of R saves R of kill XP in full (rule L-17, sourced; unverified on Forever, with a no-code check). The "at half" text was wrong.
+- Spelunker challenges are planned at any level. Zone Explorer timing stays open: the answer kept the template "[after 50 / other]".
+- Design direction recorded in Phase2_Plan.md 8.3.1-8.3.5; the Q-G1 checks extended (portraits, race/gender and class icons, faction emblems, ruleset and realm type). Roster records gain race, sex, faction and ruleset in format 2. L-18: Hardcore points are kept apart.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
