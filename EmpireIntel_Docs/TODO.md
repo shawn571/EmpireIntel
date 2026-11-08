@@ -47,7 +47,7 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.18 Run 10 after the first spend recorded (S-031)
 - [x] 1.19 Selected-tree test run (run 11): spentInTree 0 in all reads; which tree each read was on is not recorded (S-032)
 - [x] 1.19a Unapplied placement test (run 13): not counted until applied; spentInTree still 0 (S-034)
-- [ ] 1.20 **User:** a read after the next earned point; a read on a second character
+- [x] 1.20 Second earned point (run 12) and a second character (run 15) read (S-037)
 - [ ] 1.21 **User:** decide what comes after TP-1 (see the S-030 handoff)
 - Exit test: Architecture section 9 exit criteria.
 

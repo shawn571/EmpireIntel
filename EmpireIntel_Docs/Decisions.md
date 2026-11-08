@@ -234,6 +234,18 @@ Built on branch `tp1-legacy-read`; `/reload` is enough.
 - **Explorer steps (user correction):** steps are found by following the game's own links, never by position. A criterion links to another achievement when its asset id is that achievement's id and it is of the complete-achievement type (8) or carries that achievement's name. A step is never a Legacy challenge or a hidden achievement. Each challenge with steps saves `steps = { id, name, completed, earnedByMe }`, and the line shows "<challenge> X of N done". Achievements that are neither challenges nor steps are reported as UNEXPECTED.
 - **Defect 15:** criteria are saved as `text`, `completed`, `quantity` and `required` (the last two only when required > 1), plus `achievement` for a link. `type`, `assetID`, `criteriaID` and `quantityString` are no longer saved. The size trim drops `strongSeen`, `undoc` and `docs` before any Legacy data. Then, within Legacy: the steps' own criteria, then all criteria and the category list. Challenges, step lists and points always stay.
 
+## D-037 Phase 3 authorized for `/ei legacy`, P3-1 only | Approved (user, 2026-11-08, Q-P3, Q-P3-1, Q-P3-1a)
+- Phase 3 is authorized with one approval per increment. **P3-1 only**: P3-2 (saved summary) and P3-3 (per-tree detail) stay locked. Q-T4 stays unapproved until P3-1 passes its live gate.
+- P3-1 as in Phase3_Legacy_Plan.md section 3. No saved crash guard; saved-data format 1 unchanged.
+- **Branches (user: keep P2-3 separate; merge nothing without approval):** P3-1 is built on its own branch, `p3-1-legacy`, started from `tp1-legacy-read`.
+  - That branch already holds P2-3 (EmpireIntel 0.4.0, unchanged), so the P3-1 package still has `/ei rest` for the pending inn test. It also holds the check code that P3-1 ports.
+  - `p2-3-views` is not touched.
+  - Merge order, each step only on the user's approval: `p2-3-views`, then `tp1-legacy-read`, then `p3-1-legacy`.
+- Version 0.5.0. `/reload` (new files in an existing folder, D-034).
+- The plan's call list is narrowed, not widened. The 7 achievement getters plus `LegacySystem.GetCurrencyInfo()` with no argument. The three `C_CurrencyInfo` getters are dropped: on Forever the Legacy points are not an ordinary currency (EI-E-21), so they add nothing.
+- Explorer progress is shown as the logged-in character's (EI-E-27). The other challenges' progress is the account's.
+
+---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
 

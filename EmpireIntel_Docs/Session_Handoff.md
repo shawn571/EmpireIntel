@@ -4,6 +4,12 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-037 | 2026-11-08 | Claude
+
+- **Done:** run 15 recorded (TP1_Report_Run1.md section 22, EI-E-27); P2-3_Report.md; D-037 (Phase 3, P3-1 only).
+- **NEXT:** build P3-1 as 0.5.0 on branch `p3-1-legacy`.
+- **WAITING FOR:** the formal inn test, then Q-P2-3c.
+
 ## S-036 | 2026-11-08 | Claude
 
 - **Done:** spentInTree inventory (TP1_Report_Run1.md section 21); `/ei legacy` plan (Phase3_Legacy_Plan.md). No code.
