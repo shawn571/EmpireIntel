@@ -54,8 +54,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-2 built: EmpireIntel 0.3.0 on branch `p2-2-alts` (full client restart), 211 tests pass (S-018, D-030)
 - [x] P2-2 live test 1 (0.3.0): DataStore off passed, format 1 unchanged; D2 fixed in 0.3.1 (S-019)
 - [x] P2-2 live test 2 passed (DataStore on); P2-2 closed by the user 2026-11-08 (D-032)
-- [ ] P2-3 plan for approval (Q-P2-3), no code
-- [ ] P2-3 Views: unlock, rest, milestones (/reload)
+- [x] P2-3 plan written: Phase2_Plan.md section 6 (S-023)
+- [x] Q-P2-3, Q-P2-3a, Q-P2-3b approved 2026-11-08
+- [x] P2-3 built: EmpireIntel 0.4.0 on branch `p2-3-views`, 244 tests, 16/16 mutants (S-024, D-033)
+- [ ] **User:** P2-3 live test and inn test, then Q-P2-3c
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
 ## Later phases: see Architecture.md section 10 (not approved)

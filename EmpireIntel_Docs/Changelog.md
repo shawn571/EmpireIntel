@@ -5,6 +5,17 @@ Append-only. Newest first.
 ## 2026-11-07 | S-020 | Run 6, the level-25 run (documentation only)
 - Legacy unlocked on build 70862. `LegacySystem` Lua table found; the challenges are an achievement category and the points come from currency info (EI-E-16). DataStore last-update time is nil on Forever (EI-E-17). Q-T7 proposed. No code changed.
 
+## 2026-11-08 | S-025 | Restart rule revised (documentation only)
+- EI-E-19: `/reload` loads new TOC files on Forever (0.4.0 and 0.1.6 both worked after a reload). D-034: packages that change or add files in an existing addon say `/reload`; a new addon folder still says restart until observed. The repository's 0.4.0 README is corrected; the zip is unchanged.
+
+## 2026-11-08 | S-024 | EmpireIntel 0.4.0, increment P2-3 (FULL CLIENT RESTART; branch p2-3-views)
+- New `Core/Rules.lua` and `Core/Views.lua`: `/ei unlock`, `/ei rest` (measured, plus a projected value under the classic rule, labelled estimate), `/ei milestones` (9 classes, 6 crafting skills, estimated Legacy points from both groups).
+- `Alts.Collect` shared by `/ei alts` and the views; merge rows gained `xp` and `restAt` (not stored). No saved-data change.
+- Tests: `test_ei_views.lua` plus static rules. 244 tests pass under Lua 5.1 and 5.3; all 16 guard mutants caught. D-033.
+
+## 2026-11-08 | S-023 | P2-3 plan for approval (documentation only)
+- Phase2_Plan.md 1.3.0 section 6: `/ei unlock`, `/ei rest`, `/ei milestones`; Core/Rules.lua and Core/Views.lua; no format change; full restart (corrected from /reload). Questions Q-P2-3, Q-P2-3a, Q-P2-3b. No code.
+
 ## 2026-11-08 | S-022 | P2-2 closed; branch merged
 - The user confirmed `/ei alts` matched the game with DataStore on and approved closing P2-2 (D-032). `p2-2-alts` merged into main. No hide-old-characters rule (user).
 
