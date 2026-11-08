@@ -330,6 +330,12 @@ The user's words: "Standing order, effective now. Record it in CODE_STANDING_ORD
 - GoldIntel is not changed (D-018/D-020); D-105 is cited only.
 - Known limit: in Claude Code cloud sessions the `gh` CLI cannot use GitHub GraphQL, which `gh pr merge` uses; if the merge fails for that reason, the session reports the exact message and stops (the user's rule).
 
+## D-050 Merge command: REST in place of gh pr merge | Decided (user, 2026-11-08)
+The user's words: "Use the REST merge command (gh api -X PUT repos/shawn571/EmpireIntel/pulls/<n>/merge -f merge_method=merge) in place of gh pr merge: approved. Record it with my words in CODE_STANDING_ORDERS.md and NEXT_SESSION_PROMPT.md. Add its permission to #6: yes, replacing the gh pr merge rule: Bash(gh api -X PUT repos/shawn571/EmpireIntel/pulls/*/merge *). #5: you merge it with the REST command, then check main. I’ll merge #6 myself after you’ve updated it."
+- Why: `gh pr merge 5 --merge` was refused with "403 Forbidden ... GitHub GraphQL is not available from Claude Code sessions; use the REST API" (S-049).
+- The REST command makes the same merge commit through the pull request; the rest of D-049 is unchanged.
+- `.claude/settings.json` (pull request 6) allows `Bash(gh api -X PUT repos/shawn571/EmpireIntel/pulls/*/merge *)` in place of `Bash(gh pr merge *)`.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

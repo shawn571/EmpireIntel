@@ -7,4 +7,5 @@ You are continuing the EmpireIntel project (GitHub: shawn571/EmpireIntel, privat
 5. Wait for my approval before changing any code, merging anything or starting any increment.
 
 Merging (D-049): “Once I approve a merge in chat, you merge it yourself through its pull request (gh pr merge <n> --merge; no squash, no rebase, no direct push to main), then check main and report the merge commit and the test result. Approval is still required for every merge except the docs-only standing approval. Commits and pushes to work branches need no approval. Never force-push or delete branches.”
+Merge command (D-050): “Use the REST merge command (gh api -X PUT repos/shawn571/EmpireIntel/pulls/<n>/merge -f merge_method=merge) in place of gh pr merge: approved.”
 Docs-only standing approval (D-049): “you may merge docs-only pull requests that change only Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md or the recording of my decisions; tell me each time.”
