@@ -8,7 +8,7 @@ local ADDON, EI = ...
 --   * The character list is the one /ei alts shows (Alts.Collect: own records plus DataStore, newer value wins).
 --   * No new game call and no DataStore call: the only live read is the player's own progress (P.Unit.Progress),
 --     already used by the snapshot. Nothing is written to saved data.
---   * Every worked-out number says "estimate"; every rule from the user's list carries its label (R.LABEL_RULES).
+--   * Every worked-out number says "estimate"; the milestones header carries R.LABEL_RULES and the rest header R.LABEL_REST.
 
 EI = EI or {}
 local P = EI.Platform

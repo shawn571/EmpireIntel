@@ -75,8 +75,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Q-P2-3, Q-P2-3a, Q-P2-3b approved 2026-11-08
 - [x] P2-3 built: EmpireIntel 0.4.0 on branch `p2-3-views`, 244 tests, 16/16 mutants (S-024, D-033)
 - [x] P2-3 live test and inn test passed; **closed** (D-041)
-- [ ] Rest label change (D-041): build in the next package (proposed 0.5.2), after the user's go-ahead
-- [ ] **User:** the `/ei milestones` rules label (confirmed by EI-E-22): keep or drop
+- [x] Rest and milestones labels built as EmpireIntel 0.5.2 (D-041, D-043)
+- [ ] **User:** 0.5.2 live check (README steps 3-6)
+- [ ] Merge 1 `p2-3-views` into main: approved (D-043); blocked by the session permission check, waiting
+- [ ] Merges 2 (`tp1-legacy-read`) and 3 (`p3-1-legacy`): wait for separate approval
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
 ## Later phases: see Architecture.md section 10 (not approved)

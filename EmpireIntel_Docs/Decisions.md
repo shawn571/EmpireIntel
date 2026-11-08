@@ -286,9 +286,12 @@ The user's words: "Q-P3-1c: close P3-1." and "Q-T4 stays unapproved. P3-2 and P3
 - 0.5.1 checked live (P3-1_Report.md section 2).
 - Merges: none until the user approves each one. Proposed order: `p2-3-views`, `tp1-legacy-read`, `p3-1-legacy` (each a fast-forward of main).
 
----
-
-## Open questions for the user (updated S-002, 2026-11-03)
+## D-043 EmpireIntel 0.5.2: both labels; merge 1 approved | Decided (user, 2026-11-08)
+The user's words: "Build 0.5.2 with the rest label: yes, as worded. Milestones label: drop “not yet confirmed” for the class and crafting rules (EI-E-22), and keep [estimate] on the Legacy points line. Put both in 0.5.2. Merge 1 (p2-3-views): approved. Tell me when it’s done; merges 2 and 3 wait for separate approval."
+- Built on `p3-1-legacy` as EmpireIntel 0.5.2 (`/reload`). Text only: `R.LABEL_REST` is "[estimate: 5% of a level per 8 h resting (inn rate checked on Forever); a quarter outside and the 1.5-level cap unverified]"; `R.LABEL_RULES` is "[class and crafting milestones confirmed by the game]". The Legacy points line keeps "[estimate]". No new call, saved data unchanged. This builds the D-041 label change.
+- Tests: 321 pass under Lua 5.1 and 5.3; new assertions check both headers and that no view line says "not yet confirmed"; 3 of 3 label mutants caught.
+- Merge 1 (`p2-3-views` into main, a fast-forward): approved. The first attempt was blocked by the session's auto-mode permission check (merge without review), so main is unchanged at 83b3574 until the user allows the push or merges it on GitHub.
+ (updated S-002, 2026-11-03)
 
 | ID | Question | Status |
 |---|---|---|

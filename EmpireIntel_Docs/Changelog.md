@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-043 | EmpireIntel 0.5.2: labels after the inn test (/reload; branch p3-1-legacy)
+- `/ei rest` label: inn rate checked on Forever; outside rate and 1.5-level cap unverified (D-041). `/ei milestones` label: class and crafting milestones confirmed by the game (EI-E-22); the Legacy points line keeps [estimate] (D-043). Text only. 321 tests pass under Lua 5.1 and 5.3; 3 of 3 label mutants caught.
+
 ## 2026-11-08 | S-042 | Inn test passed; P2-3 and P3-1 closed (documentation only)
 - P2-3_Report.md section 3 (inn test, EI-E-28) and section 4; P3-1_Report.md sections 2 and 3; D-041 (P2-3 closed, rest label narrowed, not yet built) and D-042 (P3-1 closed). No code changed, nothing merged.
 

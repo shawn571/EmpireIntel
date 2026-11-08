@@ -4,6 +4,31 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-043 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed. EmpireIntel 0.5.2 built (labels only, D-043), waiting for the user's live check. No increment open; P3-2, P3-3 locked.
+
+**Done:** 0.5.2 on `p3-1-legacy` (this push): rest label and milestones label (D-041, D-043). 321 tests pass under Lua 5.1 and 5.3. `dist/EmpireIntel_AddOns_v0.5.2.zip`, sha256 5738fb7dd89326f5010a94ec310cd0995f43d4236904d30f8854f58c635d1251.
+
+**Merge 1 (`p2-3-views` into main): approved, NOT done.** The fast-forward push to main was blocked by the session's auto-mode permission check. Main is still 83b3574 (EmpireIntel 0.3.1). The user chooses: allow the push in this session, or merge on GitHub.
+
+**Pending (the user decides):** the 0.5.2 live check; how to do merge 1; merges 2 (`tp1-legacy-read`) and 3 (`p3-1-legacy`), separately; Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 83b3574 | EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1 | is main |
+| p2-3-views | 257c2bb | EmpireIntel 0.4.0 | no: ahead, merge approved, not done |
+| tp1-legacy-read | 1544eb5 | plus EmpireIntelCheck 0.1.8-tp1 | no: ahead, unmerged |
+| p3-1-legacy | this push | plus EmpireIntel 0.5.2 and the newest docs | no: ahead, unmerged |
+
+No pull requests.
+
+**Installed (as the user has said):** EmpireIntel 0.5.1; EmpireIntelCheck 0.1.8-tp1. 0.5.2 delivered, not yet installed.
+
+**User's next step:** install 0.5.2 with `/reload` and run README steps 3-6; say how to do merge 1.
+
 ## S-042 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-3 **closed** (D-041) and P3-1 **closed** (D-042). No increment is open. Phase 3 has no further increment approved: P3-2 and P3-3 are locked.

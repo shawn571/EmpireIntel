@@ -61,4 +61,4 @@ Also observed: EmpireIntel 0.5.1 installed over 0.5.0 at 09:50 with `/reload`; "
 
 **Closed** by the user, 2026-11-08: "Q-P2-3c: close P2-3, with the label change you propose: drop \"not yet confirmed\" for the inn rate only; keep \"unverified\" for the outside rate and the cap." (D-041)
 
-The label change is approved but **not yet built**; it is a text change in `Core/Rules.lua` (`R.LABEL_REST`), shipped in the next EmpireIntel package (proposed 0.5.2, `/reload`).
+The label change is approved; it is a text change in `Core/Rules.lua` (`R.LABEL_REST`), built in EmpireIntel 0.5.2 (`/reload`, D-043).
