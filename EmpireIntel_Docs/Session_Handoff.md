@@ -4,6 +4,20 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-060 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-4a merged (#14, merge commit 70da547; main: EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests on Lua 5.1 and 5.3). P2-4a stays open until the user closes it. **P2-4b: static mockup published for approval** (private Artifact: https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1): Fastest mode, My plan mode (in-place edit, drag, right-click menu), parts (Up Next card for an alt, badges, row icons, rules tooltip, minimap button, compartment). **No window code.**
+
+**Approved:** through D-059: merge #14 (done); EI-E-31 ElvUI-off run corrected; next check version (setter labels, SetColorTexture read-back) later, not built; Q-P2-4a-3 yes (DataStore `GetCharacterFaction`, read-only, built with P2-4b).
+
+**Pending (the user decides):** the mockup (approve or change; open questions in the report to the user: faction emblem art, the font, window size); P2-4b build after approval; closing P2-4a; #10 (P3-2 becomes format 3 when next edited; Q-P3-2a later); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 70da547 plus this docs pull request. #11 reference only; #10 open. `p2-4a-planner` merged (kept).
+
+**Installed (as the user has said):** EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1; both match main.
+
+**User's next step:** review the mockup; answer its questions; `/ei plan copy` to drop C3's old entries from "my plan".
+
 ## S-059 | 2026-11-08 | Claude
 
 **Phase and increment:** Phase 2, P2-4a: live tests received; findings 1-4 answered (P2-4a_Report.md section 6); evidence EI-E-29..31; D-058. Code unchanged since S-058 (the packages are the ones tested).

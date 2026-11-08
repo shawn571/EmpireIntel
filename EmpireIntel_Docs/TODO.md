@@ -94,8 +94,11 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Q-P2-4r, a, b (after Q-G1), Q-G1, Q-G2, Q-F1-F5 answered (D-055); 8.5 rested fix; window design direction
 - [x] P2-4a and 0.1.9-tp1 approved; Q-F3 answered: Explorer after 50, counting zones already explored (D-056)
 - [x] P2-4a built: EmpireIntel 0.6.0 (format 2) and EmpireIntelCheck 0.1.9-tp1 on branch `p2-4a-planner`; 408 tests, 20/20 mutants (S-058, D-057)
-- [ ] **User:** live tests of 0.6.0 and 0.1.9-tp1 (P2-4a_Report.md section 4); merge approval
-- [ ] Static mockup of the window (both modes, Up Next card) from the 0.1.9 results, for approval, before any P2-4b code
+- [x] Live tests of 0.6.0 and 0.1.9-tp1 received; findings answered; #14 merged (70da547, D-058, D-059)
+- [x] Static mockup of the window (both modes, Up Next card, parts) published for approval (S-060)
+- [ ] **User:** approve or change the mockup; close P2-4a
+- [ ] P2-4b build (window, minimap button, compartment, DataStore faction getter), after the mockup is approved
+- [ ] Next check version (setter labels "ok, no return value", SetColorTexture read-back, full UI result per character): not built yet (D-059)
 - [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
 - [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later
 

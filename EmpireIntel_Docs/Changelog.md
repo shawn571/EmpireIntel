@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-059, S-060 | P2-4a merged; findings answered; window mockup for approval
+- Live-test findings 1-4 answered (P2-4a_Report.md section 6); EI-E-29..31 (ElvUI-off run corrected by the user); D-058, D-059. #14 merged (70da547); main has EmpireIntel 0.6.0 and EmpireIntelCheck 0.1.9-tp1.
+- P2-4b static mockup published (private Artifact), no window code.
+
 ## 2026-11-08 | S-058 | P2-4a built: EmpireIntel 0.6.0 and EmpireIntelCheck 0.1.9-tp1 (branch `p2-4a-planner`, not merged)
 - EmpireIntel 0.6.0: the route planner in chat (`/ei next`, `/ei plan ...`, `/ei rules`), the rules table L-1..L-18, saved-data format 2 (`plan` section; roster race, sex, faction, ruleset, preset), the measured XP rate (Q-F2). No window code (D-056).
 - EmpireIntelCheck 0.1.9-tp1: the UI checks of Phase2_Plan.md 8.3.4 (`UI.lua`, `/eicheck ui`, `Media/Test.tga`).
