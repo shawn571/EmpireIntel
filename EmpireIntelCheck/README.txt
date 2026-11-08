@@ -1,4 +1,4 @@
-EmpireIntelCheck 0.1.6-tp1 - EmpireIntel Test Package 1: the Legacy check
+EmpireIntelCheck 0.1.7-tp1 - EmpireIntel Test Package 1: the Legacy check
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the
@@ -6,8 +6,35 @@ WHAT IT IS
   to SavedVariables. It is NOT EmpireIntel itself. Remove it when the test is over.
 
 RESTART OR RELOAD?
-  FULL CLIENT RESTART. 0.1.6 adds a new file (Legacy.lua); the game reads an addon's file list only at start.
-  After a /reload alone the new reading would not run.
+  Update from 0.1.6: /RELOAD IS ENOUGH (files changed only; on Forever even new files load on /reload, EI-E-19).
+
+WHAT CHANGED IN 0.1.7 (your Q-T8 approval; fixes from your 0.1.6 file)
+  - Reads every challenge category the game lists. On Forever these ARE the Legacy categories (Classes, Tradeskills,
+    Player vs. Player, Adventure, Dungeons, Raids and their sub-groups); 0.1.6 wrongly looked for "Legacy" in a title.
+  - "Tier 1 Gear" and "Do Not Display" (not shown in the pane) are read and saved but kept out of the totals.
+  - Each challenge is saved with its steps (each dungeon, each raid boss) and whether each is done.
+  - Legacy points come from the pane's own LegacySystem.GetCurrencyInfo(), all its fields saved as they are.
+    The trait-currency number (4225) is no longer sent to the ordinary currency functions.
+  - The same limits as 0.1.6: only achievement and currency read functions, only numbers the game returned,
+    blocked words and crash guard as before. No talent-tree (trait) calls.
+
+UPDATE AND TEST (about 3 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntelCheck with the one in the zip (the game may be running).
+  2. Type  /reload  and wait about 15 seconds. The first "Legacy read:" line may say
+     "points not found" or the ordinary-currency fallback: the pane is not open yet. That is fine.
+  3. Open the Legacy window (the pane) for a moment.
+  4. Type  /eicheck legacy   Expect something like:
+     "Legacy read: 65 challenges (1 completed, 1 of 65 points) in 27 categories; Legacy points: maxQuantity 1,
+      quantity 1, renownCurrency 1, spent 0, spentInTree 0"
+  5. Compare with the pane: "Legacy Points 1 / 65" should match "1 of 65 points". Note any line with UNEXPECTED.
+  6. Type  /reload  (this saves the file), or exit the game.
+  7. Send  WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua  and the "Legacy read:" line.
+  Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
+
+ROLLBACK (one step)
+  Put the 0.1.6 folder back and /reload (addon files only; saved data stays as it is).
+  To remove the check: delete the folder Interface\AddOns\EmpireIntelCheck (or untick it) and /reload.
+  EmpireIntel, GoldIntel and DataStore are not affected either way.
 
 WHAT CHANGED IN 0.1.6 (your Q-T7 approval)
   - Once Legacy is unlocked, each check also reads the Legacy values the game shows:
@@ -24,26 +51,6 @@ WHAT CHANGED IN 0.1.6 (your Q-T7 approval)
   - Fixed: the size limit could erase the values of the Legacy calls in a run (your level-25 file lost them).
   - Character names the game returns with achievements are not saved.
   - New command  /eicheck legacy : read again now (for example after opening the Legacy pane).
-
-INSTALL AND TEST (about 5 minutes)
-  1. Quit the game fully.
-  2. Replace the folder Interface\AddOns\EmpireIntelCheck with the one in the zip.
-  3. Start the game and log in on your level-25 character. Wait about 15 seconds.
-     Expect two chat lines from EmpireIntelCheck 0.1.6-tp1. The second starts with "Legacy read:", e.g.
-     "Legacy read: 65 challenges (1 completed) in N categories; Legacy Points 1/16".
-     It may add "LegacySystem not loaded": that is fine for now.
-  4. Open the Legacy window (the pane) and look at the Challenges and Progress Track pages for a moment.
-  5. Type  /eicheck legacy   Expect "Legacy read: ..." again, now without "LegacySystem not loaded".
-  6. Compare with the game: is the points number the same as the pane? Is the number of challenges and completed
-     challenges plausible? Note any line starting with UNEXPECTED.
-  7. Exit the game fully and send  WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua
-     and the two chat lines (or a screenshot).
-  Any red Lua error or "addon blocked" popup: note it (BugSack shows the text) and tell me.
-
-ROLLBACK (one step)
-  Quit the game, put the 0.1.5 (or 0.1.4) folder back, start the game (addon files only; saved data stays as it is).
-  To remove the check: quit the game, delete the folder Interface\AddOns\EmpireIntelCheck (or untick it).
-  EmpireIntel, GoldIntel and DataStore are not affected either way.
 
 WHAT CHANGED IN 0.1.5 (your Q-T5 rule)
   - Blocked words are matched as whole words: SetSeason, IsSeasonOpen, ShowFrame stay blocked; IsShown, GetClaimable,

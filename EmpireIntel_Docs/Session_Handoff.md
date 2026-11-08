@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-027 | 2026-11-08 | Claude
+
+- **Done:** built EmpireIntelCheck 0.1.7-tp1 (Q-T8, D-035) on `tp1-legacy-read`. 274 tests; all mutants caught. `dist/EmpireIntelCheck_AddOns_v0.1.7-tp1.zip` (sha256 c71ba1b5...).
+- **WAITING FOR:** the 0.1.7 file and the Legacy read line; the P2-3 live and inn tests, then Q-P2-3c.
+
 ## S-026 | 2026-11-08 | Claude
 
 - **Done:** read run 7 (TP1_Report_Run1.md section 12, EI-E-20/21, Legacy_Rules.md 1a). Proposed Q-T8 (0.1.7 fixes defects 13 and 14). No code changed.

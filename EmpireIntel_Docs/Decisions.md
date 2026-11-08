@@ -223,6 +223,13 @@ EI-E-19: on Forever, `/reload` loads files newly added to an existing addon's TO
 
 ---
 
+
+## D-035 Q-T8: EmpireIntelCheck 0.1.7 reads all challenge categories and the pane's points | Approved (user, 2026-11-08)
+Built on branch `tp1-legacy-read`; `/reload` is enough (D-034).
+- **Defect 13:** every category `GetCategoryList()` returns is read (EI-E-20). Categories titled "Tier 1 Gear" or "Do Not Display", and anything under them, are read and saved with `excluded = true`, at most 30 challenges each, and are left out of every total.
+- **Defect 14:** the points are every scalar field of `LegacySystem.GetCurrencyInfo()`, saved as-is in `legacy.points`. `C_CurrencyInfo.GetCurrencyInfo` gets an id only from a key named exactly `currencyID`, never `traitCurrencyID`. The currency list is scanned only when the pane gave no points.
+- Totals: challenges counted, completed, points offered and earned (sums of each challenge's points), categories counted.
+- Within the Q-T7 limits. No trait-system call (Q-T4 stays unapproved).
 ## Open questions for the user (updated S-002, 2026-11-03)
 
 | ID | Question | Status |
@@ -248,5 +255,5 @@ EI-E-19: on Forever, `/reload` loads files newly added to an existing addon's TO
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
 | Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | **Approved** 2026-11-08, with a and b; built as 0.4.0 (D-033) |
 | Q-P2-3c | Close P2-3 after the live test and the inn test? | Open |
-| Q-T8 | Build EmpireIntelCheck 0.1.7 (defects 13 and 14), within the Q-T7 limits: read every category `GetCategoryList()` returns, plus their achievements and criteria (all ids from the game); take the points from `LegacySystem.GetCurrencyInfo()`; stop passing `traitCurrencyID` to `C_CurrencyInfo`? Trait-system calls with 4225 stay out (Q-T4) | Open (recommend: yes) |
+| Q-T8 | Build EmpireIntelCheck 0.1.7 (defects 13 and 14), within the Q-T7 limits: read every category `GetCategoryList()` returns, plus their achievements and criteria (all ids from the game); take the points from `LegacySystem.GetCurrencyInfo()`; stop passing `traitCurrencyID` to `C_CurrencyInfo`? Trait-system calls with 4225 stay out (Q-T4) | **Approved** 2026-11-08; built as 0.1.7-tp1 (D-035) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |

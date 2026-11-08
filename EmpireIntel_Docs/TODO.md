@@ -39,7 +39,9 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] 1.10 Level-25 run received 2026-11-07 (pane opened; build 70862); TP1_Report_Run1.md section 11 (S-020)
 - [x] 1.11 Q-T7 approved; screenshots received (1 point; Legacy_Rules.md) (2026-11-07)
 - [x] 1.12 EmpireIntelCheck 0.1.6-tp1 built: Part C Legacy read, defect 12 (S-021)
-- [ ] 1.13 **User:** 0.1.6 run with the pane opened and /eicheck legacy; send the file
+- [x] 1.13 0.1.6 run received (run 7): categories and points found; defects 13, 14 (S-026)
+- [x] 1.14 Q-T8 approved; EmpireIntelCheck 0.1.7-tp1 built (S-027, D-035)
+- [ ] 1.15 **User:** 0.1.7 run (pane opened, /eicheck legacy, /reload), send the file and the Legacy read line
 - Exit test: Architecture section 9 exit criteria.
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0

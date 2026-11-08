@@ -10,7 +10,7 @@ local ADDON, NS = ...
 
 NS = NS or {}
 NS.env = NS.env or _G
-NS.VERSION = '0.1.6-tp1'
+NS.VERSION = '0.1.7-tp1'
 
 local U = {}
 NS.U = U

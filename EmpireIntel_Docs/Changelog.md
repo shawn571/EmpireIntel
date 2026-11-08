@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-027 | EmpireIntelCheck 0.1.7-tp1 (/reload; branch tp1-legacy-read)
+- Q-T8 (D-035). Defect 13: reads every category the game lists. "Tier 1 Gear" and "Do Not Display" (and children) are saved but left out of the totals. Defect 14: the points come from `LegacySystem.GetCurrencyInfo()`, all fields as-is, and the trait currency is never sent to `C_CurrencyInfo`. The chat line shows the points earned of those offered.
+- The fixture now mirrors run 7. 274 tests pass under Lua 5.1 and 5.3; 11 of 11 new and 13 of 13 earlier guard mutants caught.
+
 ## 2026-11-08 | S-026 | Run 7, the first Legacy read (documentation only)
 - On Forever, the achievement categories are the 29 Legacy challenge categories (EI-E-20). The points are a trait currency, read by `LegacySystem.GetCurrencyInfo()` (EI-E-21). Check defects 13 and 14 (title matcher; points source). The pane confirms the six crafts and the 65 total. Q-T8 proposed. No code changed.
 

@@ -234,24 +234,31 @@ function F.new(opts)
     env.Enum.BnetAccountFlag = { IsLegacy = 131072 }
   end
   if opts.legacy25 then
-    -- the level-25 profile (run 6, EI-E-16), with the achievement and currency getters of Q-T7.
-    -- 'ids': LegacySystem answers name a currency id and a category id; 'list': no ids, no LegacySystem table.
+    -- the level-25 profile as run 7 saw it (EI-E-20, EI-E-21): GetCategoryList returns only the Legacy categories, none
+    -- titled "Legacy", plus two the pane hides; the points are a trait currency from LegacySystem.GetCurrencyInfo().
+    -- 'ids': with the LegacySystem table (pane opened); 'list': without it (pane not opened yet).
     W.unlocked = true
     W.badArgs, W.argCalls = 0, 0
-    local known = { [92] = true, [15000] = true, [15001] = true, [15002] = true, [50001] = true, [50002] = true, [50010] = true, [3001] = true }
+    local known = { [15568] = true, [15580] = true, [15593] = true, [15594] = true, [15626] = true, [15425] = true, [15430] = true, [50050] = true,
+      [50001] = true, [50002] = true, [50010] = true, [50020] = true, [50030] = true, [50040] = true }
     local function arg(v, max)
       W.argCalls = W.argCalls + 1
       if type(v) ~= 'number' or not (known[v] or (max and v >= 1 and v <= max)) then W.badArgs = W.badArgs + 1 end
     end
-    local cats = { [92] = { 'General', -1 }, [15000] = { 'Legacy', -1 }, [15001] = { 'Class Mastery', 15000 }, [15002] = { 'Dungeons', 15000 } }
+    local cats = { [15568] = { 'Classes', -1 }, [15580] = { 'Paladin', 15568 }, [15593] = { 'Dungeons', -1 }, [15594] = { 'Raids', -1 },
+      [15626] = { 'Tier 1 Gear', 15594 }, [15425] = { 'Do Not Display', -1 }, [15430] = { 'Odd Child', 15425 } }
     local ach = {
       [50001] = { 50001, 'Paladin: Level 25', 1, true, 11, 7, 26, 'Reach level 25 with a Paladin.', 0, 1, 'Legacy Point', false, true, 'Someone Name', false },
       [50002] = { 50002, 'Paladin: Level 45', 1, false, nil, nil, nil, 'Reach level 45 with a Paladin.', 0, 1, 'Legacy Point', false, false, nil, false },
       [50010] = { 50010, 'Novice Spelunker', 1, false, nil, nil, nil, 'Complete these dungeons.', 0, 1, 'Legacy Point', false, false, nil, false },
+      [50020] = { 50020, 'Conqueror of the Lair', 1, false, nil, nil, nil, 'Defeat Onyxia.', 0, 1, 'Legacy Point', false, false, nil, false },
+      [50030] = { 50030, 'Tier 1 Helm', 0, true, 11, 8, 26, 'hidden', 0, 1, '', false, true, nil, false },
+      [50040] = { 50040, 'Internal', 5, true, 11, 8, 26, 'hidden', 0, 1, '', false, true, nil, false },
+      [50050] = { 50050, 'Internal child', 2, false, nil, nil, nil, 'hidden', 0, 1, '', false, false, nil, false },
     }
-    local inCat = { [15001] = { 50001, 50002 }, [15002] = { 50010 } }
+    local inCat = { [15580] = { 50001, 50002 }, [15593] = { 50010 }, [15594] = { 50020 }, [15626] = { 50030 }, [15425] = { 50040 }, [15430] = { 50050 } }
     local function unpackT(t, i, n) if i > n then return end return t[i], unpackT(t, i + 1, n) end
-    env.GetCategoryList = function() rec('GetCategoryList'); return { 92, 15000, 15001, 15002 } end
+    env.GetCategoryList = function() rec('GetCategoryList'); return { 15425, 15580, 15568, 15593, 15594, 15626, 15430 } end
     env.GetCategoryInfo = function(id)
       arg(id); rec('GetCategoryInfo')
       W.inFlightSeen = env.EmpireIntelCheckDB.inFlight and env.EmpireIntelCheckDB.inFlight.name
@@ -279,7 +286,7 @@ function F.new(opts)
     end
     local legacyPoints = { name = 'Legacy Points', quantity = 1, maxQuantity = 16, totalEarned = 1, isAccountWide = true, iconFileID = 4567 }
     env.C_CurrencyInfo = {
-      GetCurrencyInfo = function(id) arg(id); rec('C_CurrencyInfo.GetCurrencyInfo'); if id == 3001 then return legacyPoints end end,
+      GetCurrencyInfo = function(id) arg(id); rec('C_CurrencyInfo.GetCurrencyInfo'); if id == 4225 then W.traitToCurrency = true end end,
       GetCurrencyListSize = function() rec('C_CurrencyInfo.GetCurrencyListSize'); return 2 end,
       GetCurrencyListInfo = function(i)
         arg(i, 2); rec('C_CurrencyInfo.GetCurrencyListInfo')
@@ -290,9 +297,9 @@ function F.new(opts)
     }
     if opts.legacy25 == 'ids' then
       env.LegacySystem = {
-        CHALLENGE_CATEGORY_ID = 15000,
-        GetCurrencyInfo = function() rec('LegacySystem.GetCurrencyInfo'); return { currencyID = 3001, name = 'Legacy Points', quantity = 1 } end,
-        GetFilteredChallenges = function() rec('LegacySystem.GetFilteredChallenges'); return nil end,
+        GetCurrencyInfo = function() rec('LegacySystem.GetCurrencyInfo')
+          return { quantity = 1, maxQuantity = 1, renownCurrency = 1, spent = 0, spentInTree = 0, traitCurrencyID = 4225 } end,
+        GetFilteredChallenges = function() rec('LegacySystem.GetFilteredChallenges'); return {} end,
         GetChallengeIndices = function() error('Usage: GetCategoryNumAchievements(categoryID, includeSuperceded)') end,
       }
     end

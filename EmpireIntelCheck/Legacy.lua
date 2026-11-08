@@ -1,5 +1,5 @@
 local ADDON, NS = ...
--- EmpireIntelCheck / Legacy.lua                                          (0.1.6-tp1, Q-T7 approved 2026-11-07)
+-- EmpireIntelCheck / Legacy.lua                         (0.1.6-tp1, Q-T7 approved 2026-11-07; 0.1.7-tp1, Q-T8 2026-11-08)
 -- Part C: read the Legacy values once the system is unlocked (evidence EI-E-16: the challenges are an
 -- achievement category, the points are shown from currency info).
 --
@@ -21,7 +21,7 @@ NS.Legacy = L
 
 L.MAX_CALLS = 2500
 L.MAX_CATEGORIES = 400
-L.MAX_CHALLENGES = 120
+L.MAX_CHALLENGES = 250
 L.MAX_CRITERIA = 40
 L.MAX_INDEX = 400
 L.MAX_CURRENCY_LIST = 300
@@ -147,8 +147,12 @@ function L.ReadSystem(st, out)
   out.system = sys
 end
 
--- (b) achievement categories: every category with its title; Legacy ones are those titled Legacy and their children
-function L.ReadCategories(st, out, extraIds)
+-- (b) achievement categories. On Forever the list IS the Legacy challenge list (EI-E-20), and no title says "Legacy"
+-- (defect 13), so every category is read. Categories the pane does not show are read but kept out of the totals.
+L.EXCLUDED_TITLES = { ['do not display'] = true, ['tier 1 gear'] = true }    -- Q-T8
+L.MAX_PER_EXCLUDED = 30
+
+function L.ReadCategories(st, out)
   local r = L.Call(st, 'GetCategoryList')
   if not r then out.categoryNote = 'GetCategoryList gave nothing'; return {} end
   local list = r[1]
@@ -164,19 +168,17 @@ function L.ReadCategories(st, out, extraIds)
     byId[id] = c
     table.insert(all, c)
   end
-  local function isLegacy(c, depth)
+  local function excluded(c, depth)
     if not c or depth > 6 then return false end
-    if extraIds[c.id] then return true end
-    if type(c.title) == 'string' and string.find(string.lower(c.title), 'legacy', 1, true) then return true end
-    return c.parent ~= nil and c.parent ~= -1 and isLegacy(byId[c.parent], depth + 1)
+    if type(c.title) == 'string' and L.EXCLUDED_TITLES[string.lower(c.title)] then return true end
+    return c.parent ~= nil and c.parent ~= -1 and excluded(byId[c.parent], depth + 1)
   end
-  local legacy = {}
   out.categories = {}
   for _, c in ipairs(all) do
-    if isLegacy(c, 0) then c.legacy = true; table.insert(legacy, c) end
+    if excluded(c, 0) then c.excluded = true end
     table.insert(out.categories, c)
   end
-  return legacy
+  return all
 end
 
 local function readCriteria(st, achId)
@@ -215,10 +217,16 @@ function L.ReadChallenges(st, out, legacyCats, extraAchIds)
     local n = r and regCount(st, r[1]) or 0
     c.numAchievements = r and val(r[1]) or nil
     c.numCompleted = r and val(r[2]) or nil
-    for i = 1, n do
+    local top = c.excluded and math.min(n, L.MAX_PER_EXCLUDED) or n
+    if top < n then c.truncated = true end
+    for i = 1, top do
       if #out.challenges >= L.MAX_CHALLENGES then out.challengesTruncated = true; break end
       local ch = challengeFrom(st, L.Call(st, 'GetAchievementInfo', c.id, i), c.id)
-      if ch and not seen[ch.id] then seen[ch.id] = true; table.insert(out.challenges, ch) end
+      if ch and not seen[ch.id] then
+        seen[ch.id] = true
+        if c.excluded then ch.excluded = true end
+        table.insert(out.challenges, ch)
+      end
     end
   end
   -- ids the LegacySystem table returned that no category covered
@@ -241,7 +249,22 @@ local function currencyFrom(info)
   return c
 end
 
--- (b) currency: ids the LegacySystem answers named; else the currency list, matched by name
+-- the Legacy points: every scalar field of LegacySystem.GetCurrencyInfo(), saved as-is (Q-T8, EI-E-21)
+function L.PointsFrom(sys)
+  local res = sys and sys.GetCurrencyInfo
+  local t = res and res.code == 'ok' and type(res.values) == 'table' and res.values[1]
+  if type(t) ~= 'table' then return nil end
+  local p = {}
+  local n = 0
+  for k, v in pairs(t) do
+    if type(k) == 'string' and type(v) ~= 'table' then p[k] = v; n = n + 1 end
+  end
+  if n == 0 then return nil end
+  return p
+end
+
+-- (b) ordinary currency: only an id under the exact key currencyID. A trait currency (traitCurrencyID, the Legacy
+-- points) is never passed to C_CurrencyInfo (defect 14). The currency list is scanned only when LegacySystem gave no points.
 function L.ReadCurrency(st, out, currencyIds)
   out.currency = {}
   for _, id in ipairs(currencyIds) do
@@ -249,7 +272,7 @@ function L.ReadCurrency(st, out, currencyIds)
     local c = r and currencyFrom(r[1])
     if c then c.id = id; c.source = 'GetCurrencyInfo'; table.insert(out.currency, c) end
   end
-  if #out.currency > 0 then return end
+  if #out.currency > 0 or out.points then return end
   local r = L.Call(st, 'C_CurrencyInfo.GetCurrencyListSize')
   local n = r and regCount(st, r[1]) or 0
   out.currencyListSize = r and val(r[1]) or nil
@@ -288,28 +311,41 @@ function L.Read(reason, unlocked)
   -- guarded on its own (L.Call, D.Probe); any other failure ends the job and is reported by the caller.
   do
     L.ReadSystem(st, out)
-    local extraCats, extraAch, currencyIds = {}, {}, {}
+    out.points = L.PointsFrom(out.system)
+    if out.points then out.points.source = 'LegacySystem.GetCurrencyInfo' end
+    local extraAch, currencyIds = {}, {}
     for _, e in ipairs(out.system and out.system.ids or {}) do
       local k = string.lower(e.key)
-      if string.find(k, 'categor', 1, true) then extraCats[e.id] = true
-      elseif string.find(k, 'currency', 1, true) then table.insert(currencyIds, e.id)
+      if k == 'currencyid' then table.insert(currencyIds, e.id)
       elseif string.find(k, 'achiev', 1, true) or k == '[array]' then table.insert(extraAch, e.id) end
     end
-    local legacyCats = L.ReadCategories(st, out, extraCats)
-    out.legacyCategories = #legacyCats
-    L.ReadChallenges(st, out, legacyCats, extraAch)
+    local cats = L.ReadCategories(st, out)
+    L.ReadChallenges(st, out, cats, extraAch)
     L.ReadCurrency(st, out, currencyIds)
     out.docs = L.DocsStatus()
   end
-  local done = 0
-  for _, ch in ipairs(out.challenges or {}) do if ch.completed == true then done = done + 1 end end
-  local pts = out.currency and out.currency[1]
-  out.summary = { challenges = out.challenges and #out.challenges or 0, completed = done, categories = out.legacyCategories or 0,
-    points = pts and pts.quantity, max = pts and pts.maxQuantity, currency = pts and pts.name }
+  -- totals leave out the categories the pane does not show (Q-T8)
+  local counted, done, offered, earned, excluded = 0, 0, 0, 0, 0
+  for _, ch in ipairs(out.challenges or {}) do
+    if ch.excluded then
+      excluded = excluded + 1
+    else
+      counted = counted + 1
+      local pv = type(ch.points) == 'number' and ch.points or 0
+      offered = offered + pv
+      if ch.completed == true then done = done + 1; earned = earned + pv end
+    end
+  end
+  local cats = 0
+  for _, c in ipairs(out.categories or {}) do if not c.excluded then cats = cats + 1 end end
+  local cur = out.currency and out.currency[1]
+  out.summary = { challenges = counted, completed = done, categories = cats, excludedChallenges = excluded,
+    pointsOffered = offered, pointsEarned = earned,
+    points = out.points and out.points.quantity or (cur and cur.quantity), max = cur and cur.maxQuantity, currency = cur and cur.name }
   out.calls = { total = st.calls, counts = st.counts, errors = st.errors, refused = st.refused }
   local db = NS.Core.DB()
   local hist = db.legacy and db.legacy.history or {}
-  table.insert(hist, { at = out.at, points = out.summary.points, completed = done, challenges = out.summary.challenges })
+  table.insert(hist, { at = out.at, points = out.summary.points, completed = done, challenges = counted, earned = earned })
   while #hist > 30 do table.remove(hist, 1) end
   out.history = hist
   db.legacy = out
@@ -319,8 +355,16 @@ end
 --- One chat line for the read.
 function L.Line(out)
   local s = out.summary
-  local text = 'Legacy read: ' .. s.challenges .. ' challenges (' .. s.completed .. ' completed) in ' .. s.categories .. ' categories; '
-  if s.points ~= nil then
+  local text = 'Legacy read: ' .. s.challenges .. ' challenges (' .. s.completed .. ' completed, ' .. s.pointsEarned .. ' of '
+    .. s.pointsOffered .. ' points) in ' .. s.categories .. ' categories; '
+  if out.points then
+    local parts = {}
+    for k, v in pairs(out.points) do
+      if k ~= 'source' and k ~= 'traitCurrencyID' then parts[#parts + 1] = k .. ' ' .. tostring(v) end
+    end
+    table.sort(parts)
+    text = text .. 'Legacy points: ' .. table.concat(parts, ', ')
+  elseif s.points ~= nil then
     text = text .. tostring(s.currency or 'currency') .. ' ' .. tostring(s.points) .. (s.max and s.max ~= 0 and ('/' .. tostring(s.max)) or '')
   else
     text = text .. 'points not found'

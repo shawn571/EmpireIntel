@@ -773,7 +773,7 @@ T.describe('0.1.5: defect 11 wording', function()
   end)
 end)
 
-T.describe('0.1.6: Part C, the Legacy read (Q-T7)', function()
+T.describe('0.1.6/0.1.7: Part C, the Legacy read (Q-T7, Q-T8)', function()
   local function serialize(v, out, depth)
     out = out or {}
     depth = depth or 0
@@ -786,16 +786,48 @@ T.describe('0.1.6: Part C, the Legacy read (Q-T7)', function()
   local W = F.session({ launch = true, legacy25 = 'ids' })
   local db = W.env.EmpireIntelCheckDB
   local L = db.legacy
-  T.it('runs after an unlocked run and saves challenges, criteria and points', function()
+  T.it('defect 13: every category the game lists is read, though none is titled Legacy', function()
     T.truthy(L, 'db.legacy saved')
     T.eq(L.unlocked, true)
-    T.eq(L.summary.challenges, 3)
+    T.eq(L.categoryCount, 7)
+    T.eq(L.summary.categories, 4, 'Classes, Paladin, Dungeons, Raids; Tier 1 Gear and Do Not Display left out')
+    T.eq(L.summary.challenges, 4, 'Paladin 25, Paladin 45, Novice Spelunker, Conqueror of the Lair')
     T.eq(L.summary.completed, 1)
-    T.eq(L.summary.categories, 3, 'Legacy and its two child categories')
+    T.eq(L.summary.pointsOffered, 4)
+    T.eq(L.summary.pointsEarned, 1)
+  end)
+  T.it('Q-T8: Tier 1 Gear and Do Not Display are read and saved, but kept out of the totals', function()
+    T.eq(L.summary.excludedChallenges, 3)
+    local ex = {}
+    for _, c in ipairs(L.categories) do if c.excluded then ex[c.title] = true end end
+    T.truthy(ex['Tier 1 Gear'] and ex['Do Not Display'])
+    T.truthy(ex['Odd Child'], 'a category under a hidden one is hidden too')
+    T.falsy(ex.Raids, 'the parent of Tier 1 Gear still counts')
+    local hidden = 0
+    for _, ch in ipairs(L.challenges) do if ch.excluded then hidden = hidden + 1 end end
+    T.eq(hidden, 3)
+  end)
+  T.it('a hidden category is read only up to its cap', function()
+    W.NS.Legacy.MAX_PER_EXCLUDED = 0
+    W.env.SlashCmdList.EMPIREINTELCHECK('legacy')
+    W:advance(30)
+    W.NS.Legacy.MAX_PER_EXCLUDED = 30
+    T.eq(db.legacy.summary.excludedChallenges, 0)
+    T.eq(db.legacy.summary.challenges, 4, 'the counted challenges are unaffected')
+    local tr = false
+    for _, c in ipairs(db.legacy.categories) do if c.excluded and c.truncated then tr = true end end
+    T.truthy(tr)
+    L = db.legacy
+  end)
+  T.it('defect 14: the points are every field of LegacySystem.GetCurrencyInfo(), as-is; the trait currency never goes to C_CurrencyInfo', function()
+    T.eq(L.points, { quantity = 1, maxQuantity = 1, renownCurrency = 1, spent = 0, spentInTree = 0, traitCurrencyID = 4225,
+      source = 'LegacySystem.GetCurrencyInfo' })
     T.eq(L.summary.points, 1)
-    T.eq(L.summary.max, 16)
-    T.eq(L.summary.currency, 'Legacy Points')
-    T.eq(L.currency[1].source, 'GetCurrencyInfo', 'the id came from LegacySystem.GetCurrencyInfo')
+    T.isnil(W.traitToCurrency, 'C_CurrencyInfo.GetCurrencyInfo(4225) never called')
+    T.isnil(W.calls['C_CurrencyInfo.GetCurrencyInfo'])
+    T.eq(#L.currency, 0)
+  end)
+  T.it('saves each challenge with its steps', function()
     local nov
     for _, ch in ipairs(L.challenges) do if ch.id == 50010 then nov = ch end end
     T.eq(nov.criteriaCount, 2)
@@ -805,9 +837,8 @@ T.describe('0.1.6: Part C, the Legacy read (Q-T7)', function()
   end)
   T.it('(a) keeps the LegacySystem fields and the values of its zero-argument calls', function()
     T.eq(L.system.present, true)
-    T.eq(L.system.fields.CHALLENGE_CATEGORY_ID, 15000)
     T.eq(L.system.GetCurrencyInfo.code, 'ok')
-    T.eq(L.system.GetCurrencyInfo.values[1].currencyID, 3001)
+    T.eq(L.system.GetCurrencyInfo.values[1].traitCurrencyID, 4225)
     T.truthy(has(L.system.functions, 'GetChallengeIndices'), 'listed')
     T.isnil(W.calls['LegacySystem.GetChallengeIndices'], 'a function that needs arguments is listed, never called')
   end)
@@ -828,14 +859,14 @@ T.describe('0.1.6: Part C, the Legacy read (Q-T7)', function()
     local run = W:lastRun()
     local mine = {}
     for _, m in ipairs(W.chat) do if m:find('Run ' .. run.id .. ' ', 1, true) or m:find('Legacy read:', 1, true) then table.insert(mine, m) end end
-    T.truthy(has(W.chat, 'Legacy read: 3 challenges (1 completed) in 3 categories; Legacy Points 1/16'), table.concat(W.chat, '\n'))
+    T.truthy(has(W.chat, 'Legacy read: 4 challenges (1 completed, 1 of 4 points) in 4 categories; Legacy points: maxQuantity 1, quantity 1, renownCurrency 1, spent 0, spentInTree 0'), table.concat(W.chat, '\n'))
     T.eq(run.legacy.points, 1)
   end)
   T.it('defect 12: the run keeps its Legacy call values when the latest results are trimmed', function()
     local run = W:lastRun()
     for _, r in pairs(db.latest.results) do r.values = nil end
     local res = run.calls.legacy['LegacySystem.GetCurrencyInfo']
-    T.truthy(res and res.values and res.values[1].currencyID == 3001, 'own copy kept')
+    T.truthy(res and res.values and res.values[1].traitCurrencyID == 4225, 'own copy kept')
   end)
   T.it('refuses a number the game did not return, and any name outside the list, before calling', function()
     local st = { ids = {}, calls = 0, counts = {}, errors = {}, refused = {} }
@@ -889,11 +920,11 @@ T.describe('0.1.6: Part C, the Legacy read (Q-T7)', function()
 end)
 
 T.describe('0.1.6: Part C without LegacySystem, and while locked', function()
-  T.it('without the LegacySystem table: the category is found by its title and the points in the currency list', function()
+  T.it('without the LegacySystem table: categories are still read; the points come from the currency list fallback', function()
     local W = F.session({ launch = true, legacy25 = 'list' })
     local L = W.env.EmpireIntelCheckDB.legacy
     T.eq(L.system.present, false)
-    T.eq(L.summary.challenges, 3)
+    T.eq(L.summary.challenges, 4)
     T.eq(L.summary.points, 1)
     T.eq(L.currency[1].source, 'currency list')
     T.eq(W.badArgs, 0)
@@ -921,7 +952,7 @@ T.describe('0.1.6: Part C under frame spreading and faults', function()
     local W = F.session({ launch = true, legacy25 = 'ids', precise = 2 })
     W:advance(60)
     local L = W.env.EmpireIntelCheckDB.legacy
-    T.truthy(L and L.summary.challenges == 3, 'read finished')
+    T.truthy(L and L.summary.challenges == 4, 'read finished')
     T.truthy(W.NS.Core.stats.ticks > 3, 'spread over frames')
   end)
   T.it('a game function that throws is counted; the rest of the read goes on', function()
@@ -929,7 +960,7 @@ T.describe('0.1.6: Part C under frame spreading and faults', function()
     W.env.GetAchievementNumCriteria = function() error('boom criteria') end
     F.load(W); W:login(); W:advance(12); W:advance(30)
     local L = W.env.EmpireIntelCheckDB.legacy
-    T.eq(L.summary.challenges, 3)
+    T.eq(L.summary.challenges, 4)
     T.eq(L.summary.points, 1)
     T.truthy(tostring(L.calls.errors.GetAchievementNumCriteria):find('boom criteria', 1, true))
     T.truthy(L.calls.counts.error >= 3)
