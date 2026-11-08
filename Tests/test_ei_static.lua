@@ -13,7 +13,7 @@ end
 local _, FILES = F.loadAddon(F.new(), 'EmpireIntel')
 
 local ALLOWED = { type = true, pairs = true, ipairs = true, next = true, pcall = true, select = true, tostring = true,
-  tonumber = true, string = true, table = true, math = true, error = true, assert = true }
+  tonumber = true, string = true, table = true, math = true, error = true, assert = true, coroutine = true }
 
 local function luacGlobals(path)
   local p = io.popen('luac5.1 -p -l "' .. path .. '" 2>/dev/null')
@@ -29,10 +29,10 @@ local function luacGlobals(path)
 end
 
 T.describe('EmpireIntel static rules', function()
-  T.it('TOC: Interface 16001, version 0.4.0, one saved variable, forward slashes, files exist', function()
+  T.it('TOC: Interface 16001, version 0.5.2, one saved variable, forward slashes, files exist', function()
     local toc = read(DIR .. 'EmpireIntel.toc')
     T.truthy(toc:find('^## Interface: 16001\n'))
-    T.truthy(toc:find('## Version: 0.4.0', 1, true))
+    T.truthy(toc:find('## Version: 0.5.2', 1, true))
     T.truthy(toc:find('## SavedVariables: EmpireIntelDB\n', 1, true))
     T.falsy(toc:find('SavedVariablesPerCharacter', 1, true), 'format 1 is account-wide only')
     T.falsy(toc:find('Dependencies', 1, true))
@@ -112,5 +112,46 @@ T.describe('P2-3 static rules', function()
     end
     local rules = read(DIR .. 'Core/Rules.lua'):gsub('%-%-[^\n]*', '')
     T.falsy(rules:find('P%.'), 'Rules.lua is pure')
+  end)
+end)
+
+T.describe('P3-1 static rules', function()
+  local function code(f) return (read(DIR .. f):gsub('%-%-[^\n]*', '')) end
+  T.it('only Platform/Legacy.lua names the Legacy and achievement functions', function()
+    for _, file in ipairs(FILES) do
+      if file ~= 'Platform/Legacy.lua' then
+        local c = code(file)
+        for _, n in ipairs({ 'GetCategoryList', 'GetCategoryInfo', 'GetCategoryNumAchievements', 'GetAchievementInfo',
+          'GetAchievementNumCriteria', 'GetAchievementCriteriaInfo', 'LegacySystem' }) do
+          T.falsy(c:find(n, 1, true), n .. ' in ' .. file)
+        end
+      end
+    end
+  end)
+  T.it('Platform/Legacy.lua: the allowed list is exactly the approved one; no Update, Register, trait or currency call', function()
+    local c = code('Platform/Legacy.lua')
+    local block = c:match('L%.ALLOWED = (%b{})')
+    local names = {}
+    for n in block:gmatch("%[?'?([%w_%.]+)'?%]? = {") do names[n] = true end
+    local want = { 'LegacySystem.GetCurrencyInfo', 'GetCategoryList', 'GetCategoryInfo', 'GetCategoryNumAchievements',
+      'GetAchievementInfo', 'GetAchievementNumCriteria', 'GetAchievementCriteriaInfo' }
+    local n = 0
+    for _ in pairs(names) do n = n + 1 end
+    T.eq(n, #want)
+    for _, w in ipairs(want) do T.truthy(names[w], w) end
+    for _, bad in ipairs({ 'UpdateCurrencyInfo', 'RegisterCurrencyInfoCallback', 'C_Traits', 'C_ClassTalents', 'C_CurrencyInfo' }) do
+      T.falsy(c:find(bad, 1, true), bad)
+    end
+    for name in c:gmatch("L%.Call%(st, '([%w_%.]+)'") do T.truthy(names[name], 'L.Call of ' .. name) end
+  end)
+  T.it('P3-1 files never touch saved data', function()
+    for _, f in ipairs({ 'Platform/Legacy.lua', 'Core/LegacyView.lua' }) do
+      local c = code(f)
+      T.falsy(c:find('Store.', 1, true) or c:find('EmpireIntelDB', 1, true) or c:find('SavedVars', 1, true), f)
+    end
+  end)
+  T.it('Core/LegacyView.lua makes no game call', function()
+    local c = code('Core/LegacyView.lua')
+    T.falsy(c:find('P.Call', 1, true) or c:find('P.env', 1, true) or c:find('P.CallIn', 1, true))
   end)
 end)

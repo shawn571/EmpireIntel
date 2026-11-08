@@ -1,6 +1,6 @@
 # EmpireIntel Phase 3 Plan: `/ei legacy`
 
-DOC VERSION: 0.1.0  |  DATE: 2026-11-08  |  STATUS: **Plan for the user's approval. Phase 3 is NOT authorized. No code.**
+DOC VERSION: 0.1.0  |  DATE: 2026-11-08  |  STATUS: **Phase 3 authorized for P3-1 only (D-037). P3-1 built as EmpireIntel 0.5.0 on branch `p3-1-legacy` (D-038); waiting for its live gate. P3-2 and P3-3 locked.**
 
 **Phase 3 would let EmpireIntel itself show the Legacy values that EmpireIntelCheck has proven readable (TP-1 runs 6-14):** points earned, available and spent, and every challenge with its steps and what is left. It reuses the check's proven calls and limits (Q-T7, Q-T8, Q-T9). Per-tree detail is not in the first version: it needs the trait system (Q-T4), which is unapproved and can wait (section 5).
 

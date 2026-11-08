@@ -2,6 +2,31 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-047 | Merge 2 done; merge 3 pull request (documentation only)
+- main is e8a30b3 (merge of shawn571/EmpireIntel#2): EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1, 283 tests. Merge 3 (`p3-1-legacy` into main) approved and opened as a pull request (D-047).
+
+## 2026-11-08 | S-046 | Merge 1 done; merge 2 pull request (documentation only)
+- main is 634bd63 (merge of shawn571/EmpireIntel#1): EmpireIntel 0.4.0, 244 tests. Pull request shawn571/EmpireIntel#2 (`tp1-legacy-read` into main) opened (D-046).
+
+## 2026-11-08 | S-044 | 0.5.2 checked live; merge 1 pull request (documentation only)
+- D-044: 0.5.2 steps 2-5 match; pull request shawn571/EmpireIntel#1 (`p2-3-views` into main) opened for the user to merge. Restored the Decisions.md "Open questions" heading lost in S-043.
+
+## 2026-11-08 | S-043 | EmpireIntel 0.5.2: labels after the inn test (/reload; branch p3-1-legacy)
+- `/ei rest` label: inn rate checked on Forever; outside rate and 1.5-level cap unverified (D-041). `/ei milestones` label: class and crafting milestones confirmed by the game (EI-E-22); the Legacy points line keeps [estimate] (D-043). Text only. 321 tests pass under Lua 5.1 and 5.3; 3 of 3 label mutants caught.
+
+## 2026-11-08 | S-042 | Inn test passed; P2-3 and P3-1 closed (documentation only)
+- P2-3_Report.md section 3 (inn test, EI-E-28) and section 4; P3-1_Report.md sections 2 and 3; D-041 (P2-3 closed, rest label narrowed, not yet built) and D-042 (P3-1 closed). No code changed, nothing merged.
+
+## 2026-11-08 | S-041 | Project_Bible 1.2.0: restart rule follows D-034 (documentation only)
+- Project_Bible.md section 5 states the `/reload` rule of D-034; D-040 records the user's approval, and that the paraphrased early rules in CODE_STANDING_ORDERS.md section 7 are accepted. No code changed.
+
+## 2026-11-08 | S-039 | EmpireIntel 0.5.1 (/reload; branch p3-1-legacy)
+- P3-1 live test 1 passed on content (P3-1_Report.md). Fixed: `/ei legacy all` is ordered group by group (D1), and the Explorer line no longer repeats its name (D2). 321 tests pass under Lua 5.1 and 5.3.
+
+## 2026-11-08 | S-038 | EmpireIntel 0.5.0, increment P3-1 (/reload; branch p3-1-legacy)
+- `/ei legacy` and `/ei legacy all`: earned (from the challenges), available and spent (from the pane), group counts, the closest challenges with what is left, Explorer per character, and level and skill hints from EmpireIntel's records. Read on command, spread over frames, never in combat, nothing saved (D-037, D-038).
+- `Platform/Legacy.lua` is the only caller of the 7 achievement getters and `LegacySystem.GetCurrencyInfo()`. 319 tests pass under Lua 5.1 and 5.3; 20 of 21 guard mutants caught (one equivalent).
+
 ## 2026-11-08 | S-037 | Run 15; P2-3 views check; Phase 3 approvals (documentation only)
 - spentInTree closed as unusable without a tree argument (counter 2 on the open tree, value 0). Exploration areas are per character; challenges and dungeon steps are account-wide (EI-E-27).
 - P2-3_Report.md: the views check passed; the rest projection was within 0.5% (supporting, not the formal inn test).

@@ -1,6 +1,6 @@
 # EmpireIntel Project Bible
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-03 (S-002)  |  PROJECT VERSION: 0.0.0-planning  |  STATUS: Active
+DOC VERSION: 1.2.0  |  DATE: 2026-11-08 (S-041)  |  PROJECT VERSION: 0.0.0-planning  |  STATUS: Active
 
 > Read this file first. If another project document conflicts with it on governance, this file wins. On client facts, Compatibility_Notes.md wins. These rules are adopted from GoldIntel's Project Bible (v1.0.0, D-032 roles), which has worked through GoldIntel Phases 0 to 3b.
 
@@ -51,7 +51,8 @@ A conflict the table cannot settle: stop, list it under OPEN ISSUES in the hando
 **Working rules (the user, 2026-11-03, D-015):**
 - **Lean scope.** Build only what Requirements_v1.md asks for.
 - **Surface unexpected conditions visibly:** in the addon (a chat line starting `UNEXPECTED` plus a saved record) and in every report to the user.
-- **Every package states** whether a `/reload` is enough or a **full client restart** is required (new addon folder or TOC change = restart), and comes with **exact step-by-step test instructions**.
+- **Every package states** whether a `/reload` is enough or a **full client restart** is required, and comes with **exact step-by-step test instructions**.
+  - *Restart rule (D-034, D-040; supersedes "new addon folder or TOC change = restart"):* new or changed files inside an existing addon folder load on `/reload` (EI-E-19). A first install of a new addon folder still says full restart until it is seen to work with `/reload`. TOC header changes shown in the AddOns list (such as the version label) refresh only at start; harmless.
 - **Passive collection.** The user plays normally; Claude reads the SavedVariables the user sends after `/reload` or logout. No required in-game commands, except an explicitly optional step.
 - **Stop for the user's approval before writing code,** and at every phase gate.
 

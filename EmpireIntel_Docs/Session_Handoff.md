@@ -4,6 +4,185 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-047 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed; EmpireIntel 0.5.2 installed and checked. No increment open; P3-2, P3-3 locked.
+
+**Approved:** as S-046, plus merge 3 (D-047). **Pending:** merging the merge 3 pull request; Q-T4 (unapproved); Stage 1 (not authorized); what comes next after the merges (no phase or increment approved).
+
+**Branches and pull requests:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | e8a30b3 | merge of #2: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1; 283 tests | is main |
+| p2-3-views | 257c2bb | | merged (#1) |
+| tp1-legacy-read | 1544eb5 | | merged (#2) |
+| p3-1-legacy | this push | plus EmpireIntel 0.5.2 (321 tests) and the newest docs | no: ahead; merge 3 pull request open |
+
+**Installed (as the user has said):** EmpireIntel 0.5.2; EmpireIntelCheck 0.1.8-tp1.
+
+**After merge 3:** main matches the installed versions; new work branches from main; NEXT_SESSION_PROMPT.md should then point at main (docs change, after the merge).
+
+**User's next step:** merge the merge 3 pull request on GitHub ("Create a merge commit") and say so.
+
+## S-046 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed; EmpireIntel 0.5.2 installed and checked. No increment open; P3-2, P3-3 locked.
+
+**Approved:** as S-044, plus merge 2 (D-045). **Pending:** merging pull request 2; merge 3 (separate approval); Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches and pull requests:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 634bd63 | merge of #1: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.5-tp1; 244 tests | is main |
+| p2-3-views | 257c2bb | EmpireIntel 0.4.0 | merged (#1) |
+| tp1-legacy-read | 1544eb5 | plus EmpireIntelCheck 0.1.8-tp1, docs runs 6-15 | no: ahead; pull request https://github.com/shawn571/EmpireIntel/pull/2 open, clean |
+| p3-1-legacy | this push | plus EmpireIntel 0.5.2 and the newest docs | no: ahead, merge 3 not approved |
+
+**Installed (as the user has said):** EmpireIntel 0.5.2; EmpireIntelCheck 0.1.8-tp1.
+
+**User's next step:** merge #2 on GitHub ("Create a merge commit") and say so; approve merge 3 when ready.
+
+## S-045 | 2026-11-08 | Claude
+
+**State:** as S-044. Merge 2 approved (D-045). Pull request https://github.com/shawn571/EmpireIntel/pull/1 is **still open, not merged** (GitHub API); main is 83b3574 (0.3.1, 212 tests pass). The merge 2 pull request (`tp1-legacy-read` into main) is held until #1 is merged. Merge 3 waits for separate approval.
+
+**User's next step:** merge #1 on GitHub ("Create a merge commit"), say so; then the main check and the merge 2 pull request follow.
+
+## S-044 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed. EmpireIntel 0.5.2 checked live (D-044). No increment open; P3-2, P3-3 locked.
+
+**Done (docs only):** D-044; pull request https://github.com/shawn571/EmpireIntel/pull/1 (`p2-3-views` 257c2bb into main 83b3574; GitHub reports it mergeable, clean), for the user to merge on GitHub with a merge commit. Restored the Decisions.md "Open questions" heading that the S-043 edit dropped.
+
+**Pending (the user decides):** merging pull request 1; merges 2 (`tp1-legacy-read`) and 3 (`p3-1-legacy`), each separately; Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches:** as S-043, except `p3-1-legacy` head is this push. One pull request: #1, open.
+
+**Installed (as the user has said):** EmpireIntel 0.5.2 (files from d1ae945, all 20 match); EmpireIntelCheck 0.1.8-tp1.
+
+**Note for merges 2 and 3:** after a merge-commit merge of pull request 1, merges 2 and 3 are merge commits too; no conflicts expected, since each branch already contains `p2-3-views`.
+
+**User's next step:** merge pull request 1 on GitHub and say so; approve merge 2 when ready.
+
+## S-043 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 and P3-1 closed. EmpireIntel 0.5.2 built (labels only, D-043), waiting for the user's live check. No increment open; P3-2, P3-3 locked.
+
+**Done:** 0.5.2 on `p3-1-legacy` (this push): rest label and milestones label (D-041, D-043). 321 tests pass under Lua 5.1 and 5.3. `dist/EmpireIntel_AddOns_v0.5.2.zip`, sha256 5738fb7dd89326f5010a94ec310cd0995f43d4236904d30f8854f58c635d1251.
+
+**Merge 1 (`p2-3-views` into main): approved, NOT done.** The fast-forward push to main was blocked by the session's auto-mode permission check. Main is still 83b3574 (EmpireIntel 0.3.1). The user chooses: allow the push in this session, or merge on GitHub.
+
+**Pending (the user decides):** the 0.5.2 live check; how to do merge 1; merges 2 (`tp1-legacy-read`) and 3 (`p3-1-legacy`), separately; Q-T4 (unapproved); Stage 1 (not authorized).
+
+**Branches:**
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 83b3574 | EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1 | is main |
+| p2-3-views | 257c2bb | EmpireIntel 0.4.0 | no: ahead, merge approved, not done |
+| tp1-legacy-read | 1544eb5 | plus EmpireIntelCheck 0.1.8-tp1 | no: ahead, unmerged |
+| p3-1-legacy | this push | plus EmpireIntel 0.5.2 and the newest docs | no: ahead, unmerged |
+
+No pull requests.
+
+**Installed (as the user has said):** EmpireIntel 0.5.1; EmpireIntelCheck 0.1.8-tp1. 0.5.2 delivered, not yet installed.
+
+**User's next step:** install 0.5.2 with `/reload` and run README steps 3-6; say how to do merge 1.
+
+## S-042 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-3 **closed** (D-041) and P3-1 **closed** (D-042). No increment is open. Phase 3 has no further increment approved: P3-2 and P3-3 are locked.
+
+**Done (docs only):** formal inn test recorded and passed (P2-3_Report.md section 3, EI-E-28); 0.5.1 check recorded (P3-1_Report.md section 2); D-041, D-042; TODO and Changelog updated. No code changed, nothing merged. Session renamed "EmpireIntel Code" (user).
+
+**Approved:** as S-041, plus D-041 (close P2-3; narrow the rest label to inn rate checked, outside rate and cap unverified) and D-042 (close P3-1).
+
+**Pending (the user decides):**
+- Go-ahead to build the rest label change (D-041) as EmpireIntel 0.5.2 on `p3-1-legacy` (`/reload`).
+- The `/ei milestones` rules label: keep or drop "not yet confirmed" (EI-E-22 confirmed the class and crafting rules).
+- Merges, one approval each, in this order: `p2-3-views` (EmpireIntel 0.4.0), then `tp1-legacy-read` (EmpireIntelCheck 0.1.8-tp1), then `p3-1-legacy` (EmpireIntel 0.5.1 and the newest docs). Each is a fast-forward of main; tests pass at each head (244, 283, 321, under Lua 5.1 and 5.3).
+- Q-T4: unapproved. P3-2, P3-3: locked. Stage 1: not authorized.
+
+**Branches:** as S-040, except `p3-1-legacy` head is this push. No pull requests.
+
+**Installed (as the user has said):** EmpireIntel 0.5.1 (confirmed 09:50, 2026-11-08); EmpireIntelCheck 0.1.8-tp1; GoldIntel and DataStore/Altoholic. The stale beta Shaman (C3) is still in DataStore.
+
+**Open questions:** the two pending decisions above, the merges, Q-T4.
+
+**User's next step:** approve (or not) the 0.5.2 label build and the milestones label; approve merges one at a time.
+
+## S-041 | 2026-11-08 | Claude
+
+**Phase and increment:** unchanged from S-040: P3-1 built as EmpireIntel 0.5.1, waiting for the `/ei legacy all` look, then Q-P3-1c; P2-3 built as 0.4.0, waiting for the formal inn test, then Q-P2-3c.
+
+**Done (docs only):** new session verified the repository against S-040: branch heads, TOC versions (EmpireIntel 0.5.1, EmpireIntelCheck 0.1.8-tp1 on `p3-1-legacy`; 0.3.1 and 0.1.5-tp1 on main), main at S-022 docs, repository private, no pull requests, 321 tests pass under Lua 5.1 and 5.3. No conflict found other than the one below, now settled. D-040: Project_Bible.md section 5 follows D-034 (v1.2.0); paraphrased early rules in CODE_STANDING_ORDERS.md section 7 accepted.
+
+**Approved:** as S-040, plus D-040.
+
+**Pending (the user decides):** Q-P3-1c, Q-P2-3c, Q-T4, P3-2 and P3-3 (locked), Stage 1 (not authorized), merges (none without approval; order `p2-3-views`, `tp1-legacy-read`, `p3-1-legacy`).
+
+**Branches:** as S-040, except `p3-1-legacy` head is this push. No pull requests.
+
+**Installed (as the user has said):** EmpireIntel 0.5.0 (0.5.1 delivered, not yet confirmed); EmpireIntelCheck 0.1.8-tp1.
+
+**Open questions:** Q-P3-1c, Q-P2-3c, Q-T4. No open doc conflict.
+
+**User's next step:** as S-040: install 0.5.1 with `/reload`, type `/ei legacy all`, say whether it reads well (Q-P3-1c); run the formal inn test, then decide Q-P2-3c.
+
+## S-040 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 3, increment P3-1 (`/ei legacy`), built as EmpireIntel 0.5.1; waiting for the user's look at `/ei legacy all`, then Q-P3-1c. Phase 2 increment P2-3 (views) built as 0.4.0; views check passed; formal inn test pending, then Q-P2-3c. TP-1 (EmpireIntelCheck) at 0.1.8-tp1, the Legacy read proven (runs 6-15).
+
+**Approved:**
+- Phase 2 (pre-25 features; D-027): P2-1 closed (D-029), P2-2 closed (D-032), P2-3 built (D-033).
+- Phase 3, P3-1 only (D-037), with no saved crash guard (Q-P3-1a).
+- Q-T7, Q-T8 and Q-T9 (check Legacy reads).
+- The standing orders (D-039).
+
+**Pending (the user decides):**
+- Q-P3-1c: close P3-1, after a look at 0.5.1.
+- Q-P2-3c: close P2-3, after the formal inn test.
+- Q-T4: trait-system reads, after P3-1 passes its live gate.
+- P3-2 and P3-3: locked.
+- Release pipeline Stage 1: not authorized.
+- Merges: none without approval. The order is `p2-3-views`, then `tp1-legacy-read`, then `p3-1-legacy`.
+
+**Branches** (no pull requests exist):
+
+| Branch | Head | Holds | Matches main? |
+|---|---|---|---|
+| main | 83b3574 | EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1, docs to S-022 | is main |
+| p2-1-foundation | ca0d2b6 | merged earlier (P2-1) | contained in main |
+| p2-2-alts | 83b3574 | P2-2 | identical to main |
+| p2-3-views | 257c2bb | EmpireIntel 0.4.0 (P2-3) | no: ahead of main, unmerged |
+| tp1-legacy-read | 1544eb5 | p2-3-views plus EmpireIntelCheck 0.1.6-0.1.8 and docs | no: ahead, unmerged |
+| p3-1-legacy | this push | tp1-legacy-read plus EmpireIntel 0.5.0-0.5.1 and the newest docs | no: ahead, unmerged |
+
+**Installed (as the user has said):**
+- EmpireIntel 0.5.0 (0.5.1 delivered; installation not yet confirmed).
+- EmpireIntelCheck 0.1.8-tp1.
+- GoldIntel and DataStore/Altoholic also installed.
+- The user will delete the stale beta Shaman in Altoholic.
+
+**Open questions:** Q-P3-1c, Q-P2-3c, Q-T4. Conflict to confirm: Project_Bible.md section 5 restart rule vs D-034 (see D-039).
+
+**User's next step:**
+1. Install 0.5.1 with `/reload`, open the Legacy window, type `/ei legacy all`, and say whether it reads well (Q-P3-1c).
+2. Run the formal inn test from the P2-3 README, then decide Q-P2-3c.
+
+## S-039 | 2026-11-08 | Claude
+
+- **Done:** P3-1 live test 1 recorded; 0.5.1 fixes the `/ei legacy all` order and the Explorer wording.
+- **WAITING FOR:** a look at `/ei legacy all` on 0.5.1, then Q-P3-1c; the formal inn test, then Q-P2-3c.
+
+## S-038 | 2026-11-08 | Claude
+
+- **Done:** built P3-1 as EmpireIntel 0.5.0 on branch `p3-1-legacy` (D-038). `dist/EmpireIntel_AddOns_v0.5.0.zip`.
+- **Branch stack:** `p3-1-legacy` is built on `tp1-legacy-read`, which is built on `p2-3-views`. Nothing is merged; merge order on approval: P2-3, then TP-1, then P3-1.
+- **WAITING FOR:** the P3-1 live gate, then Q-P3-1c; the formal inn test, then Q-P2-3c.
+
 ## S-037 | 2026-11-08 | Claude
 
 - **Done:** run 15 recorded (TP1_Report_Run1.md section 22, EI-E-27); P2-3_Report.md; D-037 (Phase 3, P3-1 only).

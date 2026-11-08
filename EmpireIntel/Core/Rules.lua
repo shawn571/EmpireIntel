@@ -7,8 +7,10 @@ local ADDON, EI = ...
 --
 -- SOURCES
 --   'game'   confirmed by the client (EI-E-02: the Legacy system unlocks when the first character reaches 25)
---   'user'   the user's challenge list (Legacy_Rules.md section 1), not yet confirmed by the game
---   'classic' the classic rest rule (Q-P2-3b), unverified on Forever until the inn test
+--   'user'   the user's challenge list (Legacy_Rules.md section 1); the class and crafting milestones are
+--            confirmed by the game (EI-E-22, D-043)
+--   'classic' the classic rest rule (Q-P2-3b): the inn rate is checked on Forever (EI-E-28, D-041); the quarter
+--            rate outside a rest area and the 1.5-level cap are unverified
 -- Ported from EmpireIntelCheck/Character.lua (Ch.RULES), our own code.
 
 EI = EI or {}
@@ -27,10 +29,10 @@ R.CRAFTS = {                                           -- user (Q-P2-3a): the si
   { name = 'Engineering', line = 202 }, { name = 'Leatherworking', line = 165 }, { name = 'Tailoring', line = 197 },
 }
 R.CRAFT_MILESTONES = { 150, 225, 300 }                 -- user
-R.REST = { per8h = 0.05, outsideFactor = 0.25, cap = 1.5, period = 8 * 3600 }   -- classic, unverified on Forever
+R.REST = { per8h = 0.05, outsideFactor = 0.25, cap = 1.5, period = 8 * 3600 }   -- classic; inn rate checked (EI-E-28), outside rate and cap unverified
 
-R.LABEL_RULES = '[rules from your list; not yet confirmed by the game]'
-R.LABEL_REST = '[estimate: classic rule, 5% of a level per 8 h resting, a quarter outside, cap 1.5 levels; unverified on Forever]'
+R.LABEL_RULES = '[class and crafting milestones confirmed by the game]'
+R.LABEL_REST = '[estimate: 5% of a level per 8 h resting (inn rate checked on Forever); a quarter outside and the 1.5-level cap unverified]'
 
 --- The next milestone above value, and how many are reached. next is nil when all are reached.
 function R.Next(milestones, value)

@@ -245,6 +245,75 @@ Built on branch `tp1-legacy-read`; `/reload` is enough.
 - The plan's call list is narrowed, not widened. The 7 achievement getters plus `LegacySystem.GetCurrencyInfo()` with no argument. The three `C_CurrencyInfo` getters are dropped: on Forever the Legacy points are not an ordinary currency (EI-E-21), so they add nothing.
 - Explorer progress is shown as the logged-in character's (EI-E-27). The other challenges' progress is the account's.
 
+## D-038 P3-1 built: EmpireIntel 0.5.0 | Claude (2026-11-08), within D-037
+- `Platform/Legacy.lua` (the only caller of the Legacy and achievement functions; static test) and `Core/LegacyView.lua` (`/ei legacy`, `/ei legacy all`).
+- **How the read runs:** as a coroutine resumed by EmpireIntel's scheduler, 60 calls per frame. Every pause happens outside any pcall (the Lua 5.1 lesson from check 0.1.6). `coroutine` is added to the static test's list of allowed Lua builtins. Combat stops the read; a second command while reading waits.
+- **What it shows:**
+  - Earned is the completed challenges' points. Available and spent are `quantity` and `spent` and need the pane to have loaded. `maxQuantity` is only a cross-check (UNEXPECTED on a difference); `spentInTree` and `renownCurrency` are never shown.
+  - Explorer is labelled "on this character".
+  - Level and skill hints say "[from EmpireIntel's records]" and are given only while the level or skill is still below the challenge.
+- **Tests:** `test_ei_legacy.lua` plus the P3-1 static rules; 319 tests pass under Lua 5.1 and 5.3. 20 of 21 guard mutants are caught. The survivor is equivalent: stopping the coroutine early after combat starts, when every remaining call is already refused.
+- Nothing saved; format 1 unchanged (test). `/reload`.
+
+## D-039 Code Standing Orders | Decided (user, 2026-11-08)
+The user's words: "Standing instruction, effective now."
+- "Make it permanent in the repo": CODE_STANDING_ORDERS.md (roles, gates, packages, evidence first, the package block, the end-of-report format) and NEXT_SESSION_PROMPT.md ("always current", "short").
+- "anything I decide in chat gets recorded in the docs with my exact words."
+- "Update Session_Handoff first ... Commit and push it, and say so."
+- "Tell me when to start a new Code session: if your context has been summarized, or a session has run long, and only at a clean stopping point with nothing half-built and nothing unpushed."
+- "End with three short parts: 'What you do' (plain language, numbered), 'Reply to send' (ready to paste), and the package block. Keep reports short; long evidence goes in files in the docs folder."
+- "Do this in your next push, docs only ... Do not change any code or merge anything for it."
+
+Placement: pushed on `p3-1-legacy`, the branch holding the newest docs. Main is not touched (no merge without approval).
+
+Known conflict, kept for the user to confirm: Project_Bible.md section 5 still says "new addon folder or TOC change = restart". D-034 (2026-11-08) revised this from live evidence: new files in an existing folder load on `/reload`. CODE_STANDING_ORDERS.md section 3 follows D-034.
+
+
+## D-040 Project_Bible section 5 follows D-034; paraphrased early rules accepted | Decided (user, 2026-11-08)
+The user's words: "Item 4: paraphrased early rules are acceptable. Item 5: yes, update Project_Bible section 5 to follow D-034."
+- Item 4: CODE_STANDING_ORDERS.md section 7 states earlier decisions (D-015, D-018, D-020, D-027 and others) in paraphrase, not quotes. Accepted as is; those rules stay in force as written there.
+- Item 5: Project_Bible.md section 5 (v1.2.0) drops "new addon folder or TOC change = restart" and states the D-034 rule, matching CODE_STANDING_ORDERS.md section 3. This settles the conflict noted under D-039.
+- Docs only; no code changed, nothing merged. Pushed on `p3-1-legacy`.
+
+## D-041 P2-3 closed after the inn test; rest label narrowed | Decided (user, 2026-11-08, Q-P2-3c)
+The user's words: "Q-P2-3c: close P2-3, with the label change you propose: drop \"not yet confirmed\" for the inn rate only; keep \"unverified\" for the outside rate and the cap."
+- Inn test passed (P2-3_Report.md section 3, EI-E-28): gap 1.0% (about 0.5% like for like) on C1; C2 within a few XP over about 9.2 h.
+- Label change approved: the rest estimate label states the inn rate as checked on Forever, and keeps "unverified" for the quarter rate outside a rest area and the 1.5-level cap. Not yet built; it ships in the next EmpireIntel package (proposed 0.5.2, `/reload`), which waits for the user's go-ahead.
+- Not covered by this decision: the `/ei milestones` label "[rules from your list; not yet confirmed by the game]", whose class and crafting rules EI-E-22 confirmed. It stays as is until the user decides.
+
+## D-042 P3-1 closed | Decided (user, 2026-11-08, Q-P3-1c)
+The user's words: "Q-P3-1c: close P3-1." and "Q-T4 stays unapproved. P3-2 and P3-3 stay locked. Do not merge anything; I will approve merges separately."
+- 0.5.1 checked live (P3-1_Report.md section 2).
+- Merges: none until the user approves each one. Proposed order: `p2-3-views`, `tp1-legacy-read`, `p3-1-legacy` (each a fast-forward of main).
+
+## D-043 EmpireIntel 0.5.2: both labels; merge 1 approved | Decided (user, 2026-11-08)
+The user's words: "Build 0.5.2 with the rest label: yes, as worded. Milestones label: drop “not yet confirmed” for the class and crafting rules (EI-E-22), and keep [estimate] on the Legacy points line. Put both in 0.5.2. Merge 1 (p2-3-views): approved. Tell me when it’s done; merges 2 and 3 wait for separate approval."
+- Built on `p3-1-legacy` as EmpireIntel 0.5.2 (`/reload`). Text only: `R.LABEL_REST` is "[estimate: 5% of a level per 8 h resting (inn rate checked on Forever); a quarter outside and the 1.5-level cap unverified]"; `R.LABEL_RULES` is "[class and crafting milestones confirmed by the game]". The Legacy points line keeps "[estimate]". No new call, saved data unchanged. This builds the D-041 label change.
+- Tests: 321 pass under Lua 5.1 and 5.3; new assertions check both headers and that no view line says "not yet confirmed"; 3 of 3 label mutants caught.
+- Merge 1 (`p2-3-views` into main, a fast-forward): approved. The first attempt was blocked by the session's auto-mode permission check (merge without review), so main is unchanged at 83b3574 until the user allows the push or merges it on GitHub.
+
+## D-044 0.5.2 checked live; merge 1 by pull request | Decided (user, 2026-11-08)
+The user's words: "0.5.2 is installed (the reviewer chat copied the files from d1ae945 into my Forever folder; all 20 match). Steps 2–5: match. Merge 1: open a PR p2-3-views → main and I’ll merge it on GitHub with a merge commit. Merges 2 and 3 still need separate approval."
+- 0.5.2 live check passed (README steps 2-5) [reported].
+- Pull request https://github.com/shawn571/EmpireIntel/pull/1 opened: `p2-3-views` (257c2bb) into main (83b3574). The user merges it on GitHub with a merge commit. Merges 2 and 3 wait for separate approval.
+- Test count: still 321 because the test runner counts `T.it` blocks, not assertions; 0.5.2 added assertions inside the two existing label tests (each fails when its label is undone).
+- Repair: the S-043 edit of this file dropped the "---" line and the "## Open questions for the user" heading before the table below; restored here (text only, no entry changed).
+
+## D-045 Merge 2 approved | Decided (user, 2026-11-08)
+The user's words: "PR 1 merged (merge commit). Check main and confirm it’s at 0.4.0 with 244 tests passing. Merge 2 (tp1-legacy-read): approved, open a PR. Merge 3 waits for separate approval."
+- Checked on GitHub at S-045: pull request 1 is still **open, not merged**; main is 83b3574 (EmpireIntel 0.3.1, EmpireIntelCheck 0.1.5-tp1, 212 tests pass under Lua 5.1 and 5.3).
+- The merge 2 pull request is held until pull request 1 is merged: opened now against main, it would also carry all of `p2-3-views`, and merging it first would do merges 1 and 2 at once.
+
+## D-046 Merge 1 done; merge 2 pull request | Recorded (user, 2026-11-08)
+The user's words: "PR 1 now shows Merged. Go ahead: check main and open the merge 2 PR."
+- Checked: main is 634bd63, a merge commit (parents 83b3574 and 257c2bb), with the same tree as `p2-3-views`: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.5-tp1; 244 tests pass under Lua 5.1 and 5.3.
+- Pull request https://github.com/shawn571/EmpireIntel/pull/2 opened: `tp1-legacy-read` (1544eb5) into main; GitHub reports it mergeable, clean (22 commits, 18 files). Merge 3 waits for separate approval.
+
+## D-047 Merge 2 done; merge 3 approved | Decided (user, 2026-11-08)
+The user's words: "PR 2 shows Merged. Check main. Merge 3 (p3-1-legacy): [approved, open a PR" (the message ended there; read as the first option of the reply template, "approved, open a PR").
+- Checked: main is e8a30b3, a merge commit (parents 634bd63 and 1544eb5), with the same tree as `tp1-legacy-read`: EmpireIntel 0.4.0, EmpireIntelCheck 0.1.8-tp1; 283 tests pass under Lua 5.1 and 5.3.
+- Merge 3 pull request opened: `p3-1-legacy` into main (no conflicts, checked with `git merge-tree`). After it is merged, main holds EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1 and the newest docs, matching what the user has installed.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
@@ -271,10 +340,11 @@ Built on branch `tp1-legacy-read`; `/reload` is enough.
 | Q-P2-2 | Approve increment P2-2 (alts from DataStore, Phase2_Plan.md section 5)? | **Approved** 2026-11-06; built (D-030) |
 | Q-P2-2c | Close P2-2 after the live test? | **Approved** 2026-11-08: closed (D-032) |
 | Q-P2-3 | Approve increment P2-3 (views, Phase2_Plan.md section 6), with Q-P2-3a (crafting list) and Q-P2-3b (rest rule)? | **Approved** 2026-11-08, with a and b; built as 0.4.0 (D-033) |
-| Q-P2-3c | Close P2-3 after the live test and the inn test? | Open |
+| Q-P2-3c | Close P2-3 after the live test and the inn test? | **Closed** 2026-11-08, with the rest label change (D-041) |
 | Q-P3 | Authorize Phase 3 for `/ei legacy` (Phase3_Legacy_Plan.md)? | **Approved** 2026-11-08, one approval per increment; **P3-1 only**; P3-2 and P3-3 stay locked (D-037) |
 | Q-P3-1 | Approve P3-1, the live `/ei legacy` (Phase3_Legacy_Plan.md section 3)? | **Approved** 2026-11-08 as written (D-037) |
 | Q-P3-1a | No saved crash guard in EmpireIntel; format 1 unchanged? | **Approved** 2026-11-08 |
+| Q-P3-1c | Close P3-1 after its live gate (Phase3_Legacy_Plan.md section 3)? | **Closed** 2026-11-08 (D-042) |
 | Q-T9 | Build EmpireIntelCheck 0.1.8 (defects 15, 16): count only achievements whose reward text names a Legacy point (65), take each one's value from that text, and keep the 46 supporting exploration achievements as "supporting"; save each step as text, done and progress only (drop type, asset id, criteria id and quantity text); and trim the discovery leftovers (`latest`, `strongSeen`, `docs`, `undoc`) before any Legacy data. This changes the shape of the check's saved `legacy` section | **Approved** 2026-11-08 with the user's correction: the 46 are the Explorer challenge's steps (done / not done, "X of 46 done"), outside the point count. Built as 0.1.8-tp1 (D-036) |
 | Q-T8 | Build EmpireIntelCheck 0.1.7 (defects 13 and 14), within the Q-T7 limits: read every category `GetCategoryList()` returns, plus their achievements and criteria (all ids from the game); take the points from `LegacySystem.GetCurrencyInfo()`; stop passing `traitCurrencyID` to `C_CurrencyInfo`? Trait-system calls with 4225 stay out (Q-T4) | **Approved** 2026-11-08; built as 0.1.7-tp1 (D-035) |
 | Q-9 | Allow web hosts to check the Legacy rules | The user allowed all domains, but this session still could not resolve worldofwarcraft.blizzard.com or forg.gg. The setting probably applies to new sessions only. Rules stay unverified |
