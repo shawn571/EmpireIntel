@@ -4,6 +4,16 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-023 | 2026-11-08 | Claude
+
+- **Done:** P2-3 plan, Phase2_Plan.md section 6, on branch `p2-3-views`. No code.
+- **WAITING FOR:** Q-P2-3 (with a and b); the EmpireIntelCheck 0.1.6 run with the pane open, plus the user's Legacy Points line.
+
+## S-022 | 2026-11-08 | Claude
+
+- **Done:** P2-2 closed (D-032); `p2-2-alts` merged into main (fast-forward).
+- **NEXT:** the P2-3 plan for approval (no code). **WAITING FOR:** the EmpireIntelCheck 0.1.6 run with the pane open, plus the user's Legacy Points line.
+
 ## S-021 | 2026-11-07 | Claude
 
 - **Done:** Q-T7 approved; built EmpireIntelCheck 0.1.6-tp1 on branch `tp1-legacy-read` (stacked on `p2-2-alts`). Legacy_Rules.md written. 238 tests; 15/15 mutants. `dist/EmpireIntelCheck_AddOns_v0.1.6-tp1.zip`.
