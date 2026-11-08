@@ -290,3 +290,24 @@ Testing (b) needs a tree id from the game, which only the trait system gives (Q-
 - The only other changes since run 10 are two explored zone areas: Hammerfall (Arathi Highlands) and Dun Algaz (Wetlands).
 - 230 KB, nothing trimmed. All 955 calls ok.
 - The step data predicted the next point: run 9 showed "only Excavation Site: Wetlands left", and completing it gave the point. This is the kind of hint `/ei legacy` is meant to give (Legacy_Rules.md section 4).
+
+## 21. spentInTree: every known read (2026-11-08 inventory)
+
+[O] = observed (file or chat line). [I] = inferred. [U] = user's statement. A file keeps the point fields only for its **latest** read, and `legacy.history` does not store spentInTree, so earlier reads come from chat lines. No file records whether the Legacy window was open, or which tree or page it showed: `paneSeen` only says the pane's code had loaded.
+
+| Read (user time) | Source | spentInTree | quantity / spent / earned | Window and tree at the read |
+|---|---|---|---|---|
+| Run 7, 2026-11-07 20:39 | file [O] | 0 | 1 / 0 / 1 | not recorded; the user had opened the pane that session [U] |
+| Run 8, 21:08 (3 reads) | chat [O]; file holds the last [O] | 0 | 1 / 0 / 1 | not recorded |
+| Run 9, 23:02 | file [O] | 0 | 1 / 0 / 1 | not recorded |
+| Run 10, 23:09 (after the first spend) | file [O] | 0 | 0 / 1 / 1 | not recorded; tree of the spend not given |
+| Run 11, 23:15-23:16 (4 reads) | chat [O] | 0 | 0 / 1 / 1 | the user ran the selected-tree test; which tree each read was on not given [U] |
+| Run 12, 00:16 (after the second earn) | chat [O] | 0 | 1 / 1 / 2 | **Adventure tree open; the first point is in Adventure** [U] |
+| Run 13, 00:19 (placed, not applied) | chat [O] | 0 | 1 / 1 / 2 | tree not given [U] |
+| Run 13, 00:20 (applied) | chat [O]; latest in run 14's file [O] | 0 | 0 / 2 / 2 | tree not given |
+
+- [O] spentInTree was **0 in every read (16 in all)**: before any spend, after one and after two applied spends, and with a point placed but unapplied.
+- [O] **Nothing in the data supports "follows the selected tree".** It never took a value other than 0.
+- [U, I] The one read with a stated tree (run 12, Adventure open, where a point is) shows 0, which argues against it. But "Adventure" is also a page on the Challenges list. It is not recorded whether the tree page itself was showing, so this read cannot settle it alone.
+- [I] The pane's tree page shows a counter under each tree's name (the "0" circle in the 2026-11-07 screenshots). That is the pane's own per-tree spent value, the natural reference for spentInTree.
+- **The single test that settles it** (no new call): open the Legacy window on the **tree page** of a tree whose counter shows 1 or more, leave it open, type `/eicheck legacy`, and take a screenshot of the window at that moment. If spentInTree equals the counter, it follows the selected tree. If it shows 0 while the counter shows 1 or more, it does not, at least not with no argument, and only Q-T4 could go further.

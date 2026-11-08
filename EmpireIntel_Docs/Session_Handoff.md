@@ -4,6 +4,11 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-036 | 2026-11-08 | Claude
+
+- **Done:** spentInTree inventory (TP1_Report_Run1.md section 21); `/ei legacy` plan (Phase3_Legacy_Plan.md). No code.
+- **WAITING FOR:** Q-P3, Q-P3-1, Q-P3-1a; the P2-3 views check and the inn test, then Q-P2-3c; optionally the spentInTree screenshot test.
+
 ## S-035 | 2026-11-08 | Claude
 
 - **Done:** run 14 recorded: the second point came from Novice Spelunker (Excavation Site: Wetlands).
