@@ -268,6 +268,13 @@ Placement: pushed on `p3-1-legacy`, the branch holding the newest docs. Main is 
 
 Known conflict, kept for the user to confirm: Project_Bible.md section 5 still says "new addon folder or TOC change = restart". D-034 (2026-11-08) revised this from live evidence: new files in an existing folder load on `/reload`. CODE_STANDING_ORDERS.md section 3 follows D-034.
 
+
+## D-040 Project_Bible section 5 follows D-034; paraphrased early rules accepted | Decided (user, 2026-11-08)
+The user's words: "Item 4: paraphrased early rules are acceptable. Item 5: yes, update Project_Bible section 5 to follow D-034."
+- Item 4: CODE_STANDING_ORDERS.md section 7 states earlier decisions (D-015, D-018, D-020, D-027 and others) in paraphrase, not quotes. Accepted as is; those rules stay in force as written there.
+- Item 5: Project_Bible.md section 5 (v1.2.0) drops "new addon folder or TOC change = restart" and states the D-034 rule, matching CODE_STANDING_ORDERS.md section 3. This settles the conflict noted under D-039.
+- Docs only; no code changed, nothing merged. Pushed on `p3-1-legacy`.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

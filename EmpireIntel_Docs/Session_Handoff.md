@@ -4,6 +4,24 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-041 | 2026-11-08 | Claude
+
+**Phase and increment:** unchanged from S-040: P3-1 built as EmpireIntel 0.5.1, waiting for the `/ei legacy all` look, then Q-P3-1c; P2-3 built as 0.4.0, waiting for the formal inn test, then Q-P2-3c.
+
+**Done (docs only):** new session verified the repository against S-040: branch heads, TOC versions (EmpireIntel 0.5.1, EmpireIntelCheck 0.1.8-tp1 on `p3-1-legacy`; 0.3.1 and 0.1.5-tp1 on main), main at S-022 docs, repository private, no pull requests, 321 tests pass under Lua 5.1 and 5.3. No conflict found other than the one below, now settled. D-040: Project_Bible.md section 5 follows D-034 (v1.2.0); paraphrased early rules in CODE_STANDING_ORDERS.md section 7 accepted.
+
+**Approved:** as S-040, plus D-040.
+
+**Pending (the user decides):** Q-P3-1c, Q-P2-3c, Q-T4, P3-2 and P3-3 (locked), Stage 1 (not authorized), merges (none without approval; order `p2-3-views`, `tp1-legacy-read`, `p3-1-legacy`).
+
+**Branches:** as S-040, except `p3-1-legacy` head is this push. No pull requests.
+
+**Installed (as the user has said):** EmpireIntel 0.5.0 (0.5.1 delivered, not yet confirmed); EmpireIntelCheck 0.1.8-tp1.
+
+**Open questions:** Q-P3-1c, Q-P2-3c, Q-T4. No open doc conflict.
+
+**User's next step:** as S-040: install 0.5.1 with `/reload`, type `/ei legacy all`, say whether it reads well (Q-P3-1c); run the formal inn test, then decide Q-P2-3c.
+
 ## S-040 | 2026-11-08 | Claude
 
 **Phase and increment:** Phase 3, increment P3-1 (`/ei legacy`), built as EmpireIntel 0.5.1; waiting for the user's look at `/ei legacy all`, then Q-P3-1c. Phase 2 increment P2-3 (views) built as 0.4.0; views check passed; formal inn test pending, then Q-P2-3c. TP-1 (EmpireIntelCheck) at 0.1.8-tp1, the Legacy read proven (runs 6-15).

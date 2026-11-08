@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-08 | S-041 | Project_Bible 1.2.0: restart rule follows D-034 (documentation only)
+- Project_Bible.md section 5 states the `/reload` rule of D-034; D-040 records the user's approval, and that the paraphrased early rules in CODE_STANDING_ORDERS.md section 7 are accepted. No code changed.
+
 ## 2026-11-08 | S-039 | EmpireIntel 0.5.1 (/reload; branch p3-1-legacy)
 - P3-1 live test 1 passed on content (P3-1_Report.md). Fixed: `/ei legacy all` is ordered group by group (D1), and the Explorer line no longer repeats its name (D2). 321 tests pass under Lua 5.1 and 5.3.
 
