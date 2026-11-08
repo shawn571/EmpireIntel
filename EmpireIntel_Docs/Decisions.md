@@ -347,6 +347,16 @@ And: "Separately, plan only and no code: write a post-25 plan (Phase 3) covering
 - Phase2_Plan.md section 7 (plan file format 1 is a contract), with the lock rule in 7.3, 7.4 and 7.7; header lines corrected: P2-1 to P2-3 use no Legacy API; P2-4 uses the P3-1 reads on command only. This narrows D-027 for P2-4 only.
 - Unlocked = any known character at level 25 or higher (EI-E-02).
 
+## D-054 P2-4 redirected: an in-game plan window and a route planner | Decided (user, 2026-11-08)
+The user's words: "Direction change for P2-4. Don’t merge #11; keep the branch. I don’t want plans written in a text file. I want:
+An in-game GUI (window opened by a command and optionally a minimap button, works with ElvUI) to view and edit the plan.
+A default plan: the most efficient path to Legacy points across my characters. For example: level the main to 25, the main’s first Spelunker challenge, level the first alt to 25, and so on.
+The plan informed by Legacy route guides (start with Method’s “Fastest Way to Get Legacy Points”; check what the Hated Legacy addon already does). Respect level-gated requirements (profession caps by character level) and things not worth doing before 60 (low-level PvP). Every rule is tagged with its source and labelled unverified until the game confirms it.
+Two modes: my edited plan, or auto-adjust to whatever unlocks a Legacy point fastest from the characters’ current state.
+Plan only, no code. Write it as a revised P2-4 (or a new increment if that fits better) with: what can be reused from #11; the GUI design and the API checks it needs first; the rules table and its sources; how “fastest” is measured and what the target is (16 spendable, the 15/25/40/55 rewards, or something else); the saved-data format change; restart or reload; questions for me."
+- #11 (`p2-4-next`, 0.6.0 and EmpireIntel_Plan 1) is kept, not merged. Plan file format 1 is not adopted.
+- The revised plan is Phase2_Plan.md section 8 (for approval, Q-P2-4r and the questions in 8.9). Section 7 is superseded.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
