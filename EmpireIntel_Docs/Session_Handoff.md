@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-057 | 2026-11-08 | Claude
+
+**Phase and increment:** P2-4a and EmpireIntelCheck 0.1.9-tp1 **approved for building** (D-056). Building on branch `p2-4a-planner` (not yet pushed when this section was written). No window code (P2-4b) before the user approves the static mockup.
+
+**Approved:** through D-056. Q-F3 closed: zone Explorer after 50, counting zones already explored on the way; Spelunker at any level.
+
+**Pending (the user decides):** merging the P2-4a build and 0.1.9-tp1; the mockup; P2-4b; #10 (post-25 plan; when next edited, its P3-2 becomes format 3; Q-P3-2a later); Q-T4; Stage 1. #11 stays open, reference only.
+
+**Note on numbering:** there is no S-054 on main. S-054 (and decision D-053) were written on branch `p2-4-next` (#11), which is not merged; main goes S-053 to S-055 and D-052 to D-054.
+
+**Main:** c765948 (EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1, 321 tests, Lua 5.1 and 5.3). This docs-only pull request (`docs-d056`: Decisions.md D-056, this section, NEXT_SESSION_PROMPT.md) is merged by Claude under the docs-only standing approval.
+
+**Installed (as the user has said):** EmpireIntel 0.5.2, EmpireIntelCheck 0.1.8-tp1.
+
+**User's next step:** wait for the build report in this session.
+
 ## S-056 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-4 revised and **approved** (D-055). Next: build **P2-4a** (rules table, route engine, both modes, `/ei next`, saved-data format 2 for the plan) and **EmpireIntelCheck 0.1.9-tp1** with the UI checks (Phase2_Plan.md 8.3.4). **P2-4b** (the window) waits for the check's results and an approved static mockup (8.3.5). No code yet for any of these.
