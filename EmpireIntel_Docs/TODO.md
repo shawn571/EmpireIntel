@@ -81,7 +81,7 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Merge 2 `tp1-legacy-read`: merged (e8a30b3, D-047)
 - [x] Merge 3 `p3-1-legacy`: merged (c5434a7, D-048). Main matches the installed versions
 - [x] Docs pull request (`docs-after-merges`): merged as #4 (5091f39)
-- [x] Merge standing order and docs-only standing approval recorded (D-049)
+- [x] Merge standing order and docs-only standing approval recorded (D-049); REST merge command (D-050); #5 merged
 - [ ] **User:** merge the `claude-settings` pull request (`.claude/settings.json`, D-049)
 - [ ] P2-4 What next and the plan file (plan format needs approval)
 
