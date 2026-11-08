@@ -373,6 +373,26 @@ Merge #12: approved after the 8.5 fix and the design direction are added to sect
 - Spelunker challenges are planned at any level. Zone Explorer timing stays open: the answer kept the template "[after 50 / other]".
 - Design direction recorded in Phase2_Plan.md 8.3.1-8.3.5; the Q-G1 checks extended (portraits, race/gender and class icons, faction emblems, ruleset and realm type). Roster records gain race, sex, faction and ruleset in format 2. L-18: Hardcore points are kept apart.
 
+## D-056 P2-4a and EmpireIntelCheck 0.1.9-tp1 build approved; Q-F3 answered; docs fixes | Approved (user, 2026-11-08)
+The user's words: "Approved: start P2-4a and EmpireIntelCheck 0.1.9-tp1 (UI checks) as planned in Phase2_Plan.md section 8.
+Q-F3: zone Explorer after 50, counting zones already explored on the way. Spelunker stays at any level.
+Rules for this build:
+No window code before I approve the static mockup.
+Each package ends with its own package block (reload or restart, exact test steps, rollback, file and sha256).
+The UI checks report evidence (what the game returned), not assumptions.
+Docs fixes under the docs-only approval:
+Note in the handoff that there is no S-054.
+In NEXT_SESSION_PROMPT.md, state the REST merge command (D-050) as the one to use, so gh pr merge isn't read as current.
+When #10 is next edited, change P3-2 to format 3.
+Q-P3-2a comes later."
+- Approved: building **P2-4a** (EmpireIntel, Phase2_Plan.md 8.1, 8.4-8.7, saved-data format 2) and **EmpireIntelCheck 0.1.9-tp1** (the UI checks of 8.3.4). Merging either still needs the user's approval.
+- **No window code** (P2-4b) before the user approves the static mockup (8.3.5).
+- Each package (EmpireIntel, EmpireIntelCheck) gets its own package block.
+- The UI checks record what the game returned (values, types, errors), never an assumed result.
+- **Q-F3 closed:** zone Explorer is planned after a character reaches 50; zones already explored before 50 count toward it. Spelunker challenges stay at any level. Rule L-11's timing changes from [assumed] to the user's rule.
+- Docs: the handoff notes that there is no S-054; NEXT_SESSION_PROMPT.md names the REST merge command (D-050) as current. When #10 is next edited, its P3-2 is changed to saved-data format 3 (D-055).
+- Q-P3-2a: later.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
