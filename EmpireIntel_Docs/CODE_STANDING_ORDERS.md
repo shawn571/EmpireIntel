@@ -19,7 +19,8 @@ Quotes in "double quotes" are the user's exact words.
   - Steps: `gh api -X PUT repos/shawn571/EmpireIntel/pulls/<n>/merge -f merge_method=merge`; then fetch main, report the merge commit, and run `lua5.1 Tests/run.lua` and `lua5.3 Tests/run.lua` on it.
   - If a merge is blocked (by a permission check or the tool), report the exact message and do not work around it.
 - **Docs-only standing approval (D-049, EmpireIntel only, the same as GoldIntel D-105):** “you may merge docs-only pull requests that change only Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md or the recording of my decisions; tell me each time.”
-  - It covers a pull request whose every changed file is Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md or Decisions.md (or a report's section recording a decision). Any other file in the pull request means it needs the user's approval.
+  - **Extended (D-051, 2026-11-08):** “Extend the docs-only standing approval to also cover TODO.md and Changelog.md.”
+  - It covers a pull request whose every changed file is Session_Handoff.md, NEXT_SESSION_PROMPT.md, CODE_STANDING_ORDERS.md, Decisions.md (or a report's section recording a decision), TODO.md or Changelog.md. Any other file in the pull request means it needs the user's approval.
 - Saved-data format changes always wait for the user's approval.
 - Closing an increment is the user's decision, after its live gate.
 

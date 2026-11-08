@@ -4,6 +4,10 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-051 | 2026-11-08 | Claude
+
+**State:** as S-050, plus D-051: the docs-only standing approval also covers TODO.md and Changelog.md. TODO.md updated (1.3.0). This pull request is merged by Claude under that approval. No open pull requests after it. Nothing pending; next step: none for now.
+
 ## S-050 | 2026-11-08 | Claude
 
 **Phase and increment:** none open; P2-3 and P3-1 closed. User: "Nothing else for now."
