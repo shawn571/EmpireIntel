@@ -133,6 +133,33 @@ local function recordHints(out)
   return hints
 end
 
+--- The closest challenges with several steps, most done first: up to max lines, plus the Explorer challenge
+-- (shown on its own by the caller). Pure. Also used by /ei next (P2-4).
+function V.Closest(out, max)
+  local cand = {}
+  local explorer = nil
+  for _, ch in ipairs(out.challenges or {}) do
+    if ch.legacy and not ch.excluded and ch.completed ~= true then
+      if ch.steps then
+        explorer = explorer or ch
+      else
+        local d, n = stepsOf(ch)
+        if n > 1 and d > 0 then cand[#cand + 1] = { ch = ch, d = d, n = n } end
+      end
+    end
+  end
+  table.sort(cand, function(a, b)
+    if a.d / a.n ~= b.d / b.n then return a.d / a.n > b.d / b.n end
+    return (a.n - a.d) < (b.n - b.d)
+  end)
+  local closest = {}
+  for i = 1, math.min(max, #cand) do
+    local c = cand[i]
+    closest[#closest + 1] = string.format('%s %d of %d (left: %s)', tostring(c.ch.name), c.d, c.n, leftNames(c.ch, V.LEFT_NAMES))
+  end
+  return closest, explorer
+end
+
 --- The lines for one finished read (pure: no game call, no print). mode: nil or 'all'.
 function V.Lines(out, mode)
   local lines = {}
@@ -198,28 +225,7 @@ function V.Lines(out, mode)
       end
     end
   else
-    -- closest: challenges with several steps, most done first (Explorer on its own line)
-    local cand = {}
-    local explorer = nil
-    for _, ch in ipairs(out.challenges) do
-      if ch.legacy and not ch.excluded and ch.completed ~= true then
-        if ch.steps then
-          explorer = explorer or ch
-        else
-          local d, n = stepsOf(ch)
-          if n > 1 and d > 0 then cand[#cand + 1] = { ch = ch, d = d, n = n } end
-        end
-      end
-    end
-    table.sort(cand, function(a, b)
-      if a.d / a.n ~= b.d / b.n then return a.d / a.n > b.d / b.n end
-      return (a.n - a.d) < (b.n - b.d)
-    end)
-    local closest = {}
-    for i = 1, math.min(V.CLOSEST, #cand) do
-      local c = cand[i]
-      closest[#closest + 1] = string.format('%s %d of %d (left: %s)', tostring(c.ch.name), c.d, c.n, leftNames(c.ch, V.LEFT_NAMES))
-    end
+    local closest, explorer = V.Closest(out, V.CLOSEST)
     if explorer then closest[#closest + 1] = explorerLine(out, explorer) end
     for _, h in ipairs(recordHints(out)) do closest[#closest + 1] = h end
     for i, c in ipairs(closest) do add((i == 1 and 'Closest: ' or '         ') .. c) end

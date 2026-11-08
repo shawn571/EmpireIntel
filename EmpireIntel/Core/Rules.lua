@@ -29,6 +29,11 @@ R.CRAFTS = {                                           -- user (Q-P2-3a): the si
   { name = 'Engineering', line = 202 }, { name = 'Leatherworking', line = 165 }, { name = 'Tailoring', line = 197 },
 }
 R.CRAFT_MILESTONES = { 150, 225, 300 }                 -- user
+-- challenge names (game, EI-E-22): '<title> <class>' and '<title> <craft>'
+R.CLASS_TITLES = { [25] = 'Novice', [45] = 'Experienced', [60] = 'Master' }
+R.CRAFT_TITLES = { [150] = 'Journeyman', [225] = 'Expert', [300] = 'Artisan' }
+R.CRAFT_PERSON = { Alchemy = 'Alchemist', Blacksmithing = 'Blacksmith', Enchanting = 'Enchanter', Engineering = 'Engineer',
+  Leatherworking = 'Leatherworker', Tailoring = 'Tailor' }
 R.REST = { per8h = 0.05, outsideFactor = 0.25, cap = 1.5, period = 8 * 3600 }   -- classic; inn rate checked (EI-E-28), outside rate and cap unverified
 
 R.LABEL_RULES = '[class and crafting milestones confirmed by the game]'

@@ -1,0 +1,7 @@
+## Interface: 16001
+## Title: EmpireIntel Plan
+## Notes: Your goals for EmpireIntel's /ei next. Edit Plan.lua, then /reload.
+## Version: 1
+
+Marker.lua
+Plan.lua

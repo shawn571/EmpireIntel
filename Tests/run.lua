@@ -11,7 +11,7 @@ local F = require('fakeclient')
 F.root = root
 _G.TEST_ROOT = root
 
-local FILES = { 'test_static', 'test_check', 'test_ei_static', 'test_ei', 'test_ei_alts', 'test_ei_views', 'test_ei_legacy' }
+local FILES = { 'test_static', 'test_check', 'test_ei_static', 'test_ei', 'test_ei_alts', 'test_ei_views', 'test_ei_legacy', 'test_ei_next' }
 local filter = arg and arg[1]
 for _, name in ipairs(FILES) do
   if not filter or name:find(filter, 1, true) then

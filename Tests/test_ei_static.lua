@@ -29,10 +29,10 @@ local function luacGlobals(path)
 end
 
 T.describe('EmpireIntel static rules', function()
-  T.it('TOC: Interface 16001, version 0.5.2, one saved variable, forward slashes, files exist', function()
+  T.it('TOC: Interface 16001, version 0.6.0, one saved variable, forward slashes, files exist', function()
     local toc = read(DIR .. 'EmpireIntel.toc')
     T.truthy(toc:find('^## Interface: 16001\n'))
-    T.truthy(toc:find('## Version: 0.5.2', 1, true))
+    T.truthy(toc:find('## Version: 0.6.0', 1, true))
     T.truthy(toc:find('## SavedVariables: EmpireIntelDB\n', 1, true))
     T.falsy(toc:find('SavedVariablesPerCharacter', 1, true), 'format 1 is account-wide only')
     T.falsy(toc:find('Dependencies', 1, true))
@@ -153,5 +153,40 @@ T.describe('P3-1 static rules', function()
   T.it('Core/LegacyView.lua makes no game call', function()
     local c = code('Core/LegacyView.lua')
     T.falsy(c:find('P.Call', 1, true) or c:find('P.env', 1, true) or c:find('P.CallIn', 1, true))
+  end)
+end)
+
+T.describe('P2-4 static rules', function()
+  local function code(f) return (read(DIR .. f):gsub('%-%-[^\n]*', '')) end
+  T.it('Core/Plan.lua and Core/Next.lua make no game call and never touch saved data', function()
+    for _, f in ipairs({ 'Core/Plan.lua', 'Core/Next.lua' }) do
+      local c = code(f)
+      for _, bad in ipairs({ 'P.Call', 'P.CallIn', 'P.env', 'P.fn', 'Store.', 'EmpireIntelDB', 'SavedVars', 'DataStoreBridge', '_G' }) do
+        T.falsy(c:find(bad, 1, true), bad .. ' in ' .. f)
+      end
+    end
+  end)
+  T.it('the plan globals are read only through P.PlanGlobals; Next reads Legacy only through P.Legacy.Read', function()
+    T.truthy(code('Core/Plan.lua'):find('P.PlanGlobals()', 1, true))
+    T.falsy(code('Core/Next.lua'):find('EmpireIntelPlan', 1, true))
+    local n = code('Core/Next.lua')
+    local uses = {}
+    for m in n:gmatch('P%.Legacy%.([%w_]+)') do uses[m] = true end
+    uses.busy = nil
+    T.eq(uses, { Read = true })
+  end)
+  T.it('EmpireIntel_Plan: ASCII, LF, every TOC file exists; Plan.lua and Marker.lua assign only their globals', function()
+    local pdir = root .. '/EmpireIntel_Plan/'
+    for _, f in ipairs({ 'EmpireIntel_Plan.toc', 'Marker.lua', 'Plan.lua', 'README.txt' }) do
+      local s = read(pdir .. f)
+      T.falsy(s:find('[\128-\255]'), f .. ' is ASCII')
+      T.falsy(s:find('\r', 1, true), f .. ' has LF endings')
+    end
+    for _, f in ipairs({ 'Marker.lua', 'Plan.lua' }) do
+      local _, set = luacGlobals(pdir .. f)
+      if set then
+        for name in pairs(set) do T.truthy(name == 'EmpireIntelPlan' or name == 'EmpireIntelPlanFolder', name .. ' in ' .. f) end
+      end
+    end
   end)
 end)

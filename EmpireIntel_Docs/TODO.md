@@ -87,7 +87,8 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Docs-only standing approval extended to TODO.md and Changelog.md (D-051)
 - [x] P2-4 plan written: Phase2_Plan.md section 7 (S-052); no code
 - [x] Q-P2-4, a-e approved with the Legacy lock rule (D-052)
-- [ ] P2-4 build: EmpireIntel 0.6.0 plus EmpireIntel_Plan 1
+- [x] P2-4 built: EmpireIntel 0.6.0 plus EmpireIntel_Plan 1 on branch `p2-4-next`, 364 tests, 15/15 mutants (D-053)
+- [ ] **User:** P2-4 live gate (README steps 1-10), then Q-P2-4c (close P2-4)
 - [ ] Post-25 plan (Phase 3: P3-2, P3-3, perk goals), plan only
 
 ## Later phases: see Architecture.md section 10 (not approved)

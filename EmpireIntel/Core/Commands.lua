@@ -1,10 +1,11 @@
 local ADDON, EI = ...
--- EmpireIntel / Core / Commands.lua                                      (Phase 2, increments P2-1..P2-3; Phase 3, P3-1)
+-- EmpireIntel / Core / Commands.lua                                      (Phase 2, increments P2-1..P2-4; Phase 3, P3-1)
 --
 -- /ei            this character: level, XP, rested XP, professions, last saved; characters known
 -- /ei alts       every character, own records merged with DataStore (Core/Alts.lua, P2-2)
 -- /ei unlock | rest | milestones   views over the same characters (Core/Views.lua, P2-3)
 -- /ei legacy [all]  Legacy points and challenges, read on command (Core/LegacyView.lua, P3-1)
+-- /ei next      what next: the plan file's goals, or default suggestions (Core/Next.lua, P2-4)
 -- /ei version    addon version, saved-data schema, store state
 -- /ei off | on   stop or resume all snapshots (kept across logins)
 -- /ei help
@@ -74,6 +75,9 @@ function C.Handle(msg)
   elseif msg == 'legacy' or msg == 'legacy all' then
     local ok, err = pcall(EI.LegacyView.Command, msg == 'legacy all' and 'all' or nil)
     if not ok then P.Print('UNEXPECTED: /ei legacy failed: ' .. tostring(err)) end
+  elseif msg == 'next' then
+    local ok, err = pcall(EI.Next.Command)
+    if not ok then P.Print('UNEXPECTED: /ei next failed: ' .. tostring(err)) end
   elseif msg == 'version' then
     local st = EI.Store.Status() or {}
     P.Print('version ' .. P.VERSION .. ', saved data schema ' .. tostring(st.schema) .. ' (' .. tostring(st.state) .. ')')
@@ -86,7 +90,7 @@ function C.Handle(msg)
     EI.Snapshot.Start()
     P.Print('ON. This character is saved in about 2 seconds.')
   else
-    P.Print('commands: /ei (this character), /ei alts, /ei unlock, /ei rest, /ei milestones, /ei legacy, /ei version, /ei off, /ei on')
+    P.Print('commands: /ei (this character), /ei alts, /ei unlock, /ei rest, /ei milestones, /ei legacy, /ei next, /ei version, /ei off, /ei on')
   end
 end
 

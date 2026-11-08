@@ -347,6 +347,13 @@ And: "Separately, plan only and no code: write a post-25 plan (Phase 3) covering
 - Phase2_Plan.md section 7 (plan file format 1 is a contract), with the lock rule in 7.3, 7.4 and 7.7; header lines corrected: P2-1 to P2-3 use no Legacy API; P2-4 uses the P3-1 reads on command only. This narrows D-027 for P2-4 only.
 - Unlocked = any known character at level 25 or higher (EI-E-02).
 
+## D-053 P2-4 built: EmpireIntel 0.6.0 and EmpireIntel_Plan 1 | Claude (2026-11-08), within D-052
+- Branch `p2-4-next`. New `Core/Plan.lua` (plan file format 1, validation) and `Core/Next.lua` (`/ei next`, the defaults, the Legacy lock rule); `P.PlanGlobals()` in Platform; `LegacyView.Closest` extracted for reuse (no change to `/ei legacy` output); `R.CLASS_TITLES`, `R.CRAFT_TITLES`, `R.CRAFT_PERSON` (challenge names, EI-E-22: "Journeyman Tailor", not "Journeyman Tailoring").
+- New folder `EmpireIntel_Plan` (TOC, `Marker.lua`, the example `Plan.lua`, README), shipped once as its own zip (Q-P2-4c).
+- No new game call, saved-data format 1 unchanged. 364 tests pass under Lua 5.1 and 5.3 (43 new); 15 of 15 mutants caught (lock rule, unlock threshold, Legacy read only when unlocked, defaults before the unlock, met boundary, line limits, thresholds, unknown never met, perk, duplicate names, load error).
+- Architecture.md section 7 (the 2026-11-03 draft) is superseded by Phase2_Plan.md section 7.3.
+- Restart or reload: EmpireIntel 0.6.0 `/reload`; EmpireIntel_Plan first install stated as a full restart, tested with `/reload` first (D-034).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
