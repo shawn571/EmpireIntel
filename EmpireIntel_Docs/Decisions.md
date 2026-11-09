@@ -479,6 +479,14 @@ Choices within the user's items, open to change:
 - **Item 7:** the emblem is `Interface\TargetingFrame\UI-PVP-<faction>` (EI-E-30), cropped to its icon [inferred crop]; the atlas is the fallback.
 - **Item 9:** "Account" in both modes (L-7: the progress is account-wide); NOW means today's value in both modes; the character column shows today's level.
 
+## D-065 Finding 10 and duplicates fixed in 0.7.2; Q-P2-4c and Q-P2-4d approved with conditions; one retest | User (2026-11-09)
+The user's exact words:
+"Finding 10: fix now in 0.7.2: each My plan row counts from the end of the earlier steps for the same character and profession; a step already reached shows “covered by step n” with no time or points. Also remove saved duplicate steps automatically on load (keep the first) and say so in chat. I’ll retest once, on 0.7.2: steps 2, 3, 6 and 8.
+Q-P2-4c: yes. c-1: yes (inside format 2). c-2: yes; nothing is planned for a free slot until I choose a profession or pick “planner’s choice” in the wizard. c-3: yes, gathering skills appear in the wizard, marked as earning no Legacy points.
+Q-P2-4d: yes. d-1: no, keep the rested rule unverified until I do the /ei rested-kill check on Forever. d-2: yes. d-3: yes (1.4 levels, 0.90).
+Build P2-4c and P2-4d only after P2-4b closes, one increment at a time."
+Consequences: EmpireIntel 0.7.2 built on `p2-4b-window` (P2-4b_Report.md section 6). P2-4c and P2-4d are approved as planned (Phase2_Plan.md section 10) with these answers, and are not started: P2-4c begins only after P2-4b closes, P2-4d after P2-4c. L-17 stays unverified (the rested-kill check, README 0.6.0 step 8). Claude's choices within the words: the first copy of a repeated step keeps a later copy's note when it has none; a saved step with an unknown key is never removed as a repeat (it stays an UNEXPECTED line); the repeat check runs about 3 seconds after login or `/reload`, after the first snapshot, so the chat line can name the character; `/ei next` in chat still counts each of my plan's steps from today (finding 10 was about the window's rows).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

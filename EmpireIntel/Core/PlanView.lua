@@ -261,11 +261,20 @@ local function mineRow(g, ctx)
       if type(r.level) ~= 'number' then row.status, row.now = 'unknown', '?'
       else
         row.now = tostring(r.level)
+        -- D-065 finding 10: time and points from the end of this character's earlier level steps
+        local prior = ctx.reach and ctx.reach.level[g.guid]
+        local from = (prior and prior.v > r.level) and prior.v or r.level
         if r.level >= g.level then row.status = 'done'
+        elseif from >= g.level then row.status, row.coveredBy = 'covered', prior.n
         else
           row.status = 'open'
-          row.hours = EI.Route.LevelHours(EI.Route.State(r, ctx.now, ctx.rates), g.level)
-          for _, m in ipairs(R.CLASS_MILESTONES) do if m > r.level and m <= g.level then row.pts = '+1' end end
+          local st = EI.Route.State(r, ctx.now, ctx.rates)
+          local h = EI.Route.LevelHours(st, g.level)
+          if from > r.level then h = h - (EI.Route.LevelHours(st, from)) end
+          row.hours = math.max(0, h)
+          local n = 0
+          for _, m in ipairs(R.CLASS_MILESTONES) do if m > from and m <= g.level then n = n + 1 end end
+          if n > 0 then row.pts = '+' .. n end
         end
       end
       row.rules = { 'L-15', 'L-16', 'L-17' }
@@ -276,12 +285,18 @@ local function mineRow(g, ctx)
       else
         local skill = p and p.skill or 0
         row.now = tostring(skill) .. ((p and type(p.max) == 'number' and p.max > 0) and ('/' .. p.max) or '')
+        -- D-065 finding 10: time and points from the end of the earlier steps of this character and profession
+        local prior = ctx.reach and ctx.reach.skill[g.guid .. '|' .. g.profession]
+        local from = (prior and prior.v > skill) and prior.v or skill
         if skill >= g.skill then row.status = 'done'
+        elseif from >= g.skill then row.status, row.coveredBy = 'covered', prior.n
         else
           row.status = (p and p.max and p.max < g.skill) and 'gate' or 'open'
-          row.hours = EI.Route.SkillHours(skill, g.skill)
+          row.hours = EI.Route.SkillHours(from, g.skill)
           if R.Craft({ name = g.profession }) then
-            for _, m in ipairs(R.CRAFT_MILESTONES) do if m > skill and m <= g.skill then row.pts = '+1' end end
+            local n = 0
+            for _, m in ipairs(R.CRAFT_MILESTONES) do if m > from and m <= g.skill then n = n + 1 end end
+            if n > 0 then row.pts = '+' .. n end
           end
         end
       end
@@ -297,9 +312,11 @@ local function mineRow(g, ctx)
       row.rules = { 'L-14' }
     end
   end
+  -- D-065 finding 10: a step an earlier step already reaches
+  if row.status == 'covered' then row.hours, row.pts = nil, '' end
   -- D-063 item 1: a skill step whose training gate has no level step before it in my plan
   local gateNeed = ctx.gates and ctx.gates[g.n]
-  if gateNeed and row.status ~= 'done' and row.status ~= 'unknown' then row.status = 'gate' end
+  if gateNeed and row.status ~= 'done' and row.status ~= 'unknown' and row.status ~= 'covered' then row.status = 'gate' end
   -- D-063 item 4: a step of an ignored character stays in my plan, marked, and is not "up next"
   if g.guid and ctx.ignore and ctx.ignore[g.guid] then row.ignored, row.status, row.hours, row.pts = true, 'ignored', nil, '' end
   row.time = row.hours and hours(row.hours) or ''
@@ -313,6 +330,7 @@ local function mineRow(g, ctx)
   if gateNeed and row.status == 'gate' then
     add[#add + 1] = { text = 'Needs level ' .. gateNeed .. ' first (L-4); my plan has no level step for it before this one.', r = 0.88, g = 0.66, b = 0.23 }
   end
+  if row.status == 'covered' then add[#add + 1] = { text = 'Covered by step ' .. tostring(row.coveredBy) .. ': that step already reaches this target; no time or points here.' } end
   if g.note and g.note ~= '' then add[#add + 1] = { text = 'Note: ' .. g.note, r = 1, g = 1, b = 1 } end
   for k, l in ipairs(add) do table.insert(row.tooltip, 1 + k, l) end
   return row
@@ -374,14 +392,24 @@ function V.Build(ctx)
     for _, r in ipairs(ctx.rows or {}) do if r.guid then byGuid[r.guid] = r end end
     ctx.gates = {}
     for _, v in ipairs(EI.Plan.Violations(ctx.plan.steps, byGuid)) do ctx.gates[v.dep.n] = v.need end
+    ctx.reach = { level = {}, skill = {} }
+    local covered = 0
     for _, g in ipairs(ctx.plan.steps) do
       local row = mineRow(g, ctx)
       if row.status == 'done' then met = met + 1 end
+      if row.status == 'covered' then covered = covered + 1 end
+      -- what this step reaches, for the steps after it (an ignored character's steps are not planned)
+      if not row.ignored and g.guid and (g.kind == 'level' or g.kind == 'skill') then
+        local tbl, key, v = ctx.reach.level, g.guid, g.level
+        if g.kind == 'skill' then tbl, key, v = ctx.reach.skill, g.guid .. '|' .. g.profession, g.skill end
+        if not tbl[key] or v > tbl[key].v then tbl[key] = { v = v, n = g.n } end
+      end
       if row.ignored then ignored = ignored + 1 end
       view.rows[#view.rows + 1] = row
-      if not view.card and row.status ~= 'done' and not row.ignored then view.card = mineCard(row) end
+      if not view.card and row.status ~= 'done' and row.status ~= 'covered' and not row.ignored then view.card = mineCard(row) end
     end
-    view.footer.total = #ctx.plan.steps .. ' steps - ' .. met .. ' met' .. ((ignored > 0) and (' - ' .. ignored .. ' ignored') or '') ..
+    view.footer.total = #ctx.plan.steps .. ' steps - ' .. met .. ' met' .. ((covered > 0) and (' - ' .. covered .. ' covered') or '')
+      .. ((ignored > 0) and (' - ' .. ignored .. ' ignored') or '') ..
       ((#view.problems > 0) and (' - ' .. #view.problems .. ' skipped (/ei next lists them)') or '')
     if ctx.plan.total == 0 then view.empty = 'My plan is empty: right-click a Fastest row, or /ei plan copy.' end
     if not view.card and ctx.plan.total > 0 then view.empty = 'Every step in my plan is met.' end

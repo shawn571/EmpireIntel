@@ -458,6 +458,56 @@ function Plan.NextEntry(list, kind, guid, row, prof)
 end
 
 ---------------------------------------------------------------------------
+-- duplicates (D-065): removed from the saved plan at load, the first kept
+---------------------------------------------------------------------------
+
+local function stepKey(e)
+  if type(e) ~= 'table' or not KEYS[e.kind] then return nil end
+  for k in pairs(e) do if not KEYS[e.kind][k] then return nil end end      -- a bad step stays, reported by Load
+  if e.kind == 'challenge' then return 'c|' .. tostring(e.id) end
+  if e.kind == 'level' then return 'l|' .. tostring(e.guid) .. '|' .. tostring(e.level) end
+  if e.kind == 'skill' then return 's|' .. tostring(e.guid) .. '|' .. string.lower(tostring(e.profession)) .. '|' .. tostring(e.skill) end
+  if e.kind == 'rested' then return 'r|' .. tostring(e.guid) .. '|' .. tostring(e.rested) end
+  return nil
+end
+
+--- Removes saved steps that repeat an earlier one (same kind, character and target; the first is kept, and keeps
+-- a later copy's note when it has none). Returns removed { { n, e } }, or nil plus the reason (read-only).
+-- Removing a later copy never breaks a prerequisite: the kept one is earlier.
+function Plan.Dedupe()
+  local mine = Plan.Section().mine
+  if type(mine) ~= 'table' then return {} end
+  local seen, list, removed = {}, {}, {}
+  for i, e in ipairs(mine) do
+    local k = stepKey(e)
+    local first = k and seen[k]
+    if first then
+      removed[#removed + 1] = { n = i, e = e }
+      if (first.note == nil or first.note == '') and type(e.note) == 'string' and e.note ~= '' then first.carryNote = e.note end
+    else
+      if k then seen[k] = { e = e, note = e.note } end
+      list[#list + 1] = e
+    end
+  end
+  if #removed == 0 then return removed end
+  local ok, why = writable()
+  if not ok then return nil, why end
+  for _, f in pairs(seen) do if f.carryNote then f.e.note = f.carryNote end end
+  Plan.Section().mine = list
+  return removed
+end
+
+--- The chat line after Dedupe, or nil when nothing was found.
+function Plan.DedupeText(removed, why, byGuid)
+  if removed == nil then return 'my plan has repeated steps; ' .. tostring(why) end
+  if #removed == 0 then return nil end
+  local parts = {}
+  for _, x in ipairs(removed) do parts[#parts + 1] = 'step ' .. x.n .. ' ' .. Plan.Label(x.e, byGuid or {}) end
+  return 'removed ' .. #removed .. ' repeated step' .. (#removed == 1 and '' or 's') .. ' from my plan (the first of each is kept): '
+    .. table.concat(parts, ', ') .. '.'
+end
+
+---------------------------------------------------------------------------
 -- XP rate measurement (Q-F2)
 ---------------------------------------------------------------------------
 

@@ -48,7 +48,8 @@ T.ICON = {
   ring = cell(0, 32, 32), disc = cell(32, 32, 32), thinRing = cell(64, 32, 32),
 }
 T.ICON.ignored = T.ICON.unknown                         -- D-063 item 4: a step of an ignored character
-T.STATUS_COLOR = { open = 'muted', progress = 'amber', done = 'doneFill', gate = 'muted', unknown = 'muted', ignored = 'dim' }
+T.ICON.covered = T.ICON.check                           -- D-065 finding 10: reached by an earlier step
+T.STATUS_COLOR = { open = 'muted', progress = 'amber', done = 'doneFill', gate = 'muted', unknown = 'muted', ignored = 'dim', covered = 'dim' }
 
 -- race file (UnitRace's second value) -> the atlas token (EI-E-30: Scourge is "undead"); others lower case
 T.RACE_ATLAS = { Scourge = 'undead', NightElf = 'nightelf' }

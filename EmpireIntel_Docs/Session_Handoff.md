@@ -4,6 +4,24 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-064 | 2026-11-09 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest build **EmpireIntel 0.7.2** (finding 10, repeated steps; D-065) on `p2-4b-window`, PR #17 open, **not merged**.
+
+**Approved:** through D-065: finding 10 and the repeat removal (built); **P2-4c and P2-4d approved with conditions** (Phase2_Plan.md section 10: c-1 inside format 2, c-2 nothing planned for a free slot until chosen, c-3 gathering shown as no points; d-1 **no**, L-17 stays unverified until the user's rested-kill check; d-2, d-3 yes). P2-4c starts only after P2-4b closes; P2-4d only after P2-4c closes.
+
+**Pending (the user decides):** the one retest on 0.7.2 (gate steps 2, 3, 6, 8); merging #17; closing P2-4b; the next check version (D-059, not built); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0, 0.7.1 and 0.7.2, 519 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.2.zip`, sha256 `07b2c0fcc0626bd3bf0214c8d57ceabb132942d3ea1084ccaac8db6ede5a3a70`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.0 (0.7.1 sent, not reported installed), EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** none new.
+
+**User's next step:** install 0.7.2, /reload (expect the chat line removing the repeated Enchanting 150), run gate steps 2, 3, 6, 8 once, send screenshots of both modes (as images) and the saved file; then decide on merging #17 and closing P2-4b.
+
 ## S-063 | 2026-11-09 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. Live gate on 0.7.0 **partly passed** (steps 1, 4, 5, 7; D-063). Retest build **EmpireIntel 0.7.1** (items 1-9, D-064) on `p2-4b-window`, PR #17 open, **not merged** ("Don't merge #17").

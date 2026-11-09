@@ -462,9 +462,10 @@ function L.Draw(list)
         r.who:SetTextColor(col[1], col[2], col[3], 1)
         local step = data.step .. (data.target and (' ' .. data.target) or '')
         if data.ignored then step = step .. ' (ignored)' end
+        if data.status == 'covered' then step = step .. ' (covered by step ' .. tostring(data.coveredBy) .. ')' end
         if data.note and data.note ~= '' then step = step .. ' (note)' end
         r.step:SetText(step)
-        local sc = (data.status == 'done' or data.ignored) and C.dim or C.text
+        local sc = (data.status == 'done' or data.status == 'covered' or data.ignored) and C.dim or C.text
         r.step:SetTextColor(sc[1], sc[2], sc[3], 1)
         r.now:SetText(data.now or '')
         r.pts:SetText(data.pts or '')

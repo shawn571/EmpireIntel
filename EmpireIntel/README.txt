@@ -1,6 +1,15 @@
-EmpireIntel 0.7.1 - the plan window, fixes from your live gate (P2-4b retest)
+EmpireIntel 0.7.2 - the plan window, your retest build (P2-4b)
 
-WHAT 0.7.1 CHANGES (your findings 1 to 9, D-063)
+WHAT 0.7.2 ADDS TO 0.7.1 (your decision D-065)
+  10. My plan counts each row from the end of the earlier steps of the same character (and profession):
+      "Level 20" after "Level 10" shows only the time from 10 to 20; "Enchanting 225" after "Enchanting 150"
+      only 150 to 225. A step an earlier step already reaches reads "(covered by step n)", greyed, with no
+      time or points. NOW stays today's value. The footer counts covered steps.
+  Repeated steps in My plan are removed when you log in or /reload (the first of each is kept, with a later
+  copy's note if it had none); chat says which, for example
+      "plan: removed 1 repeated step from my plan (the first of each is kept): step 9 <name> Enchanting 150."
+
+WHAT 0.7.1 CHANGED (your findings 1 to 9, D-063)
   1. My plan keeps prerequisites (training gates, L-4). A move, Move to top or drag that would put a skill
      step above the level step it needs takes that level step along; moving a level step down takes the
      steps that need it along. Chat says what moved with it. Removing or lowering a level step that a later
@@ -23,34 +32,38 @@ WHAT 0.7.1 CHANGES (your findings 1 to 9, D-063)
      Copying the route keeps the runner's level step before a dungeon challenge.
 
 RESTART OR RELOAD?
-  Update from 0.7.0 (or 0.6.0): /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
+  Update from 0.7.1, 0.7.0 or 0.6.0: /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
   the AddOns list refreshes at the next start, harmless). Saved data: unchanged format 2.
 
-RETEST (only the gate steps that did not pass; steps 1, 4, 5 and 7 passed on 0.7.0)
+RETEST (once, on 0.7.2: gate steps 2, 3, 6 and 8; steps 1, 4, 5 and 7 passed on 0.7.0)
   Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload. Type /ei version:
-  expect "version 0.7.1, saved data schema 2 (ok)".
+  expect "version 0.7.2, saved data schema 2 (ok)". About 3 seconds after the /reload, expect the chat line
+  "plan: removed 1 repeated step ..." naming your second Enchanting 150 (it is the only repeat in your plan).
   2. Fastest and My plan against the mockup, and:
      a. the card's emblem is the Horde icon (not a red shield), next to a badge reading "PvE";
      b. the target button reads "Cap 2/16"; click it: "Next reward 2/15", then "Next point 2/3"; hover it;
      c. the Experienced Spelunker row says "Account" in both modes;
-     d. in Fastest, NOW shows today's values (the Priest's Enchanting row 28/75, not 150/150).
-  3. My plan (/ei plan copy first if you want a fresh copy):
+     d. in Fastest, NOW shows today's values (the Priest's Enchanting row 28/75, not 150/150);
+     e. in My plan, Level 20 after Level 10 shows less time than before (about 7.8 h, not 9.1 h); the times
+        no longer overlap.
+  3. My plan:
      a. drag (or Move to top) an Enchanting 150 row above "Level 10" of the same Priest: both move, and chat
         says "Moved with it: ... Level 10";
-     b. right-click Enchanting 150 > Add a skill step after: expect Enchanting 225 with a Level 20 step added
-        before it (chat says so); doing it again on Enchanting 225 gives 300, never a second 150;
+     b. right-click Enchanting 150 > Add a skill step after: if Enchanting 225 is already in your plan, expect
+        300 (or "nothing added: Enchanting 300 is already planned"), never a second 150; a missing level step
+        is added before it (chat says so);
      c. right-click a row > Edit note: the bar opens below the rows; type a note, Enter: the row shows "(note)"
         and its tooltip shows the note;
      d. the rows of the character you ignored read "(ignored)"; right-click one: it offers "Unignore";
      e. /reload and open again: all kept.
   6. Enter combat, open the window: "Legacy not read (in combat)" (or "from before combat"). Leave combat
      with the window open: within a few seconds the line goes away.
-  8. Send a screenshot of each mode, the saved file
+  8. Send a screenshot of each mode (pasted as images), the saved file
        WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
      and any line with UNEXPECTED or any red Lua error.
 
-ROLLBACK TO 0.7.0
-  Put the 0.7.0 folder back and /reload. Saved data is the same format; nothing to undo.
+ROLLBACK TO 0.7.0 OR 0.7.1
+  Put that folder back and /reload. Saved data is the same format (removed repeats stay removed).
 
 EmpireIntel 0.7.0 - the plan window (P2-4b)
 

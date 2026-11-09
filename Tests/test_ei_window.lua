@@ -975,3 +975,72 @@ T.describe('P2-4b retest, item 9: one meaning in both modes', function()
     T.eq(list, { { kind = 'level', guid = C1, level = 20 }, { kind = 'challenge', id = 777 } })
   end)
 end)
+
+T.describe('P2-4b retest 0.7.2, finding 10: my plan counts from the earlier steps (D-065)', function()
+  local plan = { mode = 'mine', mine = {
+    { kind = 'level', guid = C2, level = 10 },
+    { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 },
+    { kind = 'level', guid = C2, level = 20 },
+    { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 225 },
+    { kind = 'level', guid = C2, level = 15 },
+  } }
+  T.it('each row\'s time and points run from the end of the earlier steps; NOW stays today\'s', function()
+    local W, EI = session({ eidb = db(plan) })
+    openWin(W)
+    local rows = EI.Window.view.rows
+    local st = EI.Route.State(EI.Window.byGuid[C2], (W.EI.Platform.Now()), EI.Plan.Rates())
+    local h10, h20 = EI.Route.LevelHours(st, 10), EI.Route.LevelHours(st, 20)
+    T.near(rows[1].hours, h10, 1e-9)
+    T.near(rows[3].hours, h20 - h10, 1e-9, 'Level 20 from 10, not from 6')
+    T.near(rows[4].hours, EI.Route.SkillHours(150, 225), 1e-9, 'Enchanting 225 from 150, not from 28')
+    T.eq(rows[4].pts, '+1')
+    T.eq(rows[4].now, '28/75', 'NOW is today\'s value')
+  end)
+  T.it('a step an earlier step already reaches says "covered by step n", with no time or points, and is not up next', function()
+    local W, EI = session({ eidb = db(plan) })
+    openWin(W)
+    local r = EI.Window.view.rows[5]
+    T.eq(r.status, 'covered')
+    T.eq(r.time, '')
+    T.eq(r.pts, '')
+    T.eq(row(EI, 5).step.text, 'Level 15 (covered by step 3)')
+    T.truthy(EI.Window.view.footer.total:find('1 covered', 1, true), EI.Window.view.footer.total)
+    local hit = false
+    for _, l in ipairs(r.tooltip) do if l.text:find('Covered by step 3', 1, true) then hit = true end end
+    T.truthy(hit)
+  end)
+  T.it('two milestones in one step count +2', function()
+    local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C1, level = 60 } } }) })
+    openWin(W)
+    T.eq(EI.Window.view.rows[1].pts, '+2', 'C1 27 -> 60 passes 45 and 60')
+  end)
+end)
+
+T.describe('P2-4b retest 0.7.2: repeated saved steps are removed at load (D-065)', function()
+  local function dupPlan()
+    return { mode = 'mine', mine = {
+      { kind = 'level', guid = C2, level = 10 },
+      { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 },
+      { kind = 'level', guid = C2, level = 20 },
+      { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150, note = 'vellum' },
+      { kind = 'challenge', id = 62032 }, { kind = 'challenge', id = 62032 },
+    } }
+  end
+  T.it('the first is kept (with a later copy\'s note), the others go, and chat says which', function()
+    local W = session({ eidb = db(dupPlan()) })
+    local mine = W.env.EmpireIntelDB.plan.mine
+    T.eq(#mine, 4)
+    T.eq(mine[2], { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150, note = 'vellum' })
+    T.eq(mine[4], { kind = 'challenge', id = 62032 })
+    T.truthy(find(W.prints, 'plan: removed 2 repeated steps from my plan (the first of each is kept): step 4 Cee Two Enchanting 150, step 6 challenge 62032.'), dump(W.prints))
+  end)
+  T.it('no repeats: nothing said; a bad step is never removed as a repeat; read-only: said, nothing changed', function()
+    local W = session({ eidb = db({ mine = { { kind = 'level', guid = C2, level = 10 } } }) })
+    for _, l in ipairs(W.prints) do T.falsy(l:find('repeated', 1, true), l) end
+    local W2 = session({ eidb = db({ mine = { { kind = 'level', guid = C2, level = 10 }, { kind = 'level', guid = C2, level = 10, name = 'x' } } }) })
+    T.eq(#W2.env.EmpireIntelDB.plan.mine, 2)
+    local W3 = session({ eidb = { schema = 9, meta = {}, roster = { [C1] = c1() }, plan = dupPlan() } })
+    T.eq(#W3.env.EmpireIntelDB.plan.mine, 6)
+    T.truthy(find(W3.prints, 'my plan has repeated steps; not saved: the saved data is read-only'), dump(W3.prints))
+  end)
+end)

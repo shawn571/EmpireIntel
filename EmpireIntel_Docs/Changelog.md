@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-09 | S-064 | Retest build EmpireIntel 0.7.2: finding 10 and repeated steps (branch `p2-4b-window`, not merged)
+- D-065. My plan rows count from the earlier steps ("covered by step n"); repeated saved steps removed at load, said in chat. 519 tests (Lua 5.1 and 5.3). Q-P2-4c and Q-P2-4d approved with conditions (L-17 stays unverified); not started.
+
 ## 2026-11-09 | S-063 | P2-4b live gate partly passed; retest build EmpireIntel 0.7.1; plan for P2-4c and P2-4d (branch `p2-4b-window`, not merged)
 - D-063 (the user's findings 1-11), D-064. Gate steps 1, 4, 5, 7 passed. 0.7.1 fixes items 1-9: prerequisites kept on every My plan edit, the next skill milestone without duplicates, an edit bar and note tooltips, ignored characters' steps marked, the target button labelled, the realm-type badge, the game's faction icon, a refresh when combat ends, "Account" and today's NOW in both modes. 514 tests (Lua 5.1 and 5.3); 22/22 new mutants. EI-E-32. P2-4b_Report.md section 6.
 - Phase2_Plan.md 1.7.0 section 10: P2-4c (profession choices, setup wizard) and P2-4d (rested XP in the route, the 105% rule as unverified L-19, rested priority), for approval; no code.

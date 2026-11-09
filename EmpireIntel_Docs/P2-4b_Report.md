@@ -1,6 +1,6 @@
 # P2-4b Report: the plan window (EmpireIntel 0.7.0)
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Live gate partly passed (D-063); 0.7.1 built for the retest; not merged.** Approved by the user (D-060 mockup, D-061 plan with the fill path); build choices in D-062. Branch `p2-4b-window`.
+DOC VERSION: 1.1.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Live gate partly passed (D-063); 0.7.2 built for the one retest (D-065); not merged.** Approved by the user (D-060 mockup, D-061 plan with the fill path); build choices in D-062. Branch `p2-4b-window`.
 
 ## 1. What was built
 
@@ -65,3 +65,5 @@ At first open a hidden texture is filled with `SetColorTexture` and read back wi
 **My plan screenshot (0.7.0, received 2026-11-09 after the build) [screenshot]:** 20 steps, 0 met; it confirms items 2, 6, 7 and 9 as reported. Two more observations, not fixed in 0.7.1:
 - **A duplicate already saved** (C2 Enchanting 150 twice, made by the item 2 fault). 0.7.1 adds no new duplicates but does not remove saved ones; the user removes it (Remove step) or copies the route again.
 - **Finding 10 (new): My plan's TIME and PTS count from today, not from the step before.** Each row's time runs from the character's current value (C2 Level 20 ~9.1 h includes the ~1.3 h of Level 10; Enchanting 225 ~6.2 h includes Enchanting 150's ~3.2 h), so the times overlap and do not add up, unlike Fastest. The duplicate Enchanting 150 also shows +1 twice. Proposed fix (needs the user's go-ahead): time and points from the end of the earlier steps of the same character and profession; a step already reached by an earlier step shows "covered by step n".
+
+**0.7.2 (D-065):** finding 10 fixed: each My plan row's time and points run from the end of the earlier steps of the same character (and profession); a step already reached reads "(covered by step n)", no time or points, never up next, counted in the footer; NOW stays today's value; several milestones in one step count `+2`. Repeated saved steps are removed about 3 seconds after login or `/reload` (the first kept, with a later copy's note when it had none; bad steps never removed as repeats; read-only: said, nothing changed); chat names them. 519 tests pass under Lua 5.1 and 5.3 (5 new); mutation check 8 of 9 caught, the ninth equivalent (a covered step always follows the open step that covers it, so it can never be the first open row). Package `EmpireIntel_AddOns_v0.7.2.zip`, 34 files, sha256 `07b2c0fcc0626bd3bf0214c8d57ceabb132942d3ea1084ccaac8db6ede5a3a70`; `/reload`; no format change. **The one retest:** gate steps 2, 3, 6 and 8 on 0.7.2.

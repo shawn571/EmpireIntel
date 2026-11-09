@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.7.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d, for approval (Q-P2-4c, Q-P2-4d), no code.**
+DOC VERSION: 1.7.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c).**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -584,7 +584,9 @@ The approved mockup (D-060): https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1 (
 - The path that ran is reported: once in chat when the window first opens, and in `/ei plan help`. Not saved (no format change).
 - Tests cover both paths and the double failure.
 
-## 10. P2-4c and P2-4d: profession choices with a setup wizard, and rested XP in the route (for approval; D-063 items 10 and 11; no code)
+## 10. P2-4c and P2-4d: profession choices with a setup wizard, and rested XP in the route (approved D-065; D-063 items 10 and 11; not started)
+
+**Answers (D-065):** Q-P2-4c yes; c-1 yes, inside format 2; c-2 yes, nothing is planned for a free slot until the user chooses a profession or "planner's choice" in the wizard; c-3 yes, gathering skills appear, marked as earning no Legacy points. Q-P2-4d yes; **d-1 no: L-17 stays unverified until the user's rested-kill check on Forever**; d-2 yes; d-3 yes (1.4 levels, 0.90). Order: P2-4c after P2-4b closes, P2-4d after P2-4c, one increment at a time.
 
 Two increments, one approval each, both after P2-4b closes. Proposed order: **P2-4c first** (it removes a wrong assumption from today's route), then P2-4d.
 
