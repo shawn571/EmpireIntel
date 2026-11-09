@@ -450,6 +450,35 @@ Built on branch `p2-4b-window`, not merged. Report: P2-4b_Report.md. Choices wit
 - **The compartment** shows our own mark (`Media/Mark.tga`); the minimap button and the window use the same mark.
 - **Faction from DataStore** is shown as "(DataStore)" next to the emblem on the card.
 
+## D-063 P2-4b live gate: partial pass; fix items 1-9 for a retest; plan items 10-11 for approval | User (2026-11-09)
+The user's exact words (character names replaced: C2 the Priest, C1 the Paladin, C3 the ignored character, C4 the Druid):
+"P2-4b live gate results (screenshots of both modes attached). Passed: 1 (/ei plan and minimap button), 4 (resize and persistence), 5 (ElvUI on and off, minimap placement), 7 (/ei alts). Don't merge #17. Fix items 1–9, rebuild for a retest, and plan items 10–11 for my approval (no code for those until I approve):
+1. My plan prerequisites: every edit (move, Move to top, drag, add, edit target) must keep prerequisites. Example: Enchanting 150 can't move above "Priest level 10" (gate L-4). Block the move, or move the prerequisite with it, and say which.
+2. Add a skill step after: adding after Enchanting 150 creates a second Enchanting 150; adding after Enchanting 225 creates Enchanting 150. Offer the next milestone (225 after 150, 300 after 225) and never duplicate an existing step.
+3. Notes: the edit box draws over the step text, and the note vanishes after editing. Give notes their own space (a second line or a tooltip), with the edit box clear of the text.
+4. Ignore and My plan: steps for an ignored character ([C3]) stayed in My plan. On ignore, mark or remove its steps there and tell me.
+5. Target button: it cycles 2/3, 2/16, 2/15 with no label. Label it ("Next point 2/3", "Cap 2/16", "Next reward 2/15") and add a tooltip.
+6. Ruleset badge: "Normal" means nothing to me. Show the realm type: PvE, PvP, RP-PvE, RP-PvP, or Hardcore later. Our realm name ends in "PvE"; report with evidence how the type can be read (game call, realm name or DataStore).
+7. Faction emblem: a red square shows instead of the Horde emblem. Find out why and check against the 0.1.9 evidence.
+8. Combat footer: "Legacy not read (in combat), counts inferred" stays after combat until I reopen. Refresh when combat ends.
+9. Consistency: Experienced Spelunker shows "Account" in My plan and the Paladin in Fastest; use one. NOW shows today's value in My plan but the expected value at that step in Fastest; label the difference or use one meaning.
+10. Profession choices and a setup wizard (plan first): I don't know where [C4]'s Alchemy came from (the Druid has Alchemy 0). The route must not assume a profession a character hasn't learned. Add a first-run setup wizard (like ElvUI's install) that asks for preferences: each character's intended professions (or "let the planner choose"), the target, which characters to include, and similar. Everything can be changed later, and the wizard can be rerun from the add-on's options. Until a profession is chosen or learned, show "choose a profession" or "learn Alchemy (planner's choice)", never a silent assumption.
+11. Rested XP in the route (plan first):
+a. Leveling time must use rested XP. A character with a full rested pool levels faster until the pool runs out, so its time estimate is lower. Use the confirmed rule: a pool of R saves R of kill XP.
+b. The 105% cap issue: in all versions of WoW, rested XP stops at 105% of a level, not 150%, if a character stays logged out in an inn without logging in until 105% has built up (about 7 days). It isn't confirmed on Forever. Label it unverified, and give me a simple test once my alt roster is set up. The plan should add a step "log in and out on <character>" when a resting character reaches about 90% (about 6 days), so the pool keeps growing to 150%.
+c. A character at or near 150% gets priority in the default route: level it through its rested pool so nothing is wasted, even if that isn't up to a Legacy milestone. This is the usual alt-cycling strategy, rotating through characters by rested state, to reach 60 account-wide faster.
+Each fix gets a test. End with the package block and only the gate steps to repeat."
+Consequences: #17 stays unmerged; items 1-9 built as EmpireIntel 0.7.1 on `p2-4b-window` (D-064, P2-4b_Report.md section 6); items 10-11 planned in Phase2_Plan.md section 10 (Q-P2-4c), no code. Only one screenshot (Fastest) reached the session; the second, sent as an image address, could not be opened (HTTP 403).
+
+## D-064 P2-4b retest built: EmpireIntel 0.7.1 | Claude (2026-11-09), within D-063
+Choices within the user's items, open to change:
+- **Item 1:** the prerequisite is carried, not blocked, for moves (the level step goes up with a skill step; a level step moved down takes its dependents); removing or lowering a needed level step is refused; adding or raising a skill target adds the missing level step before it. Gates that were already open before an edit are left as they are (shown as a gate), so an edit never moves unrelated steps.
+- **Item 3:** one edit bar below the rows for notes and targets; Enter or leaving the box saves, Escape cancels; the note is in the row tooltip with a "(note)" mark, and on the Up next card.
+- **Item 4:** the steps are marked, not removed (kept, greyed, never up next); Unignore in the row menu.
+- **Item 6:** the realm type comes from the end of the realm name [inferred]; no game call gives it (EI-E-31, EI-E-32).
+- **Item 7:** the emblem is `Interface\TargetingFrame\UI-PVP-<faction>` (EI-E-30), cropped to its icon [inferred crop]; the atlas is the fallback.
+- **Item 9:** "Account" in both modes (L-7: the progress is account-wide); NOW means today's value in both modes; the character column shows today's level.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

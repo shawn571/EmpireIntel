@@ -46,27 +46,38 @@ local function setMine(list)
   return ok
 end
 
+local function byGuid() return (EI.Window and EI.Window.byGuid) or {} end
+
+-- D-063 item 1: every edit keeps the prerequisites (Core/Plan.lua *Keeping): a level step a skill step needs is
+-- carried with it, or the edit is refused; chat says which.
+
 --- Moves saved step `from` to position `to` (1-based, in the saved list).
 function L.Move(from, to)
   local mine = EI.Plan.Mine()
   if not mine[from] or from == to then return false end
-  local list = {}
-  for i, e in ipairs(mine) do if i ~= from then list[#list + 1] = e end end
-  to = math.max(1, math.min(to, #list + 1))
-  table.insert(list, to, mine[from])
-  return setMine(list)
+  local bg = byGuid()
+  local list, carried = EI.Plan.MoveKeeping(mine, from, to, bg)
+  if not list then say('not moved: ' .. tostring(carried)); return false end
+  if not setMine(list) then return false end
+  local now
+  for i, e in ipairs(list) do if e == mine[from] then now = i end end
+  if #carried > 0 or now ~= to then
+    say('moved step ' .. from .. ' to ' .. tostring(now) .. '.' .. EI.Plan.CarriedText(carried, bg))
+  end
+  return true
 end
 
 function L.Remove(n)
   local mine = EI.Plan.Mine()
   if not mine[n] then return false end
-  local list = {}
-  for i, e in ipairs(mine) do if i ~= n then list[#list + 1] = e end end
+  local list, why = EI.Plan.RemoveKeeping(mine, n, byGuid())
+  if not list then say(why); return false end
   return setMine(list)
 end
 
 --- Sets one field of saved step n after Plan.Check accepts the result. Returns ok, reason.
-function L.Edit(n, field, value, byGuid)
+function L.Edit(n, field, value, bg)
+  bg = bg or byGuid()
   local mine = EI.Plan.Mine()
   local e = mine[n]
   if not e then return nil, 'no step ' .. tostring(n) end
@@ -78,39 +89,38 @@ function L.Edit(n, field, value, byGuid)
     if not v then return nil, 'not a number' end
     e2[field] = v
   end
-  local ok, why = EI.Plan.Check(e2, byGuid)
+  local ok, why = EI.Plan.Check(e2, bg)
   if not ok then return nil, why end
-  local list = {}
-  for i, x in ipairs(mine) do list[i] = (i == n) and e2 or x end
+  local list, carried = EI.Plan.ReplaceKeeping(mine, n, e2, bg)
+  if not list then return nil, carried end
   if not setMine(list) then return nil, 'not saved' end
+  if #carried > 0 then say('step ' .. n .. ' saved.' .. EI.Plan.CarriedText(carried, bg)) end
   return true
 end
 
---- Inserts a new step after n: kind 'level' (next class milestone) or 'skill' (next craft milestone).
+--- Inserts a new step after n (D-063 item 2): the next milestone after everything already planned for that
+-- character (and, for a skill, that profession), never a duplicate; its prerequisite is added or carried.
 function L.AddAfter(n, kind, row)
   local mine = EI.Plan.Mine()
   local guid = row and row.guid
   if not guid then return false end
-  local e
-  local r = row.saved and row.saved.row
-  if kind == 'level' then
-    local lvl = (r and type(r.level) == 'number') and r.level or 1
-    local nextM = EI.Rules.Next(EI.Rules.CLASS_MILESTONES, lvl) or EI.Rules.MAX_LEVEL
-    e = { kind = 'level', guid = guid, level = nextM }
-  else
-    local prof = row.saved and row.saved.profession
+  local bg = byGuid()
+  local r = (row.saved and row.saved.row) or bg[guid]
+  local prof
+  if kind == 'skill' then
+    prof = row.saved and row.saved.kind == 'skill' and row.saved.profession
     if not prof and r and type(r.professions) == 'table' then
       for _, p in ipairs(r.professions) do if EI.Rules.Craft(p) then prof = EI.Rules.Craft(p); break end end
     end
     if not prof then say('this character has no crafting skill recorded'); return false end
-    local cur = 0
-    for _, p in ipairs(r and r.professions or {}) do if p.name == prof and type(p.skill) == 'number' then cur = p.skill end end
-    e = { kind = 'skill', guid = guid, profession = prof, skill = EI.Rules.Next(EI.Rules.CRAFT_MILESTONES, cur) or 300 }
   end
-  local list = {}
-  for i, x in ipairs(mine) do list[#list + 1] = x; if i == n then list[#list + 1] = e end end
-  if #list == #mine then list[#list + 1] = e end
-  return setMine(list)
+  local e, why = EI.Plan.NextEntry(mine, kind, guid, r, prof)
+  if not e then say('nothing added: ' .. why .. '.'); return false end
+  local list, carried = EI.Plan.InsertKeeping(mine, n, e, bg)
+  if not list then say('nothing added: ' .. tostring(carried)); return false end
+  if not setMine(list) then return false end
+  say('added ' .. EI.Plan.Label(e, bg) .. '.' .. EI.Plan.CarriedText(carried, bg))
+  return true
 end
 
 ---------------------------------------------------------------------------
@@ -125,7 +135,8 @@ local function menuItems(list, row)
       items[#items + 1] = { text = 'Add a skill step after', act = 'addSkill' }
     end
     items[#items + 1] = { text = 'Edit note', act = 'note' }
-    if row.guid then items[#items + 1] = { text = 'Ignore ' .. tostring(row.who.name) .. ' in Fastest', act = 'ignore' } end
+    if row.guid and row.ignored then items[#items + 1] = { text = 'Unignore ' .. tostring(row.who.name), act = 'unignore' }
+    elseif row.guid then items[#items + 1] = { text = 'Ignore ' .. tostring(row.who.name) .. ' in Fastest', act = 'ignore' } end
     items[#items + 1] = { text = 'Remove step', act = 'remove', danger = true }
     return items
   end
@@ -141,9 +152,10 @@ function L.Act(list, act, row)
   elseif act == 'addLevel' then L.AddAfter(row.index, 'level', row)
   elseif act == 'addSkill' then L.AddAfter(row.index, 'skill', row)
   elseif act == 'note' then L.StartEdit(list, row, 'note'); return
-  elseif act == 'ignore' then
-    local ok, why = EI.Plan.SetIgnored(row.guid, true)
-    say(ok and (tostring(row.who.name) .. ' is left out of the fastest route.') or why)
+  elseif act == 'ignore' or act == 'unignore' then
+    local on = act == 'ignore'
+    local ok, why = EI.Plan.SetIgnored(row.guid, on)
+    say(ok and EI.Plan.IgnoreText(row.who.name, row.guid, on) or why)
   elseif act == 'copy' then
     local steps = win.res and win.res.steps or {}
     local entries, skipped = EI.Plan.FromRoute(steps)
@@ -206,36 +218,76 @@ L.ShowMenu = showMenu
 -- in-place edit
 ---------------------------------------------------------------------------
 
+-- D-063 item 3: the edit box has its own bar at the bottom of the list, clear of every row's text, with a label
+-- naming the step and the field. Enter or leaving the box saves; Escape cancels. A note is shown in the row's
+-- tooltip (and on the Up next card), with a "(note)" mark after the step.
+local function editBar(list)
+  if list.bar then return list.bar end
+  local C = T.C
+  local f = UI.Create('Frame', list.frame)
+  if not f then return nil end
+  f:SetHeight(T.ROW_H + 4)
+  f:SetPoint('BOTTOMLEFT', list.frame, 'BOTTOMLEFT', 0, 0)
+  f:SetPoint('BOTTOMRIGHT', list.frame, 'BOTTOMRIGHT', 0, 0)
+  local bg = fill(f, 'BACKGROUND', C.editBg)
+  if bg then bg:SetAllPoints(f) end
+  local line = fill(f, 'BORDER', C.accentLine)
+  if line then line:SetPoint('TOPLEFT', f, 'TOPLEFT', 0, 0); line:SetPoint('TOPRIGHT', f, 'TOPRIGHT', 0, 0); line:SetHeight(1) end
+  local label = text(f, T.FONTS.rows, T.SIZE.text, C.soft)
+  label:SetPoint('LEFT', f, 'LEFT', 10, 0)
+  local hint = text(f, T.FONTS.rows, T.SIZE.tiny, C.dim, 'RIGHT')
+  hint:SetPoint('RIGHT', f, 'RIGHT', -10, 0)
+  hint:SetText('Enter saves - Esc cancels')
+  local e = UI.Create('EditBox', f)
+  if not e then return nil end
+  e:SetAutoFocus(false)
+  e:SetFont(T.FONTS.rows, T.SIZE.text, '')
+  e:SetHeight(18)
+  e:SetTextColor(1, 1, 1, 1)
+  e:SetPoint('LEFT', label, 'RIGHT', 8, 0)
+  e:SetPoint('RIGHT', hint, 'LEFT', -8, 0)
+  f:Hide()
+  list.bar = { frame = f, label = label, edit = e, hint = hint }
+  list.edit = e
+  return list.bar
+end
+
+local function stopEdit(list)
+  list.editing = nil
+  if list.bar then list.bar.frame:Hide() end
+  L.Draw(list)
+end
+
+local function commit(list)
+  local ed = list.editing
+  if not ed or not list.edit then return end
+  list.editing = nil
+  local ok, why = L.Edit(ed.row.index, ed.field, list.edit:GetText(), list.win.byGuid or {})
+  if not ok then say('not saved: ' .. tostring(why))
+  elseif ed.field == 'note' then say('note saved on step ' .. ed.row.index .. ' (hover the row to read it).') end
+  if list.bar then list.bar.frame:Hide() end
+  if list.win.Refresh then list.win.Refresh() else L.Draw(list) end
+end
+L.Commit = commit
+
 function L.StartEdit(list, row, field)
   if list.mode ~= 'mine' or not row or not row.editable then return false end
   field = field or row.field
   if not field then return false end
-  local e = list.edit
-  if not e then
-    e = UI.Create('EditBox', list.frame)
-    if not e then return false end
-    e:SetAutoFocus(false)
-    e:SetFont(T.FONTS.rows, T.SIZE.text, '')
-    e:SetHeight(18)
-    e:SetTextColor(1, 1, 1, 1)
-    e:SetScript('OnEscapePressed', function(self) self:ClearFocus(); self:Hide() end)
-    e:SetScript('OnEditFocusLost', function(self) self:Hide() end)
-    list.edit = e
-  end
-  local ui = list.pool[row.slot]
-  e:ClearAllPoints()
-  if ui then e:SetPoint('LEFT', ui.step, 'LEFT', 0, 0); e:SetWidth(field == 'note' and 200 or 60) end
-  local current = field == 'note' and (row.note or '') or tostring(row.target or '')
-  e:SetText(current)
-  e:SetScript('OnEnterPressed', function(self)
-    local ok, why = L.Edit(row.index, field, self:GetText(), list.win.byGuid or {})
-    if not ok then say('not saved: ' .. tostring(why)) end
-    self:ClearFocus(); self:Hide()
-    if list.win.Refresh then list.win.Refresh() end
-  end)
+  local bar = editBar(list)
+  if not bar then return false end
+  local e = bar.edit
+  e:SetScript('OnEscapePressed', function(self) list.editing = nil; self:ClearFocus(); stopEdit(list) end)
+  e:SetScript('OnEditFocusLost', function() if list.editing then commit(list) end end)
+  e:SetScript('OnEnterPressed', function(self) commit(list); self:ClearFocus() end)
+  local what = field == 'note' and 'Note for step ' or ('New target for step ')
+  bar.label:SetText(what .. tostring(row.index) .. ' (' .. tostring(row.step) .. (row.target and (' ' .. row.target) or '') .. '):')
+  e:SetText(field == 'note' and (row.note or '') or tostring(row.target or ''))
+  list.editing = { row = row, field = field }
+  bar.frame:Show()
+  L.Draw(list)
   e:Show()
   e:SetFocus()
-  list.editing = { row = row, field = field }
   return true
 end
 
@@ -352,7 +404,7 @@ end
 --- Number of row slots that fit the list's height.
 function L.Slots(list)
   local h = list.frame:GetHeight() or 0
-  return math.max(1, math.floor(h / T.ROW_H) - 1)
+  return math.max(1, math.floor(h / T.ROW_H) - 1 - (list.editing and 1 or 0))
 end
 
 function L.Scroll(list, by)
@@ -408,9 +460,11 @@ function L.Draw(list)
         local col = UI.ClassColor(data.who.class) or C.text
         r.who:SetText(data.who.name .. ' ' .. (data.who.classText or '') .. (data.who.level and (' ' .. data.who.level) or ''))
         r.who:SetTextColor(col[1], col[2], col[3], 1)
-        local step = data.step .. (data.target and (' ' .. data.target) or '') .. ((data.note and data.note ~= '') and (' - ' .. data.note) or '')
+        local step = data.step .. (data.target and (' ' .. data.target) or '')
+        if data.ignored then step = step .. ' (ignored)' end
+        if data.note and data.note ~= '' then step = step .. ' (note)' end
         r.step:SetText(step)
-        local sc = data.status == 'done' and C.dim or C.text
+        local sc = (data.status == 'done' or data.ignored) and C.dim or C.text
         r.step:SetTextColor(sc[1], sc[2], sc[3], 1)
         r.now:SetText(data.now or '')
         r.pts:SetText(data.pts or '')

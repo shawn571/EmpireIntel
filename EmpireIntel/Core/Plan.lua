@@ -92,6 +92,23 @@ function Plan.SetTarget(t)
   return true
 end
 
+--- How many saved steps of "my plan" belong to a character (D-063 item 4).
+function Plan.StepsOf(guid)
+  local n = 0
+  for _, e in ipairs(Plan.Mine()) do if type(e) == 'table' and e.guid == guid then n = n + 1 end end
+  return n
+end
+
+--- The chat text after an ignore or unignore (D-063 item 4): what happens in Fastest and in my plan.
+function Plan.IgnoreText(name, guid, on)
+  local n = Plan.StepsOf(guid)
+  local steps = n .. ' step' .. (n == 1 and '' or 's')
+  if on then
+    return tostring(name) .. ' is left out of the fastest route.' .. (n > 0 and (' Its ' .. steps .. ' in my plan are kept, marked "ignored" and skipped for Up next (Remove step deletes one; Unignore brings them back).') or '')
+  end
+  return tostring(name) .. ' is back in the fastest route.' .. (n > 0 and (' Its ' .. steps .. ' in my plan are active again.') or '')
+end
+
 function Plan.SetIgnored(guid, on)
   local ok, why = writable(); if not ok then return nil, why end
   Plan.Ignore()[guid] = on and true or nil
@@ -221,6 +238,10 @@ function Plan.FromRoute(steps)
   for _, s in ipairs(steps) do
     local guid = s.row and s.row.guid
     if s.kind == 'dungeon' or s.kind == 'explorer' then
+      -- the level the route takes the runner to first is kept as its own step (D-063 item 1: a prerequisite)
+      for _, p in ipairs(s.parts) do
+        if p.kind == 'level' and guid then list[#list + 1] = { kind = 'level', guid = guid, level = p.to } end
+      end
       if s.id then list[#list + 1] = { kind = 'challenge', id = s.id } else skipped = skipped + 1 end
     elseif not guid then
       skipped = skipped + 1
@@ -236,6 +257,204 @@ function Plan.FromRoute(steps)
     if #list >= Plan.MAX_MINE then break end
   end
   return list, skipped
+end
+
+---------------------------------------------------------------------------
+-- prerequisites (P2-4b retest, D-063 item 1): every edit of "my plan" keeps them
+---------------------------------------------------------------------------
+-- A skill step needs the level of the training gate it passes (L-4, RouteRules.TRAIN), unless the character is
+-- already at that level or already has the rank (its max skill is at or above the target). The prerequisite is
+-- met by the character's level, or by a level step of the same character, at that level or higher, earlier in
+-- the list. Gates that were already open before an edit are left as they are (the row shows them as a gate).
+
+--- The level a skill target needs (L-4), or nil.
+function Plan.GateLevel(skill)
+  local need = nil
+  for cap, g in pairs(RR.TRAIN) do
+    if type(skill) == 'number' and skill > cap - 75 and (not need or g.level > need) then need = g.level end
+  end
+  return need
+end
+
+local function profOf(row, name)
+  for _, p in ipairs(row and type(row.professions) == 'table' and row.professions or {}) do
+    if type(p.name) == 'string' and string.lower(p.name) == string.lower(name) then return p end
+  end
+  return nil
+end
+
+--- The level an entry needs before it, or nil when it needs none.
+function Plan.Needs(e, byGuid)
+  if type(e) ~= 'table' or e.kind ~= 'skill' or type(e.guid) ~= 'string' then return nil end
+  local need = Plan.GateLevel(e.skill)
+  if not need then return nil end
+  local row = byGuid[e.guid]
+  if row and type(row.level) == 'number' and row.level >= need then return nil end
+  local p = row and type(e.profession) == 'string' and profOf(row, e.profession)
+  if p and type(p.max) == 'number' and p.max >= e.skill then return nil end
+  return need
+end
+
+local function meets(x, e, need) return x.kind == 'level' and x.guid == e.guid and type(x.level) == 'number' and x.level >= need end
+
+--- Steps whose prerequisite is not met before them: { dep, need, sat (the first level step after it, or nil) }.
+function Plan.Violations(list, byGuid)
+  local out = {}
+  for i, e in ipairs(list) do
+    local need = Plan.Needs(e, byGuid)
+    if need then
+      local ok = false
+      for j = 1, i - 1 do if meets(list[j], e, need) then ok = true; break end end
+      if not ok then
+        local sat = nil
+        for j = i + 1, #list do if meets(list[j], e, need) then sat = list[j]; break end end
+        out[#out + 1] = { dep = e, need = need, sat = sat }
+      end
+    end
+  end
+  return out
+end
+
+local function indexOf(list, e) for i, x in ipairs(list) do if x == e then return i end end return nil end
+
+local function openGates(list, byGuid)
+  local set = {}
+  for _, v in ipairs(Plan.Violations(list, byGuid)) do set[v.dep] = true end
+  return set
+end
+
+--- A step's short name for messages: "Name Level 10", "Name Enchanting 150", "challenge 123".
+function Plan.Label(e, byGuid)
+  if e.kind == 'challenge' then return 'challenge ' .. tostring(e.id) end
+  local row = byGuid[e.guid]
+  local who = row and row.name and (tostring(row.name) .. ' ') or ''
+  if e.kind == 'level' then return who .. 'Level ' .. tostring(e.level) end
+  if e.kind == 'skill' then return who .. tostring(e.profession) .. ' ' .. tostring(e.skill) end
+  return who .. 'Rested ' .. tostring(e.rested)
+end
+
+local function gateText(need)
+  local rank
+  for _, g in pairs(RR.TRAIN) do if g.level == need then rank = g.rank end end
+  return (rank or 'training') .. ' needs level ' .. need .. ', L-4'
+end
+
+-- After an edit: every gate that was open before stays as it was; a new one is fixed by carrying the level step
+-- (moved = the step the user moved: if it is the level step, its dependents follow it down instead), or, when no
+-- level step exists, by `missing` ('insert' a level step before it, or 'block'); 'blockAll' refuses any new gate.
+-- Returns list, carried (entries moved or inserted, each with .why), or nil plus the reason.
+local function keep(list, old, byGuid, moved, missing)
+  local carried = {}
+  for _ = 1, #list + 1 do
+    local fix
+    for _, v in ipairs(Plan.Violations(list, byGuid)) do if not old[v.dep] then fix = v; break end end
+    if not fix then return list, carried end
+    local di = indexOf(list, fix.dep)
+    if missing == 'blockAll' then
+      return nil, Plan.Label(fix.dep, byGuid) .. ' needs level ' .. fix.need .. ' first (' .. gateText(fix.need) .. ')'
+    end
+    if fix.sat then
+      -- a level step the user moved down takes its dependents with it, even when another level step would do
+      if moved and meets(moved, fix.dep, fix.need) and (indexOf(list, moved) or 0) > di then fix.sat = moved end
+      local si = indexOf(list, fix.sat)
+      if fix.sat == moved then
+        table.remove(list, di); table.insert(list, si, fix.dep)
+        carried[#carried + 1] = { e = fix.dep, why = 'needs ' .. Plan.Label(fix.sat, byGuid) .. ' first (' .. gateText(fix.need) .. ')' }
+      else
+        table.remove(list, si); table.insert(list, di, fix.sat)
+        carried[#carried + 1] = { e = fix.sat, why = 'prerequisite of ' .. Plan.Label(fix.dep, byGuid) .. ' (' .. gateText(fix.need) .. ')' }
+      end
+    elseif missing == 'insert' then
+      local lv = { kind = 'level', guid = fix.dep.guid, level = fix.need }
+      table.insert(list, di, lv)
+      carried[#carried + 1] = { e = lv, why = 'prerequisite of ' .. Plan.Label(fix.dep, byGuid) .. ' (' .. gateText(fix.need) .. ')', added = true }
+    else
+      return nil, Plan.Label(fix.dep, byGuid) .. ' needs level ' .. fix.need .. ' first (' .. gateText(fix.need) .. ')'
+    end
+  end
+  return nil, 'the prerequisites could not be kept'
+end
+
+local function copyList(list) local o = {}; for i, x in ipairs(list) do o[i] = x end; return o end
+
+local function carriedText(carried, byGuid)
+  local moved, added = {}, {}
+  for _, c in ipairs(carried) do
+    local t = Plan.Label(c.e, byGuid) .. ' (' .. c.why .. ')'
+    if c.added then added[#added + 1] = t else moved[#moved + 1] = t end
+  end
+  local out = ''
+  if #moved > 0 then out = out .. ' Moved with it: ' .. table.concat(moved, '; ') .. '.' end
+  if #added > 0 then out = out .. ' Added before it: ' .. table.concat(added, '; ') .. '.' end
+  return out
+end
+Plan.CarriedText = carriedText
+
+--- Moves step `from` to position `to`, keeping prerequisites. Returns list, carried, or nil plus the reason.
+function Plan.MoveKeeping(list, from, to, byGuid)
+  local e = list[from]
+  if not e then return nil, 'no step ' .. tostring(from) end
+  local old = openGates(list, byGuid)
+  local out = copyList(list)
+  table.remove(out, from)
+  to = math.max(1, math.min(to, #out + 1))
+  table.insert(out, to, e)
+  return keep(out, old, byGuid, e, 'block')
+end
+
+--- Removes step n unless a later step needs it. Returns list, or nil plus the reason.
+function Plan.RemoveKeeping(list, n, byGuid)
+  if not list[n] then return nil, 'no step ' .. tostring(n) end
+  local old = openGates(list, byGuid)
+  local out = copyList(list)
+  table.remove(out, n)
+  local res, why = keep(out, old, byGuid, nil, 'blockAll')      -- a removal never carries
+  if not res then return nil, 'not removed: ' .. why .. '; remove that step first' end
+  return res
+end
+
+--- Replaces step n with e2, keeping prerequisites (a skill target that now needs a level step gets one before it;
+-- a level step lowered below what a later step needs is refused). Returns list, carried, or nil plus the reason.
+function Plan.ReplaceKeeping(list, n, e2, byGuid)
+  if not list[n] then return nil, 'no step ' .. tostring(n) end
+  local old = openGates(list, byGuid)
+  -- a gate that was open stays accepted when the edit does not change what the step needs (a note, say)
+  if old[list[n]] and Plan.Needs(e2, byGuid) == Plan.Needs(list[n], byGuid) then old[e2] = true end
+  local out = copyList(list)
+  out[n] = e2
+  return keep(out, old, byGuid, nil, e2.kind == 'skill' and 'insert' or 'blockAll')
+end
+
+--- Inserts e after step n (at the end when n is past it), keeping prerequisites (a missing level step is added
+-- before it). Returns list, carried, or nil plus the reason.
+function Plan.InsertKeeping(list, n, e, byGuid)
+  local old = openGates(list, byGuid)
+  local out = copyList(list)
+  table.insert(out, math.max(0, math.min(n, #out)) + 1, e)
+  return keep(out, old, byGuid, nil, 'insert')
+end
+
+--- The next step to add after a step (D-063 item 2): the next milestone above the character's value and every
+-- step already planned for it, so no step is ever duplicated. kind 'level' (class milestones) or 'skill' (craft
+-- milestones of `prof`). Returns the entry, or nil plus the reason.
+function Plan.NextEntry(list, kind, guid, row, prof)
+  if kind == 'level' then
+    local base = (row and type(row.level) == 'number') and row.level or 1
+    for _, x in ipairs(list) do if x.kind == 'level' and x.guid == guid and type(x.level) == 'number' and x.level > base then base = x.level end end
+    local m = R.Next(R.CLASS_MILESTONES, base)
+    if not m then return nil, 'level ' .. R.MAX_LEVEL .. ' is already planned' end
+    return { kind = 'level', guid = guid, level = m }
+  end
+  prof = Plan.CanonicalProfession(prof)
+  if not prof then return nil, 'no profession' end
+  local p = profOf(row, prof)
+  local base = (p and type(p.skill) == 'number') and p.skill or 0
+  for _, x in ipairs(list) do
+    if x.kind == 'skill' and x.guid == guid and Plan.CanonicalProfession(x.profession) == prof and type(x.skill) == 'number' and x.skill > base then base = x.skill end
+  end
+  local m = R.Next(R.CRAFT_MILESTONES, base)
+  if not m then return nil, prof .. ' 300 is already planned' end
+  return { kind = 'skill', guid = guid, profession = prof, skill = m }
 end
 
 ---------------------------------------------------------------------------

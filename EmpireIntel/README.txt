@@ -1,3 +1,57 @@
+EmpireIntel 0.7.1 - the plan window, fixes from your live gate (P2-4b retest)
+
+WHAT 0.7.1 CHANGES (your findings 1 to 9, D-063)
+  1. My plan keeps prerequisites (training gates, L-4). A move, Move to top or drag that would put a skill
+     step above the level step it needs takes that level step along; moving a level step down takes the
+     steps that need it along. Chat says what moved with it. Removing or lowering a level step that a later
+     step needs is refused, with the reason. A skill step with no level step before it shows as a gate.
+  2. Add a skill step after: the next milestone (150 -> 225 -> 300) after everything already planned for that
+     character and profession, never a duplicate; its level step is added before it when missing.
+     Add a level step after: the next class milestone after the levels already planned.
+  3. Notes: Edit note (and clicking a target) opens an edit bar below the rows, clear of the text. Enter or
+     clicking away saves, Escape cancels. A row with a note shows "(note)"; hover it to read the note; the
+     Up next card shows it too.
+  4. Ignore: the ignored character's steps stay in My plan, marked "(ignored)", greyed and never "up next";
+     chat says how many. Right-click such a row: Unignore. Fastest's footer says how many are ignored.
+  5. The target button says what it is: "Cap 2/16", "Next reward 2/15", "Next point 2/3"; hover explains.
+  6. The badge shows the realm type (PvE, PvP, RP-PvE, RP-PvP; Hardcore from the game), read from the end
+     of the realm name [inferred]; hover the card for the source.
+  7. The faction emblem is the game's faction icon (the one the target frame uses), not the large crest.
+  8. When combat ends, an open window reads Legacy again and the combat line goes away.
+  9. A dungeon challenge says "Account" in both modes; the step names the character it runs on.
+     NOW is today's value in both modes; in Fastest the value at that point of the route is in the tooltip.
+     Copying the route keeps the runner's level step before a dungeon challenge.
+
+RESTART OR RELOAD?
+  Update from 0.7.0 (or 0.6.0): /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
+  the AddOns list refreshes at the next start, harmless). Saved data: unchanged format 2.
+
+RETEST (only the gate steps that did not pass; steps 1, 4, 5 and 7 passed on 0.7.0)
+  Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload. Type /ei version:
+  expect "version 0.7.1, saved data schema 2 (ok)".
+  2. Fastest and My plan against the mockup, and:
+     a. the card's emblem is the Horde icon (not a red shield), next to a badge reading "PvE";
+     b. the target button reads "Cap 2/16"; click it: "Next reward 2/15", then "Next point 2/3"; hover it;
+     c. the Experienced Spelunker row says "Account" in both modes;
+     d. in Fastest, NOW shows today's values (the Priest's Enchanting row 28/75, not 150/150).
+  3. My plan (/ei plan copy first if you want a fresh copy):
+     a. drag (or Move to top) an Enchanting 150 row above "Level 10" of the same Priest: both move, and chat
+        says "Moved with it: ... Level 10";
+     b. right-click Enchanting 150 > Add a skill step after: expect Enchanting 225 with a Level 20 step added
+        before it (chat says so); doing it again on Enchanting 225 gives 300, never a second 150;
+     c. right-click a row > Edit note: the bar opens below the rows; type a note, Enter: the row shows "(note)"
+        and its tooltip shows the note;
+     d. the rows of the character you ignored read "(ignored)"; right-click one: it offers "Unignore";
+     e. /reload and open again: all kept.
+  6. Enter combat, open the window: "Legacy not read (in combat)" (or "from before combat"). Leave combat
+     with the window open: within a few seconds the line goes away.
+  8. Send a screenshot of each mode, the saved file
+       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
+     and any line with UNEXPECTED or any red Lua error.
+
+ROLLBACK TO 0.7.0
+  Put the 0.7.0 folder back and /reload. Saved data is the same format; nothing to undo.
+
 EmpireIntel 0.7.0 - the plan window (P2-4b)
 
 WHAT 0.7.0 ADDS (your approval D-060, D-061; Phase2_Plan.md section 9; the approved mockup)

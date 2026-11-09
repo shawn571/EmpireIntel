@@ -1,11 +1,11 @@
 # EmpireIntel TODO
 
-DOC VERSION: 1.4.0  |  UPDATED: 2026-11-08 (session S-058)
+DOC VERSION: 1.5.0  |  UPDATED: 2026-11-09 (session S-063)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4b: built (EmpireIntel 0.7.0), branch p2-4b-window, not merged.
-IMPLEMENTATION APPROVED:  P2-4b (D-061).
-OPEN BLOCKERS:            the user's live gate; merge approval
+CURRENT PHASE:            Phase 2, increment P2-4b: live gate partly passed (D-063); retest build 0.7.1 on p2-4b-window, not merged.
+IMPLEMENTATION APPROVED:  P2-4b (D-061) and its fixes 1-9 (D-063). P2-4c and P2-4d: planned, NOT approved.
+OPEN BLOCKERS:            the user's retest (gate steps 2, 3, 6, 8); merge approval; Q-P2-4c, Q-P2-4d
 ```
 
 Rules: work only on the current phase. A phase is complete only when its exit test passes. Mark tasks `[x]` with date and session.
@@ -100,7 +100,11 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-4b build plan written: Phase2_Plan.md section 9 (S-061)
 - [x] Q-P2-4b-1..4 approved with the fill path (D-061); #16 merged (9cb1d10)
 - [x] P2-4b built: EmpireIntel 0.7.0 on branch `p2-4b-window`; 485 tests, 21/21 mutants (S-062, D-062)
-- [ ] **User:** the live gate (P2-4b_Report.md section 5, ElvUI on and off); merge approval; close P2-4b
+- [x] Live gate on 0.7.0: steps 1, 4, 5, 7 passed; findings 1-11 (D-063, 2026-11-09)
+- [x] 0.7.1 built for the retest (items 1-9): 514 tests, 22/22 mutants (S-063, D-064)
+- [x] P2-4c and P2-4d planned: Phase2_Plan.md section 10 (S-063)
+- [ ] **User:** retest gate steps 2, 3, 6, 8 on 0.7.1; merge approval for #17; close P2-4b
+- [ ] **User:** Q-P2-4c (profession choices, setup wizard) and Q-P2-4d (rested XP in the route), with their sub-questions
 - [ ] Next check version (setter labels "ok, no return value", SetColorTexture read-back, full UI result per character): not built yet (D-059)
 - [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
 - [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later

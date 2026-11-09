@@ -35,10 +35,28 @@ local function ago(t, now)
   return 'seen ' .. math.floor(d / 86400) .. ' days ago'
 end
 
-local function rulesetBadge(rs)
-  if rs == 'normal' then return { text = 'Normal', kind = 'normal' } end
-  if rs == 'hardcore' then return { text = 'Hardcore', kind = 'hard' } end
-  return { text = 'Ruleset unknown', kind = 'unknown' }
+-- D-063 item 6: the badge shows the realm type. No game call names it (EI-E-31: none of the C_GameRules functions
+-- called says it); the realm name ends with it ("... PvE", EI-E-06, EI-E-31), for the played character
+-- (GetRealmName) and for DataStore's alts (the realm part of its key). Hardcore comes from the game
+-- (C_GameRules.IsHardcoreActive, the ruleset field). The type is labelled [inferred] from the name.
+V.REALM_TYPES = {
+  { pat = 'rp%-?pvp$', text = 'RP-PvP', kind = 'pvp' }, { pat = 'rp%-?pve$', text = 'RP-PvE', kind = 'normal' },
+  { pat = '[^%a]rp$', text = 'RP-PvE', kind = 'normal' }, { pat = 'pvp$', text = 'PvP', kind = 'pvp' },
+  { pat = 'pve$', text = 'PvE', kind = 'normal' },
+}
+
+--- The realm-type badge { text, kind, why } from the realm name and the ruleset.
+function V.RealmType(realm, ruleset)
+  if ruleset == 'hardcore' then return { text = 'Hardcore', kind = 'hard', why = 'Hardcore: C_GameRules.IsHardcoreActive() [game]' } end
+  if type(realm) == 'string' then
+    local n = string.lower((string.gsub(realm, '%s+$', '')))
+    for _, t in ipairs(V.REALM_TYPES) do
+      if string.find(n, t.pat) then
+        return { text = t.text, kind = t.kind, why = 'Realm type ' .. t.text .. ': from the realm name [inferred]; no game call gives it (EI-E-31)' }
+      end
+    end
+  end
+  return { text = 'Realm type ?', kind = 'unknown', why = 'Realm type unknown: the realm name does not end with PvE, PvP, RP or RP-PvP' }
 end
 
 --- The art and badges for a character row (EI-E-30, D-060).
@@ -57,9 +75,18 @@ function V.Who(row, now, level)
     level = level or row.level, isPlayer = row.isPlayer == true, guid = row.guid,
     art = art, classAtlas = T.ClassAtlas(row.class),
     faction = faction, factionSrc = fsrc, emblem = faction and T.EMBLEM[faction] or nil,
-    ruleset = rulesetBadge(row.ruleset),
+    ruleset = V.RealmType(row.realm, row.ruleset),
     seen = row.isPlayer and 'played now' or ago(row.at, now),
   }
+end
+
+--- A card tooltip plus the realm-type line (D-063 item 6).
+function V.WithRealm(tip, who)
+  if not (who and who.ruleset and who.ruleset.why) then return tip end
+  local out = {}
+  for i, l in ipairs(tip) do out[i] = l end
+  out[#out + 1] = { text = who.ruleset.why }
+  return out
 end
 
 local function tooltip(title, timeLine, ruleIds)
@@ -118,16 +145,58 @@ function V.StepFacts(s)
   return text or '?', now or '', status
 end
 
+-- D-063 item 9: NOW is today's value in both modes (the character's real level, skill or the account's dungeon
+-- progress); the value at that point of the route is in the tooltip.
+local function todayNow(s)
+  local row = s.row or {}
+  for i = #s.parts, 1, -1 do
+    local p = s.parts[i]
+    if p.kind == 'skill' then
+      for _, x in ipairs(type(row.professions) == 'table' and row.professions or {}) do
+        if type(x.name) == 'string' and (R.Craft(x) or x.name) == p.profession and type(x.skill) == 'number' then
+          return tostring(x.skill) .. ((type(x.max) == 'number' and x.max > 0) and ('/' .. x.max) or '')
+        end
+      end
+      return '-'                                         -- not learned yet
+    end
+  end
+  for _, p in ipairs(s.parts) do if p.kind == 'runs' or p.kind == 'zones' then return nil end end   -- already today's
+  return type(row.level) == 'number' and tostring(row.level) or '?'
+end
+V.TodayNow = todayNow
+
+-- D-063 item 9: a dungeon challenge is account-wide (L-7): its row says "Account" in both modes; the character
+-- the route runs it on is named in the step (when it must level first) and in the tooltip.
+local ACCOUNT = { name = 'Account', classText = '', isPlayer = false, account = true }
+
+local function firstName(row) return (string.match(tostring(row.name or '?'), '^(%S+)')) end
+
 local function routeRow(s, i, now)
-  local text, nowText, status = V.StepFacts(s)
+  local text, routeNow, status = V.StepFacts(s)
   local un = EI.Route.UnverifiedRules(s)
-  local who = V.Who(s.row, now, s.atLevel)
+  local who = V.Who(s.row, now)
+  local nowText = todayNow(s) or routeNow
   local timeLine = hours(s.hours) .. ' [estimate]' .. (((s.restHours or 0) > 0.05) and (' - rest saves ' .. hours(s.restHours)) or '')
+  local title = who.name .. ' ' .. who.classText .. ' ' .. tostring(who.level) .. ': ' .. text
+  local extra = {}
+  if s.kind == 'dungeon' then
+    local lvl, runs
+    for _, p in ipairs(s.parts) do if p.kind == 'level' then lvl = p elseif p.kind == 'runs' then runs = p end end
+    local name = runs and runs.name or text
+    text = lvl and ('Level ' .. lvl.to .. ' on ' .. firstName(s.row) .. ', then ' .. name) or name
+    extra[#extra + 1] = { text = 'Account-wide challenge (L-7); the route runs it on ' .. who.name .. ' ' .. who.classText .. ' ' .. tostring(who.level) }
+    title = 'Account: ' .. text
+    who = ACCOUNT
+  end
+  if nowText ~= routeNow and routeNow ~= '' then
+    extra[#extra + 1] = { text = 'NOW is today\'s value; at this point of the route: ' .. routeNow }
+  end
+  local tip = tooltip(title, timeLine, s.rules)
+  for k, l in ipairs(extra) do table.insert(tip, 1 + k, l) end
   return {
     index = i, who = who, step = text, now = nowText, pts = '+' .. (s.points or 1), time = hours(s.hours), status = status,
-    unverified = #un > 0, kind = s.kind, guid = s.row and s.row.guid,
-    tooltip = tooltip(who.name .. ' ' .. who.classText .. ' ' .. tostring(who.level) .. ': ' .. text, timeLine, s.rules),
-    route = s,
+    unverified = #un > 0, kind = s.kind, guid = (s.kind ~= 'dungeon') and s.row and s.row.guid or nil,
+    tooltip = tip, route = s,
   }
 end
 
@@ -147,8 +216,10 @@ local function routeCard(s, now)
     for _, x in pairs(RR.TRAIN) do if x.rank == s.train then tr = x end end
     if tr then gate = 'gate: ' .. s.train .. ' needs level ' .. tr.level .. ' (L-4)' end
   end
-  return { who = r.who, title = title, earns = '+' .. (s.points or 1) .. ' ' .. table.concat(s.earns, ', '),
-    time = r.time, gate = gate, unverified = r.unverified, tooltip = r.tooltip }
+  -- the card names the character to play, also for an account-wide dungeon challenge (its runner)
+  local who = r.who.account and V.Who(s.row, now) or r.who
+  return { who = who, title = title, earns = '+' .. (s.points or 1) .. ' ' .. table.concat(s.earns, ', '),
+    time = r.time, gate = gate, unverified = r.unverified, tooltip = V.WithRealm(r.tooltip, who) }
 end
 
 ---------------------------------------------------------------------------
@@ -226,31 +297,62 @@ local function mineRow(g, ctx)
       row.rules = { 'L-14' }
     end
   end
+  -- D-063 item 1: a skill step whose training gate has no level step before it in my plan
+  local gateNeed = ctx.gates and ctx.gates[g.n]
+  if gateNeed and row.status ~= 'done' and row.status ~= 'unknown' then row.status = 'gate' end
+  -- D-063 item 4: a step of an ignored character stays in my plan, marked, and is not "up next"
+  if g.guid and ctx.ignore and ctx.ignore[g.guid] then row.ignored, row.status, row.hours, row.pts = true, 'ignored', nil, '' end
   row.time = row.hours and hours(row.hours) or ''
   local un = {}
   for _, id in ipairs(row.rules or {}) do if RR.Unverified(id) then un[#un + 1] = id end end
-  row.unverified = #un > 0 and row.status ~= 'done'
+  row.unverified = #un > 0 and row.status ~= 'done' and not row.ignored
   local label = row.step .. (row.target and (' ' .. row.target) or '')
   row.tooltip = tooltip(row.who.name .. ': ' .. label, (row.time ~= '' and (row.time .. ' [estimate]') or row.status), row.rules)
+  local add = {}
+  if row.ignored then add[#add + 1] = { text = 'Ignored: ' .. row.who.name .. ' is left out of Fastest. Right-click: Unignore, or Remove step.', r = 0.88, g = 0.66, b = 0.23 } end
+  if gateNeed and row.status == 'gate' then
+    add[#add + 1] = { text = 'Needs level ' .. gateNeed .. ' first (L-4); my plan has no level step for it before this one.', r = 0.88, g = 0.66, b = 0.23 }
+  end
+  if g.note and g.note ~= '' then add[#add + 1] = { text = 'Note: ' .. g.note, r = 1, g = 1, b = 1 } end
+  for k, l in ipairs(add) do table.insert(row.tooltip, 1 + k, l) end
   return row
 end
 
 local function mineCard(row)
   local title = row.step .. (row.target and (' ' .. row.target) or '') .. (row.now ~= '' and (' - now ' .. row.now) or '')
   return { who = row.who, title = title, earns = row.pts ~= '' and (row.pts .. ' Legacy point') or 'no Legacy point by itself',
-    time = row.time, unverified = row.unverified, tooltip = row.tooltip, index = row.index }
+    time = row.time, unverified = row.unverified, tooltip = V.WithRealm(row.tooltip, row.who), index = row.index,
+    gate = (row.note and row.note ~= '') and ('Note: ' .. row.note) or nil }
 end
 
 ---------------------------------------------------------------------------
 -- the whole view
 ---------------------------------------------------------------------------
 
+-- D-063 item 5: the target button says what it counts toward; its tooltip explains the three choices.
+function V.TargetLabel(res)
+  local tip = { { text = 'Target' },
+    { text = 'Next point: the route to your next Legacy point.' },
+    { text = 'Cap: ' .. RR.DEFAULT_TARGET .. ' points, the spending cap per character (L-12, unverified).' },
+    { text = 'Next reward: the next reward on the track (15 Air Rifle, 25 Spectral Bear Cub, 40 Tabard, 55 Reins; L-13).' },
+    { text = 'Click to change: Cap -> Next reward -> Next point.', r = 0.65, g = 0.66, b = 1 } }
+  if not res then return '?', tip end
+  local nums = res.earned .. '/' .. res.target
+  local label
+  if res.targetKind == 'next' then label = 'Next point ' .. nums
+  elseif res.targetKind == 'reward' then label = 'Next reward ' .. nums
+  elseif res.target == RR.DEFAULT_TARGET then label = 'Cap ' .. nums
+  else label = 'Target ' .. nums end
+  tip[1] = { text = 'Target: ' .. label .. ' (' .. (res.earnedSrc == 'game' and 'earned points from the game' or 'earned points inferred') .. ')' }
+  return label, tip
+end
+
 --- ctx: mode ('auto' | 'mine'), res (Route.Build), plan (Plan.Load), rows, now, rates, unlocked, legacy, legacyWhy
 function V.Build(ctx)
   local res = ctx.res
   local view = { mode = ctx.mode, rows = {}, problems = ctx.plan and ctx.plan.problems or {} }
   local n, u = RR.Counts()
-  view.target = res and (res.earned .. ' / ' .. res.target) or '?'
+  view.target, view.targetTip = V.TargetLabel(res)
   view.targetKind = res and res.targetKind
   local reward = res and RR.NextReward(res.earned)
   view.footer = { reward = reward and ('Next reward at ' .. reward.at .. ': ' .. reward.name) or 'All rewards reached',
@@ -267,14 +369,19 @@ function V.Build(ctx)
     view.note = 'Legacy not unlocked yet'
   end
   if ctx.mode == 'mine' then
-    local met = 0
+    local met, ignored = 0, 0
+    local byGuid = {}
+    for _, r in ipairs(ctx.rows or {}) do if r.guid then byGuid[r.guid] = r end end
+    ctx.gates = {}
+    for _, v in ipairs(EI.Plan.Violations(ctx.plan.steps, byGuid)) do ctx.gates[v.dep.n] = v.need end
     for _, g in ipairs(ctx.plan.steps) do
       local row = mineRow(g, ctx)
       if row.status == 'done' then met = met + 1 end
+      if row.ignored then ignored = ignored + 1 end
       view.rows[#view.rows + 1] = row
-      if not view.card and row.status ~= 'done' then view.card = mineCard(row) end
+      if not view.card and row.status ~= 'done' and not row.ignored then view.card = mineCard(row) end
     end
-    view.footer.total = #ctx.plan.steps .. ' steps - ' .. met .. ' met' ..
+    view.footer.total = #ctx.plan.steps .. ' steps - ' .. met .. ' met' .. ((ignored > 0) and (' - ' .. ignored .. ' ignored') or '') ..
       ((#view.problems > 0) and (' - ' .. #view.problems .. ' skipped (/ei next lists them)') or '')
     if ctx.plan.total == 0 then view.empty = 'My plan is empty: right-click a Fastest row, or /ei plan copy.' end
     if not view.card and ctx.plan.total > 0 then view.empty = 'Every step in my plan is met.' end
@@ -293,6 +400,9 @@ function V.Build(ctx)
     view.footer.total = string.format('Route: %d steps, ~%.0f h', #res.steps, total)
   else
     view.footer.total = string.format('Route stops at %d of %d', res.reached, res.target)
+  end
+  if res.excluded and res.excluded.ignored > 0 then
+    view.footer.total = view.footer.total .. (view.footer.total ~= '' and ' - ' or '') .. res.excluded.ignored .. ' ignored'
   end
   return view
 end

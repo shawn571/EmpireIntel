@@ -26,7 +26,7 @@ T.C = {
   menuHover = hex('2c2e3a'), danger = hex('f0a8a8'), editBg = hex('22232b'),
   hordeText = hex('f1b8b8'), hordeBg = hex('3a1f22'), allianceText = hex('b9cdf4'), allianceBg = hex('1f2840'),
   normalText = hex('c9d1c9'), normalBg = hex('23302a'), hardText = hex('ffd0c2'), hardBg = hex('45231a'),
-  unknownText = hex('c4c6cd'), unknownBg = hex('26272d'),
+  unknownText = hex('c4c6cd'), unknownBg = hex('26272d'), pvpText = hex('f1b8b8'), pvpBg = hex('3a1f22'),
 }
 
 -- the game's built-in fonts (EI-E-29: SetFont with FRIZQT__ returned true); ARIALN for the dense rows, with a
@@ -36,6 +36,7 @@ T.SIZE = { title = 13, text = 12, small = 11, tiny = 10, card = 13, cardName = 1
 
 T.WINDOW = { w = 560, h = 420, minW = 440, minH = 300, maxW = 900, maxH = 800 }   -- Q-P2-4b-4
 T.HEADER_H, T.FOOTER_H, T.ROW_H, T.CARD_H, T.PAD = 36, 30, 22, 92, 12
+T.TARGET_W = 118                                        -- D-063 item 5: room for "Next reward 12/15"
 T.COLUMNS = { status = 22, char = 120, now = 46, pts = 28, time = 50, handle = 14 }
 
 -- icon sheet cells (Media/Icons.tga, 128 x 64): left, right, top, bottom
@@ -46,7 +47,8 @@ T.ICON = {
   grip = cell(0, 16), handle = cell(16, 16), chevron = cell(32, 16), check = cell(48, 16),
   ring = cell(0, 32, 32), disc = cell(32, 32, 32), thinRing = cell(64, 32, 32),
 }
-T.STATUS_COLOR = { open = 'muted', progress = 'amber', done = 'doneFill', gate = 'muted', unknown = 'muted' }
+T.ICON.ignored = T.ICON.unknown                         -- D-063 item 4: a step of an ignored character
+T.STATUS_COLOR = { open = 'muted', progress = 'amber', done = 'doneFill', gate = 'muted', unknown = 'muted', ignored = 'dim' }
 
 -- race file (UnitRace's second value) -> the atlas token (EI-E-30: Scourge is "undead"); others lower case
 T.RACE_ATLAS = { Scourge = 'undead', NightElf = 'nightelf' }
@@ -66,3 +68,10 @@ function T.ClassAtlas(class)
 end
 
 T.EMBLEM = { Horde = 'HordeEmblem', Alliance = 'AllianceEmblem' }      -- EI-E-30 (D-060: the game's own)
+-- D-063 item 7: the emblem is the game's faction icon file (EI-E-30: Interface\TargetingFrame\UI-PVP-<faction> loads,
+-- file ids 136998 and 137000); its icon sits in the top-left of the file, so it is cropped [inferred from the
+-- classic target frame]. The atlas above is the fallback only: at 20 px it drew as a red shield (the user's 0.7.0
+-- screenshot).
+T.EMBLEM_FILE = 'Interface\\TargetingFrame\\UI-PVP-'
+T.EMBLEM_CROP = { 0, 0.625, 0, 0.625 }
+T.EMBLEM_SIZE = 26

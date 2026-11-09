@@ -308,6 +308,7 @@ function N.MineLines(ctx)
   local list, met = {}, 0
   for _, g in ipairs(plan.steps) do
     local l = stepLine(g, ctx)
+    if l ~= 'met' and g.guid and ctx.ignore and ctx.ignore[g.guid] then l = '(ignored) ' .. l end   -- D-063 item 4
     if l == 'met' then met = met + 1 else list[#list + 1] = { n = g.n, s = l } end
   end
   lines[#lines + 1] = string.format('next (my plan: %s; %d met, %d skipped%s):', plural(plan.total, 'step'), met,
@@ -370,7 +371,7 @@ function N.Command()
   withData(false, function(rows, legacy, why, now, plan)
     local lines
     if EI.Plan.Mode() == 'mine' then
-      lines = N.MineLines({ rows = rows, plan = plan, unlocked = N.Unlocked(rows), now = now, rates = EI.Plan.Rates(),
+      lines = N.MineLines({ rows = rows, plan = plan, unlocked = N.Unlocked(rows), now = now, rates = EI.Plan.Rates(), ignore = EI.Plan.Ignore(),
         legacy = legacy, legacyWhy = why })
     else
       local res, ruleset = routeFor(rows, legacy, now)
@@ -436,11 +437,13 @@ function N.PlanCommand(args)
     local n = tonumber(rest)
     local mine = EI.Plan.Mine()
     if not n or not mine[n] then say('no step ' .. tostring(rest) .. ' (my plan has ' .. plural(#mine, 'step') .. ').'); return end
-    local list = {}
-    for i, e in ipairs(mine) do if i ~= n then list[#list + 1] = e end end
-    if cmd == 'top' then table.insert(list, 1, mine[n]) end
+    local byGuid = {}
+    for _, r in ipairs(EI.Views.Collect()) do if r.guid then byGuid[r.guid] = r end end
+    local list, carried
+    if cmd == 'top' then list, carried = EI.Plan.MoveKeeping(mine, n, 1, byGuid) else list, carried = EI.Plan.RemoveKeeping(mine, n, byGuid) end
+    if not list then say((cmd == 'top' and 'not moved: ' or '') .. tostring(carried)); return end
     local ok, why = EI.Plan.SetMine(list)
-    done(ok, why, (cmd == 'top' and 'moved step ' .. n .. ' to the top.' or 'removed step ' .. n .. '.'))
+    done(ok, why, (cmd == 'top' and ('moved step ' .. n .. ' to the top.' .. EI.Plan.CarriedText(carried or {}, byGuid)) or 'removed step ' .. n .. '.'))
   elseif cmd == 'clear' then
     local ok, why = EI.Plan.SetMine({})
     done(ok, why, 'my plan is empty.')
@@ -448,7 +451,7 @@ function N.PlanCommand(args)
     local row, why = EI.Plan.MatchChar(EI.Views.Collect(), rest)
     if not row then say(why); return end
     local ok, err = EI.Plan.SetIgnored(row.guid, cmd == 'ignore')
-    done(ok, err, tostring(row.name) .. (cmd == 'ignore' and ' is left out of the fastest route.' or ' is back in the fastest route.'))
+    done(ok, err, EI.Plan.IgnoreText(row.name, row.guid, cmd == 'ignore'))
   else
     settings(EI.Views.Collect())
   end

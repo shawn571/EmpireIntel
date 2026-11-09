@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.6.0  |  DATE: 2026-11-08 (S-061)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9: the P2-4b build plan, for approval (Q-P2-4b).**
+DOC VERSION: 1.7.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d, for approval (Q-P2-4c, Q-P2-4d), no code.**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -583,3 +583,55 @@ The approved mockup (D-060): https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1 (
 - Otherwise fills use `SetTexture` on our own `Media/White8.tga` (an 8x8 white file; our shipped texture loaded in 0.1.9, EI-E-29) plus `SetVertexColor`, read back with `GetVertexColor`. If both fail: one `UNEXPECTED` line, and the window still opens with text only.
 - The path that ran is reported: once in chat when the window first opens, and in `/ei plan help`. Not saved (no format change).
 - Tests cover both paths and the double failure.
+
+## 10. P2-4c and P2-4d: profession choices with a setup wizard, and rested XP in the route (for approval; D-063 items 10 and 11; no code)
+
+Two increments, one approval each, both after P2-4b closes. Proposed order: **P2-4c first** (it removes a wrong assumption from today's route), then P2-4d.
+
+### 10.1 Why the route showed Alchemy for C4 (item 10) [file: code; screenshot]
+
+`Core/Route.lua` lets a character with a free primary slot (fewer than two, L-6) **learn** any craft when that is the cheapest next point (`learn = true`). C4 Druid has no Alchemy and a free slot, so the route chose "learn Alchemy". In chat the step says "learn Alchemy"; **in the window the word was lost**: `PlanView.StepFacts` writes "Level 10, then Alchemy 150" when a level part comes first. Both are wrong by the user's rule: a profession a character has not learned is never assumed.
+
+### 10.2 P2-4c: what it delivers (EmpireIntel 0.8.0)
+
+1. **Profession choices per character.** For each character: its learned professions (read, as now) plus, for each free primary slot, one of: a profession the user picks, **"let the planner choose"**, or **"none"**.
+2. **The route uses only** learned professions, the user's picks, and, where the user said "let the planner choose", the planner's pick. With no answer for a free slot, the route assumes nothing: that character's craft points are not planned, and **one row says "C4: choose a profession (1 free slot)"** (no time, no points). A planner's pick is written **"learn Alchemy (planner's choice)"**, in chat, the window and the card. The window never drops "learn" again (test).
+3. **A first-run setup wizard** (in the spirit of ElvUI's install; our own frames and look, no templates, D-060). It opens the first time the window opens after 0.8.0, and never again unless asked. Pages, each with Back, Next and Skip:
+   1. Welcome: what EmpireIntel plans, and that every answer can be changed later.
+   2. Characters to include: every known character with a tick (unticked = ignored, the same list as `/ei plan ignore`).
+   3. Professions: per included character, its learned professions (read only) and a choice per free slot (the six crafts, the three gathering skills, "let the planner choose", "none").
+   4. Target: Cap 16, next reward or next point.
+   5. Default view and the minimap button: Fastest or My plan; button on or off.
+   6. Done: a summary; Finish saves everything at once.
+4. **Rerun:** `/ei setup`, a "Setup..." button in the window's header, and an entry in the game's AddOns options **if the client has the options API** (checked at run time under `pcall`; if absent, one `UNEXPECTED` line and the other two ways still work). Every answer is also changeable later in the window (right-click a character's row: "Professions...", "Include / Ignore").
+5. **Saved data (needs approval, Q-P2-4c-1):** in the `plan` section, new fields `profs = { ['<GUID>'] = { 'Alchemy', 'auto' } }` (a profession name, `'auto'` = planner's choice, or `'none'`, one per free slot) and `setup = { done = '0.8.0', at = <time> }`. Nothing is converted; older versions ignore the fields. Characters stay stored by GUID.
+6. **Tests** (about 40): no assumed profession anywhere (route, chat, window); planner's choice labelled; the "choose" row; each wizard page; Skip and Back; rerun; read-only saved data; the options-panel probe absent and present. **Package** 0.8.0, `/reload`.
+
+### 10.3 P2-4d: rested XP in the route (EmpireIntel 0.9.0)
+
+**What 0.7.x already does [file: code]:** every levelling estimate already spends the character's projected rested pool (L-17: a pool of R saves R of kill XP; saving = min(R, XP to go)), and the tooltip says "rest saves ~X h". What is missing:
+
+1. **(a) The pool grows during the route.** Today the pool is the one projected for *now*. P2-4d projects each character's pool to the moment its step starts: while the user plays other characters (the route's earlier steps, in play hours), a character logged out in an inn gains 5% of a level per 8 h (EI-E-28, confirmed). Assumption to approve (Q-P2-4d-2): **one character is played at a time and the others rest in an inn.** Each step's time then uses the pool it will have, and its row shows the pool ("rested 1.2 lv").
+2. **(b) The 105% rule (new rule L-19, unverified).** As the user describes it: a character that stays logged out in an inn without logging in stops gaining rested XP at 105% of a level (about 7 days at 5% per 8 h) instead of 150%. Not confirmed on Forever, so it is **labelled unverified** wherever it is used. The projection caps an untouched pool at 1.05 levels; **the route adds a step "log in and out on C<n>"** when a resting character reaches about 0.90 levels (about 6 days), after which the pool can grow to 1.5. A time line says when ("in about 2 days").
+3. **(c) Rested priority (alt cycling).** In the default route, a character at or near the cap (1.4 levels or more, or due to reach the cap before its next step) gets a step **"play C<n>: about X h at double XP (rested pool 1.5 lv)"**, placed before the cheapest Legacy step, even when it does not reach a Legacy milestone. Such a step earns 0 points; the route shows it as rested use, and the time to 60 account-wide is the measure. A switch in the wizard and the window, "Rested priority: on" (default on, as asked).
+4. **Saved data:** none beyond P2-4c's (the switch is one field `restPriority` in `plan`, with Q-P2-4c-1).
+5. **Tests** (about 30): pool growth across steps; the 1.05 cap without a login and 1.5 after one; the login step at 0.90; priority ordering and its switch; no change when every pool is empty. **Package** 0.9.0, `/reload`.
+
+**The 105% test for the user (once the alt roster is set up; no code):**
+1. Pick two alts with little or no rested XP, both logged out in an inn on the same day. Note `/ei rest` for both.
+2. Alt A: do not log in for 8 days. Alt B: log in once on day 6 (just log in and out), then leave it.
+3. On day 8 or later, log in on each and type `/ei rest`. Send both lines.
+4. If A shows about 1.05 levels and B about 1.2 or more, the 105% rule holds on Forever (L-19 becomes confirmed). If both show about the same (about 1.2 or more), there is no 105% stop and L-19 is dropped.
+
+### 10.4 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4c | Approve P2-4c as in 10.2 (EmpireIntel 0.8.0)? | Yes, after P2-4b closes |
+| Q-P2-4c-1 | Approve the saved fields `plan.profs`, `plan.setup` (and `plan.restPriority` for P2-4d), additive inside format 2 (no number change, since P3-2 keeps format 3)? | Yes |
+| Q-P2-4c-2 | With no answer for a free slot, plan nothing for it and show "choose a profession" (fewer points planned until you answer)? | Yes |
+| Q-P2-4c-3 | Gathering skills in the wizard's choices (they give no points, L-3, but use a slot, L-6)? | Yes |
+| Q-P2-4d | Approve P2-4d as in 10.3 (EmpireIntel 0.9.0)? | Yes, after P2-4c |
+| Q-P2-4d-1 | Record your words "Use the confirmed rule: a pool of R saves R of kill XP" as confirming L-17 (status user-confirmed, D-063), so it loses its unverified label? | Yes |
+| Q-P2-4d-2 | Assume one character played at a time, the others resting in an inn, for the pool growth? | Yes |
+| Q-P2-4d-3 | Thresholds: rested priority at 1.4 levels or more; the login step at 0.90 levels? | Yes |

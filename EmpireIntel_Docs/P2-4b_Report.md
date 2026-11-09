@@ -1,6 +1,6 @@
 # P2-4b Report: the plan window (EmpireIntel 0.7.0)
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-08 (S-062)  |  STATUS: **Built, not merged, waiting for the live gate.** Approved by the user (D-060 mockup, D-061 plan with the fill path); build choices in D-062. Branch `p2-4b-window`.
+DOC VERSION: 1.1.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Live gate partly passed (D-063); 0.7.1 built for the retest; not merged.** Approved by the user (D-060 mockup, D-061 plan with the fill path); build choices in D-062. Branch `p2-4b-window`.
 
 ## 1. What was built
 
@@ -39,3 +39,25 @@ At first open a hidden texture is filled with `SetColorTexture` and read back wi
 6. Open in combat: no error, "from before combat".
 7. `/ei alts`: an alt's faction from DataStore matches the game.
 8. Screenshots of both modes, the saved file, any `UNEXPECTED` line or Lua error.
+
+## 6. Live gate on 0.7.0 and the 0.7.1 retest build (S-063, D-063, D-064)
+
+**Result [reported]:** steps 1 (`/ei plan`, the minimap button), 4 (resize and persistence), 5 (ElvUI on and off, minimap placement) and 7 (`/ei alts`) passed. Steps 2, 3, 6 and 8 are repeated on 0.7.1. One screenshot (Fastest) was received; the second could not be opened (HTTP 403). The user's words and files were read as data; C1 Paladin, C2 Priest, C3 the ignored character, C4 the Druid.
+
+| # | Finding | Cause | 0.7.1 | Tests |
+|---|---|---|---|---|
+| 1 | My plan edits break prerequisites | edits had no prerequisite check | `Plan.MoveKeeping`, `RemoveKeeping`, `ReplaceKeeping`, `InsertKeeping`: the level step is carried (or added), a removal or lowering is refused; chat says which; an open gate shows as a gate | 11 |
+| 2 | Add a skill step duplicates 150 | the next milestone came from the character's skill, not from the plan | `Plan.NextEntry`: the next milestone after everything planned; nothing after 300 | 3 |
+| 3 | The note edit box covers the text; the note seems to vanish | the box was anchored on the step text; the note was appended to a fixed-width step column (cut off) | an edit bar below the rows; "(note)" mark, the note in the tooltip and on the card; leaving the box saves | 3 |
+| 4 | Ignored character's steps stay in My plan | the ignore applied to Fastest only (Q-F4) | marked "(ignored)", greyed, never up next, counted in the footer; Unignore in the menu; chat says how many | 3 |
+| 5 | The target button has no label | number only | "Cap 2/16", "Next reward 2/15", "Next point 2/3"; tooltip | 1 |
+| 6 | "Normal" badge | it showed the ruleset (`IsHardcoreActive`) | the realm type from the end of the realm name [inferred]; evidence EI-E-32 | 2 |
+| 7 | Red square for the Horde emblem | the `HordeEmblem` atlas draws a crest that reads as a red shield at 20 px (EI-E-32); 0.1.9 checked only that it exists | the game's faction icon file `UI-PVP-<faction>` (loads, EI-E-30), cropped [inferred], 26 px; atlas fallback | 1 |
+| 8 | Combat line stays after combat | no refresh on combat end | an open window reads Legacy again on `PLAYER_REGEN_ENABLED` (through `P_COMBAT`) | 2 |
+| 9 | "Account" vs the Paladin; NOW meanings differ | Fastest named the runner and showed the route's value | "Account" in both; NOW = today's value in both, the route's value in the tooltip; copying keeps the runner's level step | 3 |
+
+**Tests:** 514 pass under Lua 5.1 and 5.3 (485 before; 29 new, 8 adjusted to the new labels and rules). **Mutation check: 22 of 22 new guards caught.**
+
+**Package:** `EmpireIntel_AddOns_v0.7.1.zip`, 34 files, sha256 `937d51e9944ac7334cc3a118d15d6eb056091d969068396f9c561b1299120866`. `/reload` from 0.7.0. Rollback: the 0.7.0 folder and `/reload`. No saved-data format change.
+
+**Retest:** gate steps 2, 3, 6 and 8 (the package README lists what to look for).

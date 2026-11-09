@@ -433,11 +433,17 @@ T.describe('P2-4a: /ei plan and my plan', function()
     local W = session({ eidb = today() })
     run(W, 'plan copy')
     local mine = W.env.EmpireIntelDB.plan.mine
-    local second = mine[2]
-    run(W, 'plan top 2')
-    T.eq(W.env.EmpireIntelDB.plan.mine[1], second)
+    local first, second = mine[1], mine[2]
+    -- D-063 item 1: Tailoring 150 needs level 10 (L-4), so the level step moves to the top with it
+    local out = run(W, 'plan top 2')
+    T.eq(W.env.EmpireIntelDB.plan.mine[1], first)
+    T.eq(W.env.EmpireIntelDB.plan.mine[2], second)
+    T.truthy(find(out, 'Moved with it: Cee Two Level 10 (prerequisite of Cee Two Tailoring 150 (Journeyman needs level 10, L-4))'), dump(out))
     local n = #W.env.EmpireIntelDB.plan.mine
-    run(W, 'plan remove 1')
+    out = run(W, 'plan remove 1')
+    T.truthy(find(out, 'not removed: Cee Two Tailoring 150 needs level 10 first'), dump(out))
+    T.eq(#W.env.EmpireIntelDB.plan.mine, n)
+    run(W, 'plan remove 2')
     T.eq(#W.env.EmpireIntelDB.plan.mine, n - 1)
     T.truthy(find(run(W, 'plan remove 99'), 'no step 99'))
     run(W, 'plan clear')

@@ -3,7 +3,7 @@ local ADDON, EI = ...
 --
 -- PURPOSE
 --   The Up Next card of the approved mockup (D-060): the character's portrait (played) or race icon (alt, else its
---   class icon) in a class-coloured ring, a small class icon, the game's faction emblem, the ruleset badge, the
+--   class icon) in a class-coloured ring, a small class icon, the game's faction emblem, the realm-type badge, the
 --   step, the points, the time and a gate line. Draws only what Core/PlanView.lua returns.
 
 EI = EI or {}
@@ -52,7 +52,7 @@ function U.Create(parent)
   card.label = text(f, T.FONTS.title, T.SIZE.tiny, C.muted)
   card.label:SetPoint('TOPLEFT', f, 'TOPLEFT', 82, -12)
   card.emblem = UI.Texture(f, 'ARTWORK')
-  if card.emblem then card.emblem:SetSize(20, 20) end
+  if card.emblem then card.emblem:SetSize(T.EMBLEM_SIZE, T.EMBLEM_SIZE) end
   card.badgeBg = fill(f, 'ARTWORK', C.normalBg)
   card.badge = text(f, T.FONTS.rows, T.SIZE.tiny, C.normalText)
   card.badge:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -14, -11)
@@ -88,7 +88,8 @@ end
 
 local function show(x, on) if x then if on then x:Show() else x:Hide() end end end
 
-local BADGE = { normal = { 'normalText', 'normalBg' }, hard = { 'hardText', 'hardBg' }, unknown = { 'unknownText', 'unknownBg' } }
+local BADGE = { normal = { 'normalText', 'normalBg' }, pvp = { 'pvpText', 'pvpBg' }, hard = { 'hardText', 'hardBg' },
+  unknown = { 'unknownText', 'unknownBg' } }
 
 --- Draws a PlanView card (or the empty text when there is none). Returns what art was used (for tests and evidence).
 function U.Render(card, c, mode, empty)
@@ -117,8 +118,9 @@ function U.Render(card, c, mode, empty)
   local classIconOn = used ~= 'class' and UI.Atlas(card.classIcon, who.classAtlas)
   show(card.classIcon, classIconOn)
   -- faction: the game's emblem (D-060); DataStore's is marked
-  local emblemOn = who.emblem and UI.Atlas(card.emblem, who.emblem)
-  show(card.emblem, emblemOn)
+  local emblemOn = who.faction and UI.Emblem(card.emblem, who.faction)
+  card.emblemPath = emblemOn
+  show(card.emblem, emblemOn ~= nil and emblemOn ~= false)
   card.factionText:SetText(who.faction and (who.factionSrc == 'datastore' and (who.faction .. ' (DataStore)') or '') or '')
   local b = BADGE[who.ruleset.kind] or BADGE.unknown
   card.badge:SetText(who.ruleset.text)

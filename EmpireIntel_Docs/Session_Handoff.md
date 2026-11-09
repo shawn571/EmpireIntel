@@ -4,6 +4,24 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-063 | 2026-11-09 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Live gate on 0.7.0 **partly passed** (steps 1, 4, 5, 7; D-063). Retest build **EmpireIntel 0.7.1** (items 1-9, D-064) on `p2-4b-window`, PR #17 open, **not merged** ("Don't merge #17").
+
+**Approved:** through D-063 (fix items 1-9; plan items 10-11 without code).
+
+**Pending (the user decides):** the retest (gate steps 2, 3, 6, 8; README in the zip); merging #17; closing P2-4b; Q-P2-4c and Q-P2-4d with their sub-questions (Phase2_Plan.md section 10); the next check version (D-059, not built); #10 (P3-2 becomes format 3 when next edited); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 and 0.7.1, 514 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.1.zip`, sha256 `937d51e9944ac7334cc3a118d15d6eb056091d969068396f9c561b1299120866` (P2-4b_Report.md section 6); `/reload`; no format change. Note: the build tool stores file times, so a rebuild from a fresh checkout gives another sha256 with the same files.
+
+**Installed (as the user has said):** EmpireIntel 0.7.0, EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** Q-P2-4c, Q-P2-4c-1..3, Q-P2-4d, Q-P2-4d-1..3. Only one of the user's two screenshots was readable (the second, an image address, gave HTTP 403); the user should resend My plan's screenshot as an image.
+
+**User's next step:** install 0.7.1, repeat gate steps 2, 3, 6, 8, send the screenshots (as images) and the saved file; answer Q-P2-4c and Q-P2-4d.
+
 ## S-062 | 2026-11-08 | Claude
 
 **Phase and increment:** Phase 2, P2-4b **built** as EmpireIntel 0.7.0 (D-061 approval, D-062 build choices) on branch `p2-4b-window`, pull request open, **not merged**.

@@ -176,6 +176,23 @@ function UI.Atlas(tex, name)
   return ok
 end
 
+--- The faction emblem (D-063 item 7): the game's faction icon file, cropped, read back with GetTexture; the atlas
+-- when the file does not read back. Returns 'file', 'atlas' or nil (nothing drawn).
+function UI.Emblem(tex, faction)
+  local T = EI.Theme
+  if not tex or (faction ~= 'Horde' and faction ~= 'Alliance') or not T then return nil end
+  local ok = pcall(function() tex:SetTexture(T.EMBLEM_FILE .. faction) end)
+  local okB, back = pcall(function() return tex:GetTexture() end)
+  if ok and okB and back ~= nil then
+    local c = T.EMBLEM_CROP
+    pcall(function() tex:SetTexCoord(c[1], c[2], c[3], c[4]) end)
+    return 'file'
+  end
+  pcall(function() tex:SetTexCoord(0, 1, 0, 1) end)
+  if UI.Atlas(tex, T.EMBLEM[faction]) then return 'atlas' end
+  return nil
+end
+
 --- The class colour { r, g, b }, or nil.
 function UI.ClassColor(class)
   local cc = env().C_ClassColor

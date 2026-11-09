@@ -196,14 +196,14 @@ T.describe('P2-4b: the Up Next card and the rows (Fastest)', function()
     T.eq(card.earns.text, '+1 Journeyman Tailor')
     T.truthy(card.time.text:find('[estimate]', 1, true))
     T.eq(card.gate.text, 'gate: Journeyman needs level 10 (L-4)')
-    T.eq(card.badge.text, 'Normal')
-    T.eq(card.emblem.atlas, 'HordeEmblem')
+    T.eq(card.badge.text, 'Realm type ?', 'the test realm name has no type')
+    T.eq(card.emblem.path, 'Interface\\TargetingFrame\\UI-PVP-Horde')
     T.eq(card.ring.vc, { 1, 1, 1, 1 }, 'class colour: Priest white')
   end)
   T.it('the header shows earned / target; the footer the reward and the rules', function()
     local W, EI = session({})
     openWin(W)
-    T.eq(EI.Window.targetText.text, '1 / 16')
+    T.eq(EI.Window.targetText.text, 'Cap 1/16')
     T.truthy(EI.Window.footRight.text:find('Rules: 18, 11 unverified', 1, true))
     T.truthy(EI.Window.footLeft.text:find('Next reward at 15: Air Rifle', 1, true), EI.Window.footLeft.text)
   end)
@@ -233,7 +233,7 @@ T.describe('P2-4b: the Up Next card and the rows (Fastest)', function()
     T.eq(card.portrait.atlas, 'raceicon-undead-male')
     T.eq(card.classIcon.atlas, 'classicon-paladin')
     T.truthy(card.classIcon.shown)
-    T.eq(card.emblem.atlas, 'HordeEmblem')
+    T.eq(card.emblem.path, 'Interface\\TargetingFrame\\UI-PVP-Horde')
     T.near(card.ring.vc[1], 0.96, 1e-9)
     T.truthy(card.sub.text:find('seen 1 h ago', 1, true), card.sub.text)
   end)
@@ -246,14 +246,14 @@ T.describe('P2-4b: the Up Next card and the rows (Fastest)', function()
     T.eq(card.portrait.atlas, 'classicon-paladin')
     T.falsy(card.classIcon.shown, 'not twice')
     T.falsy(card.emblem.shown)
-    T.eq(card.badge.text, 'Ruleset unknown')
+    T.eq(card.badge.text, 'Realm type ?')
   end)
   T.it('the target button cycles 16 -> next reward -> next point', function()
     local W, EI = session({})
     openWin(W)
     EI.Window.targetButton.scripts.OnClick(EI.Window.targetButton)
     T.eq(W.env.EmpireIntelDB.plan.target, 'reward')
-    T.eq(EI.Window.targetText.text, '1 / 15')
+    T.eq(EI.Window.targetText.text, 'Next reward 1/15')
     EI.Window.targetButton.scripts.OnClick(EI.Window.targetButton)
     T.eq(W.env.EmpireIntelDB.plan.target, 'next')
   end)
@@ -360,7 +360,7 @@ T.describe('P2-4b: My plan', function()
     pick(m, 'Move to top')
     T.eq(W.env.EmpireIntelDB.plan.mine[1].guid, C1)
     pick(menu(1), 'Add a level step after')
-    T.eq(W.env.EmpireIntelDB.plan.mine[2], { kind = 'level', guid = C1, level = 45 })
+    T.eq(W.env.EmpireIntelDB.plan.mine[2], { kind = 'level', guid = C1, level = 60 }, 'the next milestone after 45, not 45 again')
     pick(menu(2), 'Edit note')
     local e = EI.Window.list.edit
     e.text = 'with the guild'
@@ -394,7 +394,7 @@ T.describe('P2-4b: Legacy and combat', function()
     local W, EI = session({ launch = true, legacy25 = 'ids' })
     openWin(W)
     T.truthy((W.calls.GetCategoryList or 0) >= 1)
-    T.eq(EI.Window.targetText.text, '1 / 16')
+    T.eq(EI.Window.targetText.text, 'Cap 1/16')
     slash(W, 'plan')
     W.combat = true
     local n = W.calls.GetCategoryList
@@ -613,5 +613,365 @@ T.describe('P2-4b: Fastest is read only', function()
     W.ui.cursor = { 300, 400 - 22 * 1 - 11 }
     r.button.scripts.OnDragStop(r.button)
     T.eq(W.env.EmpireIntelDB.plan.mine or {}, {}, "nothing saved")
+  end)
+end)
+
+---------------------------------------------------------------------------
+-- P2-4b retest (EmpireIntel 0.7.1): the user's live-gate findings, items 1 to 9 (D-063)
+---------------------------------------------------------------------------
+local function minePlan2(extra)
+  local m = { { kind = 'level', guid = C2, level = 10 }, { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 },
+    { kind = 'level', guid = C1, level = 45 } }
+  for _, e in ipairs(extra or {}) do m[#m + 1] = e end
+  return { mode = 'mine', mine = m }
+end
+local function since(W, from) local out = {}; for i = from + 1, #W.prints do out[#out + 1] = W.prints[i] end; return out end
+local function menuOf(EI, i)
+  local r = row(EI, i)
+  r.button.scripts.OnClick(r.button, 'RightButton')
+  return EI.Window.list.menu
+end
+local function pick(m, label)
+  for i = 1, m.items.count do if m.items[i].label.text == label then m.items[i].button.scripts.OnClick(m.items[i].button); return true end end
+  local have = {}
+  for i = 1, m.items.count do have[#have + 1] = m.items[i].label.text end
+  error('no item ' .. label .. ' (have: ' .. table.concat(have, ', ') .. ')')
+end
+local function kinds(list)
+  local out = {}
+  for _, e in ipairs(list) do out[#out + 1] = (e.kind == 'level' and ('L' .. e.level)) or (e.kind == 'skill' and (e.profession:sub(1, 3) .. e.skill)) or ('C' .. tostring(e.id)) end
+  return table.concat(out, ' ')
+end
+
+T.describe('P2-4b retest, item 1: my plan keeps prerequisites (L-4)', function()
+  local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+  local P0 = EI0.Plan
+  local byGuid = { [C2] = { guid = C2, name = 'Cee Two', level = 6, professions = { { name = 'Enchanting', skill = 28, max = 75 } } } }
+  local function L(n) return { kind = 'level', guid = C2, level = n } end
+  local function E(n) return { kind = 'skill', guid = C2, profession = 'Enchanting', skill = n } end
+  T.it('the gate levels: 75 or less none, to 150 level 10, to 225 level 20, to 300 level 35', function()
+    T.eq({ P0.GateLevel(75), P0.GateLevel(76), P0.GateLevel(150), P0.GateLevel(151), P0.GateLevel(225), P0.GateLevel(300) },
+      { nil, 10, 10, 20, 20, 35 })
+  end)
+  T.it('no gate when the character is at the level, or already has the rank', function()
+    T.isnil(P0.Needs(E(150), { [C2] = { level = 12 } }))
+    T.isnil(P0.Needs(E(150), { [C2] = { level = 6, professions = { { name = 'Enchanting', skill = 80, max = 150 } } } }))
+    T.eq(P0.Needs(E(150), byGuid), 10)
+  end)
+  T.it('Move to top: Enchanting 150 above Level 10 carries Level 10 with it', function()
+    local list = { L(10), E(150) }
+    local out, carried = P0.MoveKeeping(list, 2, 1, byGuid)
+    T.eq(kinds(out), 'L10 Enc150')
+    T.eq(#carried, 1)
+    T.truthy(P0.CarriedText(carried, byGuid):find('Moved with it: Cee Two Level 10 (prerequisite of Cee Two Enchanting 150 (Journeyman needs level 10, L-4))', 1, true))
+  end)
+  T.it('moving Level 10 below Enchanting 150 takes Enchanting 150 down with it', function()
+    local out = P0.MoveKeeping({ L(10), E(150), L(25) }, 1, 3, byGuid)
+    T.eq(kinds(out), 'L25 L10 Enc150')
+  end)
+  T.it('a gate that was already open is left as it was (no surprise moves)', function()
+    local out, carried = P0.MoveKeeping({ E(150), L(25), L(30) }, 3, 2, byGuid)
+    T.eq(kinds(out), 'Enc150 L30 L25')
+    T.eq(#carried, 0)
+  end)
+  T.it('removing or lowering the level step a later step needs is refused, with the reason', function()
+    local out, why = P0.RemoveKeeping({ L(10), E(150) }, 1, byGuid)
+    T.isnil(out)
+    T.eq(why, 'not removed: Cee Two Enchanting 150 needs level 10 first (Journeyman needs level 10, L-4); remove that step first')
+    out, why = P0.ReplaceKeeping({ L(10), E(150) }, 1, L(8), byGuid)
+    T.isnil(out)
+    T.truthy(why:find('Cee Two Enchanting 150 needs level 10 first', 1, true), why)
+    T.truthy(P0.RemoveKeeping({ L(10), E(150) }, 2, byGuid), 'the dependent itself can go')
+  end)
+  T.it('editing a step whose gate was already open (a note, the same rank) adds nothing', function()
+    local e2 = E(150); e2.note = 'later'
+    local out, carried = P0.ReplaceKeeping({ E(150) }, 1, e2, byGuid)
+    T.eq(kinds(out), 'Enc150')
+    T.eq(#carried, 0)
+    out = P0.ReplaceKeeping({ E(150) }, 1, E(140), byGuid)
+    T.eq(kinds(out), 'Enc140')
+  end)
+  T.it('raising a skill target that now needs a higher level adds that level step before it', function()
+    local out, carried = P0.ReplaceKeeping({ L(10), E(150) }, 2, E(225), byGuid)
+    T.eq(kinds(out), 'L10 L20 Enc225')
+    T.truthy(carried[1].added)
+  end)
+  T.it('in the window: dragging Enchanting 150 above Level 10 moves both and says so in chat', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    local r = row(EI, 2)
+    r.button.scripts.OnDragStart(r.button)
+    W.ui.cursor = { 300, 400 - 22 * 1 - 11 }        -- over slot 1
+    local from = #W.prints
+    r.button.scripts.OnDragStop(r.button)
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 Enc150 L45')
+    local out = since(W, from)
+    T.truthy(find(out, 'Moved with it: Cee Two Level 10'), dump(out))
+  end)
+  T.it('in the window: Move to top on Enchanting 150 keeps Level 10 first; Remove on Level 10 is refused', function()
+    local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C1, level = 45 }, { kind = 'level', guid = C2, level = 10 },
+      { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 } } }) })
+    openWin(W)
+    pick(menuOf(EI, 3), 'Move to top')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 Enc150 L45')
+    local from = #W.prints
+    pick(menuOf(EI, 1), 'Remove step')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 Enc150 L45')
+    T.truthy(find(since(W, from), 'not removed: Cee Two Enchanting 150 needs level 10 first'), dump(since(W, from)))
+  end)
+  T.it('a skill step with no level step before it shows as a gate, with the reason in its tooltip', function()
+    local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 } } }) })
+    openWin(W)
+    local data = EI.Window.view.rows[1]
+    T.eq(data.status, 'gate')
+    local hit = false
+    for _, l in ipairs(data.tooltip) do if l.text:find('Needs level 10 first (L-4)', 1, true) then hit = true end end
+    T.truthy(hit)
+  end)
+end)
+
+T.describe('P2-4b retest, item 2: Add a skill step after offers the next milestone, never a duplicate', function()
+  T.it('after Enchanting 150: Enchanting 225 (with its Level 20); after 225: 300 (with Level 35); after 300: nothing', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    local from = #W.prints
+    pick(menuOf(EI, 2), 'Add a skill step after')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 Enc150 L20 Enc225 L45')
+    T.truthy(find(since(W, from), 'added Cee Two Enchanting 225. Added before it: Cee Two Level 20'), dump(since(W, from)))
+    pick(menuOf(EI, 4), 'Add a skill step after')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 Enc150 L20 Enc225 L35 Enc300 L45')
+    from = #W.prints
+    pick(menuOf(EI, 6), 'Add a skill step after')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 Enc150 L20 Enc225 L35 Enc300 L45')
+    T.truthy(find(since(W, from), 'nothing added: Enchanting 300 is already planned.'), dump(since(W, from)))
+  end)
+  T.it('from a level step: the next milestone of the first craft after what is planned (no second Enchanting 150)', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    pick(menuOf(EI, 1), 'Add a skill step after')
+    local mine = W.env.EmpireIntelDB.plan.mine
+    local n150 = 0
+    for _, e in ipairs(mine) do if e.kind == 'skill' and e.skill == 150 and e.profession == 'Tailoring' then n150 = n150 + 1 end end
+    T.eq(n150, 1, 'Tailoring 150 once (the first craft recorded is Tailoring)')
+    T.eq(kinds(mine), 'L10 Tai150 Enc150 L45')
+  end)
+  T.it('Add a level step after: the next class milestone after the levels planned', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    pick(menuOf(EI, 1), 'Add a level step after')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L10 L25 Enc150 L45')
+  end)
+end)
+
+T.describe('P2-4b retest, item 3: notes have their own space', function()
+  T.it('Edit note opens a bar below the rows, clear of the step text; Enter saves; the note shows in the tooltip and on the card', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    pick(menuOf(EI, 1), 'Edit note')
+    local list = EI.Window.list
+    local bar = list.bar
+    T.truthy(bar.frame.shown)
+    T.eq(bar.label.text, 'Note for step 1 (Level 10):')
+    local e = list.edit
+    T.eq(e.parent, bar.frame, 'the edit box sits in the bar, not on a row')
+    for _, p in ipairs(e.points) do T.neq(p[2], row(EI, 1).step, 'not anchored to the step text') end
+    T.truthy(e.focus)
+    e.text = 'with the guild'
+    e.scripts.OnEnterPressed(e)
+    T.eq(W.env.EmpireIntelDB.plan.mine[1].note, 'with the guild')
+    T.falsy(bar.frame.shown)
+    T.eq(row(EI, 1).step.text, 'Level 10 (note)')
+    local hit = false
+    for _, l in ipairs(EI.Window.view.rows[1].tooltip) do if l.text == 'Note: with the guild' then hit = true end end
+    T.truthy(hit)
+    T.eq(EI.Window.card.gate.text, 'Note: with the guild')
+  end)
+  T.it('clicking away saves the note too; Escape cancels', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    pick(menuOf(EI, 2), 'Edit note')
+    local e = EI.Window.list.edit
+    e.text = 'buy vellum'
+    e:ClearFocus()
+    T.eq(W.env.EmpireIntelDB.plan.mine[2].note, 'buy vellum')
+    pick(menuOf(EI, 2), 'Edit note')
+    T.eq(e.text, 'buy vellum', 'the box starts with the saved note')
+    e.text = 'changed'
+    e.scripts.OnEscapePressed(e)
+    T.eq(W.env.EmpireIntelDB.plan.mine[2].note, 'buy vellum')
+    T.falsy(EI.Window.list.bar.frame.shown)
+  end)
+  T.it('the row list makes room for the bar while it is open', function()
+    local W, EI = session({ eidb = db(minePlan2()) })
+    openWin(W)
+    local list = EI.Window.list
+    local before = EI.Rows.Slots(list)
+    pick(menuOf(EI, 1), 'Edit note')
+    T.eq(EI.Rows.Slots(list), before - 1)
+  end)
+end)
+
+T.describe('P2-4b retest, item 4: ignoring a character marks its steps in my plan', function()
+  T.it('Ignore from my plan: its steps are kept, marked, not up next; chat says how many; Unignore undoes it', function()
+    local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C1, level = 45 }, { kind = 'level', guid = C2, level = 10 } } }) })
+    openWin(W)
+    local from = #W.prints
+    pick(menuOf(EI, 1), 'Ignore Cee One in Fastest')
+    local out = since(W, from)
+    T.truthy(find(out, 'Cee One is left out of the fastest route. Its 1 step in my plan are kept, marked "ignored"'), dump(out))
+    local v = EI.Window.view
+    T.eq(v.rows[1].status, 'ignored')
+    T.eq(row(EI, 1).step.text, 'Level 45 (ignored)')
+    T.eq(EI.Window.card.label.text, 'UP NEXT - MY PLAN STEP 2', 'the ignored step is not up next')
+    T.truthy(v.footer.total:find('1 ignored', 1, true), v.footer.total)
+    pick(menuOf(EI, 1), 'Unignore Cee One')
+    T.eq(W.env.EmpireIntelDB.plan.ignore, {})
+    T.neq(EI.Window.view.rows[1].status, 'ignored')
+  end)
+  T.it('/ei plan ignore says the same; /ei next marks the steps', function()
+    local W = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C1, level = 45 } } }) })
+    local out = slash(W, 'plan ignore cee one')
+    T.truthy(find(out, 'Its 1 step in my plan are kept'), dump(out))
+    out = slash(W, 'next')
+    T.truthy(find(out, '1. (ignored) Cee One'), dump(out))
+  end)
+  T.it('Fastest says how many are ignored in its footer', function()
+    local W, EI = session({})
+    slash(W, 'plan ignore cee one')
+    openWin(W)
+    T.truthy(EI.Window.footRight.text:find('1 ignored', 1, true), EI.Window.footRight.text)
+  end)
+end)
+
+T.describe('P2-4b retest, item 5: the target button is labelled and has a tooltip', function()
+  T.it('Cap 1/16 -> Next reward 1/15 -> Next point 1/2; hovering explains the three', function()
+    local W, EI = session({})
+    openWin(W)
+    local b = EI.Window.targetButton
+    T.eq(EI.Window.targetText.text, 'Cap 1/16')
+    b.scripts.OnClick(b)
+    T.eq(EI.Window.targetText.text, 'Next reward 1/15')
+    b.scripts.OnClick(b)
+    T.eq(EI.Window.targetText.text, 'Next point 1/2')
+    b.scripts.OnEnter(b)
+    T.truthy(W.ui.tooltipShown)
+    local all = table.concat(W.ui.tooltip, '\n')
+    T.truthy(all:find('Target: Next point 1/2', 1, true), all)
+    T.truthy(all:find('Cap: 16 points, the spending cap per character (L-12, unverified)', 1, true), all)
+    T.truthy(all:find('Next reward: the next reward on the track', 1, true), all)
+    T.truthy(b.w >= 110, 'wide enough for the label')
+  end)
+end)
+
+T.describe('P2-4b retest, item 6: the realm-type badge', function()
+  local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+  local V = EI0.PlanView
+  T.it('read from the end of the realm name; Hardcore from the game; else unknown (never guessed)', function()
+    local function t(realm, rs) return V.RealmType(realm, rs).text end
+    T.eq(t('CAMWOW US2 Realm 3 PvE'), 'PvE')
+    T.eq(t('Some Realm PvP'), 'PvP')
+    T.eq(t('Some Realm RP-PvP'), 'RP-PvP')
+    T.eq(t('Some Realm RP-PvE'), 'RP-PvE')
+    T.eq(t('Some Realm RP'), 'RP-PvE')
+    T.eq(t('SomeRealmPvE'), 'PvE')
+    T.eq(t('Sharp'), 'Realm type ?')
+    T.eq(t('Test Realm'), 'Realm type ?')
+    T.eq(t(nil), 'Realm type ?')
+    T.eq(t('Some Realm PvE', 'hardcore'), 'Hardcore')
+    T.truthy(V.RealmType('X PvE').why:find('[inferred]', 1, true))
+  end)
+  T.it('on the card, with the reason in the card tooltip', function()
+    local W, EI = session({ eidb = { schema = 2, meta = {}, plan = { ignore = { [C2] = true } }, roster = { [C1] = (function()
+      local r = c1(); r.realm = 'CAMWOW US2 Realm 3 PvE'; return r end)() } } })
+    openWin(W)
+    T.eq(EI.Window.card.badge.text, 'PvE')
+    local hit = false
+    for _, l in ipairs(EI.Window.view.card.tooltip) do if l.text:find('Realm type PvE: from the realm name [inferred]', 1, true) then hit = true end end
+    T.truthy(hit)
+  end)
+end)
+
+T.describe('P2-4b retest, item 7: the faction emblem', function()
+  T.it('the game\'s faction icon file, cropped to its icon; the atlas only when the file does not read back', function()
+    local W, EI = session({})
+    openWin(W)
+    local em = EI.Window.card.emblem
+    T.eq(em.path, 'Interface\\TargetingFrame\\UI-PVP-Horde')
+    T.eq(em.coord, { 0, 0.625, 0, 0.625 })
+    T.eq({ em.w, em.h }, { 26, 26 })
+    local tex = FU.frame('Frame', W.env.UIParent):CreateTexture()
+    tex.GetTexture = function(self) if self.atlas then return self.path end return nil end   -- the file does not load
+    T.eq(EI.Platform.UI.Emblem(tex, 'Alliance'), 'atlas')
+    T.eq(tex.atlas, 'AllianceEmblem')
+    T.isnil(EI.Platform.UI.Emblem(tex, 'Neutral'))
+  end)
+end)
+
+T.describe('P2-4b retest, item 8: the combat footer refreshes when combat ends', function()
+  T.it('opened in combat: "Legacy not read (in combat)"; when combat ends the window reads Legacy and the line goes', function()
+    local W, EI = session({ launch = true, legacy25 = 'ids' })
+    W.combat = true
+    W:fire('PLAYER_REGEN_DISABLED')
+    openWin(W)
+    T.truthy(EI.Window.footLeft.text:find('Legacy not read (in combat)', 1, true), EI.Window.footLeft.text)
+    local n = W.calls.GetCategoryList or 0
+    W.combat = false
+    W:fire('PLAYER_REGEN_ENABLED')
+    W:advance(5)
+    T.truthy((W.calls.GetCategoryList or 0) > n, 'a read after combat')
+    T.falsy(EI.Window.footLeft.text:find('combat', 1, true), EI.Window.footLeft.text)
+  end)
+  T.it('a closed window does not read when combat ends', function()
+    local W, EI = session({ launch = true, legacy25 = 'ids' })
+    W.combat = true
+    openWin(W)
+    slash(W, 'plan')
+    local n = W.calls.GetCategoryList or 0
+    W.combat = false
+    W:fire('PLAYER_REGEN_ENABLED')
+    W:advance(5)
+    T.eq(W.calls.GetCategoryList or 0, n)
+  end)
+end)
+
+T.describe('P2-4b retest, item 9: one meaning in both modes', function()
+  local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+  local V = EI0.PlanView
+  local pal = { guid = C1, name = 'Cee One', class = 'PALADIN', level = 17, professions = {} }
+  local pri = { guid = C2, name = 'Cee Two', class = 'PRIEST', level = 6, isPlayer = true,
+    professions = { { name = 'Enchanting', skill = 28, max = 75 } } }
+  local function res(steps) return { earned = 2, earnedSrc = 'game', target = 16, targetKind = 'points', states = { {} }, steps = steps,
+    left = 0, reached = 16, excluded = { ignored = 0, ruleset = 0 }, unlocked = true } end
+  local first = { row = pri, kind = 'class', parts = { { kind = 'level', from = 6, to = 25 } }, hours = 5, rules = {}, earns = { 'Novice Priest' }, points = 1, atLevel = 6 }
+  local dungeon = { row = pal, kind = 'dungeon', parts = { { kind = 'level', from = 17, to = 20 }, { kind = 'runs', name = 'Experienced Spelunker', left = 9 } },
+    hours = 8, rules = { 'L-7' }, earns = { 'Experienced Spelunker' }, points = 1, atLevel = 17 }
+  local ench = { row = pri, kind = 'craft', parts = { { kind = 'level', from = 10, to = 20 }, { kind = 'skill', profession = 'Enchanting', from = 150, to = 225, max = 150 } },
+    hours = 9, rules = { 'L-4' }, earns = { 'Expert Enchanter' }, points = 1, atLevel = 10, train = 'Expert' }
+  T.it('a dungeon challenge is "Account" in Fastest as in My plan; the step names the character it runs on', function()
+    local v = V.Build({ mode = 'auto', res = res({ first, dungeon }), now = WALL })
+    local r = v.rows[1]
+    T.eq(r.who.name, 'Account')
+    T.eq(r.step, 'Level 20 on Cee, then Experienced Spelunker')
+    T.eq(r.now, '1/10')
+    T.isnil(r.guid, 'no Ignore offered for the account')
+    T.truthy(r.tooltip[2].text:find('the route runs it on Cee One Paladin 17', 1, true), r.tooltip[2].text)
+    local m = V.Build({ mode = 'mine', plan = { steps = { { kind = 'challenge', id = 99, n = 1 } }, problems = {}, total = 1 }, rows = {}, now = WALL, unlocked = true, res = res({}) })
+    T.eq(m.rows[1].who.name, 'Account')
+  end)
+  T.it('NOW is today\'s value in Fastest too; the route\'s value is in the tooltip', function()
+    local v = V.Build({ mode = 'auto', res = res({ first, ench }), now = WALL })
+    local r = v.rows[1]
+    T.eq(r.now, '28/75')
+    T.eq(r.who.level, 6, 'today\'s level in the character column')
+    local hit = false
+    for _, l in ipairs(r.tooltip) do if l.text == 'NOW is today\'s value; at this point of the route: 150/150' then hit = true end end
+    T.truthy(hit)
+    local lv = V.Build({ mode = 'auto', res = res({ ench, first }), now = WALL }).rows[1]
+    T.eq(lv.now, '6')
+  end)
+  T.it('copying the route keeps the runner\'s level step before a dungeon challenge', function()
+    local d = { row = pal, kind = 'dungeon', id = 777, parts = dungeon.parts }
+    local list = EI0.Plan.FromRoute({ d })
+    T.eq(list, { { kind = 'level', guid = C1, level = 20 }, { kind = 'challenge', id = 777 } })
   end)
 end)

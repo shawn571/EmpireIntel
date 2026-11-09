@@ -133,16 +133,16 @@ local function build()
   if cx then cx:SetSize(12, 12); cx:SetPoint('CENTER', close, 'CENTER', 0, 0); UI.Icon(cx, T.ICON.close, C.muted) end
   close:SetScript('OnClick', function() W.Close() end)
   W.targetButton = UI.Create('Button', f)
-  W.targetButton:SetSize(64, 20)
+  W.targetButton:SetSize(T.TARGET_W, 20)
   W.targetButton:SetPoint('RIGHT', close, 'LEFT', -8, 0)
   local tbg = fill(W.targetButton, 'BACKGROUND', C.switchBg)
   if tbg then tbg:SetAllPoints(W.targetButton) end
   W.targetText = text(W.targetButton, T.FONTS.title, T.SIZE.small, C.text, 'CENTER')
   W.targetText:SetPoint('CENTER', W.targetButton, 'CENTER', 0, 0)
-  W.targetButton:SetScript('OnClick', function() W.CycleTarget() end)
-  local tl = text(f, T.FONTS.rows, T.SIZE.small, C.muted, 'RIGHT')
-  tl:SetPoint('RIGHT', W.targetButton, 'LEFT', -6, 0)
-  tl:SetText('Target')
+  W.targetButton:SetScript('OnClick', function(self) W.CycleTarget(); if W.view then UI.Tooltip(self, W.view.targetTip) end end)
+  -- D-063 item 5: the label says what the target is ("Cap 2/16"); the tooltip explains the three choices
+  W.targetButton:SetScript('OnEnter', function(self) if W.view then UI.Tooltip(self, W.view.targetTip) end end)
+  W.targetButton:SetScript('OnLeave', function() UI.HideTooltip() end)
   local hl = fill(f, 'ARTWORK', C.line)
   if hl then hl:SetHeight(1); hl:SetPoint('TOPLEFT', f, 'TOPLEFT', 1, -T.HEADER_H); hl:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -1, -T.HEADER_H) end
 
@@ -181,9 +181,15 @@ local function build()
   f:SetScript('OnHide', function()
     UI.HideTooltip()
     if W.list and W.list.menu then W.list.menu.frame:Hide() end
-    if W.list and W.list.edit then W.list.edit:Hide() end
+    if W.list and W.list.bar then W.list.editing = nil; W.list.bar.frame:Hide() end
   end)
   UI.CloseOnEscape(f, W.NAME)
+  -- D-063 item 8: when combat ends, a window that could not read Legacy in combat reads it again
+  if P.Events and P.Events.On then
+    P.Events.On('P_COMBAT', function(payload)
+      if payload and payload.inCombat == false and W.IsShown() and W.cache and W.cache.why == 'combat' then W.Refresh(true) end
+    end)
+  end
   return f
 end
 
@@ -196,7 +202,7 @@ local function compute(rows, legacy, why, now, plan)
   W.res = res
   W.byGuid = {}
   for _, r in ipairs(rows) do if r.guid then W.byGuid[r.guid] = r end end
-  W.view = EI.PlanView.Build({ mode = W.mode, res = res, plan = plan, rows = rows, now = now, rates = EI.Plan.Rates(),
+  W.view = EI.PlanView.Build({ mode = W.mode, res = res, plan = plan, rows = rows, now = now, rates = EI.Plan.Rates(), ignore = EI.Plan.Ignore(),
     unlocked = EI.Next.Unlocked(rows), legacy = legacy, legacyWhy = why })
   W.Redraw()
 end
