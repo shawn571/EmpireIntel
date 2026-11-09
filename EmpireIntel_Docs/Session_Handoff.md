@@ -18,7 +18,7 @@ Append the newest section at the TOP. The newest section wins.
 
 **Installed (as the user has said):** EmpireIntel 0.7.0, EmpireIntelCheck 0.1.9-tp1.
 
-**Open questions:** Q-P2-4c, Q-P2-4c-1..3, Q-P2-4d, Q-P2-4d-1..3. Only one of the user's two screenshots was readable (the second, an image address, gave HTTP 403); the user should resend My plan's screenshot as an image.
+**Open questions:** Q-P2-4c, Q-P2-4c-1..3, Q-P2-4d, Q-P2-4d-1..3. My plan's screenshot (0.7.0) received later as an image: finding 10 (My plan time and points counted from today, overlapping) proposed for 0.7.2, waiting for the user's go-ahead; one duplicate Enchanting 150 is saved in the user's plan (remove it, or copy the route again).
 
 **User's next step:** install 0.7.1, repeat gate steps 2, 3, 6, 8, send the screenshots (as images) and the saved file; answer Q-P2-4c and Q-P2-4d.
 

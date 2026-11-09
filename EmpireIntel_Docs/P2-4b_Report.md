@@ -61,3 +61,7 @@ At first open a hidden texture is filled with `SetColorTexture` and read back wi
 **Package:** `EmpireIntel_AddOns_v0.7.1.zip`, 34 files, sha256 `937d51e9944ac7334cc3a118d15d6eb056091d969068396f9c561b1299120866`. `/reload` from 0.7.0. Rollback: the 0.7.0 folder and `/reload`. No saved-data format change.
 
 **Retest:** gate steps 2, 3, 6 and 8 (the package README lists what to look for).
+
+**My plan screenshot (0.7.0, received 2026-11-09 after the build) [screenshot]:** 20 steps, 0 met; it confirms items 2, 6, 7 and 9 as reported. Two more observations, not fixed in 0.7.1:
+- **A duplicate already saved** (C2 Enchanting 150 twice, made by the item 2 fault). 0.7.1 adds no new duplicates but does not remove saved ones; the user removes it (Remove step) or copies the route again.
+- **Finding 10 (new): My plan's TIME and PTS count from today, not from the step before.** Each row's time runs from the character's current value (C2 Level 20 ~9.1 h includes the ~1.3 h of Level 10; Enchanting 225 ~6.2 h includes Enchanting 150's ~3.2 h), so the times overlap and do not add up, unlike Fastest. The duplicate Enchanting 150 also shows +1 twice. Proposed fix (needs the user's go-ahead): time and points from the end of the earlier steps of the same character and profession; a step already reached by an earlier step shows "covered by step n".
