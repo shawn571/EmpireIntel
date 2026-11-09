@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.7.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c).**
+DOC VERSION: 1.8.0  |  DATE: 2026-11-09 (S-065)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066 (all options in the window, realistic levelling time, what is captured at login), for approval, no code.**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -637,3 +637,81 @@ Two increments, one approval each, both after P2-4b closes. Proposed order: **P2
 | Q-P2-4d-1 | Record your words "Use the confirmed rule: a pool of R saves R of kill XP" as confirming L-17 (status user-confirmed, D-063), so it loses its unverified label? | Yes |
 | Q-P2-4d-2 | Assume one character played at a time, the others resting in an inn, for the pool growth? | Yes |
 | Q-P2-4d-3 | Thresholds: rested priority at 1.4 levels or more; the login step at 0.90 levels? | Yes |
+
+## 11. Items 5-7 of D-066 (for approval; no code)
+
+### 11.1 All options in the window (item 5): folded into P2-4c
+
+It fits P2-4c: the wizard asks the questions once, and the same pages stay open as the window's **Options**. Proposal (Q-P2-4c-4):
+
+- **`/ei` opens the window** (today it prints a status line; that line moves to the Options' About page and to `/ei status`). Every command stays as a shortcut.
+- **A gear button in the header** opens Options inside the window (our own frames, D-060), with pages:
+
+| Page | What it holds | Replaces |
+|---|---|---|
+| General | Mode (Fastest / My plan), target, the minimap button on/off, recording on/off, "Run setup again" | `/ei plan mode`, `/ei plan target`, `/ei minimap`, `/ei off` / `on`, `/ei setup` |
+| Characters | One line per character: class, level, realm and realm type, faction, rested now, professions, last seen, source; Include / Ignore; "Professions..." | `/ei alts`, `/ei rest`, `/ei unlock`, `/ei plan ignore` / `unignore` |
+| Professions | The wizard's page: learned professions and the choice per free slot (gathering marked "no Legacy points") | (new, P2-4c) |
+| Legacy | Earned, available, spent; the closest challenges; read on opening the page, never in combat | `/ei legacy`, `/ei milestones` |
+| Rules | L-1..L-n with status and source | `/ei rules` |
+| About | Version, saved-data schema and state, the fill path, the last UNEXPECTED lines | `/ei version`, `/ei plan help` |
+
+- **Row menus** keep the per-step actions (move, add, note, target, ignore, copy the route).
+- The game's AddOns options entry, if the client has the options API (P2-4c point 4), opens the same page.
+- No saved field beyond P2-4c's. Tests: every command's action reachable from the window (one test per row of the table).
+- Size: this roughly doubles P2-4c. **Q-P2-4c-5:** one increment (0.8.0), or two (0.8.0 professions and wizard; 0.8.1 Options)? Recommendation: two, so each has a short live gate.
+
+### 11.2 Realistic levelling time (item 6): new increment P2-4e, after P2-4d
+
+**Why 9 h for C2 6 -> 20 today [file: code]:** the time is the XP from 6 to 20 by the classic table (about 159,600 XP, L-15) divided by the default XP per hour by band (12,000 below 10, 18,000 from 10, L-16 [assumed]) minus the rested saving. No character has a measured rate yet (Q-F2 needs 30 minutes played in one session with a level gained). The defaults are the guess; P2-4e replaces them.
+
+**What the game gives about quests in the log** [inherited from the classic and modern API documentation; **not yet observed on Forever**, so a check comes first]:
+- the list: `GetNumQuestLogEntries`, `GetQuestLogTitle(i)` (title, quest level, headers, complete flag, quest id), or `C_QuestLog.GetInfo(i)` on newer clients;
+- objectives: `GetNumQuestLeaderBoards(i)` and `GetQuestLogLeaderBoard(n, i)` (text such as "Kobold killed: 3/10", type, done), or `C_QuestLog.GetQuestObjectives(id)`;
+- XP: `GetQuestLogRewardXP()` for the selected quest on clients that have it (absent on some classic builds);
+- locations: **classic clients give no objective locations** (no quest map points); that is why Questie exists. The player's own position (`C_Map.GetBestMapForUnit`, `C_Map.GetPlayerMapPosition`) is available. Travel time therefore needs a database of where objectives are.
+
+**What Questie's database could add, read only** [file: Questie's LICENSE.md, fetched 2026-11-09; content inferred from its public structure, to be checked]: quest starters, finishers and objective spawn coordinates (NPCs, objects, items), quest levels and required levels, and (for classic) quest XP. It would be read at run time from an installed Questie through a new Bridge, like DataStore: optional, read only, never stored, degrade when absent. **License:** Questie's LICENSE.md says "when in doubt consider Questie as 'all rights reserved'"; the team tolerates GPLv3 copying but "can not promise all contributors are" fine with it. EmpireIntel is MIT: **no Questie code or data is copied into the repository or the zip** (D-003); only an installed Questie is read in game. Risks: its internal tables are not a public API and can change; its data is classic's, and Forever's quests may differ.
+
+**Why live Wowhead lookups are impossible** [inherited]: addons run in a sandbox with no network and no file access; the only output is the SavedVariables file written at logout. An offline copy of Wowhead's data would mean scraping it, which its terms forbid; not proposed.
+
+**The model (every part labelled):** per character, time to the target level = quest part + grind part.
+- Quest part: for each quest in its log at a fitting level, its XP (game or Questie, labelled which) and its time (objectives x minutes per objective [assumed, then measured] + travel between objectives and to the turn-in from Questie's coordinates at a riding or running speed [assumed]).
+- Grind part: the XP left after the quests, at the character's measured kill rate, or the classic mob-XP formula and kills per hour [assumed], doubled while rested (P2-4d, L-17 unverified).
+- The measured XP per hour (Q-F2) calibrates both when it exists.
+- Quests completed while the user plays are seen at the next snapshot; the estimate updates.
+
+**Steps:** (1) a check, EmpireIntelCheck 0.1.10-tp1: which quest-log functions exist and what they return for the user's log; whether `GetQuestLogRewardXP` exists; the player position; whether Questie is loaded and the shape (names, counts) of its quest tables, nothing copied. (2) Then P2-4e, built on what the check shows. Saved data: a per-character quest summary (ids, levels, XP, objective counts), which is a format change (Q-P2-4e-2).
+
+### 11.3 What is captured at login (item 7) [file: Core/Snapshot.lua, Platform/Unit.lua]
+
+Saved for each character the first time it logs in with EmpireIntel running, and updated at each level, profession change, timer and logout:
+
+| Saved | From | Since |
+|---|---|---|
+| name (with surname), realm, class | `UnitName`, `GetRealmName`, `UnitClass` | format 1 |
+| level, XP, XP to next level | `UnitLevel`, `UnitXP`, `UnitXPMax` | format 1 |
+| rested XP and resting (in an inn or city), and when | `GetXPExhaustion`, `IsResting` | format 1 |
+| professions: name, skill, max, skill line | `GetProfessions`, `GetProfessionInfo` | format 1 |
+| race, sex, faction, ruleset (hardcore or normal), experience preset | `UnitRace`, `UnitSex`, `UnitFactionGroup`, `C_GameRules` | format 2 |
+| measured XP per hour (after 30 minutes with a level gained) | the snapshots themselves | format 2 (`plan.rates`) |
+
+So **race, sex, class, faction, realm, professions and rested are all saved**, as the user listed. **Portraits are not** (the game draws them only for a unit in view, EI-E-30); offline alts show their race and class icons, as now.
+
+**Other useful things that could be captured** (each needs a check probe first, then the user's approval as a format change, Q-P2-4f):
+1. **Bind location** (`GetBindLocation`): the inn the hearthstone is set to. Shows whether the character rests where it logs out.
+2. **Logout zone and resting at logout**: already saved as "resting"; the zone name would make the rested projection's assumption visible.
+3. **Played time** (`RequestTimePlayed`, the `TIME_PLAYED_MSG` event: total and this level): a much better measured rate than login sessions, and it needs no 30-minute session.
+4. **The quest log summary** of 11.2 (for P2-4e).
+5. Not proposed: money, gear, talents, bags (not needed for the plan).
+
+### 11.4 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4c-4 | Fold "all options in the window" (11.1) into P2-4c, with `/ei` opening the window? | Yes |
+| Q-P2-4c-5 | Build it as two increments (0.8.0 professions and wizard; 0.8.1 Options) instead of one? | Two |
+| Q-P2-4e | Approve P2-4e (11.2): first the check 0.1.10-tp1, then the quest-and-grind model, after P2-4d? | Yes |
+| Q-P2-4e-1 | Read an installed Questie at run time (optional Bridge, nothing copied, license as quoted)? | Yes, read only |
+| Q-P2-4e-2 | Save a per-character quest summary (a format change, inside format 2)? | Decide after the check |
+| Q-P2-4f | Capture bind location, logout zone and played time (11.3, after a check probe; a format change inside format 2)? | Yes, played time first |

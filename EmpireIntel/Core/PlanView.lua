@@ -80,6 +80,14 @@ function V.Who(row, now, level)
   }
 end
 
+--- A selected card's tooltip plus how to go back to Up next (D-066).
+function V.BackHint(tip)
+  local out = {}
+  for i, l in ipairs(tip or {}) do out[i] = l end
+  out[#out + 1] = { text = 'Click the card to go back to Up next.', r = 0.65, g = 0.66, b = 1 }
+  return out
+end
+
 --- A card tooltip plus the realm-type line (D-063 item 6).
 function V.WithRealm(tip, who)
   if not (who and who.ruleset and who.ruleset.why) then return tip end
@@ -237,7 +245,7 @@ end
 local function mineRow(g, ctx)
   local row = { index = g.n, pts = '', kind = g.kind, note = g.note, guid = g.guid, saved = g, editable = true }
   if g.kind == 'challenge' then
-    row.who = { name = 'Account', classText = '', isPlayer = false }
+    row.who = ACCOUNT
     local ch = ctx.legacy and ctx.legacy.challengeById and ctx.legacy.challengeById[g.id]
     if not ctx.unlocked then
       row.step, row.status, row.now = 'Challenge ' .. g.id, 'unknown', 'locked'
@@ -407,17 +415,31 @@ function V.Build(ctx)
       if row.ignored then ignored = ignored + 1 end
       view.rows[#view.rows + 1] = row
       if not view.card and row.status ~= 'done' and row.status ~= 'covered' and not row.ignored then view.card = mineCard(row) end
+      -- D-066: the card follows the selected row (any row, any character)
+      if ctx.selected and ctx.selected.mode == 'mine' and ctx.selected.key == row.index then
+        row.selected = true
+        view.selectedCard = mineCard(row)
+        view.selectedCard.label = 'SELECTED - MY PLAN STEP ' .. tostring(row.index)
+        view.selectedCard.tooltip = V.BackHint(view.selectedCard.tooltip)
+      end
     end
     view.footer.total = #ctx.plan.steps .. ' steps - ' .. met .. ' met' .. ((covered > 0) and (' - ' .. covered .. ' covered') or '')
       .. ((ignored > 0) and (' - ' .. ignored .. ' ignored') or '') ..
       ((#view.problems > 0) and (' - ' .. #view.problems .. ' skipped (/ei next lists them)') or '')
     if ctx.plan.total == 0 then view.empty = 'My plan is empty: right-click a Fastest row, or /ei plan copy.' end
     if not view.card and ctx.plan.total > 0 then view.empty = 'Every step in my plan is met.' end
+    if view.selectedCard then view.card, view.selected = view.selectedCard, true end
     return view
   end
   if not res or #res.states == 0 then view.empty = 'No characters known yet.'; return view end
   for i, s in ipairs(res.steps) do
     if i == 1 then view.card = routeCard(s, ctx.now) else view.rows[#view.rows + 1] = routeRow(s, i, ctx.now) end
+    if i > 1 and ctx.selected and ctx.selected.mode == 'auto' and ctx.selected.key == i then
+      view.rows[#view.rows].selected = true
+      view.selectedCard = routeCard(s, ctx.now)
+      view.selectedCard.label = 'SELECTED - STEP ' .. i
+      view.selectedCard.tooltip = V.BackHint(view.selectedCard.tooltip)
+    end
   end
   local total = 0
   for _, s in ipairs(res.steps) do total = total + s.hours end
@@ -432,5 +454,6 @@ function V.Build(ctx)
   if res.excluded and res.excluded.ignored > 0 then
     view.footer.total = view.footer.total .. (view.footer.total ~= '' and ' - ' or '') .. res.excluded.ignored .. ' ignored'
   end
+  if view.selectedCard then view.card, view.selected = view.selectedCard, true end
   return view
 end

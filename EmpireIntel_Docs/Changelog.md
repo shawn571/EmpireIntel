@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-09 | S-065 | Retest build EmpireIntel 0.7.3: chains, selection card, notes on hover, emblem size; plan for items 5-7 (branch `p2-4b-window`, not merged)
+- D-066, D-067. Retest on 0.7.2: step 6 passed, 2 and 3 failed. 0.7.3: whole prerequisite chains move in order; the card follows the selected row; notes on hover (tooltips at the pointer) and on the card; fixed badge and emblem sizes. 526 tests (Lua 5.1 and 5.3); 15/15 mutants.
+- Phase2_Plan.md 1.8.0 section 11: all options in the window (into P2-4c), realistic levelling time (P2-4e, with the quest-log, Questie and Wowhead evidence), what is captured at login; for approval, no code.
+
 ## 2026-11-09 | S-064 | Retest build EmpireIntel 0.7.2: finding 10 and repeated steps (branch `p2-4b-window`, not merged)
 - D-065. My plan rows count from the earlier steps ("covered by step n"); repeated saved steps removed at load, said in chat. 519 tests (Lua 5.1 and 5.3). Q-P2-4c and Q-P2-4d approved with conditions (L-17 stays unverified); not started.
 

@@ -149,6 +149,8 @@ local function build()
   -- card and rows
   W.card = EI.UpNext.Create(f)
   if W.card then
+    -- D-066: clicking a selected card goes back to Up next
+    W.card.frame:SetScript('OnMouseUp', function() if W.selected then W.Select(nil) end end)
     W.card.frame:SetPoint('TOPLEFT', f, 'TOPLEFT', T.PAD, -(T.HEADER_H + 10))
     W.card.frame:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -T.PAD, -(T.HEADER_H + 10))
   end
@@ -203,6 +205,7 @@ local function compute(rows, legacy, why, now, plan)
   W.byGuid = {}
   for _, r in ipairs(rows) do if r.guid then W.byGuid[r.guid] = r end end
   W.view = EI.PlanView.Build({ mode = W.mode, res = res, plan = plan, rows = rows, now = now, rates = EI.Plan.Rates(), ignore = EI.Plan.Ignore(),
+    selected = W.selected,
     unlocked = EI.Next.Unlocked(rows), legacy = legacy, legacyWhy = why })
   W.Redraw()
 end
@@ -242,8 +245,15 @@ function W.Redraw()
   W.footRight:SetText(view.footer.rules .. ((view.footer.total and view.footer.total ~= '') and ('   ' .. view.footer.total) or ''))
 end
 
+--- D-066: the card follows the selected row; nil goes back to Up next.
+function W.Select(mode, key)
+  if mode and key then W.selected = { mode = mode, key = key } else W.selected = nil end
+  W.Refresh(false)
+end
+
 function W.SetMode(m)
   W.mode = m
+  W.selected = nil
   local ok, why = EI.Plan.SetMode(m)
   if not ok and not W.saidReadOnly then W.saidReadOnly = true; P.Print('plan: mode ' .. tostring(why)) end
   W.Refresh(false)
@@ -290,4 +300,4 @@ function W.Toggle()
 end
 
 --- Test helper.
-function W.Reset() W.frame, W.view, W.cache, W.res, W.saidReadOnly = nil, nil, nil, nil, nil end
+function W.Reset() W.frame, W.view, W.cache, W.res, W.saidReadOnly, W.selected = nil, nil, nil, nil, nil, nil end

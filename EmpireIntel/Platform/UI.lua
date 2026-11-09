@@ -253,11 +253,13 @@ function UI.Compartment(text, icon, onClick)
   return true
 end
 
-function UI.Tooltip(owner, lines)
+--- anchor: nil = right of the owner; 'cursor' = at the mouse (rows span the window, so right of them can be off
+-- screen; D-066).
+function UI.Tooltip(owner, lines, anchor)
   local tt = env().GameTooltip
-  if type(tt) ~= 'table' or not owner then return end
+  if type(tt) ~= 'table' or not owner or type(lines) ~= 'table' then return end
   try('tooltip', function()
-    tt:SetOwner(owner, 'ANCHOR_RIGHT')
+    tt:SetOwner(owner, anchor == 'cursor' and 'ANCHOR_CURSOR' or 'ANCHOR_RIGHT')
     if tt.ClearLines then tt:ClearLines() end
     for i, l in ipairs(lines) do
       if i == 1 then tt:AddLine(l.text, 1, 1, 1) else tt:AddLine(l.text, l.r or 0.85, l.g or 0.85, l.b or 0.87, true) end

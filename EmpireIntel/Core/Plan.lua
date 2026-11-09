@@ -378,19 +378,111 @@ end
 local function copyList(list) local o = {}; for i, x in ipairs(list) do o[i] = x end; return o end
 
 local function carriedText(carried, byGuid)
-  local moved, added = {}, {}
+  local chain, moved, added = {}, {}, {}
   for _, c in ipairs(carried) do
-    local t = Plan.Label(c.e, byGuid) .. ' (' .. c.why .. ')'
-    if c.added then added[#added + 1] = t else moved[#moved + 1] = t end
+    if c.chain then chain[#chain + 1] = Plan.Label(c.e, byGuid)
+    else
+      local t = Plan.Label(c.e, byGuid) .. ' (' .. c.why .. ')'
+      if c.added then added[#added + 1] = t else moved[#moved + 1] = t end
+    end
   end
   local out = ''
+  if #chain > 0 then out = out .. ' Moved with it, in order: ' .. table.concat(chain, ', ') .. '.' end
   if #moved > 0 then out = out .. ' Moved with it: ' .. table.concat(moved, '; ') .. '.' end
   if #added > 0 then out = out .. ' Added before it: ' .. table.concat(added, '; ') .. '.' end
   return out
 end
 Plan.CarriedText = carriedText
 
---- Moves step `from` to position `to`, keeping prerequisites. Returns list, carried, or nil plus the reason.
+-- D-066: a step's chain is every step of the same character it builds on: for a level step, the lower level
+-- steps; for a skill step, the lower steps of the same profession and, for each of them and itself, the level
+-- step that opens its training gate (L-4) with every level step up to it. Moving a step up brings its whole chain
+-- ahead of it, in order; moving a step down takes every step that builds on it along, after it, in order. So no
+-- step is left below as "covered".
+
+local function rank(e)
+  if e.kind == 'level' then return e.level, 0, 0 end
+  if e.kind == 'skill' then return Plan.GateLevel(e.skill) or 0, 1, e.skill end
+  return 0, 2, 0
+end
+local function before(a, b)
+  local a1, a2, a3 = rank(a)
+  local b1, b2, b3 = rank(b)
+  if a1 ~= b1 then return a1 < b1 end
+  if a2 ~= b2 then return a2 < b2 end
+  return a3 < b3
+end
+
+--- The steps of `list` that `e` builds on (a set: entry -> true).
+function Plan.Chain(list, e, byGuid)
+  local set = {}
+  if type(e) ~= 'table' or (e.kind ~= 'level' and e.kind ~= 'skill') or type(e.guid) ~= 'string' then return set end
+  local topLevel = (e.kind == 'level') and (e.level - 1) or 0
+  if e.kind == 'skill' then
+    local prof = Plan.CanonicalProfession(e.profession)
+    local skills = { e }
+    for _, x in ipairs(list) do
+      if x ~= e and x.kind == 'skill' and x.guid == e.guid and Plan.CanonicalProfession(x.profession) == prof
+        and type(x.skill) == 'number' and x.skill < e.skill then
+        set[x] = true; skills[#skills + 1] = x
+      end
+    end
+    local gate = 0
+    for _, x in ipairs(skills) do local n = Plan.Needs(x, byGuid); if n and n > gate then gate = n end end
+    if gate > 0 then
+      topLevel = gate
+      -- the level step that meets the highest gate (the smallest planned level at or above it)
+      local sat
+      for _, x in ipairs(list) do
+        if x.kind == 'level' and x.guid == e.guid and type(x.level) == 'number' and x.level >= gate and (not sat or x.level < sat) then sat = x.level end
+      end
+      if sat then topLevel = sat end
+    end
+  end
+  for _, x in ipairs(list) do
+    if x ~= e and x.kind == 'level' and x.guid == e.guid and type(x.level) == 'number' and x.level <= topLevel then set[x] = true end
+  end
+  return set
+end
+
+-- e placed at its new index in out: bring its chain ahead (moving up) or its dependents after it (moving down)
+local function chainMove(out, e, byGuid, up, carried)
+  if up then
+    local chain = Plan.Chain(out, e, byGuid)
+    local anchor = indexOf(out, e)
+    local members = {}
+    for i, x in ipairs(out) do if chain[x] then members[#members + 1] = x; if i < anchor then anchor = i end end end
+    local moved = false
+    for _, x in ipairs(members) do if indexOf(out, x) > indexOf(out, e) then moved = true end end
+    if not moved then return end
+    table.sort(members, before)
+    local block = {}
+    for _, x in ipairs(members) do block[#block + 1] = x end
+    block[#block + 1] = e
+    local rest = {}
+    for _, x in ipairs(out) do if not chain[x] and x ~= e then rest[#rest + 1] = x end end
+    for i = #out, 1, -1 do out[i] = nil end
+    for i = 1, anchor - 1 do out[#out + 1] = rest[i] end
+    for _, x in ipairs(block) do out[#out + 1] = x end
+    for i = anchor, #rest do out[#out + 1] = rest[i] end
+    for _, x in ipairs(members) do carried[#carried + 1] = { e = x, why = 'part of its chain', chain = true } end
+  else
+    local deps = {}
+    local ei = indexOf(out, e)
+    for i = 1, ei - 1 do
+      local x = out[i]
+      if Plan.Chain(out, x, byGuid)[e] then deps[#deps + 1] = x end
+    end
+    if #deps == 0 then return end
+    table.sort(deps, before)
+    for _, x in ipairs(deps) do table.remove(out, indexOf(out, x)) end
+    local at = indexOf(out, e)
+    for k, x in ipairs(deps) do table.insert(out, at + k, x); carried[#carried + 1] = { e = x, why = 'builds on it', chain = true } end
+  end
+end
+
+--- Moves step `from` to position `to`, keeping prerequisites and chains (D-066). Returns list, carried, or nil
+-- plus the reason.
 function Plan.MoveKeeping(list, from, to, byGuid)
   local e = list[from]
   if not e then return nil, 'no step ' .. tostring(from) end
@@ -399,7 +491,12 @@ function Plan.MoveKeeping(list, from, to, byGuid)
   table.remove(out, from)
   to = math.max(1, math.min(to, #out + 1))
   table.insert(out, to, e)
-  return keep(out, old, byGuid, e, 'block')
+  local carried = {}
+  chainMove(out, e, byGuid, to < from, carried)
+  local res, more = keep(out, old, byGuid, e, 'block')
+  if not res then return nil, more end
+  for _, c in ipairs(more) do carried[#carried + 1] = c end
+  return res, carried
 end
 
 --- Removes step n unless a later step needs it. Returns list, or nil plus the reason.

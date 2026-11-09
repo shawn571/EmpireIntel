@@ -3,9 +3,9 @@
 DOC VERSION: 1.5.0  |  UPDATED: 2026-11-09 (session S-063)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4b: live gate partly passed (D-063); retest build 0.7.2 on p2-4b-window, not merged.
+CURRENT PHASE:            Phase 2, increment P2-4b: live gate partly passed (D-063); retest 0.7.2: 2 and 3 failed (D-066); 0.7.3 on p2-4b-window, not merged.
 IMPLEMENTATION APPROVED:  P2-4b (D-061), its fixes 1-9 (D-063) and finding 10 (D-065). P2-4c, then P2-4d: approved (D-065), start only after the one before closes.
-OPEN BLOCKERS:            the user's one retest on 0.7.2 (gate steps 2, 3, 6, 8); merge approval; closing P2-4b
+OPEN BLOCKERS:            the user's retest on 0.7.3 (gate steps 2, 3, 8); merge approval; closing P2-4b; Q-P2-4c-4/5, Q-P2-4e, Q-P2-4f
 ```
 
 Rules: work only on the current phase. A phase is complete only when its exit test passes. Mark tasks `[x]` with date and session.
@@ -105,7 +105,11 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P2-4c and P2-4d planned: Phase2_Plan.md section 10 (S-063)
 - [x] Finding 10 and repeated steps fixed: 0.7.2, 519 tests (S-064, D-065)
 - [x] Q-P2-4c and Q-P2-4d answered (D-065): approved with conditions; L-17 stays unverified
-- [ ] **User:** the one retest, gate steps 2, 3, 6, 8 on 0.7.2; merge approval for #17; close P2-4b
+- [x] Retest on 0.7.2: step 6 passed; 2 and 3 failed (D-066)
+- [x] 0.7.3 built: chains, selection card, notes on hover, emblem size; 526 tests, 15/15 mutants (S-065, D-067)
+- [x] Items 5-7 planned: Phase2_Plan.md section 11 (S-065)
+- [ ] **User:** retest gate steps 2, 3, 8 on 0.7.3; merge approval for #17; close P2-4b
+- [ ] **User:** Q-P2-4c-4, Q-P2-4c-5, Q-P2-4e (with e-1, e-2), Q-P2-4f
 - [ ] P2-4c (profession choices, setup wizard), only after P2-4b closes
 - [ ] P2-4d (rested XP in the route), only after P2-4c closes
 - [ ] **User (any time):** the rested-kill check for L-17 (README 0.6.0 step 8); the 105% test for L-19 once the alts are set up (Phase2_Plan.md 10.3)

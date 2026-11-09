@@ -4,6 +4,24 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-065 | 2026-11-09 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest on 0.7.2: step 6 passed, steps 2 and 3 failed (D-066). Retest build **EmpireIntel 0.7.3** (D-067) on `p2-4b-window`, PR #17 open, **not merged** ("don't merge #17").
+
+**Approved:** through D-066 (the 0.7.3 fixes; items 5-7 as a plan only). P2-4c and P2-4d approved earlier (D-065), not started.
+
+**Pending (the user decides):** the retest on 0.7.3 (gate steps 2, 3, 8); merging #17; closing P2-4b; Q-P2-4c-4 and Q-P2-4c-5 (options in the window, one or two increments), Q-P2-4e with e-1 and e-2 (realistic levelling time, Questie read), Q-P2-4f (more captured at login) (Phase2_Plan.md section 11); the next check version (D-059); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 to 0.7.3, 526 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.3.zip`, sha256 `c55eb642608ae976109cdc4686acc9c4c0f9b7793966e8bd5db114216b9c56c1`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.2, EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** those in section 11.4. Not confirmed: whether row tooltips showed at all on 0.7.2 (the cause of the note finding is inferred: tooltips opened off screen to the right).
+
+**User's next step:** install 0.7.3, repeat gate steps 2, 3 and 8, send both screenshots and the saved file; answer section 11.4.
+
 ## S-064 | 2026-11-09 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. Retest build **EmpireIntel 0.7.2** (finding 10, repeated steps; D-065) on `p2-4b-window`, PR #17 open, **not merged**.

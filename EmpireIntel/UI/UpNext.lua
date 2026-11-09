@@ -20,10 +20,10 @@ local function fill(parent, layer, color)
   return t
 end
 
-local function text(parent, font, size, color)
+local function text(parent, font, size, color, justify)
   local fs = UI.Text(parent, font, size)
   if fs then
-    fs:SetJustifyH('LEFT')
+    fs:SetJustifyH(justify or 'LEFT')
     if fs.SetWordWrap then fs:SetWordWrap(false) end
     fs:SetTextColor(color[1], color[2], color[3], color[4] or 1)
   end
@@ -53,11 +53,13 @@ function U.Create(parent)
   card.label:SetPoint('TOPLEFT', f, 'TOPLEFT', 82, -12)
   card.emblem = UI.Texture(f, 'ARTWORK')
   if card.emblem then card.emblem:SetSize(T.EMBLEM_SIZE, T.EMBLEM_SIZE) end
+  -- D-066: the badge is a fixed pill (T.BADGE_H high) and the emblem is drawn at a fixed size whose visible disc
+  -- matches it (T.EMBLEM_SIZE), centred on the badge
   card.badgeBg = fill(f, 'ARTWORK', C.normalBg)
-  card.badge = text(f, T.FONTS.rows, T.SIZE.tiny, C.normalText)
-  card.badge:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -14, -11)
-  if card.badgeBg then card.badgeBg:SetPoint('TOPLEFT', card.badge, 'TOPLEFT', -6, 2); card.badgeBg:SetPoint('BOTTOMRIGHT', card.badge, 'BOTTOMRIGHT', 6, -2) end
-  if card.emblem then card.emblem:SetPoint('RIGHT', card.badge, 'LEFT', -12, 0) end
+  if card.badgeBg then card.badgeBg:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -14, -10); card.badgeBg:SetSize(T.BADGE_W, T.BADGE_H) end
+  card.badge = text(f, T.FONTS.rows, T.SIZE.small, C.normalText, 'CENTER')
+  if card.badgeBg then card.badge:SetPoint('CENTER', card.badgeBg, 'CENTER', 0, 0) else card.badge:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -14, -14) end
+  if card.emblem then card.emblem:SetPoint('RIGHT', card.badgeBg or card.badge, 'LEFT', -8, 0) end
   card.factionText = text(f, T.FONTS.rows, T.SIZE.tiny, C.muted)
   if card.emblem then card.factionText:SetPoint('RIGHT', card.emblem, 'LEFT', -4, 0) end
 
@@ -102,12 +104,12 @@ function U.Render(card, c, mode, empty)
   card.tooltip = has and c.tooltip or nil
   if not has then card.empty:SetText(empty or ''); return nil end
   local who = c.who
-  card.label:SetText(mode == 'mine' and ('UP NEXT - MY PLAN STEP ' .. tostring(c.index)) or 'UP NEXT')
+  card.label:SetText(c.label or (mode == 'mine' and ('UP NEXT - MY PLAN STEP ' .. tostring(c.index)) or 'UP NEXT'))
   local col = UI.ClassColor(who.class) or C.strong
   card.name:SetText(who.name)
   card.name:SetTextColor(col[1], col[2], col[3], 1)
   if card.ring then card.ring:SetVertexColor(col[1], col[2], col[3], 1) end
-  card.sub:SetText(who.classText .. ' ' .. tostring(who.level or '?') .. ' - ' .. tostring(who.seen))
+  card.sub:SetText(who.account and 'account-wide' or (who.classText .. ' ' .. tostring(who.level or '?') .. ' - ' .. tostring(who.seen)))
   -- art: portrait, race icon, class icon (EI-E-30); a plain fill if none can be drawn
   local used = 'none'
   if who.art and who.art.kind == 'portrait' and UI.Portrait(card.portrait) then used = 'portrait'
@@ -122,10 +124,14 @@ function U.Render(card, c, mode, empty)
   card.emblemPath = emblemOn
   show(card.emblem, emblemOn ~= nil and emblemOn ~= false)
   card.factionText:SetText(who.faction and (who.factionSrc == 'datastore' and (who.faction .. ' (DataStore)') or '') or '')
-  local b = BADGE[who.ruleset.kind] or BADGE.unknown
-  card.badge:SetText(who.ruleset.text)
-  card.badge:SetTextColor(C[b[1]][1], C[b[1]][2], C[b[1]][3], 1)
-  UI.Fill(card.badgeBg, C[b[2]])
+  -- the account (a dungeon challenge in My plan) has no realm badge
+  show(card.badge, who.ruleset ~= nil); show(card.badgeBg, who.ruleset ~= nil)
+  if who.ruleset then
+    local b = BADGE[who.ruleset.kind] or BADGE.unknown
+    card.badge:SetText(who.ruleset.text)
+    card.badge:SetTextColor(C[b[1]][1], C[b[1]][2], C[b[1]][3], 1)
+    UI.Fill(card.badgeBg, C[b[2]])
+  end
   card.title:SetText(c.title)
   card.earns:SetText(c.earns or '')
   card.time:SetText((c.time ~= '' and (c.time .. ' [estimate]')) or '')

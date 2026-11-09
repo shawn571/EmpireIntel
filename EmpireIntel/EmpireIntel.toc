@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: EmpireIntel
-## Notes: Your characters' Legacy progress and the fastest route to the next points (/ei plan, /ei next). Phase 2 increment P2-4b (retest 0.7.2).
-## Version: 0.7.2
+## Notes: Your characters' Legacy progress and the fastest route to the next points (/ei plan, /ei next). Phase 2 increment P2-4b (retest 0.7.3).
+## Version: 0.7.3
 ## SavedVariables: EmpireIntelDB
 
 Platform/Platform.lua

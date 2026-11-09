@@ -487,6 +487,27 @@ Q-P2-4d: yes. d-1: no, keep the rested rule unverified until I do the /ei rested
 Build P2-4c and P2-4d only after P2-4b closes, one increment at a time."
 Consequences: EmpireIntel 0.7.2 built on `p2-4b-window` (P2-4b_Report.md section 6). P2-4c and P2-4d are approved as planned (Phase2_Plan.md section 10) with these answers, and are not started: P2-4c begins only after P2-4b closes, P2-4d after P2-4c. L-17 stays unverified (the rested-kill check, README 0.6.0 step 8). Claude's choices within the words: the first copy of a repeated step keeps a later copy's note when it has none; a saved step with an unknown key is never removed as a repeat (it stays an UNEXPECTED line); the repeat check runs about 3 seconds after login or `/reload`, after the first snapshot, so the chat line can name the character; `/ei next` in chat still counts each of my plan's steps from today (finding 10 was about the window's rows).
 
+## D-066 Retest 0.7.2: steps 2 and 3 fail; fixes for 0.7.3; plan items 5-7 | User (2026-11-09)
+The user's exact words:
+"Retest 0.7.2 (screenshots of both modes attached). The removed-repeat line appeared. Step 6 passes. Steps 2 and 3 fail; don’t merge #17. Fix in 0.7.3:
+Prerequisite chain: moving a step up must move its whole chain ahead of it, in order. Moving Enchanting 225 to the top must put Level 10, Enchanting 150 and Level 20 before it, not leave them below as “covered”.
+Notes: a row only shows “(note)”, and the only way to read the note is to edit it again. Show the note text on hover and on the card when that row is selected.
+Card follows the selected row: clicking any row (any character) shows that character on the card: portrait or race/class icon, faction, realm type.
+Faction emblem: still too small. Draw it at a fixed size that matches the PvE badge.
+Each fix gets a test. End with the package block and only the gate steps to repeat.
+Plan only, no code, for my approval:
+5. All options in the window: /ei opens the window, and everything the /ei commands do (mode, target, copy, ignore and unignore, rules, minimap on/off, alts, legacy, version, setup) is reachable there, through a settings or options panel and the row menus. The commands can stay as shortcuts, but nobody should need them. Fold this into the P2-4c setup wizard and options plan if that fits.
+6. Realistic leveling time (new increment): 9 hours for 6 to 20 isn’t realistic, even speedrunning. The estimate must adjust per character: its own measured XP per hour (Q-F2), its rested pool (P2-4d), the quests in its quest log with their expected XP, including travel time to and from objectives, and pure mob grinding for anything beyond the quest log. Report with evidence what the game gives about quests in the log (XP, objectives, locations), what Questie’s database could add read-only (and its license), and why live Wowhead lookups aren’t possible in game. Label every estimate.
+7. Captured at login: confirm what is saved for each character the first time it logs in with EmpireIntel running (race, sex, class, faction, realm, professions, rested). Portraits can’t be saved, so offline alts use race/class icons. Say if anything else useful can be captured."
+Consequences: #17 stays unmerged; 0.7.3 built (D-067); items 5-7 planned in Phase2_Plan.md section 11 (Q-P2-4c-4, Q-P2-4e, Q-P2-4f), no code.
+
+## D-067 Retest build: EmpireIntel 0.7.3 | Claude (2026-11-09), within D-066
+Choices within the user's words, open to change:
+- **The chain** of a step is every step of the same character it builds on: for a level step the lower level steps; for a skill step the lower steps of the same profession and the level steps up to the one that opens the highest training gate. Moving up brings the chain ahead in progression order (level, then the skills it opens); moving down takes the steps that build on it along, after it. Chat: "Moved with it, in order: ...".
+- **Selecting:** a left click selects a row (the card shows it, the row is highlighted); a click on the selected row in My plan edits its target (also "Edit target" in the menu); clicking the card goes back to Up next; switching the mode clears the selection. An account row (dungeon challenge) shows "account-wide" with no badge.
+- **Notes on hover:** row tooltips now open at the mouse pointer (ANCHOR_CURSOR). Inferred cause of the user's finding: the tooltip opened to the right of the full-width row, which can be off screen.
+- **Size:** the badge is a fixed 22 px pill; the emblem texture is 28 px so its disc (about 0.77 of it, measured on the 0.7.2 screenshot [inferred]) is about 22 px.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

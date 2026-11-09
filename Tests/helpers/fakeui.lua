@@ -165,7 +165,7 @@ function FU.install(W, opts)
   if not opts.noCompartment then
     env.AddonCompartmentFrame = { RegisterAddon = function(_, info) ui.registered = ui.registered + 1; ui.compartment = info end }
   end
-  env.GameTooltip = { SetOwner = function(_, owner) ui.tooltipOwner = owner; ui.tooltip = {} end,
+  env.GameTooltip = { SetOwner = function(_, owner, anchor) ui.tooltipOwner = owner; ui.tooltipAnchor = anchor; ui.tooltip = {} end,
     ClearLines = function() ui.tooltip = {} end, AddLine = function(_, s) table.insert(ui.tooltip, s) end,
     Show = function() ui.tooltipShown = true end, Hide = function() ui.tooltipShown = false end }
   env.SetPortraitTexture = function(tex, unit) if not opts.noPortrait and tex and unit == 'player' then tex.path = 'RTPortrait1' end end

@@ -49,6 +49,7 @@ T.ICON = {
 }
 T.ICON.ignored = T.ICON.unknown                         -- D-063 item 4: a step of an ignored character
 T.ICON.covered = T.ICON.check                           -- D-065 finding 10: reached by an earlier step
+T.C.selected = hex('2a2c40')                               -- D-066: the selected row
 T.STATUS_COLOR = { open = 'muted', progress = 'amber', done = 'doneFill', gate = 'muted', unknown = 'muted', ignored = 'dim', covered = 'dim' }
 
 -- race file (UnitRace's second value) -> the atlas token (EI-E-30: Scourge is "undead"); others lower case
@@ -75,4 +76,8 @@ T.EMBLEM = { Horde = 'HordeEmblem', Alliance = 'AllianceEmblem' }      -- EI-E-3
 -- screenshot).
 T.EMBLEM_FILE = 'Interface\\TargetingFrame\\UI-PVP-'
 T.EMBLEM_CROP = { 0, 0.625, 0, 0.625 }
-T.EMBLEM_SIZE = 26
+-- D-066: the badge is a fixed 22 px pill; the emblem file's disc fills about 0.77 of the cropped texture (the
+-- user's 0.7.2 screenshot: a 20 px disc in a 26 px texture) [inferred], so a 28 px texture shows a disc about
+-- 22 px high, the badge's height. Both fixed: they no longer depend on the text.
+T.BADGE_H, T.BADGE_W = 22, 64
+T.EMBLEM_SIZE = 28

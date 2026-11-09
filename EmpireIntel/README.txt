@@ -1,6 +1,17 @@
-EmpireIntel 0.7.2 - the plan window, your retest build (P2-4b)
+EmpireIntel 0.7.3 - the plan window, retest of steps 2 and 3 (P2-4b)
 
-WHAT 0.7.2 ADDS TO 0.7.1 (your decision D-065)
+WHAT 0.7.3 CHANGES (your 0.7.2 retest, D-066)
+  - Moving a step up brings its whole chain ahead of it, in order: Enchanting 225 to the top puts Level 10,
+    Enchanting 150 and Level 20 before it (chat: "Moved with it, in order: ..."). Moving a step down takes the
+    steps that build on it along, after it. Nothing is left below as "covered".
+  - Click a row to select it: the card shows that row's character (portrait for the one you play, else race and
+    class icons), its faction and realm type, and the row's note. Click the card to go back to Up next.
+    In My plan, click the selected row again (or right-click > Edit target) to edit its target.
+  - Notes: hovering a row shows its note at the mouse pointer (tooltips now open at the pointer, so they cannot
+    open off screen to the right of the window).
+  - The faction emblem and the realm badge have fixed sizes: the emblem's disc is as high as the badge (22 px).
+
+WHAT 0.7.2 ADDED (D-065)
   10. My plan counts each row from the end of the earlier steps of the same character (and profession):
       "Level 20" after "Level 10" shows only the time from 10 to 20; "Enchanting 225" after "Enchanting 150"
       only 150 to 225. A step an earlier step already reaches reads "(covered by step n)", greyed, with no
@@ -32,37 +43,29 @@ WHAT 0.7.1 CHANGED (your findings 1 to 9, D-063)
      Copying the route keeps the runner's level step before a dungeon challenge.
 
 RESTART OR RELOAD?
-  Update from 0.7.1, 0.7.0 or 0.6.0: /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
+  Update from any 0.7.x or 0.6.0: /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
   the AddOns list refreshes at the next start, harmless). Saved data: unchanged format 2.
 
-RETEST (once, on 0.7.2: gate steps 2, 3, 6 and 8; steps 1, 4, 5 and 7 passed on 0.7.0)
+RETEST (gate steps 2, 3 and 8 only; 1, 4, 5, 6 and 7 passed)
   Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload. Type /ei version:
-  expect "version 0.7.2, saved data schema 2 (ok)". About 3 seconds after the /reload, expect the chat line
-  "plan: removed 1 repeated step ..." naming your second Enchanting 150 (it is the only repeat in your plan).
-  2. Fastest and My plan against the mockup, and:
-     a. the card's emblem is the Horde icon (not a red shield), next to a badge reading "PvE";
-     b. the target button reads "Cap 2/16"; click it: "Next reward 2/15", then "Next point 2/3"; hover it;
-     c. the Experienced Spelunker row says "Account" in both modes;
-     d. in Fastest, NOW shows today's values (the Priest's Enchanting row 28/75, not 150/150);
-     e. in My plan, Level 20 after Level 10 shows less time than before (about 7.8 h, not 9.1 h); the times
-        no longer overlap.
+  expect "version 0.7.3, saved data schema 2 (ok)".
+  2. Fastest and My plan:
+     a. the emblem is the Horde disc, as high as the "PvE" badge next to it;
+     b. click a Druid row: the card shows the Druid (race and class icons, Horde emblem, PvE) and reads
+        "SELECTED - STEP n"; click the card: back to "UP NEXT" with your Priest's portrait;
+     c. hover any row: the tooltip opens at the mouse pointer.
   3. My plan:
-     a. drag (or Move to top) an Enchanting 150 row above "Level 10" of the same Priest: both move, and chat
-        says "Moved with it: ... Level 10";
-     b. right-click Enchanting 150 > Add a skill step after: if Enchanting 225 is already in your plan, expect
-        300 (or "nothing added: Enchanting 300 is already planned"), never a second 150; a missing level step
-        is added before it (chat says so);
-     c. right-click a row > Edit note: the bar opens below the rows; type a note, Enter: the row shows "(note)"
-        and its tooltip shows the note;
-     d. the rows of the character you ignored read "(ignored)"; right-click one: it offers "Unignore";
-     e. /reload and open again: all kept.
-  6. Enter combat, open the window: "Legacy not read (in combat)" (or "from before combat"). Leave combat
-     with the window open: within a few seconds the line goes away.
-  8. Send a screenshot of each mode (pasted as images), the saved file
+     a. right-click Enchanting 225 > Move to top: Level 10, Enchanting 150, Level 20 and Enchanting 225 are the
+        first four rows, in that order, none "covered"; chat lists what moved with it;
+     b. hover the Druid's "Level 10 (note)" row: the tooltip shows the note text; click the row: the card shows
+        "Note: ..." too;
+     c. click a row, then click it again: the edit bar opens for its target (Escape cancels);
+     d. /reload and open again: all kept.
+  8. Send a screenshot of each mode (as images), the saved file
        WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
      and any line with UNEXPECTED or any red Lua error.
 
-ROLLBACK TO 0.7.0 OR 0.7.1
+ROLLBACK TO 0.7.2 (OR EARLIER 0.7.x)
   Put that folder back and /reload. Saved data is the same format (removed repeats stay removed).
 
 EmpireIntel 0.7.0 - the plan window (P2-4b)

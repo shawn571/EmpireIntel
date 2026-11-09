@@ -62,7 +62,7 @@ function L.Move(from, to)
   local now
   for i, e in ipairs(list) do if e == mine[from] then now = i end end
   if #carried > 0 or now ~= to then
-    say('moved step ' .. from .. ' to ' .. tostring(now) .. '.' .. EI.Plan.CarriedText(carried, bg))
+    say('moved ' .. EI.Plan.Label(mine[from], bg) .. (to < from and ' up' or ' down') .. ' to step ' .. tostring(now) .. '.' .. EI.Plan.CarriedText(carried, bg))
   end
   return true
 end
@@ -130,6 +130,7 @@ end
 local function menuItems(list, row)
   if list.mode == 'mine' then
     local items = { { text = 'Move to top', act = 'top' } }
+    if row.editable and row.field then items[#items + 1] = { text = 'Edit target', act = 'target' } end
     if row.kind ~= 'challenge' then
       items[#items + 1] = { text = 'Add a level step after', act = 'addLevel' }
       items[#items + 1] = { text = 'Add a skill step after', act = 'addSkill' }
@@ -152,6 +153,7 @@ function L.Act(list, act, row)
   elseif act == 'addLevel' then L.AddAfter(row.index, 'level', row)
   elseif act == 'addSkill' then L.AddAfter(row.index, 'skill', row)
   elseif act == 'note' then L.StartEdit(list, row, 'note'); return
+  elseif act == 'target' then L.StartEdit(list, row); return
   elseif act == 'ignore' or act == 'unignore' then
     local on = act == 'ignore'
     local ok, why = EI.Plan.SetIgnored(row.guid, on)
@@ -328,14 +330,21 @@ local function newRow(list, i)
   r.now:SetPoint('RIGHT', r.pts, 'LEFT', 0, 0)
   r.step:SetPoint('RIGHT', r.now, 'LEFT', -16, 0)
   if r.dot then r.dot:SetPoint('RIGHT', r.now, 'LEFT', -6, 0) end
+  r.sel = fill(b, 'BACKGROUND', C.selected)
+  if r.sel then r.sel:SetAllPoints(b); r.sel:Hide() end
   b:SetScript('OnEnter', function(self)
     if r.hover then r.hover:Show() end
-    if r.data then UI.Tooltip(self, r.data.tooltip) end
+    if r.data then UI.Tooltip(self, r.data.tooltip, 'cursor') end      -- D-066: at the cursor, never off screen
   end)
   b:SetScript('OnLeave', function() if r.hover then r.hover:Hide() end; UI.HideTooltip() end)
   b:SetScript('OnClick', function(_, button)
     if not r.data then return end
-    if button == 'RightButton' then showMenu(list, r.data) else hideMenu(list); L.StartEdit(list, r.data) end
+    if button == 'RightButton' then showMenu(list, r.data); return end
+    hideMenu(list)
+    -- D-066: a click selects the row (the card shows it); a click on the selected row in My plan edits its target
+    if r.data.selected and list.mode == 'mine' then L.StartEdit(list, r.data); return end
+    local key = (list.mode == 'mine') and r.data.index or (r.data.route and r.data.index)
+    if key and list.win.Select then list.win.Select(list.mode, key) end
   end)
   b:SetScript('OnDragStart', function()
     if list.mode ~= 'mine' or not r.data then return end
@@ -471,6 +480,7 @@ function L.Draw(list)
         r.pts:SetText(data.pts or '')
         r.time:SetText(data.time or '')
         if r.dot then if data.unverified then r.dot:Show() else r.dot:Hide() end end
+        if r.sel then if data.selected then r.sel:Show() else r.sel:Hide() end end
       end
     end
   end
