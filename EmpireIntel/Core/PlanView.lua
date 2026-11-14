@@ -196,13 +196,14 @@ local function routeRow(s, i, now)
     title = 'Account: ' .. text
     who = ACCOUNT
   end
+  if s.already then extra[#extra + 1] = { text = s.already .. ' is already earned on the account: this milestone row earns no point (D-070).' } end
   if nowText ~= routeNow and routeNow ~= '' then
     extra[#extra + 1] = { text = 'NOW is today\'s value; at this point of the route: ' .. routeNow }
   end
   local tip = tooltip(title, timeLine, s.rules)
   for k, l in ipairs(extra) do table.insert(tip, 1 + k, l) end
   return {
-    index = i, who = who, step = text, now = nowText, pts = '+' .. (s.points or 1), time = hours(s.hours), status = status,
+    index = i, who = who, step = text, now = nowText, pts = ((s.points or 1) > 0) and ('+' .. (s.points or 1)) or '', time = hours(s.hours), status = status,
     unverified = #un > 0, kind = s.kind, guid = (s.kind ~= 'dungeon') and s.row and s.row.guid or nil,
     tooltip = tip, route = s,
   }
@@ -226,7 +227,9 @@ local function routeCard(s, now)
   end
   -- the card names the character to play, also for an account-wide dungeon challenge (its runner)
   local who = r.who.account and V.Who(s.row, now) or r.who
-  return { who = who, title = title, earns = '+' .. (s.points or 1) .. ' ' .. table.concat(s.earns, ', '),
+  local earns = ((s.points or 1) > 0) and ('+' .. (s.points or 1) .. ' ' .. table.concat(s.earns, ', '))
+    or ('no Legacy point (' .. tostring(s.already or 'already earned') .. ' is already earned)')
+  return { who = who, title = title, earns = earns,
     time = r.time, gate = gate, unverified = r.unverified, tooltip = V.WithRealm(r.tooltip, who) }
 end
 
@@ -240,6 +243,26 @@ local function findProf(r, name)
     if type(p.name) == 'string' and string.lower(p.name) == string.lower(name) then return p end
   end
   return false
+end
+
+-- D-070: a Legacy milestone is earned once per account (class challenges per class, craft challenges per craft,
+-- L-2, L-3): a row counts it only when the account has not earned it and no earlier step in my plan does. The
+-- account's start is the route's (the game's Legacy read, else inferred). Returns 1 or 0; a 0 is explained.
+function V.Claim(ctx, key, title, n, row)
+  ctx.claimed = ctx.claimed or {}
+  if ctx.doneStart and ctx.doneStart[key] then
+    row.already = row.already or {}
+    row.already[#row.already + 1] = title .. ' is already earned on the account'
+    return 0
+  end
+  local by = ctx.claimed[key]
+  if by and by ~= n then
+    row.already = row.already or {}
+    row.already[#row.already + 1] = title .. ' is earned by step ' .. tostring(by)
+    return 0
+  end
+  ctx.claimed[key] = n
+  return 1
 end
 
 local function mineRow(g, ctx)
@@ -281,7 +304,9 @@ local function mineRow(g, ctx)
           if from > r.level then h = h - (EI.Route.LevelHours(st, from)) end
           row.hours = math.max(0, h)
           local n = 0
-          for _, m in ipairs(R.CLASS_MILESTONES) do if m > from and m <= g.level then n = n + 1 end end
+          for _, m in ipairs(R.CLASS_MILESTONES) do
+            if m > from and m <= g.level then n = n + V.Claim(ctx, EI.Route.ClassKey(r.class, m), R.CLASS_TITLES[m] .. ' ' .. className(r.class), g.n, row) end
+          end
           if n > 0 then row.pts = '+' .. n end
         end
       end
@@ -303,7 +328,11 @@ local function mineRow(g, ctx)
           row.hours = EI.Route.SkillHours(from, g.skill)
           if R.Craft({ name = g.profession }) then
             local n = 0
-            for _, m in ipairs(R.CRAFT_MILESTONES) do if m > from and m <= g.skill then n = n + 1 end end
+            for _, m in ipairs(R.CRAFT_MILESTONES) do
+              if m > from and m <= g.skill then
+                n = n + V.Claim(ctx, EI.Route.CraftKey(g.profession, m), R.CRAFT_TITLES[m] .. ' ' .. (R.CRAFT_PERSON[g.profession] or g.profession), g.n, row)
+              end
+            end
             if n > 0 then row.pts = '+' .. n end
           end
         end
@@ -338,6 +367,7 @@ local function mineRow(g, ctx)
   if gateNeed and row.status == 'gate' then
     add[#add + 1] = { text = 'Needs level ' .. gateNeed .. ' first (L-4); my plan has no level step for it before this one.', r = 0.88, g = 0.66, b = 0.23 }
   end
+  for _, t in ipairs(row.already or {}) do add[#add + 1] = { text = t .. ' (no point here).' } end
   if row.status == 'covered' then add[#add + 1] = { text = 'Covered by step ' .. tostring(row.coveredBy) .. ': that step already reaches this target; no time or points here.' } end
   if g.note and g.note ~= '' then add[#add + 1] = { text = 'Note: ' .. g.note, r = 1, g = 1, b = 1 } end
   for k, l in ipairs(add) do table.insert(row.tooltip, 1 + k, l) end
@@ -401,6 +431,7 @@ function V.Build(ctx)
     ctx.gates = {}
     for _, v in ipairs(EI.Plan.Violations(ctx.plan.steps, byGuid)) do ctx.gates[v.dep.n] = v.need end
     ctx.reach = { level = {}, skill = {} }
+    ctx.doneStart, ctx.claimed = res and res.doneStart or {}, {}
     local covered = 0
     for _, g in ipairs(ctx.plan.steps) do
       local row = mineRow(g, ctx)

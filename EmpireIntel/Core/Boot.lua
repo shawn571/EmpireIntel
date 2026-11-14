@@ -26,6 +26,17 @@ P.OnReady(function()
       end
       local t = EI.Plan.DedupeText(removed, why, byGuid)
       if t then P.Print('plan: ' .. t) end
+      -- D-070: every milestone its own row (a saved "Alchemy 225" gets its missing "Alchemy 150")
+      if not next(byGuid) and EI.Views then
+        local okV, rows = pcall(EI.Views.Collect)
+        if okV then for _, r in ipairs(rows) do if r.guid then byGuid[r.guid] = r end end end
+      end
+      local okF, added, whyF = pcall(EI.Plan.FillSaved, byGuid)
+      if not okF then P.Print('UNEXPECTED: plan check: ' .. tostring(added))
+      else
+        local tf = EI.Plan.FillText(added, whyF, byGuid)
+        if tf then P.Print('plan: ' .. tf) end
+      end
     end
   end)
   if EI.MinimapButton then

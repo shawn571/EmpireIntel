@@ -29,10 +29,10 @@ local function luacGlobals(path)
 end
 
 T.describe('EmpireIntel static rules', function()
-  T.it('TOC: Interface 16001, version 0.7.3, one saved variable, forward slashes, files exist', function()
+  T.it('TOC: Interface 16001, version 0.7.4, one saved variable, forward slashes, files exist', function()
     local toc = read(DIR .. 'EmpireIntel.toc')
     T.truthy(toc:find('^## Interface: 16001\n'))
-    T.truthy(toc:find('## Version: 0.7.3', 1, true))
+    T.truthy(toc:find('## Version: 0.7.4', 1, true))
     T.truthy(toc:find('## SavedVariables: EmpireIntelDB\n', 1, true))
     T.falsy(toc:find('SavedVariablesPerCharacter', 1, true), 'format 1 is account-wide only')
     T.falsy(toc:find('Dependencies', 1, true))

@@ -106,7 +106,9 @@ end
 
 function N.StepLine(s)
   -- the level at this point of the route (earlier steps may have levelled the character)
-  local t = head(s.row, s.atLevel) .. (s.atLevel ~= s.row.level and ' (in this route)' or '') .. ': ' .. partsText(s) .. ': +' .. s.points .. ' (' .. table.concat(s.earns, ', ') .. '), '
+  local pts = (s.points > 0) and ('+' .. s.points .. ' (' .. table.concat(s.earns, ', ') .. ')')
+    or ('no point (' .. tostring(s.already or 'already') .. ' already earned)')
+  local t = head(s.row, s.atLevel) .. (s.atLevel ~= s.row.level and ' (in this route)' or '') .. ': ' .. partsText(s) .. ': ' .. pts .. ', '
     .. hoursText(s.hours)
   if (s.restHours or 0) > 0.05 then t = t .. ' (rest saves ' .. hoursText(s.restHours) .. ')' end
   if s.measured then t = t .. ' (measured XP rate)' end

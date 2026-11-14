@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-14 | S-067 | Retest build EmpireIntel 0.7.4: one row per Legacy milestone, points once per account, emblem at portrait size (branch `p2-4b-window`, not merged)
+- D-070. Retest on 0.7.3: step 2 passed, step 3 partial. 0.7.4: route steps split at milestones; missing milestone rows added to My plan at load; points counted once per account in both modes; emblem about the portrait's size. 536 tests (Lua 5.1 and 5.3); 11/11 mutants. Phase2_Plan.md 1.10.0 section 11.7: Questie read dropped; no bundled quest data; P2-4c adds any milestone row and assumes no profession.
+
 ## 2026-11-14 | S-066 | Standing order D-068 (third-party add-ons); plan inputs D-069 (documentation only)
 - D-068 recorded with the user's words in CODE_STANDING_ORDERS.md 1.2.0 section 8, NEXT_SESSION_PROMPT.md, Decisions.md; Project_Bible.md section 6 updated; THIRD_PARTY.md created. D-003 superseded in part (MIT and CC BY copy with credit).
 - D-069: answers to Phase2_Plan.md 11.4 and plan inputs; Phase2_Plan.md 1.9.0 sections 11.5 (P2-4c, P2-4d, P2-4e, Q-P2-4f, the check's file size) and 11.6 (Questie read vs D-068; pfQuest's data license). No code; nothing started.

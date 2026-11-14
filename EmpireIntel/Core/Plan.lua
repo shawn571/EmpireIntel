@@ -519,7 +519,13 @@ function Plan.ReplaceKeeping(list, n, e2, byGuid)
   if old[list[n]] and Plan.Needs(e2, byGuid) == Plan.Needs(list[n], byGuid) then old[e2] = true end
   local out = copyList(list)
   out[n] = e2
-  return keep(out, old, byGuid, nil, e2.kind == 'skill' and 'insert' or 'blockAll')
+  local res, carried = keep(out, old, byGuid, nil, e2.kind == 'skill' and 'insert' or 'blockAll')
+  if not res then return nil, carried end
+  -- a raised target that now passes a milestone gets that milestone's own row (D-070)
+  local filled, added = Plan.FillMilestones(res, byGuid)
+  if not filled then return nil, added end
+  for _, x in ipairs(added) do carried[#carried + 1] = { e = x, why = 'its own milestone row', added = true } end
+  return filled, carried
 end
 
 --- Inserts e after step n (at the end when n is past it), keeping prerequisites (a missing level step is added
@@ -552,6 +558,75 @@ function Plan.NextEntry(list, kind, guid, row, prof)
   local m = R.Next(R.CRAFT_MILESTONES, base)
   if not m then return nil, prof .. ' 300 is already planned' end
   return { kind = 'skill', guid = guid, profession = prof, skill = m }
+end
+
+---------------------------------------------------------------------------
+-- one row per milestone (D-070)
+---------------------------------------------------------------------------
+
+--- Adds the milestone steps a step passes without a row of its own: before "Alchemy 225" a missing "Alchemy 150"
+-- (above the character's skill today), before "Level 60" a missing "Level 45" (above its level today), each just
+-- before the step that passes it; a training gate it then needs gets its level step (as InsertKeeping does).
+-- Returns list, added (entries), or nil plus the reason.
+function Plan.FillMilestones(list, byGuid)
+  local old = openGates(list, byGuid)
+  local out, added = {}, {}
+  local have = {}
+  for _, e in ipairs(list) do
+    if type(e) == 'table' and e.kind == 'level' then have['l|' .. tostring(e.guid) .. '|' .. tostring(e.level)] = true end
+    if type(e) == 'table' and e.kind == 'skill' then have['s|' .. tostring(e.guid) .. '|' .. tostring(Plan.CanonicalProfession(e.profession)) .. '|' .. tostring(e.skill)] = true end
+  end
+  for _, e in ipairs(list) do
+    local row = type(e) == 'table' and type(e.guid) == 'string' and byGuid[e.guid]
+    if row and e.kind == 'skill' and type(e.skill) == 'number' and Plan.CanonicalProfession(e.profession) then
+      local prof = Plan.CanonicalProfession(e.profession)
+      local p = profOf(row, prof)
+      local now = (p and type(p.skill) == 'number') and p.skill or 0
+      for _, m in ipairs(R.CRAFT_MILESTONES) do
+        local k = 's|' .. e.guid .. '|' .. prof .. '|' .. m
+        if m > now and m < e.skill and not have[k] then
+          local x = { kind = 'skill', guid = e.guid, profession = prof, skill = m }
+          out[#out + 1] = x; added[#added + 1] = x; have[k] = true
+        end
+      end
+    elseif row and e.kind == 'level' and type(e.level) == 'number' and type(row.level) == 'number' then
+      for _, m in ipairs(R.CLASS_MILESTONES) do
+        local k = 'l|' .. e.guid .. '|' .. m
+        if m > row.level and m < e.level and not have[k] then
+          local x = { kind = 'level', guid = e.guid, level = m }
+          out[#out + 1] = x; added[#added + 1] = x; have[k] = true
+        end
+      end
+    end
+    out[#out + 1] = e
+  end
+  if #added == 0 then return list, added end
+  local res, carried = keep(out, old, byGuid, nil, 'insert')
+  if not res then return nil, carried end
+  for _, c in ipairs(carried) do if c.added then added[#added + 1] = c.e end end
+  return res, added
+end
+
+--- Saves FillMilestones' result. Returns added, or nil plus the reason (read-only).
+function Plan.FillSaved(byGuid)
+  local mine = Plan.Section().mine
+  if type(mine) ~= 'table' then return {} end
+  local list, added = Plan.FillMilestones(mine, byGuid)
+  if not list then return nil, added end
+  if #added == 0 then return added end
+  local ok, why = writable()
+  if not ok then return nil, why end
+  Plan.Section().mine = list
+  return added
+end
+
+function Plan.FillText(added, why, byGuid)
+  if added == nil then return 'my plan has milestones without their own row; ' .. tostring(why) end
+  if #added == 0 then return nil end
+  local parts = {}
+  for _, e in ipairs(added) do parts[#parts + 1] = Plan.Label(e, byGuid or {}) end
+  return 'added ' .. #added .. ' milestone step' .. (#added == 1 and '' or 's') .. ' to my plan, each before the step that passes it: '
+    .. table.concat(parts, ', ') .. '.'
 end
 
 ---------------------------------------------------------------------------

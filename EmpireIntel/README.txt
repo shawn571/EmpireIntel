@@ -1,6 +1,17 @@
-EmpireIntel 0.7.3 - the plan window, retest of steps 2 and 3 (P2-4b)
+EmpireIntel 0.7.4 - the plan window, retest of step 3 (P2-4b)
 
-WHAT 0.7.3 CHANGES (your 0.7.2 retest, D-066)
+WHAT 0.7.4 CHANGES (your 0.7.3 retest, D-070)
+  - Every Legacy milestone is its own row, in Fastest and in My plan. Learning Alchemy 0 -> 225 is two rows:
+    "Learn Alchemy, 0 -> 150" and "Alchemy 150 -> 225", each with its own training gate and time. A milestone
+    the account already has (or an earlier step earns) is a row with no point; hover it for why.
+  - My plan: a saved step that passes a milestone without a row of its own gets that row, just before it, when
+    you log in or /reload; chat says which (your Hunter gets "Alchemy 150" and "Blacksmithing 150").
+    Raising a target past a milestone adds that milestone's row too.
+  - Points are counted once per account in both modes: the Hunter's Alchemy 225 is +1 in My plan as in Fastest.
+  - The faction emblem is about the size of the character portrait, level with it at the card's right; the realm
+    badge sits to its left.
+
+WHAT 0.7.3 CHANGED (D-066)
   - Moving a step up brings its whole chain ahead of it, in order: Enchanting 225 to the top puts Level 10,
     Enchanting 150 and Level 20 before it (chat: "Moved with it, in order: ..."). Moving a step down takes the
     steps that build on it along, after it. Nothing is left below as "covered".
@@ -46,27 +57,26 @@ RESTART OR RELOAD?
   Update from any 0.7.x or 0.6.0: /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
   the AddOns list refreshes at the next start, harmless). Saved data: unchanged format 2.
 
-RETEST (gate steps 2, 3 and 8 only; 1, 4, 5, 6 and 7 passed)
+RETEST (gate steps 3 and 8 only; 1, 2, 4, 5, 6 and 7 passed)
   Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload. Type /ei version:
-  expect "version 0.7.3, saved data schema 2 (ok)".
-  2. Fastest and My plan:
-     a. the emblem is the Horde disc, as high as the "PvE" badge next to it;
-     b. click a Druid row: the card shows the Druid (race and class icons, Horde emblem, PvE) and reads
-        "SELECTED - STEP n"; click the card: back to "UP NEXT" with your Priest's portrait;
-     c. hover any row: the tooltip opens at the mouse pointer.
+  expect "version 0.7.4, saved data schema 2 (ok)". About 3 seconds after the /reload, expect
+  "plan: added 2 milestone steps to my plan ...: <Hunter> Alchemy 150, <Hunter> Blacksmithing 150."
+  Also look at the card: the Horde emblem is about as large as the portrait.
   3. My plan:
-     a. right-click Enchanting 225 > Move to top: Level 10, Enchanting 150, Level 20 and Enchanting 225 are the
-        first four rows, in that order, none "covered"; chat lists what moved with it;
-     b. hover the Druid's "Level 10 (note)" row: the tooltip shows the note text; click the row: the card shows
-        "Note: ..." too;
-     c. click a row, then click it again: the edit bar opens for its target (Escape cancels);
-     d. /reload and open again: all kept.
+     a. the Hunter's Alchemy 150 row is just above his Alchemy 225; same for Blacksmithing;
+     b. his Alchemy 225 shows +1 in My plan and in Fastest (Fastest shows "Learn Alchemy, 0 -> 150" with no
+        point, then "Alchemy 150 -> 225" +1);
+     c. hover a row with no point where a milestone is passed: the tooltip says it is already earned (or by
+        which step);
+     d. right-click the Hunter's Alchemy 225 > Move to top: his Level 25 and Alchemy 150 come above it;
+     e. /reload and open again: all kept.
   8. Send a screenshot of each mode (as images), the saved file
        WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
      and any line with UNEXPECTED or any red Lua error.
 
-ROLLBACK TO 0.7.2 (OR EARLIER 0.7.x)
-  Put that folder back and /reload. Saved data is the same format (removed repeats stay removed).
+ROLLBACK TO 0.7.3 (OR EARLIER 0.7.x)
+  Put that folder back and /reload. Saved data is the same format (added milestone rows and removed repeats
+  stay as they are).
 
 EmpireIntel 0.7.0 - the plan window (P2-4b)
 

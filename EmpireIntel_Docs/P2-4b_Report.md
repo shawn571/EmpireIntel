@@ -1,6 +1,6 @@
 # P2-4b Report: the plan window (EmpireIntel 0.7.0)
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Retest on 0.7.2: steps 6 passed, 2 and 3 failed (D-066); 0.7.3 built; not merged.** Approved by the user (D-060 mockup, D-061 plan with the fill path); build choices in D-062. Branch `p2-4b-window`.
+DOC VERSION: 1.1.0  |  DATE: 2026-11-09 (S-063)  |  STATUS: **Retest on 0.7.3: step 2 passed, step 3 partial (D-070); 0.7.4 built; not merged.** Approved by the user (D-060 mockup, D-061 plan with the fill path); build choices in D-062. Branch `p2-4b-window`.
 
 ## 1. What was built
 
@@ -71,3 +71,7 @@ At first open a hidden texture is filled with `SetColorTexture` and read back wi
 **Retest on 0.7.2 (D-066) [reported, screenshots]:** the removed-repeat line appeared; step 6 passed; steps 2 and 3 failed: (a) moving Enchanting 225 up carried only Level 20, leaving Level 10 and Enchanting 150 below as "covered"; (b) a note could be read only by editing it; (c) the card did not follow a clicked row; (d) the emblem (now the Horde disc, about 20 px) is too small beside the badge.
 
 **0.7.3 (D-067):** whole chains move in order (`Plan.Chain`, `MoveKeeping`); a click selects a row and the card follows it (portrait or race and class icons, faction, realm type, note); a second click edits; the card click goes back; tooltips at the pointer; a fixed 22 px badge and a 28 px emblem centred on it. 526 tests pass under Lua 5.1 and 5.3 (7 new, 7 adjusted to the new behaviour); mutation check 15 of 15 caught. Package `EmpireIntel_AddOns_v0.7.3.zip`, 34 files, sha256 `c55eb642608ae976109cdc4686acc9c4c0f9b7793966e8bd5db114216b9c56c1`; `/reload`; no format change. **Retest: gate steps 2, 3 and 8.**
+
+**Retest on 0.7.3 (D-070) [reported, screenshots, file]:** step 2 passed; step 3 partial: (a) My plan showed the Hunter's "Alchemy 225" as +2 with no Alchemy 150 row; (b) the same step was +1 in Fastest; (c) the emblem should be about the portrait's size. Cause of (a) and (b) [file: code]: the route moved a character straight from 0 to 225 when Journeyman was already earned elsewhere, and My plan counted every milestone a row passed, per character, ignoring the account.
+
+**0.7.4 (D-070):** `Route.Split` (one step per milestone, gates and hours split exactly; "already earned" rows with no point); `Plan.FillMilestones` (missing milestone rows added at load and after a raised target, chat names them); `PlanView.Claim` (each milestone counted once per account in plan order, from the account's earned set); emblem at the portrait's size. Replay of the user's saved file offline [inferred, not the live client]: "added 2 milestone steps ... Alchemy 150, Blacksmithing 150"; the Hunter's Alchemy 225 is +1 in both modes. 536 tests pass under Lua 5.1 and 5.3 (10 new, 4 adjusted); mutation check 11 of 11 caught. Package `EmpireIntel_AddOns_v0.7.4.zip`, 34 files, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; `/reload`; no format change. **Retest: gate steps 3 and 8 (and a look at the emblem).**

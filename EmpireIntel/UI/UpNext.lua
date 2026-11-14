@@ -43,7 +43,7 @@ function U.Create(parent)
   if card.edge then card.edge:SetPoint('BOTTOMLEFT', f, 'BOTTOMLEFT', 0, 0); card.edge:SetPoint('BOTTOMRIGHT', f, 'BOTTOMRIGHT', 0, 0); card.edge:SetHeight(1) end
 
   card.portrait = UI.Texture(f, 'ARTWORK')
-  if card.portrait then card.portrait:SetSize(52, 52); card.portrait:SetPoint('TOPLEFT', f, 'TOPLEFT', 14, -14) end
+  if card.portrait then card.portrait:SetSize(T.PORTRAIT, T.PORTRAIT); card.portrait:SetPoint('TOPLEFT', f, 'TOPLEFT', 14, -14) end
   card.ring = UI.Texture(f, 'OVERLAY')
   if card.ring then card.ring:SetSize(60, 60); card.ring:SetPoint('CENTER', card.portrait, 'CENTER', 0, 0); UI.Icon(card.ring, T.ICON.ring, C.strong) end
   card.classIcon = UI.Texture(f, 'OVERLAY')
@@ -53,13 +53,13 @@ function U.Create(parent)
   card.label:SetPoint('TOPLEFT', f, 'TOPLEFT', 82, -12)
   card.emblem = UI.Texture(f, 'ARTWORK')
   if card.emblem then card.emblem:SetSize(T.EMBLEM_SIZE, T.EMBLEM_SIZE) end
-  -- D-066: the badge is a fixed pill (T.BADGE_H high) and the emblem is drawn at a fixed size whose visible disc
-  -- matches it (T.EMBLEM_SIZE), centred on the badge
+  -- D-070: the emblem's disc is about the portrait's size (T.EMBLEM_SIZE), at the card's right, level with the
+  -- portrait; the realm badge is a fixed pill (D-066) to its left, on the label line
+  if card.emblem then card.emblem:SetPoint('CENTER', f, 'TOPRIGHT', -(14 + T.EMBLEM_DISC / 2), -(14 + T.PORTRAIT / 2)) end
   card.badgeBg = fill(f, 'ARTWORK', C.normalBg)
-  if card.badgeBg then card.badgeBg:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -14, -10); card.badgeBg:SetSize(T.BADGE_W, T.BADGE_H) end
+  if card.badgeBg then card.badgeBg:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -(14 + T.EMBLEM_DISC + 12), -10); card.badgeBg:SetSize(T.BADGE_W, T.BADGE_H) end
   card.badge = text(f, T.FONTS.rows, T.SIZE.small, C.normalText, 'CENTER')
   if card.badgeBg then card.badge:SetPoint('CENTER', card.badgeBg, 'CENTER', 0, 0) else card.badge:SetPoint('TOPRIGHT', f, 'TOPRIGHT', -14, -14) end
-  if card.emblem then card.emblem:SetPoint('RIGHT', card.badgeBg or card.badge, 'LEFT', -8, 0) end
   card.factionText = text(f, T.FONTS.rows, T.SIZE.tiny, C.muted)
   if card.emblem then card.factionText:SetPoint('RIGHT', card.emblem, 'LEFT', -4, 0) end
 
@@ -69,7 +69,7 @@ function U.Create(parent)
   card.sub:SetPoint('LEFT', card.name, 'RIGHT', 6, 0)
   card.title = text(f, T.FONTS.title, T.SIZE.card, C.text)
   card.title:SetPoint('TOPLEFT', card.name, 'BOTTOMLEFT', 0, -5)
-  card.title:SetPoint('RIGHT', f, 'RIGHT', -14, 0)
+  card.title:SetPoint('RIGHT', f, 'RIGHT', -(14 + T.EMBLEM_DISC + 12), 0)       -- clear of the emblem
   card.earns = text(f, T.FONTS.rows, T.SIZE.text, C.green)
   card.earns:SetPoint('TOPLEFT', card.title, 'BOTTOMLEFT', 0, -5)
   card.time = text(f, T.FONTS.rows, T.SIZE.text, C.soft)

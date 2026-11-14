@@ -528,6 +528,18 @@ I’ll install and retest 0.7.3 next. Start nothing new until P2-4b closes."
 Also from the user's reviewer notes on the saved files: "Measured XP per hour now exists for 7 of 8 characters; use it in estimates. EmpireIntelCheck’s saved file is 232 KB against its 256 KB cap and marked truncated; trim it or plan a fix."
 Consequences: Phase2_Plan.md 1.9.0 sections 10 and 11 updated (plan only). Nothing started. Two points need the user (Phase2_Plan.md 11.6): e-1 (reading Questie) conflicts with D-068 point 3, and pfQuest's bundled database comes from VMaNGOS (GPL v2), not only from pfQuest's MIT code.
 
+## D-070 Retest 0.7.3: step 2 passed, step 3 partial; fixes 1, 2 and 4 in 0.7.4; Q-D068-1 and Q-D068-2 answered | User (2026-11-14)
+The user's exact words (character names replaced: the Hunter, the Priest):
+"Retest 0.7.3: step 2 pass; step 3 partial; step 8 screenshots attached (files after logout).
+Each Legacy milestone is its own row. My plan shows “Alchemy 225” as +2 and hides Alchemy 150. Show 150, 225 and 300 as separate rows and steps (the Hunter is missing his 150 rows). Moving a 225 row up must bring the 150 row above it.
+Points mismatch: the Hunter’s “Learn Alchemy, 0 → 225” shows +1 in Fastest but +2 in My plan.
+The Priest’s Enchanting 225 wasn’t in my copied plan because the target is next reward (15). Not a bug, but I need a way to add any milestone row from the window (P2-4c options).
+Emblems: make the faction emblem about the same size as the character portrait on the card.
+The route assigns the Hunter both Alchemy and Blacksmithing although he has no professions. That’s P2-4c (setup wizard); confirm it’s covered.
+Q-D068-1: yes, drop the Questie read. Q-D068-2: bundle no quest data; read LibForeverData while the game runs as an optional plugin, and pfQuest the same way if installed; with neither, estimates use grinding only, labelled. Fix 1, 2 and 4 in 0.7.4; don’t merge #17 yet."
+Consequences: 0.7.4 built (P2-4b_Report.md section 6); #17 not merged. P2-4c gains "add any milestone row" (Phase2_Plan.md 10.2); the Hunter's two assumed crafts are covered by P2-4c's rule (10.2 points 1-2, c-2: nothing planned for a free slot until chosen). P2-4e: no Questie read, no bundled quest data; LibForeverData and an installed pfQuest read at run time as optional plugins; with neither, grinding only, labelled (Phase2_Plan.md 11.6).
+Claude's choices within the words: a route step that passes several milestones becomes one step per milestone, each with its own training gate and its share of the time (exact: level time as differences from the same start); a milestone row the account already has, or that an earlier step earns, shows no point and says why; My plan counts points once per account in plan order (class per class, craft per craft, L-2, L-3), starting from the account's earned milestones (the game's Legacy read, else inferred), as Fastest does; saved plans get the missing milestone rows at login or `/reload` (chat names them), and a raised target gets its new milestone rows; the emblem's disc is about the portrait's 52 px (texture 66 px), level with the portrait, the badge to its left, the card title kept clear of it.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

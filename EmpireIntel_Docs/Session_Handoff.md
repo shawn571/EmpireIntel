@@ -4,6 +4,24 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-067 | 2026-11-14 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest on 0.7.3: step 2 passed, step 3 partial (D-070). Retest build **EmpireIntel 0.7.4** on `p2-4b-window`, PR #17 open, **not merged** ("don't merge #17 yet").
+
+**Approved:** through D-070 (fixes 1, 2, 4 built; Q-D068-1 Questie read dropped; Q-D068-2 no bundled quest data, LibForeverData and pfQuest read at run time if installed, else grinding only, labelled; P2-4c adds "add any milestone row" and assumes no profession). Order after P2-4b: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e. Standing order D-068 in force.
+
+**Pending (the user decides):** the retest on 0.7.4 (gate steps 3 and 8, and a look at the emblem); merging #17; closing P2-4b; the next check version (0.1.10 with P2-4e); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 to 0.7.4 and the docs, 536 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.3, EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** none new.
+
+**User's next step:** install 0.7.4 and retest gate steps 3 and 8 (expect the chat line adding the Hunter's two 150 rows), send both screenshots and the saved file.
+
 ## S-066 | 2026-11-14 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. Retest build EmpireIntel 0.7.3 on `p2-4b-window` (PR #17, not merged), waiting for the user's retest. "Start nothing new until P2-4b closes."

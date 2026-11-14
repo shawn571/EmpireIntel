@@ -709,7 +709,7 @@ T.describe('P2-4b retest, item 1: my plan keeps prerequisites (L-4)', function()
   end)
   T.it('raising a skill target that now needs a higher level adds that level step before it', function()
     local out, carried = P0.ReplaceKeeping({ L(10), E(150) }, 2, E(225), byGuid)
-    T.eq(kinds(out), 'L10 L20 Enc225')
+    T.eq(kinds(out), 'L10 L20 Enc150 Enc225', 'and Enchanting 150 keeps its own row (D-070)')
     T.truthy(carried[1].added)
   end)
   T.it('in the window: dragging Enchanting 150 above Level 10 moves both and says so in chat', function()
@@ -914,7 +914,7 @@ T.describe('P2-4b retest, item 7: the faction emblem', function()
     local em = EI.Window.card.emblem
     T.eq(em.path, 'Interface\\TargetingFrame\\UI-PVP-Horde')
     T.eq(em.coord, { 0, 0.625, 0, 0.625 })
-    T.eq({ em.w, em.h }, { 28, 28 })
+    T.eq({ em.w, em.h }, { 66, 66 })
     local tex = FU.frame('Frame', W.env.UIParent):CreateTexture()
     tex.GetTexture = function(self) if self.atlas then return self.path end return nil end   -- the file does not load
     T.eq(EI.Platform.UI.Emblem(tex, 'Alliance'), 'atlas')
@@ -1025,10 +1025,12 @@ T.describe('P2-4b retest 0.7.2, finding 10: my plan counts from the earlier step
     for _, l in ipairs(r.tooltip) do if l.text:find('Covered by step 3', 1, true) then hit = true end end
     T.truthy(hit)
   end)
-  T.it('two milestones in one step count +2', function()
+  T.it('a step that passes two milestones gets a row for each (D-070): Level 45 +1, then Level 60 +1', function()
     local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C1, level = 60 } } }) })
     openWin(W)
-    T.eq(EI.Window.view.rows[1].pts, '+2', 'C1 27 -> 60 passes 45 and 60')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L45 L60')
+    T.eq({ EI.Window.view.rows[1].pts, EI.Window.view.rows[2].pts }, { '+1', '+1' })
+    T.truthy(find(W.prints, 'plan: added 1 milestone step to my plan, each before the step that passes it: Cee One Level 45.'), dump(W.prints))
   end)
 end)
 
@@ -1136,14 +1138,153 @@ T.describe('0.7.3: notes are readable on hover (D-066)', function()
   end)
 end)
 
-T.describe('0.7.3: the emblem matches the badge (D-066)', function()
-  T.it('a fixed badge pill and a fixed emblem, centred on it, whatever the text', function()
+T.describe('0.7.4: the emblem is about the portrait\'s size (D-070)', function()
+  T.it('the emblem\'s disc (about 0.77 of its texture) is the portrait\'s size, level with it; the badge a fixed pill beside it', function()
     local W, EI = session({})
     openWin(W)
     local card = EI.Window.card
-    T.eq({ card.badgeBg.w, card.badgeBg.h }, { EI.Theme.BADGE_W, EI.Theme.BADGE_H })
-    T.eq({ card.emblem.w, card.emblem.h }, { EI.Theme.EMBLEM_SIZE, EI.Theme.EMBLEM_SIZE })
-    T.near(EI.Theme.EMBLEM_SIZE * 0.77, EI.Theme.BADGE_H, 1, 'the visible disc (about 0.77 of the texture) is the badge\'s height')
-    T.eq(card.emblem.points[1][2], card.badgeBg, 'anchored on the badge')
+    local Th = EI.Theme
+    T.eq({ card.portrait.w, card.portrait.h }, { Th.PORTRAIT, Th.PORTRAIT })
+    T.eq({ card.emblem.w, card.emblem.h }, { Th.EMBLEM_SIZE, Th.EMBLEM_SIZE })
+    T.near(Th.EMBLEM_SIZE * 0.77, Th.PORTRAIT, 2, 'disc about the portrait size')
+    local p = card.emblem.points[1]
+    T.eq({ p[1], p[3], p[5] }, { 'CENTER', 'TOPRIGHT', -(14 + Th.PORTRAIT / 2) }, 'level with the portrait')
+    T.eq({ card.badgeBg.w, card.badgeBg.h }, { Th.BADGE_W, Th.BADGE_H })
+    T.eq(card.title.points[2][4], -(14 + Th.EMBLEM_DISC + 12), 'the title stops before the emblem')
+  end)
+end)
+
+---------------------------------------------------------------------------
+-- 0.7.4 (D-070): one row per Legacy milestone; the same points in both modes
+---------------------------------------------------------------------------
+T.describe('0.7.4: one row per Legacy milestone (D-070)', function()
+  local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+  local R0 = EI0.Route
+  local function kindsOf(steps)
+    local o = {}
+    for _, s in ipairs(steps) do
+      local t = {}
+      for _, p in ipairs(s.parts) do t[#t + 1] = (p.kind == 'level' and ('L' .. p.to)) or (p.kind == 'skill' and (p.profession:sub(1, 3) .. p.to)) or p.kind end
+      o[#o + 1] = table.concat(t, '+') .. ':' .. s.points
+    end
+    return table.concat(o, ' ')
+  end
+  local hunter = { guid = 'H', class = 'HUNTER', level = 1 }
+  T.it('the Hunter learning Alchemy 0 -> 225 at 25: Alchemy 150 (no point, already earned) then Alchemy 225 (+1); same hours', function()
+    local st = { row = hunter, kind = 'craft', parts = { { kind = 'skill', profession = 'Alchemy', from = 0, to = 225, learn = true } },
+      hours = R0.SkillHours(0, 225), earns = { 'Expert Alchemist' }, rules = {}, points = 1, pre = { row = hunter, level = 25, xp = 0, rest = 0 } }
+    local out = R0.Split({ st })
+    T.eq(kindsOf(out), 'Alc150:0 Alc225:1')
+    T.eq(out[1].already, 'Journeyman Alchemist')
+    T.truthy(out[1].learn and not out[2].learn)
+    T.eq({ out[1].train, out[2].train }, { 'Journeyman', 'Expert' })
+    T.near(out[1].hours + out[2].hours, st.hours, 1e-9)
+    T.eq({ out[1].total, out[2].total }, { 0, 1 })
+  end)
+  T.it('with its training gates: Level 10 then Alchemy 150, Level 20 then Alchemy 225', function()
+    local pre = { row = hunter, level = 1, xp = 0, rest = 0 }
+    local st = { row = hunter, kind = 'craft', parts = { { kind = 'level', from = 1, to = 20 }, { kind = 'skill', profession = 'Alchemy', from = 0, to = 225, learn = true } },
+      hours = R0.LevelHours(pre, 20) + R0.SkillHours(0, 225), earns = { 'Expert Alchemist' }, rules = {}, points = 1, pre = pre }
+    local out = R0.Split({ st })
+    T.eq(kindsOf(out), 'L10+Alc150:0 L20+Alc225:1')
+    T.near(out[1].hours + out[2].hours, st.hours, 1e-9)
+  end)
+  T.it('a class milestone passed on the way to a training gate is its own row', function()
+    local pri = { guid = 'P', class = 'PRIEST', level = 20 }
+    local pre = { row = pri, level = 20, xp = 0, rest = 0 }
+    local st = { row = pri, kind = 'craft', parts = { { kind = 'level', from = 20, to = 35 }, { kind = 'skill', profession = 'Enchanting', from = 225, to = 300, max = 225 } },
+      hours = R0.LevelHours(pre, 35) + R0.SkillHours(225, 300), earns = { 'Artisan Enchanter', 'Novice Priest' }, rules = {}, points = 2, pre = pre, train = 'Artisan' }
+    local out = R0.Split({ st })
+    T.eq(kindsOf(out), 'L25:1 L35+Enc300:1')
+    T.eq(out[1].earns, { 'Novice Priest' })
+    T.eq(out[2].earns, { 'Artisan Enchanter' })
+    T.near(out[1].hours + out[2].hours, st.hours, 1e-9)
+  end)
+  T.it('Fastest shows the no-point row with no points and says why; copying keeps each milestone as its own step', function()
+    local st = { row = { guid = C2, name = 'Cee Two', class = 'HUNTER', level = 25 }, kind = 'craft', parts = { { kind = 'skill', profession = 'Alchemy', from = 0, to = 225, learn = true } },
+      hours = R0.SkillHours(0, 225), earns = { 'Expert Alchemist' }, rules = {}, points = 1, pre = { row = hunter, level = 25, xp = 0, rest = 0 } }
+    local steps = R0.Split({ st })
+    local first = { row = st.row, kind = 'class', parts = { { kind = 'level', from = 1, to = 25 } }, hours = 1, rules = {}, earns = { 'Novice Hunter' }, points = 1 }
+    local v = EI0.PlanView.Build({ mode = 'auto', now = WALL, res = { earned = 2, earnedSrc = 'game', target = 15, targetKind = 'reward',
+      states = { {} }, steps = { first, steps[1], steps[2] }, left = 0, reached = 15, excluded = { ignored = 0, ruleset = 0 }, unlocked = true } })
+    T.eq(v.rows[1].pts, '')
+    T.eq(v.rows[2].pts, '+1')
+    local hit = false
+    for _, l in ipairs(v.rows[1].tooltip) do if l.text:find('Journeyman Alchemist is already earned on the account', 1, true) then hit = true end end
+    T.truthy(hit)
+    local list = EI0.Plan.FromRoute(steps)
+    T.eq(list, { { kind = 'skill', guid = C2, profession = 'Alchemy', skill = 150 }, { kind = 'skill', guid = C2, profession = 'Alchemy', skill = 225 } })
+  end)
+end)
+
+T.describe('0.7.4: my plan counts each milestone once per account, as Fastest does (D-070)', function()
+  local H = 'Player-1-00000013'
+  local function withHunter(plan)
+    local d = db(plan)
+    d.roster[H] = rec({ name = 'Cee Three', class = 'HUNTER', level = 1, xp = 0, xpMax = 400, professions = {}, race = 'Orc', sex = 2, faction = 'Horde' })
+    return d
+  end
+  T.it('a saved "Alchemy 225" without its 150 gets its own "Alchemy 150" row at load, and chat says so', function()
+    local W = session({ eidb = withHunter({ mode = 'mine', mine = { { kind = 'level', guid = H, level = 25 }, { kind = 'skill', guid = H, profession = 'Alchemy', skill = 225 } } }) })
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L25 Alc150 Alc225')
+    T.truthy(find(W.prints, 'plan: added 1 milestone step to my plan, each before the step that passes it: Cee Three Alchemy 150.'), dump(W.prints))
+  end)
+  T.it('Journeyman Alchemist earned by an earlier step: the Hunter\'s Alchemy 150 shows no point (says by which step), his 225 shows +1', function()
+    local W, EI = session({ eidb = withHunter({ mode = 'mine', mine = {
+      { kind = 'level', guid = C2, level = 10 }, { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 },
+      { kind = 'level', guid = H, level = 25 }, { kind = 'skill', guid = H, profession = 'Enchanting', skill = 150 },
+      { kind = 'skill', guid = H, profession = 'Enchanting', skill = 225 } } }) })
+    openWin(W)
+    local rows = EI.Window.view.rows
+    T.eq(rows[2].pts, '+1', 'C2 Enchanting 150 earns Journeyman Enchanter')
+    T.eq(rows[4].pts, '', 'the Hunter\'s 150: already earned by step 2')
+    T.eq(rows[5].pts, '+1')
+    local hit = false
+    for _, l in ipairs(rows[4].tooltip) do if l.text:find('Journeyman Enchanter is earned by step 2', 1, true) then hit = true end end
+    T.truthy(hit)
+  end)
+  T.it('a milestone not yet earned counts +1; a gathering skill counts nothing (L-3)', function()
+    local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C2, level = 25 } } }) })
+    openWin(W)
+    T.eq(EI.Window.view.rows[1].pts, '+1', 'Novice Priest is not earned yet')
+    local W2, EI2 = session({ eidb = (function() local d = db({ mode = 'mine', mine = { { kind = 'skill', guid = C1, profession = 'Skinning', skill = 225 } } }); return d end)() })
+    openWin(W2)
+    T.eq(EI2.Window.view.rows[1].pts, '', 'gathering skills earn no point (L-3)')
+  end)
+  T.it('moving a 225 row up brings its 150 row above it', function()
+    local W, EI = session({ eidb = withHunter({ mode = 'mine', mine = {
+      { kind = 'level', guid = C2, level = 10 }, { kind = 'level', guid = H, level = 25 },
+      { kind = 'skill', guid = H, profession = 'Alchemy', skill = 150 }, { kind = 'skill', guid = H, profession = 'Alchemy', skill = 225 } } }) })
+    openWin(W)
+    pick(menuOf(EI, 4), 'Move to top')
+    T.eq(kinds(W.env.EmpireIntelDB.plan.mine), 'L25 Alc150 Alc225 L10')
+  end)
+end)
+
+T.describe('0.7.4: milestone rows in the route and the account\'s earned milestones in my plan (D-070)', function()
+  T.it('Route.Build splits a step: with every Journeyman earned, a Hunter at 25 learns Alchemy as 0 -> 150 (no point) then 150 -> 225 (+1)', function()
+    local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+    local rows = {
+      { guid = 'H', name = 'Hunt', class = 'HUNTER', level = 25, xp = 0, xpMax = 36400, professions = {} },
+      { guid = 'A', name = 'Alc', class = 'MAGE', level = 12, xp = 0, xpMax = 10100, professions = { { name = 'Alchemy', skill = 150, max = 150 }, { name = 'Herbalism', skill = 1, max = 75 } } },
+    }
+    local ch = {}
+    for _, c in ipairs(EI0.Rules.CRAFTS) do ch[#ch + 1] = { legacy = true, name = 'Journeyman ' .. EI0.Rules.CRAFT_PERSON[c.name], completed = true } end
+    local res = EI0.Route.Build({ rows = rows, now = 0, target = 8, rates = {}, ignore = {}, legacy = { summary = { recognized = true, earned = 6 }, challenges = ch } })
+    local s2, s3 = res.steps[2], res.steps[3]
+    T.eq({ s2.parts[1].from, s2.parts[1].to, s2.points, s2.already }, { 0, 150, 0, 'Journeyman Alchemist' })
+    T.eq({ s3.parts[1].from, s3.parts[1].to, s3.points }, { 150, 225, 1 })
+    T.eq(res.reached, 8)
+  end)
+  T.it('my plan: a milestone the account already has counts no point and says so', function()
+    local d = db({ mode = 'mine', mine = { { kind = 'level', guid = C2, level = 10 }, { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 } } })
+    d.roster[C1].professions = { { name = 'Enchanting', skill = 160, max = 225, line = 333 } }
+    local W, EI = session({ eidb = d })
+    openWin(W)
+    local r = EI.Window.view.rows[2]
+    T.eq(r.pts, '')
+    local hit = false
+    for _, l in ipairs(r.tooltip) do if l.text:find('Journeyman Enchanter is already earned on the account', 1, true) then hit = true end end
+    T.truthy(hit)
   end)
 end)

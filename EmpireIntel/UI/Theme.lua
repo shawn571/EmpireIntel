@@ -76,8 +76,10 @@ T.EMBLEM = { Horde = 'HordeEmblem', Alliance = 'AllianceEmblem' }      -- EI-E-3
 -- screenshot).
 T.EMBLEM_FILE = 'Interface\\TargetingFrame\\UI-PVP-'
 T.EMBLEM_CROP = { 0, 0.625, 0, 0.625 }
--- D-066: the badge is a fixed 22 px pill; the emblem file's disc fills about 0.77 of the cropped texture (the
--- user's 0.7.2 screenshot: a 20 px disc in a 26 px texture) [inferred], so a 28 px texture shows a disc about
--- 22 px high, the badge's height. Both fixed: they no longer depend on the text.
+-- D-066, D-070: the badge is a fixed 22 px pill. The emblem's disc is about the portrait's size (52 px): the
+-- file's disc fills about 0.77 of the cropped texture (measured on the user's 0.7.2 screenshot [inferred]), so
+-- the texture is 66 px for a disc of about 51 px.
+T.PORTRAIT = 52
 T.BADGE_H, T.BADGE_W = 22, 64
-T.EMBLEM_SIZE = 28
+T.EMBLEM_DISC = 52
+T.EMBLEM_SIZE = 66

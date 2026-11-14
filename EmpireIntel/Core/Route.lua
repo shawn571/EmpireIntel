@@ -355,6 +355,8 @@ function Route.Build(input)
   end
   res.states = states
   local done, earned, src, dungeonLeft, explorer = startDone(states, input.legacy)
+  res.doneStart = {}
+  for k, v in pairs(done) do res.doneStart[k] = v end
   res.earned, res.earnedSrc = earned, src
   local t = input.target
   if t == 'reward' then
@@ -388,6 +390,8 @@ function Route.Build(input)
     local step = { row = best.st.row, kind = best.kind, parts = best.parts, hours = best.hours, restHours = best.restHours,
       rules = best.rules, earns = {}, id = best.id, craft = best.craft, train = best.train, learn = best.learn,
       unknownProgress = best.unknownProgress, measured = best.measured, atLevel = best.st.level }
+    local bst = best.st
+    step.pre = { row = bst.row, level = bst.level, xp = bst.xp, rest = bst.rest, rate = bst.rate }
     apply(best, done, step)
     step.points = #step.earns
     total = total + step.points
@@ -395,12 +399,156 @@ function Route.Build(input)
     res.steps[#res.steps + 1] = step
     if best.st.level >= R.UNLOCK_LEVEL then unlocked = true end
   end
+  res.steps = Route.Split(res.steps)
   res.left = math.max(0, res.target - total)
   res.reached = total
   if notes.explorer then
     res.notes[#res.notes + 1] = { kind = 'explorer', row = notes.explorer.row, inRoute = notes.explorer.inRoute }
   end
   return res
+end
+
+---------------------------------------------------------------------------
+-- one row per Legacy milestone (D-070)
+---------------------------------------------------------------------------
+-- A chosen step can pass several milestones: a character learning Alchemy goes 0 -> 150 -> 225 (and must train
+-- Journeyman at level 10 and Expert at 20), or levels through 25 on its way to a training gate at 35. Each
+-- milestone becomes its own step, in order; a milestone already earned on the account is a step with no point
+-- ("already earned"). The hours are split exactly (level time as the difference of LevelHours from the same start).
+
+Route.ClassKey, Route.CraftKey = classKey, craftKey
+
+local function capFor(skill)
+  local best
+  for cap in pairs(RR.TRAIN) do if cap >= skill and (not best or cap < best) then best = cap end end
+  return best
+end
+
+local function split(step)
+  local pre = step.pre
+  if not pre then return { step } end
+  local level, skill, tail = nil, nil, {}
+  for _, p in ipairs(step.parts) do
+    if p.kind == 'level' then level = p elseif p.kind == 'skill' then skill = p else tail[#tail + 1] = p end
+  end
+  local earnedClass = {}
+  for _, t in ipairs(step.earns) do
+    for _, m in ipairs(R.CLASS_MILESTONES) do if step.row.class and t == classTitle(step.row.class, m) then earnedClass[m] = t end end
+  end
+  local cuts = 0
+  if level then for m in pairs(earnedClass) do if m < level.to then cuts = cuts + 1 end end end
+  local skillCuts = {}
+  if skill then
+    for _, m in ipairs(R.CRAFT_MILESTONES) do if m > skill.from and m < skill.to then skillCuts[#skillCuts + 1] = m end end
+  end
+  if cuts == 0 and #skillCuts == 0 then return { step } end
+
+  local out, cur = {}, pre.level
+  local function lvlHours(a, b)
+    local ha, ra = Route.LevelHours(pre, a)
+    local hb, rb = Route.LevelHours(pre, b)
+    return hb - ha, rb - ra
+  end
+  local function sub(parts, hours, rest, earns, extra)
+    local s = { row = step.row, kind = step.kind, parts = parts, hours = hours, restHours = rest, rules = step.rules, earns = earns,
+      id = step.id, craft = step.craft, measured = step.measured, atLevel = parts[1] and parts[1].from or cur,
+      unknownProgress = step.unknownProgress }
+    for k, v in pairs(extra or {}) do s[k] = v end
+    s.points = #earns
+    out[#out + 1] = s
+    return s
+  end
+  -- level from cur to `to`, cutting at earned class milestones; returns the last level part (not emitted), or nil
+  local function levelTo(to)
+    local ms = {}
+    for m, t in pairs(earnedClass) do if m > cur and m < to then ms[#ms + 1] = m end end
+    table.sort(ms)
+    for _, m in ipairs(ms) do
+      local h, r = lvlHours(cur, m)
+      sub({ { kind = 'level', from = cur, to = m } }, h, r, { earnedClass[m] }, { kind = 'class' })
+      earnedClass[m] = nil
+      cur = m
+    end
+    if to > cur then
+      local p = { kind = 'level', from = cur, to = to }
+      local h, r = lvlHours(cur, to)
+      p.hours, p.rest = h, r
+      cur = to
+      return p
+    end
+    return nil
+  end
+  local trained = skill and (tonumber(skill.max) or 0) or 0
+  if skill then
+    local from, learn = skill.from, skill.learn
+    local ends = {}
+    for _, m in ipairs(skillCuts) do ends[#ends + 1] = m end
+    ends[#ends + 1] = skill.to
+    for i, e in ipairs(ends) do
+      local cap = capFor(e)
+      local gate = cap and RR.TRAIN[cap]
+      local train = nil
+      local lp = nil
+      if gate and trained < e then
+        train = gate.rank
+        if level and cur < gate.level then lp = levelTo(math.min(gate.level, level.to)) end
+        trained = cap
+      end
+      local isLast = i == #ends
+      if isLast and level and cur < level.to then
+        local more = levelTo(level.to)
+        if more then if lp then lp.to, lp.hours, lp.rest = more.to, lp.hours + more.hours, lp.rest + more.rest else lp = more end end
+      end
+      local parts, h, r = {}, Route.SkillHours(from, e), 0
+      if lp then parts[1] = { kind = 'level', from = lp.from, to = lp.to }; h, r = h + lp.hours, lp.rest end
+      parts[#parts + 1] = { kind = 'skill', profession = skill.profession, from = from, to = e, learn = learn, max = (i == 1) and skill.max or nil }
+      local earns = {}
+      if isLast then
+        -- everything the step earns that no earlier part took (the craft title, a class milestone on the way)
+        for _, t in ipairs(step.earns) do
+          local used = false
+          for _, x in ipairs(out) do for _, y in ipairs(x.earns) do if y == t then used = true end end end
+          if not used then earns[#earns + 1] = t end
+        end
+      end
+      sub(parts, h, r, earns, { train = train, learn = learn and i == 1, already = (not isLast) and craftTitle(skill.profession, e) or nil })
+      from, learn = e, false
+    end
+  else
+    local lp = level and levelTo(level.to)
+    local parts, h, r = {}, 0, 0
+    if lp then parts[1] = { kind = 'level', from = lp.from, to = lp.to }; h, r = lp.hours, lp.rest end
+    for _, p in ipairs(tail) do parts[#parts + 1] = p end
+    local earns = {}
+    for _, t in ipairs(step.earns) do
+      local used = false
+      for _, x in ipairs(out) do for _, y in ipairs(x.earns) do if y == t then used = true end end end
+      if not used then earns[#earns + 1] = t end
+    end
+    if #parts > 0 then
+      local tailHours = step.hours
+      for _, x in ipairs(out) do tailHours = tailHours - x.hours end
+      sub(parts, tailHours, r, earns)
+    elseif #earns > 0 and #out > 0 then
+      for _, t in ipairs(earns) do table.insert(out[#out].earns, t) end
+      out[#out].points = #out[#out].earns
+    end
+  end
+  return out
+end
+
+--- Splits each step at its milestones (D-070) and renumbers the running totals.
+function Route.Split(steps)
+  local out, total = {}, 0
+  for _, s in ipairs(steps) do
+    for _, x in ipairs(split(s)) do
+      total = total + (x.points or 0)
+      x.total = total
+      x.pre = nil
+      out[#out + 1] = x
+    end
+  end
+  return out
 end
 
 --- The rule ids of a step that are labelled unverified, in order.
