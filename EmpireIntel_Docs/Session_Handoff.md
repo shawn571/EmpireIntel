@@ -16,11 +16,13 @@ Append the newest section at the TOP. The newest section wins.
 
 **Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; `/reload`; no format change.
 
-**Installed (as the user has said):** EmpireIntel 0.7.3, EmpireIntelCheck 0.1.9-tp1.
+**Installed (as the user has said):** EmpireIntel 0.7.4 (retest under way), EmpireIntelCheck 0.1.9-tp1.
+
+**Standing permissions (D-071):** the user's paragraph is at the top of NEXT_SESSION_PROMPT.md, pasted at the start of every session.
 
 **Open questions:** none new.
 
-**User's next step:** install 0.7.4 and retest gate steps 3 and 8 (expect the chat line adding the Hunter's two 150 rows), send both screenshots and the saved file.
+**User's next step:** retest gate steps 3 and 8 (expect the chat line adding the Hunter's two 150 rows), send both screenshots and the saved file.
 
 ## S-066 | 2026-11-14 | Claude
 

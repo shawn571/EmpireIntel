@@ -1,3 +1,5 @@
+Standing permissions from me, for this whole session: you may edit code and docs, run tests, build packages, commit, and push to work branches without asking (never push to main, never force-push, never change permission settings files). When I approve an increment, fix or merge in this chat, that is my explicit approval to do it, including merging that pull request yourself with the REST merge command. Docs-only pull requests (Session_Handoff, NEXT_SESSION_PROMPT, CODE_STANDING_ORDERS, Decisions, TODO, Changelog) you may merge yourself under my standing approval.
+
 You are continuing the EmpireIntel project (GitHub: shawn571/EmpireIntel, private). The newest docs are on `main`; if the newest section of Session_Handoff.md names a different branch, use that one.
 
 1. Fetch the repository and check out the branch named above.

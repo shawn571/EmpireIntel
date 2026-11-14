@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-14 | S-067 | D-071 standing permissions recorded (documentation only)
+- The user's paragraph added word for word at the top of NEXT_SESSION_PROMPT.md; Decisions.md D-071; handoff: 0.7.4 installed, retest under way.
+
 ## 2026-11-14 | S-067 | Retest build EmpireIntel 0.7.4: one row per Legacy milestone, points once per account, emblem at portrait size (branch `p2-4b-window`, not merged)
 - D-070. Retest on 0.7.3: step 2 passed, step 3 partial. 0.7.4: route steps split at milestones; missing milestone rows added to My plan at load; points counted once per account in both modes; emblem about the portrait's size. 536 tests (Lua 5.1 and 5.3); 11/11 mutants. Phase2_Plan.md 1.10.0 section 11.7: Questie read dropped; no bundled quest data; P2-4c adds any milestone row and assumes no profession.
 
