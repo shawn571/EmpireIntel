@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-066 | 2026-11-14 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest build EmpireIntel 0.7.3 on `p2-4b-window` (PR #17, not merged), waiting for the user's retest. "Start nothing new until P2-4b closes."
+
+**Approved / recorded this session:** standing order **D-068** (third-party add-ons: copy and credit from MIT and CC BY only; clean room for GPL and All Rights Reserved; optional plugins only where offered; cross-checks with installed add-ons), in CODE_STANDING_ORDERS.md section 8 and NEXT_SESSION_PROMPT.md; **D-069** (section 11.4 answers: options in the window in two increments 0.8.0 and 0.8.1; P2-4e yes; Q-P2-4f yes, played time first; plan inputs). Order after P2-4b: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e.
+
+**Pending (the user decides):** the retest on 0.7.3 (gate steps 2, 3, 8); merging #17; closing P2-4b; **Q-D068-1** (drop the Questie read: it is not offered to other add-ons) and **Q-D068-2** (pfQuest's database comes from VMaNGOS, GPL v2) (Phase2_Plan.md 11.6); the next check version (now 0.1.10 with P2-4e: short quest check, file under 128 KB); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 to 0.7.3 and these docs, 526 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open. Note: the standing order lives on `p2-4b-window` until #17 merges (a separate docs PR would conflict in Decisions.md); new sessions use this branch (this handoff names it).
+
+**Package:** `EmpireIntel_AddOns_v0.7.3.zip`, sha256 `c55eb642608ae976109cdc4686acc9c4c0f9b7793966e8bd5db114216b9c56c1`; `/reload`; no format change. Unchanged this session.
+
+**Installed (as the user has said):** EmpireIntel 0.7.2 (0.7.3 next), EmpireIntelCheck 0.1.9-tp1. The user's saved files (2026-11-14) [file]: 8 characters on one realm ("... PvE"), measured XP per hour for 7 (all but the level-1 Hunter), C3 still ignored; the check's file about 252 KB of 256 KB, trimming by "size cap".
+
+**User's next step:** install 0.7.3 and retest gate steps 2, 3 and 8; answer Q-D068-1 and Q-D068-2.
+
 ## S-065 | 2026-11-09 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. Retest on 0.7.2: step 6 passed, steps 2 and 3 failed (D-066). Retest build **EmpireIntel 0.7.3** (D-067) on `p2-4b-window`, PR #17 open, **not merged** ("don't merge #17").

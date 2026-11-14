@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: pre-25 features
 
-DOC VERSION: 1.8.0  |  DATE: 2026-11-09 (S-065)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066 (all options in the window, realistic levelling time, what is captured at login), for approval, no code.**
+DOC VERSION: 1.9.0  |  DATE: 2026-11-14 (S-066)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
 **Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
 
@@ -715,3 +715,33 @@ So **race, sex, class, faction, realm, professions and rested are all saved**, a
 | Q-P2-4e-1 | Read an installed Questie at run time (optional Bridge, nothing copied, license as quoted)? | Yes, read only |
 | Q-P2-4e-2 | Save a per-character quest summary (a format change, inside format 2)? | Decide after the check |
 | Q-P2-4f | Capture bind location, logout zone and played time (11.3, after a check probe; a format change inside format 2)? | Yes, played time first |
+
+### 11.5 Answers and plan inputs (D-068, D-069; still no code)
+
+**Answers:** Q-P2-4c-4 yes (options in the window, `/ei` opens it). Q-P2-4c-5: two increments, **0.8.0** (profession choices and the wizard), then **0.8.1** (Options). Q-P2-4e yes. e-1: Questie read only, nothing copied, works without it (but see 11.6). e-2: decided after the check. Q-P2-4f yes, played time first.
+
+**Order:** P2-4b closes -> P2-4c (0.8.0, then 0.8.1) -> P2-4d -> P2-4e. One increment at a time; each starts after the one before closes.
+
+**P2-4c and Q-P2-4f (into 0.8.0, with the user's inputs):**
+- Captured per character **at login and on change, never during logout** (unit data is unreliable then, EI-E-08): played time with the game's own request (`RequestTimePlayed`, answered by `TIME_PLAYED_MSG`, total and this level), **gold** (`GetMoney`), **hearthstone location** (`GetBindLocation`) and **zone**. New roster fields inside format 2 (approved: Q-P2-4f, D-069). The request prints the game's own "Total time played" chat lines; the plan is to ask once per login and on level-up only.
+- Roster flags, **approach from Sharpie's Roster (MIT, copied and credited only after its license file is read; else written fresh)**: a character not seen for 7 days, and a character that needs a login after an EmpireIntel update (its record lacks a field the new version captures). Gold per character and the account total on the Characters page.
+- The wizard's last page tells the user to log in once on each character (and lists the ones that need it).
+- **Works without DataStore and Altoholic:** a test runs the whole window with them absent, and a live step repeats it with both disabled.
+- Measured XP per hour: already used in every estimate since 0.6.0 (`Route.Rate`: a character's measured rate replaces the band default). The user's saved file has rates for 7 of 8 characters (the level-1 Hunter has none) [file]. Limit: one rate per character, measured at its current levels, is used for every level ahead; P2-4e refines it with played time and the quest model.
+
+**P2-4d (rested):** two more rested rules, **labelled unverified**: Forever's campfire buff "Camp Benefits" and sleeping-bag buff "Well Rested" (the user's hint; how each changes rested gain is to be checked live: the plan adds one check step per buff, and the rules stay unverified until the user's observation). L-17 stays unverified until the user's rested-kill check (D-065).
+
+**P2-4e (levelling time):**
+- Quest data: **LibForeverData as an optional plugin** (read while the game runs, it is offered for that; never copied: clean room for its code), with **pfQuest as the bundled fallback** (see 11.6 for its data's license).
+- Quest XP: the game's own quest-XP function, which Sharpie's XP plugin uses on Forever (the user's hint): the 0.1.10 check confirms it in one line and stays short (function present, a value for one quest in the log; the player position; whether LibForeverData and pfQuest are loaded).
+- XP per hour and time to level: **reuse Sharpie's XP plugin code with credit** (MIT, after its license file is read), feeding the estimates; cross-checked live against ForeverXP Bar (D-068 point 4).
+- Every estimate labelled with its source (game, LibForeverData, pfQuest, measured, assumed).
+
+**The check's saved file (EmpireIntelCheck 0.1.10, with the short quest check):** the user's file is about 252 KB by Lua's own count against the 256 KB cap (`C.DB_LIMIT`), and the cap's cascade is already dropping documented systems ("size cap") [file]. The largest parts: the Legacy challenges about 101 KB, `latest` (the old discovery results) about 45 KB, `uiLatest` about 41 KB (each atlas's raw size table about 0.5 KB), `docs` about 26 KB, `undoc` about 12 KB. Fix in 0.1.10: stop saving the discovery leftovers no later phase uses (`latest.results`, `docs`, `undoc`, `strongSeen`), keep only names and present/absent in `uiLatest` (no raw size tables), and keep only the Legacy challenges' done/progress text (as D-036 intended). Target: under 128 KB, so the cap is never reached. No change to EmpireIntel itself.
+
+### 11.6 Two points for the user
+
+| ID | Point | Recommendation |
+|---|---|---|
+| Q-D068-1 | e-1 says "Questie read only", but D-068 point 3 allows reading another add-on's data only "when it's offered for that". Questie's quest database is internal to Questie, not offered to other add-ons, and its license is "when in doubt ... all rights reserved" (its LICENSE.md). Drop the Questie read and use LibForeverData (offered) and pfQuest instead? | Yes, drop the Questie read |
+| Q-D068-2 | pfQuest's code is MIT (its LICENSE file, read 2026-11-14), but its README says the vanilla database is "powered by the database of VMaNGOS", whose core repository is GPL v2. Bundling pfQuest's data tables may therefore not be "copy and credit from MIT". Options: (a) do not bundle; read an installed pfQuest's data at run time as an optional plugin instead (if it offers it), (b) bundle only pfQuest's MIT code paths, no data, (c) you check the data's license and decide. pfQuest's data is also vanilla's, not Forever's | (a), until the data's license is clear |

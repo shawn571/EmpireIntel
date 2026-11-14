@@ -2,6 +2,10 @@
 
 Append-only. Newest first.
 
+## 2026-11-14 | S-066 | Standing order D-068 (third-party add-ons); plan inputs D-069 (documentation only)
+- D-068 recorded with the user's words in CODE_STANDING_ORDERS.md 1.2.0 section 8, NEXT_SESSION_PROMPT.md, Decisions.md; Project_Bible.md section 6 updated; THIRD_PARTY.md created. D-003 superseded in part (MIT and CC BY copy with credit).
+- D-069: answers to Phase2_Plan.md 11.4 and plan inputs; Phase2_Plan.md 1.9.0 sections 11.5 (P2-4c, P2-4d, P2-4e, Q-P2-4f, the check's file size) and 11.6 (Questie read vs D-068; pfQuest's data license). No code; nothing started.
+
 ## 2026-11-09 | S-065 | Retest build EmpireIntel 0.7.3: chains, selection card, notes on hover, emblem size; plan for items 5-7 (branch `p2-4b-window`, not merged)
 - D-066, D-067. Retest on 0.7.2: step 6 passed, 2 and 3 failed. 0.7.3: whole prerequisite chains move in order; the card follows the selected row; notes on hover (tooltips at the pointer) and on the card; fixed badge and emblem sizes. 526 tests (Lua 5.1 and 5.3); 15/15 mutants.
 - Phase2_Plan.md 1.8.0 section 11: all options in the window (into P2-4c), realistic levelling time (P2-4e, with the quest-log, Questie and Wowhead evidence), what is captured at login; for approval, no code.

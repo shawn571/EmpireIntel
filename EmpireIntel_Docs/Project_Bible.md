@@ -66,7 +66,7 @@ A conflict the table cannot settle: stop, list it under OPEN ISSUES in the hando
 
 - Every client fact carries a tag: **[file]** (in an evidence file), **[reported]** (the user said so), **[inferred]**, **[assumed]**, or **[inherited]** (measured by GoldIntel, cited by its E-id).
 - Evidence files from the client are dated and kept **outside the public repository** (see section 7). The Compatibility_Notes ledger records each with an id `EI-E-nn`.
-- Third-party addon source is read for behavior only. It is never copied (D-003).
+- Third-party add-ons (D-068, standing order): copy and credit only from MIT or CC BY sources (THIRD_PARTY.md, file headers); clean room for GPL or All Rights Reserved sources (hint notes only, never their code or data tables); other add-ons' data read at run time only where offered for that, always optional; installed add-ons used to cross-check our numbers in live tests. DataStore and Altoholic: run-time public functions only (D-003).
 
 ## 7. Repository hygiene (D-007)
 

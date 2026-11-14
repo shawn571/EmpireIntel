@@ -1,6 +1,6 @@
 # Code Standing Orders
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-08  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
+DOC VERSION: 1.2.0  |  DATE: 2026-11-14  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
 
 Quotes in "double quotes" are the user's exact words.
 
@@ -79,6 +79,23 @@ Quotes in "double quotes" are the user's exact words.
 - Keep scope lean; surface unexpected conditions visibly (an `UNEXPECTED` line in the addon and in the report).
 - Verify the repository is private before every push.
 
-## 8. New sessions
+## 8. Third-party add-ons: copy and credit, clean room, optional plugins, cross-checks (D-068, 2026-11-14)
+
+The user's standing order, exact words: "We can copy and credit where it’s allowed. Where copying isn’t allowed and it’s a core function of what we’re trying to build, do the clean room thing. We can use addons to check our work too. Where it makes sense we will have some things be optional plugins and note that some features will be better if these addons are installed but our addon will still work without them."
+
+"What this means in practice:
+1. Copy and credit only from MIT or CC BY sources (for example Sharpie’s Gear Judge and its XP and Roster plugins, and pfQuest), with notices in THIRD_PARTY.md and file headers.
+2. Clean room for GPL or All Rights Reserved sources (Polestar, LibForeverData, Altoholic and DataStore, Questie, ForeverXP Bar, Forever Planner, Profession Planner): you get hint notes from me (game functions, events, pitfalls, behaviour), never their code. Write your own version and record “approach informed by <add-on>, no code copied”. Never copy data tables.
+3. Optional plugins: read another add-on’s data while the game runs only when it’s offered for that (LibForeverData, Auctionator’s interface). Every feature must work without it, and the window says which add-ons improve which features.
+4. Cross-checks: use installed add-ons to check our numbers in live tests (ForeverXP Bar for XP per hour and time to level, Profession Planner for profession steps)."
+
+How Claude applies it:
+- Before copying anything, read the source's own license file and record it in THIRD_PARTY.md (name, version or commit, license, what was copied, where). Copied files keep the source's notice in their header. A license the user names but the file does not confirm is not enough.
+- Clean room: Claude does not open the code of a GPL or All Rights Reserved add-on. It works from the user's hint notes and the game's own documented behaviour, and writes "approach informed by <add-on>, no code copied" in the file header and in the report. No data table from such a source enters the repository or the zip.
+- A data source's own license counts too, not only the code's (for example a database an MIT add-on ships may come from elsewhere).
+- Optional plugins live in `Bridge/`, are read only while the game runs, are never required (`## OptionalDeps` at most), and the window says which add-on improves which feature. Each has a test with the add-on absent.
+- Supersedes the "never copied" part of D-003 for MIT and CC BY sources only; D-003 still holds for DataStore and Altoholic (All Rights Reserved: run-time use of their public functions only).
+
+## 9. New sessions
 
 A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before changing code or merging (except under the docs-only standing approval, section 2).

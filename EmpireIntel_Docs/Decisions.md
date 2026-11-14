@@ -508,6 +508,26 @@ Choices within the user's words, open to change:
 - **Notes on hover:** row tooltips now open at the mouse pointer (ANCHOR_CURSOR). Inferred cause of the user's finding: the tooltip opened to the right of the full-width row, which can be off screen.
 - **Size:** the badge is a fixed 22 px pill; the emblem texture is 28 px so its disc (about 0.77 of it, measured on the 0.7.2 screenshot [inferred]) is about 22 px.
 
+## D-068 Standing order: third-party add-ons (copy and credit, clean room, optional plugins, cross-checks) | User (2026-11-14), standing order
+The user's exact words: "New standing order (record with my words in CODE_STANDING_ORDERS.md, NEXT_SESSION_PROMPT.md and Decisions): We can copy and credit where it’s allowed. Where copying isn’t allowed and it’s a core function of what we’re trying to build, do the clean room thing. We can use addons to check our work too. Where it makes sense we will have some things be optional plugins and note that some features will be better if these addons are installed but our addon will still work without them."
+"What this means in practice:
+1. Copy and credit only from MIT or CC BY sources (for example Sharpie’s Gear Judge and its XP and Roster plugins, and pfQuest), with notices in THIRD_PARTY.md and file headers.
+2. Clean room for GPL or All Rights Reserved sources (Polestar, LibForeverData, Altoholic and DataStore, Questie, ForeverXP Bar, Forever Planner, Profession Planner): you get hint notes from me (game functions, events, pitfalls, behaviour), never their code. Write your own version and record “approach informed by <add-on>, no code copied”. Never copy data tables.
+3. Optional plugins: read another add-on’s data while the game runs only when it’s offered for that (LibForeverData, Auctionator’s interface). Every feature must work without it, and the window says which add-ons improve which features.
+4. Cross-checks: use installed add-ons to check our numbers in live tests (ForeverXP Bar for XP per hour and time to level, Profession Planner for profession steps)."
+Recorded in CODE_STANDING_ORDERS.md section 8 (with how Claude applies it) and NEXT_SESSION_PROMPT.md. **Supersedes D-003 in part:** copying with credit is now allowed from MIT and CC BY sources; D-003 stands for DataStore and Altoholic (All Rights Reserved). Project_Bible.md section 6 updated to match. THIRD_PARTY.md created (empty list). Licenses named by the user are confirmed from each source's own license file before anything is copied.
+
+## D-069 Plan inputs for P2-4c, P2-4d, P2-4e and Q-P2-4f; answers to section 11.4 | User (2026-11-14)
+The user's exact words:
+"Plan inputs (no code):
+* P2-4e: quest data from LibForeverData as an optional plugin, with pfQuest (MIT) as the bundled fallback. Quest XP uses the game’s quest-XP function, which Sharpie’s XP plugin (MIT) uses on Forever, so keep the 0.1.10 check short. Reuse Sharpie’s XP-per-hour and time-to-level code with credit.
+* P2-4d: add Forever’s campfire buff (“Camp Benefits”) and sleeping-bag buff (“Well Rested”) as rested rules, labelled unverified.
+* P2-4c and Q-P2-4f: from Sharpie’s Roster (MIT), flag characters not seen for 7 days or that need a login after an update, and show gold per character and the total. Capture played time with the game’s own request, plus gold, hearthstone location and zone, at login and on change, never during logout (EI-E-08). Prove with a test and a live step that everything works with DataStore and Altoholic disabled. The setup wizard tells me to log in once on each character.
+* Section 11.4 answers: Q-P2-4c-4: yes. Q-P2-4c-5: two (0.8.0, then 0.8.1). Q-P2-4e: yes. e-1: Questie read only, nothing copied, and works without it. e-2: decide after the check. Q-P2-4f: yes, played time first.
+I’ll install and retest 0.7.3 next. Start nothing new until P2-4b closes."
+Also from the user's reviewer notes on the saved files: "Measured XP per hour now exists for 7 of 8 characters; use it in estimates. EmpireIntelCheck’s saved file is 232 KB against its 256 KB cap and marked truncated; trim it or plan a fix."
+Consequences: Phase2_Plan.md 1.9.0 sections 10 and 11 updated (plan only). Nothing started. Two points need the user (Phase2_Plan.md 11.6): e-1 (reading Questie) conflicts with D-068 point 3, and pfQuest's bundled database comes from VMaNGOS (GPL v2), not only from pfQuest's MIT code.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
