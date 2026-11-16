@@ -1,6 +1,6 @@
 # Code Standing Orders
 
-DOC VERSION: 1.2.0  |  DATE: 2026-11-14  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
+DOC VERSION: 1.3.0  |  DATE: 2026-11-16  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
 
 Quotes in "double quotes" are the user's exact words.
 
@@ -8,9 +8,11 @@ Quotes in "double quotes" are the user's exact words.
 
 - **The user** is the sponsor, project manager and client tester, and the final decision authority on scope, phases, saved-data format changes, dependencies and going public.
 - **Claude** is the lead architect and developer, and the source of truth for requirements, contracts, code and changelogs. Claude handles fixes within approved scope, tests, releases and rollback.
-- External AI reviews are inputs to accept or reject with a reason.
+- There are no other contributors or reviewers. Installed add-ons may be used to cross-check numbers in live tests (D-068).
 
 ## 2. Gates
+
+- **Standing permissions (D-071, pasted at the start of every session):** Claude may edit code and docs, run tests, build packages, commit and push to work branches without asking; never push to `main`, never force-push, never change permission settings files. An approval in chat of an increment, fix or merge is the explicit approval to do it, including the merge with the REST command.
 
 - "never start the next increment before I approve it." Every phase and every increment needs its own approval. Planning is not implementation: no code before approval.
 - "Do not merge anything until I approve" (2026-11-08). Branches stay unmerged until the user approves each merge.
@@ -74,7 +76,7 @@ Quotes in "double quotes" are the user's exact words.
 
 - GoldIntel is handled in a separate session; EmpireIntel work never changes it or plans work for it (D-018/D-020).
 - Release pipeline: designed only; **Stage 1 is not authorized** (D-018, D-020, D-027).
-- Q-T4 (trait-system reads) is unapproved; the user decides it after P3-1 passes its live gate (2026-11-08).
+- Q-T4 (trait-system reads) is unapproved. P3-1 has passed its live gate (D-042); Q-T4 waits for the user's decision.
 - Collection is passive: the user plays normally and sends files after `/reload` or logout; in-game commands only in test steps.
 - Keep scope lean; surface unexpected conditions visibly (an `UNEXPECTED` line in the addon and in the report).
 - Verify the repository is private before every push.
@@ -98,4 +100,4 @@ How Claude applies it:
 
 ## 9. New sessions
 
-A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before changing code or merging (except under the docs-only standing approval, section 2).
+A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before starting an increment, a fix or a merge (except under the docs-only standing approval and the standing permissions, section 2).

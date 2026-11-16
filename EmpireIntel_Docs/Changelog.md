@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-16 | S-068 | Documents brought up to date (documentation only)
+- D-072. Project_Bible 2.0.0, Architecture 3.0.0 (as built), Requirements 2.0.0, Risk_Register 2.0.0, Compatibility_Notes 2.0.0 (EI-E-33), CODE_STANDING_ORDERS 1.3.0; README, CONTRIBUTING, NEXT_SESSION_PROMPT step 5, status lines of Legacy_Rules, Phase2_Plan, Phase3_Legacy_Plan, Release_Pipeline; the 2026-11-03 reviews marked historical; `reviews/` removed. No code change.
+
 ## 2026-11-14 | S-067 | D-071 standing permissions recorded (documentation only)
 - The user's paragraph added word for word at the top of NEXT_SESSION_PROMPT.md; Decisions.md D-071; handoff: 0.7.4 installed, retest under way.
 

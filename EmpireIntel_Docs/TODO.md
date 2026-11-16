@@ -1,10 +1,10 @@
 # EmpireIntel TODO
 
-DOC VERSION: 1.5.0  |  UPDATED: 2026-11-09 (session S-063)
+DOC VERSION: 1.6.0  |  UPDATED: 2026-11-16 (session S-068)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4b: live gate partly passed (D-063); retest 0.7.3: 2 passed, 3 partial (D-070); 0.7.4 on p2-4b-window, not merged.
-IMPLEMENTATION APPROVED:  P2-4b (D-061), its fixes 1-9 (D-063) and finding 10 (D-065). P2-4c, then P2-4d: approved (D-065), start only after the one before closes.
+CURRENT PHASE:            Phase 2, increment P2-4b: 0.7.4 on p2-4b-window (PR #17, not merged), installed, live retest of steps 3 and 8 under way.
+IMPLEMENTATION APPROVED:  P2-4b (D-061) and its fixes (D-063, D-065, D-066, D-070). Next, in order, each after the one before closes: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e (D-065, D-069, D-070).
 OPEN BLOCKERS:            the user's retest on 0.7.4 (gate steps 3, 8); merge approval; closing P2-4b
 ```
 
@@ -55,16 +55,16 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P3-1 live gate passed; 0.5.1 checked; **closed** (D-042)
 - [ ] P3-2 saved summary: locked (needs approval and a format change)
 - [ ] P3-3 per-tree detail: locked (needs Q-T4)
-- Exit test: Architecture section 9 exit criteria.
+- Exit test: each increment's live gate (P3-1 passed, D-042).
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0
 - [x] S-004: design written
 - [x] S-005: user approved the design with two amendments (report task undelivered; saved-data restore only with explicit approval) and answered Q-R1..Q-R6
-- [ ] **User:** review the first launch results, then decide whether to authorize Stage 1
+- [ ] **User:** decide whether to authorize Stage 1 (releases are by hand until then)
 - Undelivered dependencies: report task (does not exist), installer, Claude's separate GitHub identity (before Stage 2)
 - Implementation tasks are listed only after Stage 1 is authorized.
 
-## Phase 2: pre-25 features (AUTHORIZED, D-027; one approval per increment; Phase2_Plan.md)
+## Phase 2: characters, views and the route planner (AUTHORIZED, D-027, D-054, D-055; one approval per increment; Phase2_Plan.md)
 - [x] Q-P2-1 approved with realm field and no P_TICK (D-028)
 - [x] P2-1 Foundation and own snapshot: EmpireIntel 0.2.1, closed by the user 2026-11-05 (D-029)
 - [x] Q-P2-2 approved 2026-11-06
@@ -120,4 +120,4 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
 - [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later
 
-## Later phases: see Architecture.md section 10 (not approved)
+## Next increments: Phase2_Plan.md sections 10-11 (approved, in order after P2-4b closes); Phase 3 P3-2 and P3-3 locked

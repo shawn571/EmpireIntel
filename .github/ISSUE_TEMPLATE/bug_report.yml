@@ -4,7 +4,7 @@ labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: "Public repository: do not paste SavedVariables files, character names, GUIDs or account names. Replace names with Char1, Char2."
+      value: "Do not paste SavedVariables files, character names, GUIDs or account names. Replace names with C1, C2."
   - type: textarea
     id: what
     attributes:

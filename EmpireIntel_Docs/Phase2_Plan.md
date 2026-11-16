@@ -1,10 +1,12 @@
-# EmpireIntel Phase 2 Plan: pre-25 features
+# EmpireIntel Phase 2 Plan: characters, views and the route planner
 
 DOC VERSION: 1.10.0  |  DATE: 2026-11-14 (S-067)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
-**Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
+**Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (built, in its live retest as 0.7.4); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs.
 
-Out of scope for Phase 2: any Legacy call beyond the P3-1 reads (used by P2-4 only, D-052), trait-system calls, UI windows (commands only), the release pipeline (Stage 1 not authorized), GoldIntel (handled elsewhere).
+**Phase 2 builds EmpireIntel's character views and the Legacy route planner:** unlock progress, rested XP, milestones ahead, the route and the plan window (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1, FR-PLAN-1..3). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4. (It was first authorized for "pre-25 features" only, D-027; the account has since unlocked Legacy, and the planner was approved on top, D-054, D-055.)
+
+Out of scope for Phase 2: any Legacy call beyond the P3-1 reads (used by P2-4 only, D-052), trait-system calls, the release pipeline (Stage 1 not authorized), GoldIntel (handled elsewhere). (The 2026-11-05 text also excluded UI windows; the window was approved later, D-054, D-055, D-060.)
 
 ## 1. Increments
 

@@ -1,22 +1,23 @@
 # WoW Forever Compatibility Notes (EmpireIntel)
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-03 (S-002)  |  Wins over Architecture.md on client facts
+DOC VERSION: 2.0.0  |  DATE: 2026-11-16 (S-068)  |  Wins over Architecture.md on client facts
 
-EmpireIntel has no evidence of its own yet. Its ids will be `EI-E-nn`. The facts below are **[inherited]** from GoldIntel's evidence ledger (beta builds 70338 to 70450, client 1.60.1, Interface 16001, October 2026) and are cited by GoldIntel id. Names and GUIDs are left out on purpose (D-007). Everything here must be re-checked on the launch build (TP-1).
+The evidence ledger is section 6 (`EI-E-nn`, each with its source file and tag). Sections 1 to 4 keep the facts inherited from GoldIntel's beta work (builds 70338 to 70450, October 2026), marked where the launch build confirmed them. Section 5 records what the pre-launch web summaries said and how each claim turned out. Names and GUIDs are left out on purpose (D-007).
 
-## 1. Client profile [inherited]
+## 1. Client profile
 
-| Fact | Value | GoldIntel id |
+| Fact | Value | Source |
 |---|---|---|
-| Version / interface | 1.60.1, Interface 16001 (= encoded version) | E-01 |
-| Project id | `WOW_PROJECT_ID` 18; third-party code names it `WOW_PROJECT_CAMELOT` (unverified) | E-01; Reference_AccountantClassic |
-| Lua | 5.1; `load`, `table.unpack` nil; `loadstring`, `bit` present | E-04 |
-| Engine | Modern retail-engine API, 272 `C_` namespaces | E-05 |
-| Realm (beta) | Named realm 'Classic Beta PvE'; launch model unknown | E-07 |
-| Name | `UnitName('player')` has a second return: the surname ("First-Last" folders) | E-44; Reference_AccountantClassic |
-| SavedVariables | Per-character file under `WTF\Account\<account>\<n>\<First-Last>\` | E-44 |
+| Version / interface | 1.60.1, Interface 16001; builds 70790 (launch), 70862, 70938 (current, 2026-11-14) | EI-E-01, EI-E-15, EI-E-33 [file] |
+| Project id | `WOW_PROJECT_ID` 18 | EI-E-01 [file] |
+| Lua | 5.1; `load`, `table.unpack` nil; `loadstring`, `bit` present | GoldIntel E-04 [inherited] |
+| Engine | Modern retail-engine API, 272 live `C_` namespaces | EI-E-03, EI-E-12 [file] |
+| Realms | Named realms ("CAMWOW US2 Realm N PvE"); the realm type ends the name; one account's characters can sit on different realms | EI-E-06, EI-E-32 [file] |
+| Name | `UnitName('player')` has a second return: the surname | GoldIntel E-44 [inherited]; EmpireIntel records "First Last" |
+| SavedVariables | Per-character file under `WTF\Account\<account>\<n>\<First-Last>\` | GoldIntel E-44 [inherited] |
+| Reload | `/reload` loads new files in an existing add-on folder | EI-E-19 [file] |
 
-## 2. Pre-modern versus modern API [inherited] (not the Legacy points system; see section 6)
+## 2. Pre-modern versus modern API [inherited; the launch build matched, EI-E-01] (not the Legacy points system)
 
 | Family | Pre-modern | Modern | GoldIntel id |
 |---|---|---|---|
@@ -32,28 +33,25 @@ EmpireIntel has no evidence of its own yet. Its ids will be `EI-E-nn`. The facts
 
 `PLAYER_LOGIN`, `PLAYER_ENTERING_WORLD`, `PLAYER_LEAVING_WORLD`, `PLAYER_LOGOUT` (handlers can still write saved variables), `PLAYER_MONEY`, `BAG_UPDATE_DELAYED`, plus GoldIntel's collection events (E-13, E-15, E-32, GoldIntel Architecture AC-1). `COMBAT_LOG_EVENT_UNFILTERED` is never registered. Probing by registration is forbidden: a blocked registration shows a popup that pcall cannot hide (GoldIntel D-025).
 
-## 4. Third-party facts (source reading, not verified)
+## 4. Third-party facts (source reading)
 
 - AddonFactory treats interface 16000..19999 as Forever and sets `isForever` and `isMainline` (Reference_DataStore_Altoholic.md section 3).
-- The Altoholic Forever changelog reports that the client sometimes returns "Unknown" as the character name.
+- The Altoholic Forever changelog reports that the client sometimes returns "Unknown" as the character name. Not seen on the user's account so far (EI-E-07).
 
-## 5. Legacy system: what is known before TP-1 (web search summaries, NOT verified)
+## 5. The pre-launch web summaries, and how they turned out
 
-The pages could not be opened from the session (network policy). These facts come from search-result summaries of [Blizzard's Legacy article](http://worldofwarcraft.blizzard.com/en-us/news/24307383), [forg.gg](https://forg.gg/en/forever/legacy), [Icy Veins](https://www.icy-veins.com/wow-forever/legacy-system), [LFCarry](https://lfcarry.com/guides/wow-forever-legacy-system), [TimeSaver](https://timesaver.gg/blog/wow-forever-legacy-system-explained) and [classicwowforever](https://classicwowforever.com/legacy/), searched 2026-11-03. Tag: [assumed] until TP-1 or the article confirms them.
+Before launch (2026-11-03) the only Legacy sources were search-result summaries of Blizzard's article and fan guides. Each claim and its outcome:
 
-| Fact | Value | Note |
-|---|---|---|
-| Challenges | 65, one point each, account-wide (66 if a beta-participation challenge is counted) | Sources disagree |
-| Trees | Professions, Adventure, Resourcefulness; 21 perks (forg.gg) | |
-| Per-character spend cap | 16 at launch; expected to rise later; one site says the beta used 30 | **Client text (EI-E-04): a *seasonal* cap on points spent "in total"; per character or per account still open** |
-| One character alone | can earn up to 29 points | Blizzard, per summary |
-| Class milestones | levels 25, 45, 60 per class, 9 classes = 27 | Basis of the Estimator |
-| Crafting milestones | skill 150, 225, 300 in Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking, Tailoring = 18 | Gathering not included |
-| Other challenges | about 20, kinds unknown | [inferred]: 3 + 6 + 20 = 29 matches the one-character figure |
-| Points past the cap | feed a cosmetic reward track | |
-| Addon API | **nothing found** in any source, and no third-party addon reviewed (DataStore, Altoholic Forever, Accountant Classic, Auctionator) reads Legacy data | TP-1 Part B |
-
-Hint for discovery: the Forever Blizzard UI has `Camelot` folders (`Blizzard_AuctionHouseUI/Camelot/...`, cited in Altoholic Forever's source), so TP-1 also searches names for "camelot".
+| Claim (2026-11-03) | Outcome |
+|---|---|
+| 65 challenges, one point each, account-wide | **Confirmed:** 65 achievements with "Earn 1 Legacy Point." (EI-E-22); the pane shows "Legacy Points n / 65" |
+| Three trees: Professions, Adventure, Resourcefulness | **Confirmed** (EI-E-04, EI-E-18) |
+| Class milestones 25 / 45 / 60 per class; crafting 150 / 225 / 300 in six crafts | **Confirmed** (EI-E-22) |
+| About 20 other challenges of unknown kinds | **Known now:** PvP ranks, battleground exalted, Field of Honor, Spelunkers, raids, Valthalak, Explorer (Legacy_Rules.md) |
+| Points past the cap feed a cosmetic reward track | **Confirmed in part:** a progress track with rewards at 15, 25, 40 and 55 points (EI-E-18) |
+| A spending cap of 16 per character at launch | **Open:** the client text says a *seasonal* cap "in total" (EI-E-04); 16 is unverified (rule L-12) |
+| One character alone can earn up to 29 points | Unverified |
+| No add-on API for Legacy | **Wrong for our purpose:** the challenges are readable as achievements and the points through `LegacySystem.GetCurrencyInfo()` once the pane has loaded (EI-E-16, EI-E-20..27) |
 
 ## 6. Evidence ledger (EmpireIntel)
 
@@ -89,5 +87,6 @@ Hint for discovery: the Forever Blizzard UI has `Camelot` folders (`Blizzard_Auc
 | EI-E-30 | **Portraits, icons, colours:** `SetPortraitTexture(tex, 'player')` returns nothing (a setter) and `GetTexture` afterwards gives `RTPortrait1` (drawn). Atlases `raceicon-<race>-<male/female>` exist for human, orc, dwarf, nightelf, tauren, gnome, troll and **undead**; `raceicon-scourge-*` does not exist although `UnitRace` returns the race file `Scourge` (race id 5): the atlas token for Scourge is `undead`. `classicon-<class>` exists for all 9 classes; `CLASS_ICON_TCOORDS`, `RAID_CLASS_COLORS`, `C_ClassColor.GetClassColor` give the same colours; `RACE_ICON_TCOORDS` is absent. Faction: atlases `AllianceEmblem` and `HordeEmblem` exist; `Interface\TargetingFrame\UI-PVP-<faction>` loads (file ids 136998, 137000) | P2-4a_Report.md section 6 [file] |
 | EI-E-31 | **Ruleset and realm:** `C_GameRules.IsHardcoreActive()` false, `GetForeverExperiencePreset()` 1, `IsSelfFoundAllowed()` false on both characters; `C_GameRules` lists 30 functions (also `IsStandard`, `GetActiveGameMode`, `IsGameRuleActive`, ...; listed, not called); the realm name includes the realm type text ("... PvE"). DataStore has `GetCharacterFaction`, `GetCharacterRace`, `GetCharacterGender` (present, not called). ElvUI loaded (C2 run): `GetMinimapShape()` returned `SQUARE`. **ElvUI off (C1 run, 15:03):** `ElvUI global` absent, counts 111 present / 6 nothing / 4 absent (user correction, D-059: the file read at 15:04 showed it; the later ElvUI-on run overwrote `uiLatest`) | P2-4a_Report.md section 6 [file] [reported] |
 | EI-E-32 | **0.7.0 live gate (build 70862, 2026-11-09):** the `HordeEmblem` atlas draws (it is not a missing texture) but at 20 x 20 px it reads as a red shield with crossed axes, not the Horde symbol [screenshot]; 0.1.9 only proved that the atlas exists (`GetAtlasInfo` returned info, EI-E-30), not what it shows. **Realm type:** no game call that names it was found: `C_GameRules` lists 30 functions (listed, not called, EI-E-31), `IsHardcoreActive()` gives only Hardcore; the realm name carries it at its end ("... PvE", EI-E-06, EI-E-31) for the played character (`GetRealmName`) and for DataStore's alts (the realm part of its character key) [file]. Hence 0.7.1 reads the type from the name [inferred] | P2-4b_Report.md section 6 [screenshot] [file] |
+| EI-E-33 | Build 1.60.1/70938 is in use (2026-11-14): EmpireIntel 0.7.2 and 0.7.3 recorded it in `meta.build`; no new error | the user's saved file, 2026-11-14 [file] |
 | EI-E-17 | On Forever, DataStore `GetModuleLastUpdateByKey('DataStore_Characters', key)` returns nil for every character; `/ei alts` then dates DataStore values by the last logout | section 11 [file] |
 | EI-E-08 | At `PLAYER_LOGOUT`, `UnitLevel` and `UnitXPMax` returned 1 and 0 for a level-2 character: unit data is unreliable at logout | section 4 [file] |

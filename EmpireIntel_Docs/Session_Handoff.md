@@ -4,6 +4,16 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-068 | 2026-11-16 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 on `p2-4b-window` (PR #17, not merged) is installed; the user's retest of gate steps 3 and 8 is under way.
+
+**This session:** the documents were brought up to date at the user's request (D-072): it is the user and Claude only, the game has launched, and the living documents describe the add-on as built. No code change; tests unchanged (536).
+
+**Approved, pending, branches, package:** as S-067 (0.7.4, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; main 9cb1d10 with 0.6.0; #10 and #11 open). These documents are on `p2-4b-window` and reach main with #17 (they touch Project_Bible, Architecture and others, outside the docs-only standing approval, and a separate pull request would conflict with #17 in Decisions.md).
+
+**User's next step:** finish the 0.7.4 retest (gate steps 3 and 8) and send the results; decide on merging #17 and closing P2-4b.
+
 ## S-067 | 2026-11-14 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. Retest on 0.7.3: step 2 passed, step 3 partial (D-070). Retest build **EmpireIntel 0.7.4** on `p2-4b-window`, PR #17 open, **not merged** ("don't merge #17 yet").
