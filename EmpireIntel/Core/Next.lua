@@ -105,6 +105,7 @@ local function partsText(s)
 end
 
 function N.StepLine(s)
+  local tail = s.prereqFor and (' (prerequisite for step ' .. s.prereqFor .. ')') or ''
   -- the level at this point of the route (earlier steps may have levelled the character)
   local pts = (s.points > 0) and ('+' .. s.points .. ' (' .. table.concat(s.earns, ', ') .. ')')
     or ('no point (' .. tostring(s.already or 'already') .. ' already earned)')
@@ -112,7 +113,7 @@ function N.StepLine(s)
     .. hoursText(s.hours)
   if (s.restHours or 0) > 0.05 then t = t .. ' (rest saves ' .. hoursText(s.restHours) .. ')' end
   if s.measured then t = t .. ' (measured XP rate)' end
-  return t .. rulesTag(EI.Route.UnverifiedRules(s)) .. srcTag(s.row)
+  return t .. rulesTag(EI.Route.UnverifiedRules(s)) .. srcTag(s.row) .. tail
 end
 
 local function targetText(res)
@@ -177,6 +178,9 @@ function N.AutoLines(ctx)
       lines[#lines + 1] = 'Explorer (planned from level ' .. RR.EXPLORER_LEVEL .. ', L-11): ' .. who
         .. '; its zones left are read only while it is played (/ei next on it), so the route does not count it yet.'
     end
+  end
+  if res.notPlanned and #res.notPlanned > 0 then
+    lines[#lines + 1] = 'Not planned (R-1): no character has ' .. table.concat(res.notPlanned, ', ') .. '.'
   end
   local reward = RR.NextReward(res.earned)
   if reward and res.targetKind ~= 'reward' then lines[#lines + 1] = 'Next reward at ' .. reward.at .. ': ' .. reward.name .. '.' end
@@ -397,7 +401,7 @@ local function settings(rows)
   say(string.format('mode %s, target %s, my plan %s, ignored: %s, measured XP rates: %d.',
     EI.Plan.Mode() == 'auto' and 'auto (fastest route)' or 'mine (my plan)', tostring(t), plural(#EI.Plan.Mine(), 'step'),
     #ign > 0 and table.concat(ign, ', ') or 'none', nr))
-  say('commands: /ei plan (the window), /ei plan help, /ei plan mode auto|mine, /ei plan target 16|reward|next, /ei plan copy, /ei plan remove <n>, /ei plan top <n>, /ei plan clear, /ei plan ignore <name>, /ei plan unignore <name>.')
+  say('commands: /ei plan (the window), /ei plan help, /ei plan mode auto|mine, /ei plan target ' .. RR.CAP .. '|reward|next, /ei plan copy, /ei plan remove <n>, /ei plan top <n>, /ei plan clear, /ei plan ignore <name>, /ei plan unignore <name>.')
   say('/ei plan opens the window; /ei minimap on|off. Saved by the game at /reload or logout.')
   if P.UI then say('window ' .. P.UI.FillText() .. '.') end
 end

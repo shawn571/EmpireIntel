@@ -231,26 +231,47 @@ local function classCandidates(states, done, out, unlocked)
   end
 end
 
-local function craftCandidates(states, done, out)
+-- R-1 and R-2 (D-075): a craft is planned only on a character that has it (no "learn" step is ever assumed), and
+-- only on its path character: the highest skill, then the higher level, then the played character. A craft no
+-- character has is listed in notPlanned.
+local function pathCharacter(states, craft)
+  local best
+  for _, st in ipairs(states) do
+    local p = st.profs[craft]
+    if p and type(p.skill) == 'number' and type(st.level) == 'number' then
+      if not best then best = st
+      else
+        local bp = best.profs[craft]
+        if p.skill ~= bp.skill then if p.skill > bp.skill then best = st end
+        elseif st.level ~= best.level then if st.level > best.level then best = st end
+        elseif st.row.isPlayer and not best.row.isPlayer then best = st end
+      end
+    end
+  end
+  return best
+end
+Route.PathCharacter = pathCharacter
+
+local function craftCandidates(states, done, out, notPlanned)
   for _, cr in ipairs(R.CRAFTS) do
     local m = nil
     for _, x in ipairs(R.CRAFT_MILESTONES) do if not done[craftKey(cr.name, x)] then m = x; break end end
     if m then
-      for _, st in ipairs(states) do
+      local st = pathCharacter(states, cr.name)
+      if not st then
+        notPlanned[cr.name] = true
+      else
         local p = st.profs[cr.name]
-        local learn = false
-        if not p and st.profsKnown and st.primaries < RR.PRIMARY_SLOTS then p = { skill = 0 }; learn = true end
-        if p and type(st.level) == 'number' and p.skill < m then
-          local c = { st = st, kind = 'craft', parts = {}, hours = 0, rules = { 'L-3' }, key = craftKey(cr.name, m),
-            title = craftTitle(cr.name, m), craft = cr.name, learn = learn }
+        if p.skill < m then
+          local c = { st = st, kind = 'craft', parts = {}, hours = 0, rules = { 'L-3', 'R-2' }, key = craftKey(cr.name, m),
+            title = craftTitle(cr.name, m), craft = cr.name }
           local gate = RR.TRAIN[m]
           if gate and not (type(p.max) == 'number' and p.max >= m) then
             addRule(c.rules, 'L-4'); addRule(c.rules, 'L-5')
             if st.level < gate.level then levelPart(st, gate.level, c) end
             c.train = gate.rank
           end
-          if learn then addRule(c.rules, 'L-6') end
-          c.parts[#c.parts + 1] = { kind = 'skill', profession = cr.name, from = p.skill, to = m, learn = learn, max = p.max }
+          c.parts[#c.parts + 1] = { kind = 'skill', profession = cr.name, from = p.skill, to = m, max = p.max }
           c.hours = c.hours + Route.SkillHours(p.skill, m)
           addRule(c.rules, 'L-16')
           out[#out + 1] = c
@@ -369,6 +390,7 @@ function Route.Build(input)
     res.targetKind, res.target = 'points', tonumber(t) or RR.DEFAULT_TARGET
   end
   local unlocked = false
+  local notPlanned = {}
   for _, st in ipairs(states) do if st.level >= R.UNLOCK_LEVEL then unlocked = true end end
   res.unlocked = unlocked
   local total = earned
@@ -377,7 +399,7 @@ function Route.Build(input)
     local cands = {}
     classCandidates(states, done, cands, unlocked)
     if unlocked then
-      craftCandidates(states, done, cands)
+      craftCandidates(states, done, cands, notPlanned)
       dungeonCandidates(states, done, dungeonLeft, cands)
       explorerCandidates(states, done, explorer, cands, notes)
     end
@@ -400,6 +422,9 @@ function Route.Build(input)
     if best.st.level >= R.UNLOCK_LEVEL then unlocked = true end
   end
   res.steps = Route.Split(res.steps)
+  -- R-1: the crafts whose milestones are left but no character has (in R.CRAFTS order)
+  res.notPlanned = {}
+  for _, cr in ipairs(R.CRAFTS) do if notPlanned[cr.name] then res.notPlanned[#res.notPlanned + 1] = cr.name end end
   res.left = math.max(0, res.target - total)
   res.reached = total
   if notes.explorer then
@@ -541,10 +566,14 @@ end
 function Route.Split(steps)
   local out, total = {}, 0
   for _, s in ipairs(steps) do
-    for _, x in ipairs(split(s)) do
+    local group = split(s)
+    local base = #out
+    for k, x in ipairs(group) do
       total = total + (x.points or 0)
       x.total = total
       x.pre = nil
+      -- R-7: a part with no point opens the group's last part
+      if (x.points or 0) == 0 and k < #group then x.prereqFor = base + #group end
       out[#out + 1] = x
     end
   end

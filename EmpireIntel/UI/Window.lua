@@ -241,7 +241,8 @@ function W.Redraw()
   W.targetText:SetText(view.target or '?')
   EI.UpNext.Render(W.card, view.card, view.mode, view.empty)
   EI.Rows.Render(W.list, view)
-  W.footLeft:SetText((view.note and (view.note .. '   ') or '') .. (view.footer.reward or ''))
+  W.footLeft:SetText((view.note and (view.note .. '   ') or '') .. (view.footer.reward or '')
+    .. (view.footer.notPlanned and ('   ' .. view.footer.notPlanned) or ''))
   W.footRight:SetText(view.footer.rules .. ((view.footer.total and view.footer.total ~= '') and ('   ' .. view.footer.total) or ''))
 end
 
@@ -259,7 +260,7 @@ function W.SetMode(m)
   W.Refresh(false)
 end
 
-W.TARGETS = { 16, 'reward', 'next' }
+W.TARGETS = { EI.RouteRules.CAP, 'reward', 'next' }          -- the cap from the rules table (L-12, R-6)
 function W.CycleTarget()
   local cur = EI.Plan.Target()
   local idx = 1

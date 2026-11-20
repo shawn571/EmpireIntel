@@ -204,14 +204,16 @@ T.describe('P2-4b: the Up Next card and the rows (Fastest)', function()
     local W, EI = session({})
     openWin(W)
     T.eq(EI.Window.targetText.text, 'Cap 1/16')
-    T.truthy(EI.Window.footRight.text:find('Rules: 18, 11 unverified', 1, true))
+    T.truthy(EI.Window.footRight.text:find('Rules: 20, 11 unverified', 1, true))
     T.truthy(EI.Window.footLeft.text:find('Next reward at 15: Air Rifle', 1, true), EI.Window.footLeft.text)
   end)
   T.it('rows: step, now, points, time, the unverified dot; hover shows each rule with its source', function()
     local W, EI = session({})
     openWin(W)
-    local r = row(EI, 1)
-    T.eq(r.step.text, 'Enchanting 28 -> 150')
+    T.eq(row(EI, 1).step.text, '1. Level 10, then Tailoring 150', 'R-5: Up next is row 1')
+    T.truthy(row(EI, 1).sel.shown, 'and marked')
+    local r = row(EI, 2)
+    T.eq(r.step.text, '2. Enchanting 28 -> 150')
     T.eq(r.now.text, '28/75')
     T.eq(r.pts.text, '+1')
     T.eq(r.time.text, '~3.2 h')
@@ -796,7 +798,7 @@ T.describe('P2-4b retest, item 3: notes have their own space', function()
     e.scripts.OnEnterPressed(e)
     T.eq(W.env.EmpireIntelDB.plan.mine[1].note, 'with the guild')
     T.falsy(bar.frame.shown)
-    T.eq(row(EI, 1).step.text, 'Level 10 (note)')
+    T.eq(row(EI, 1).step.text, '1. Level 10 (prerequisite for step 2) (note)')
     local hit = false
     for _, l in ipairs(EI.Window.view.rows[1].tooltip) do if l.text == 'Note: with the guild' then hit = true end end
     T.truthy(hit)
@@ -837,7 +839,7 @@ T.describe('P2-4b retest, item 4: ignoring a character marks its steps in my pla
     T.truthy(find(out, 'Cee One is left out of the fastest route. Its 1 step in my plan are kept, marked "ignored"'), dump(out))
     local v = EI.Window.view
     T.eq(v.rows[1].status, 'ignored')
-    T.eq(row(EI, 1).step.text, 'Level 45 (ignored)')
+    T.eq(row(EI, 1).step.text, '1. Level 45 (ignored)')
     T.eq(EI.Window.card.label.text, 'UP NEXT - MY PLAN STEP 2', 'the ignored step is not up next')
     T.truthy(v.footer.total:find('1 ignored', 1, true), v.footer.total)
     pick(menuOf(EI, 1), 'Unignore Cee One')
@@ -873,7 +875,8 @@ T.describe('P2-4b retest, item 5: the target button is labelled and has a toolti
     T.truthy(W.ui.tooltipShown)
     local all = table.concat(W.ui.tooltip, '\n')
     T.truthy(all:find('Target: Next point 1/2', 1, true), all)
-    T.truthy(all:find('Cap: 16 points, the spending cap per character (L-12, unverified)', 1, true), all)
+    T.truthy(all:find('Cap: 16 points, the spending cap per character (L-12, unverified', 1, true), all)
+    T.truthy(all:find('15 Air Rifle, 25 Spectral Bear Cub', 1, true), 'the rewards come from the rules table')
     T.truthy(all:find('Next reward: the next reward on the track', 1, true), all)
     T.truthy(b.w >= 110, 'wide enough for the label')
   end)
@@ -965,7 +968,7 @@ T.describe('P2-4b retest, item 9: one meaning in both modes', function()
     hours = 9, rules = { 'L-4' }, earns = { 'Expert Enchanter' }, points = 1, atLevel = 10, train = 'Expert' }
   T.it('a dungeon challenge is "Account" in Fastest as in My plan; the step names the character it runs on', function()
     local v = V.Build({ mode = 'auto', res = res({ first, dungeon }), now = WALL })
-    local r = v.rows[1]
+    local r = v.rows[2]
     T.eq(r.who.name, 'Account')
     T.eq(r.step, 'Level 20 on Cee, then Experienced Spelunker')
     T.eq(r.now, '1/10')
@@ -976,13 +979,13 @@ T.describe('P2-4b retest, item 9: one meaning in both modes', function()
   end)
   T.it('NOW is today\'s value in Fastest too; the route\'s value is in the tooltip', function()
     local v = V.Build({ mode = 'auto', res = res({ first, ench }), now = WALL })
-    local r = v.rows[1]
+    local r = v.rows[2]
     T.eq(r.now, '28/75')
     T.eq(r.who.level, 6, 'today\'s level in the character column')
     local hit = false
     for _, l in ipairs(r.tooltip) do if l.text == 'NOW is today\'s value; at this point of the route: 150/150' then hit = true end end
     T.truthy(hit)
-    local lv = V.Build({ mode = 'auto', res = res({ ench, first }), now = WALL }).rows[1]
+    local lv = V.Build({ mode = 'auto', res = res({ ench, first }), now = WALL }).rows[2]
     T.eq(lv.now, '6')
   end)
   T.it('copying the route keeps the runner\'s level step before a dungeon challenge', function()
@@ -1019,7 +1022,7 @@ T.describe('P2-4b retest 0.7.2, finding 10: my plan counts from the earlier step
     T.eq(r.status, 'covered')
     T.eq(r.time, '')
     T.eq(r.pts, '')
-    T.eq(row(EI, 5).step.text, 'Level 15 (covered by step 3)')
+    T.eq(row(EI, 5).step.text, '5. Level 15 (covered by step 3)')
     T.truthy(EI.Window.view.footer.total:find('1 covered', 1, true), EI.Window.view.footer.total)
     local hit = false
     for _, l in ipairs(r.tooltip) do if l.text:find('Covered by step 3', 1, true) then hit = true end end
@@ -1207,10 +1210,10 @@ T.describe('0.7.4: one row per Legacy milestone (D-070)', function()
     local first = { row = st.row, kind = 'class', parts = { { kind = 'level', from = 1, to = 25 } }, hours = 1, rules = {}, earns = { 'Novice Hunter' }, points = 1 }
     local v = EI0.PlanView.Build({ mode = 'auto', now = WALL, res = { earned = 2, earnedSrc = 'game', target = 15, targetKind = 'reward',
       states = { {} }, steps = { first, steps[1], steps[2] }, left = 0, reached = 15, excluded = { ignored = 0, ruleset = 0 }, unlocked = true } })
-    T.eq(v.rows[1].pts, '')
-    T.eq(v.rows[2].pts, '+1')
+    T.eq(v.rows[2].pts, '')
+    T.eq(v.rows[3].pts, '+1')
     local hit = false
-    for _, l in ipairs(v.rows[1].tooltip) do if l.text:find('Journeyman Alchemist is already earned on the account', 1, true) then hit = true end end
+    for _, l in ipairs(v.rows[2].tooltip) do if l.text:find('Journeyman Alchemist is already earned on the account', 1, true) then hit = true end end
     T.truthy(hit)
     local list = EI0.Plan.FromRoute(steps)
     T.eq(list, { { kind = 'skill', guid = C2, profession = 'Alchemy', skill = 150 }, { kind = 'skill', guid = C2, profession = 'Alchemy', skill = 225 } })
@@ -1262,19 +1265,21 @@ T.describe('0.7.4: my plan counts each milestone once per account, as Fastest do
 end)
 
 T.describe('0.7.4: milestone rows in the route and the account\'s earned milestones in my plan (D-070)', function()
-  T.it('Route.Build splits a step: with every Journeyman earned, a Hunter at 25 learns Alchemy as 0 -> 150 (no point) then 150 -> 225 (+1)', function()
+  T.it('Route.Build splits a step: with every Journeyman earned, a Hunter at 25 with Alchemy 10 goes 10 -> 150 (no point, prerequisite) then 150 -> 225 (+1)', function()
     local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
     local rows = {
-      { guid = 'H', name = 'Hunt', class = 'HUNTER', level = 25, xp = 0, xpMax = 36400, professions = {} },
-      { guid = 'A', name = 'Alc', class = 'MAGE', level = 12, xp = 0, xpMax = 10100, professions = { { name = 'Alchemy', skill = 150, max = 150 }, { name = 'Herbalism', skill = 1, max = 75 } } },
+      { guid = 'H', name = 'Hunt', class = 'HUNTER', level = 25, xp = 0, xpMax = 36400, professions = { { name = 'Alchemy', skill = 10, max = 75 } } },
+      { guid = 'A', name = 'Alc', class = 'MAGE', level = 12, xp = 0, xpMax = 10100, professions = { { name = 'Herbalism', skill = 1, max = 75 } } },
     }
     local ch = {}
     for _, c in ipairs(EI0.Rules.CRAFTS) do ch[#ch + 1] = { legacy = true, name = 'Journeyman ' .. EI0.Rules.CRAFT_PERSON[c.name], completed = true } end
     local res = EI0.Route.Build({ rows = rows, now = 0, target = 8, rates = {}, ignore = {}, legacy = { summary = { recognized = true, earned = 6 }, challenges = ch } })
-    local s2, s3 = res.steps[2], res.steps[3]
-    T.eq({ s2.parts[1].from, s2.parts[1].to, s2.points, s2.already }, { 0, 150, 0, 'Journeyman Alchemist' })
+    local k
+    for i, s in ipairs(res.steps) do if s.already == 'Journeyman Alchemist' then k = i end end
+    T.truthy(k, 'a no-point Alchemy 150 step')
+    local s2, s3 = res.steps[k], res.steps[k + 1]
+    T.eq({ s2.parts[1].from, s2.parts[1].to, s2.points, s2.prereqFor }, { 10, 150, 0, k + 1 })
     T.eq({ s3.parts[1].from, s3.parts[1].to, s3.points }, { 150, 225, 1 })
-    T.eq(res.reached, 8)
   end)
   T.it('my plan: a milestone the account already has counts no point and says so', function()
     local d = db({ mode = 'mine', mine = { { kind = 'level', guid = C2, level = 10 }, { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 } } })
@@ -1286,5 +1291,120 @@ T.describe('0.7.4: milestone rows in the route and the account\'s earned milesto
     local hit = false
     for _, l in ipairs(r.tooltip) do if l.text:find('Journeyman Enchanter is already earned on the account', 1, true) then hit = true end end
     T.truthy(hit)
+  end)
+end)
+
+---------------------------------------------------------------------------
+-- 0.7.5 (D-075, D-076): the Fastest route's rules R-1, R-2, R-3, R-5, R-7; the cap from the rules table
+---------------------------------------------------------------------------
+T.describe('0.7.5: the route rules R-1, R-2, R-3 (D-076)', function()
+  local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+  local function r(guid, t) t.guid = guid; t.xp = t.xp or 0; return t end
+  local function crafts(res)
+    local out = {}
+    for _, s in ipairs(res.steps) do
+      for _, p in ipairs(s.parts) do if p.kind == 'skill' then out[#out + 1] = s.row.name .. ':' .. p.profession .. ':' .. p.to end end
+    end
+    return out
+  end
+  local function has(list, x) for _, y in ipairs(list) do if y == x then return true end end return false end
+  -- the user's case (names replaced): Rogue A 44 and Rogue B 69 Leatherworking; Shaman Engineering 1; Warrior Blacksmithing 51
+  -- with a free slot; Hunter with no professions; Priest Tailoring 150/150
+  local rows = {
+    r('A', { name = 'RogueA', class = 'ROGUE', level = 15, professions = { { name = 'Leatherworking', skill = 44, max = 75 }, { name = 'Skinning', skill = 91, max = 150 } } }),
+    r('B', { name = 'RogueB', class = 'ROGUE', level = 8, professions = { { name = 'Leatherworking', skill = 69, max = 75 }, { name = 'Skinning', skill = 59, max = 75 } } }),
+    r('S', { name = 'Shaman', class = 'SHAMAN', level = 5, professions = { { name = 'Alchemy', skill = 11, max = 75 }, { name = 'Engineering', skill = 1, max = 75 } } }),
+    r('W', { name = 'Warrior', class = 'WARRIOR', level = 9, professions = { { name = 'Blacksmithing', skill = 51, max = 75 } } }),
+    r('H', { name = 'Hunter', class = 'HUNTER', level = 5, professions = {} }),
+    r('P', { name = 'Priest', class = 'PRIEST', level = 10, professions = { { name = 'Tailoring', skill = 150, max = 150 }, { name = 'Enchanting', skill = 47, max = 75 } } }),
+  }
+  local res = EI0.Route.Build({ rows = rows, now = 0, target = 30, rates = {}, ignore = {} })
+  local cs = crafts(res)
+  T.it('R-1: no character gets a craft it does not have; the Hunter has no craft step', function()
+    for _, s in ipairs(res.steps) do
+      for _, p in ipairs(s.parts) do
+        if p.kind == 'skill' then
+          local own = false
+          for _, x in ipairs(s.row.professions) do if x.name == p.profession then own = true end end
+          T.truthy(own, s.row.name .. ' ' .. p.profession)
+        end
+      end
+      T.falsy(s.row.name == 'Hunter' and s.kind == 'craft')
+    end
+    T.eq(res.notPlanned, {}, 'every craft here has a character')
+  end)
+  T.it('R-2: the highest skill is the path: Leatherworking on Rogue B (69, not 44), Engineering on the Shaman, every milestone', function()
+    T.truthy(has(cs, 'RogueB:Leatherworking:150'), table.concat(cs, ' '))
+    T.truthy(has(cs, 'RogueB:Leatherworking:225'), table.concat(cs, ' '))
+    for _, x in ipairs(cs) do T.falsy(x:find('^RogueA:Leatherworking'), x) end
+    T.truthy(has(cs, 'Shaman:Engineering:150'), table.concat(cs, ' '))
+    for _, x in ipairs(cs) do T.falsy(x:find('Engineering') and not x:find('^Shaman:'), x) end
+  end)
+  T.it('R-2 tie-break: the same skill goes to the higher level, then to the played character', function()
+    local t = { r('X', { name = 'X', class = 'MAGE', level = 10, professions = { { name = 'Tailoring', skill = 60, max = 75 } } }),
+      r('Y', { name = 'Y', class = 'MAGE', level = 12, professions = { { name = 'Tailoring', skill = 60, max = 75 } } }) }
+    local states = {}
+    for _, x in ipairs(t) do states[#states + 1] = EI0.Route.State(x, 0, {}) end
+    T.eq(EI0.Route.PathCharacter(states, 'Tailoring').row.guid, 'Y')
+    t[2].level = 10; t[1].isPlayer = true
+    states = {}
+    for _, x in ipairs(t) do states[#states + 1] = EI0.Route.State(x, 0, {}) end
+    T.eq(EI0.Route.PathCharacter(states, 'Tailoring').row.guid, 'X')
+  end)
+  T.it('R-3: the Priest\'s Tailoring 225 is in the route', function()
+    T.truthy(has(cs, 'Priest:Tailoring:225'), table.concat(cs, ' '))
+  end)
+  T.it('R-1: a craft no character has is listed as not planned, in chat and in the footer', function()
+    local res2 = EI0.Route.Build({ rows = { rows[6] }, now = 0, target = 30, rates = {}, ignore = {} })
+    T.eq(res2.notPlanned, { 'Alchemy', 'Blacksmithing', 'Engineering', 'Leatherworking' })
+    local v = EI0.PlanView.Build({ mode = 'auto', res = res2, now = WALL })
+    T.eq(v.footer.notPlanned, 'Not planned: no character has Alchemy, Blacksmithing, Engineering, Leatherworking')
+    local lines = EI0.Next.AutoLines({ res = res2 })
+    T.truthy(find(lines, 'Not planned (R-1): no character has Alchemy, Blacksmithing, Engineering, Leatherworking.'), dump(lines))
+  end)
+end)
+
+T.describe('0.7.5: Up next is row 1; prerequisites say so; the cap is in the rules table (D-076)', function()
+  T.it('R-5: Fastest\'s step 1 is the card and row 1, marked; every row starts with its step number', function()
+    local W, EI = session({})
+    openWin(W)
+    local v = EI.Window.view
+    T.truthy(v.rows[1].upnext)
+    T.eq(v.rows[1].index, 1)
+    T.eq(row(EI, 1).step.text, '1. Level 10, then Tailoring 150')
+    T.truthy(row(EI, 1).sel.shown)
+    local r2 = row(EI, 2)
+    r2.button.scripts.OnClick(r2.button, 'LeftButton')
+    T.falsy(row(EI, 1).sel.shown, 'a selected row takes the mark')
+    T.truthy(row(EI, 2).sel.shown)
+  end)
+  T.it('R-7 in Fastest: a no-point step names the step it opens, in the row, the tooltip and the chat line', function()
+    local EI0 = F.loadAddon(F.new(), 'EmpireIntel')
+    local h = { guid = 'H', name = 'Hunt', class = 'HUNTER', level = 25 }
+    local st = { row = h, kind = 'craft', parts = { { kind = 'skill', profession = 'Alchemy', from = 10, to = 225, max = 75 } },
+      hours = EI0.Route.SkillHours(10, 225), earns = { 'Expert Alchemist' }, rules = {}, points = 1, pre = { row = h, level = 25, xp = 0, rest = 0 } }
+    local steps = EI0.Route.Split({ st })
+    T.eq(steps[1].prereqFor, 2)
+    local v = EI0.PlanView.Build({ mode = 'auto', now = WALL, res = { earned = 2, earnedSrc = 'game', target = 16, targetKind = 'points',
+      states = { {} }, steps = steps, left = 0, reached = 3, excluded = { ignored = 0, ruleset = 0 }, unlocked = true } })
+    T.eq(v.rows[1].step, 'Alchemy 10 -> 150 (prerequisite for step 2)')
+    local hit = false
+    for _, l in ipairs(v.rows[1].tooltip) do if l.text:find('Prerequisite for step 2', 1, true) then hit = true end end
+    T.truthy(hit)
+    T.truthy(EI0.Next.StepLine(steps[1]):find('(prerequisite for step 2)', 1, true))
+  end)
+  T.it('R-7 in My plan: a level step that opens a later point says "prerequisite for step n"', function()
+    local W, EI = session({ eidb = db({ mode = 'mine', mine = { { kind = 'level', guid = C2, level = 10 }, { kind = 'skill', guid = C2, profession = 'Enchanting', skill = 150 } } }) })
+    openWin(W)
+    T.eq(EI.Window.view.rows[1].prereqFor, 2)
+    T.eq(row(EI, 1).step.text, '1. Level 10 (prerequisite for step 2)')
+    T.isnil(EI.Window.view.rows[2].prereqFor)
+  end)
+  T.it('the cap comes from the rules table (no 16 in the window code): changing it changes the target button', function()
+    local W, EI = session({ before = function(W) end })
+    T.eq(EI.RouteRules.CAP, 16)
+    T.eq(EI.Window.TARGETS[1], EI.RouteRules.CAP)
+    local h = assert(io.open(root .. '/EmpireIntel/UI/Window.lua')); local src = h:read('*a'); h:close()
+    T.falsy(src:find('{ 16,', 1, true), 'no hard-coded 16 in Window.lua')
   end)
 end)

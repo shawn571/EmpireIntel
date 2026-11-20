@@ -197,11 +197,13 @@ local function routeRow(s, i, now)
     who = ACCOUNT
   end
   if s.already then extra[#extra + 1] = { text = s.already .. ' is already earned on the account: this milestone row earns no point (D-070).' } end
+  if s.prereqFor then extra[#extra + 1] = { text = 'Prerequisite for step ' .. s.prereqFor .. ': it earns no point itself, but that step needs it (R-7).' } end
   if nowText ~= routeNow and routeNow ~= '' then
     extra[#extra + 1] = { text = 'NOW is today\'s value; at this point of the route: ' .. routeNow }
   end
   local tip = tooltip(title, timeLine, s.rules)
   for k, l in ipairs(extra) do table.insert(tip, 1 + k, l) end
+  if s.prereqFor then text = text .. ' (prerequisite for step ' .. s.prereqFor .. ')' end
   return {
     index = i, who = who, step = text, now = nowText, pts = ((s.points or 1) > 0) and ('+' .. (s.points or 1)) or '', time = hours(s.hours), status = status,
     unverified = #un > 0, kind = s.kind, guid = (s.kind ~= 'dungeon') and s.row and s.row.guid or nil,
@@ -385,19 +387,25 @@ end
 -- the whole view
 ---------------------------------------------------------------------------
 
+function V.RewardsText()
+  local t = {}
+  for _, r in ipairs(RR.REWARDS) do t[#t + 1] = r.at .. ' ' .. r.name end
+  return table.concat(t, ', ')
+end
+
 -- D-063 item 5: the target button says what it counts toward; its tooltip explains the three choices.
 function V.TargetLabel(res)
   local tip = { { text = 'Target' },
     { text = 'Next point: the route to your next Legacy point.' },
-    { text = 'Cap: ' .. RR.DEFAULT_TARGET .. ' points, the spending cap per character (L-12, unverified).' },
-    { text = 'Next reward: the next reward on the track (15 Air Rifle, 25 Spectral Bear Cub, 40 Tabard, 55 Reins; L-13).' },
+    { text = 'Cap: ' .. RR.CAP .. ' points, the spending cap per character (L-12, unverified; editable in a later version).' },
+    { text = 'Next reward: the next reward on the track (' .. V.RewardsText() .. '; L-13).' },
     { text = 'Click to change: Cap -> Next reward -> Next point.', r = 0.65, g = 0.66, b = 1 } }
   if not res then return '?', tip end
   local nums = res.earned .. '/' .. res.target
   local label
   if res.targetKind == 'next' then label = 'Next point ' .. nums
   elseif res.targetKind == 'reward' then label = 'Next reward ' .. nums
-  elseif res.target == RR.DEFAULT_TARGET then label = 'Cap ' .. nums
+  elseif res.target == RR.CAP then label = 'Cap ' .. nums
   else label = 'Target ' .. nums end
   tip[1] = { text = 'Target: ' .. label .. ' (' .. (res.earnedSrc == 'game' and 'earned points from the game' or 'earned points inferred') .. ')' }
   return label, tip
@@ -454,6 +462,20 @@ function V.Build(ctx)
         view.selectedCard.tooltip = V.BackHint(view.selectedCard.tooltip)
       end
     end
+    -- R-7: a row with no point that a later point needs says "prerequisite for step n"
+    for k, row in ipairs(view.rows) do
+      local g = row.saved
+      if row.pts == '' and g and g.guid and row.status ~= 'done' and row.status ~= 'covered' and not row.ignored then
+        for j = k + 1, #view.rows do
+          local later = view.rows[j]
+          if later.pts ~= '' and later.saved and EI.Plan.Chain(ctx.plan.steps, later.saved, byGuid)[g] then
+            row.prereqFor = later.index
+            table.insert(row.tooltip, 2, { text = 'Prerequisite for step ' .. later.index .. ': it earns no point itself, but that step needs it (R-7).' })
+            break
+          end
+        end
+      end
+    end
     view.footer.total = #ctx.plan.steps .. ' steps - ' .. met .. ' met' .. ((covered > 0) and (' - ' .. covered .. ' covered') or '')
       .. ((ignored > 0) and (' - ' .. ignored .. ' ignored') or '') ..
       ((#view.problems > 0) and (' - ' .. #view.problems .. ' skipped (/ei next lists them)') or '')
@@ -464,8 +486,11 @@ function V.Build(ctx)
   end
   if not res or #res.states == 0 then view.empty = 'No characters known yet.'; return view end
   for i, s in ipairs(res.steps) do
-    if i == 1 then view.card = routeCard(s, ctx.now) else view.rows[#view.rows + 1] = routeRow(s, i, ctx.now) end
-    if i > 1 and ctx.selected and ctx.selected.mode == 'auto' and ctx.selected.key == i then
+    -- R-5 (D-075): step 1 is the card and row 1 (marked Up next), so the rows count every step
+    if i == 1 then view.card = routeCard(s, ctx.now) end
+    view.rows[#view.rows + 1] = routeRow(s, i, ctx.now)
+    if i == 1 then view.rows[#view.rows].upnext = true end
+    if ctx.selected and ctx.selected.mode == 'auto' and ctx.selected.key == i then
       view.rows[#view.rows].selected = true
       view.selectedCard = routeCard(s, ctx.now)
       view.selectedCard.label = 'SELECTED - STEP ' .. i
@@ -484,6 +509,10 @@ function V.Build(ctx)
   end
   if res.excluded and res.excluded.ignored > 0 then
     view.footer.total = view.footer.total .. (view.footer.total ~= '' and ' - ' or '') .. res.excluded.ignored .. ' ignored'
+  end
+  -- R-1: crafts no character has are not planned, and the footer says so
+  if res.notPlanned and #res.notPlanned > 0 then
+    view.footer.notPlanned = 'Not planned: no character has ' .. table.concat(res.notPlanned, ', ')
   end
   if view.selectedCard then view.card, view.selected = view.selectedCard, true end
   return view

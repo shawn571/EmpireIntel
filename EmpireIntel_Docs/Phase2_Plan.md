@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: characters, views and the route planner
 
-DOC VERSION: 1.13.0  |  DATE: 2026-11-20 (S-071)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
+DOC VERSION: 1.14.0  |  DATE: 2026-11-20 (S-072)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
 **Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (built, in its live retest as 0.7.4); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (P2-4r, approved D-075); **section 13** is the Fastest route's rules R-1..R-7 (D-075, for approval).
 
@@ -865,3 +865,10 @@ Order after that, as agreed: close P2-4b -> EmpireIntelCheck 0.1.10 trim -> P2-4
 | Q-R7 | Build R-1, R-2, R-3, R-5 and R-7 as P2-4b fix 0.7.5 before closing; R-6 in P2-4c; R-4 by ignoring him now? | Yes |
 | Q-R7-a | R-2 tie-break: highest skill, then higher level, then the played character? | Yes |
 | Q-R7-b | R-1 with P2-4c: once the wizard exists, a craft no character has can be planned only on a character the user picked for it (or "planner's choice")? | Yes |
+
+### 13.4 Decided and built (D-076)
+
+- Q-R7 yes: **R-1, R-2, R-3, R-5, R-7 built as P2-4b fix 0.7.5**; the cap moved into the rules table (`RouteRules.CAP`, L-12); R-6 (targets and an editable cap) goes to P2-4c. Q-R7-a yes (highest skill, then level, then the played character).
+- **Q-R7-b (for P2-4c):** a craft no character has is planned only on a character the user picked for it; the planner may **suggest** one (for example in the wizard: "suggested: the Hunter, a free slot"), but it plans nothing until the user picks. This replaces the "planner's choice" option of 10.2 for crafts no character has.
+- **R-3 as built:** the Priest's Tailoring 225 is planned on him (R-2), but it costs about 19 h (levels 10 -> 20 first), so in the user's data it is the 16th cheapest step and appears at a target of about 20 [inferred, offline replay of the user's 2026-11-20 file]. R-6's "All 65" and "track beyond the cap" (P2-4c) will show it without changing the target.
+- The user has ignored the test characters (R-4).

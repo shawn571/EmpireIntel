@@ -3,7 +3,7 @@
 DOC VERSION: 1.6.0  |  UPDATED: 2026-11-16 (session S-068)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4b: 0.7.4 on p2-4b-window (PR #17, not merged); retest: order and 150-above-225 confirmed from the saved file; emblem, +1, merge and close not answered yet.
+CURRENT PHASE:            Phase 2, increment P2-4b: 0.7.5 on p2-4b-window (PR #17, not merged), the route rules fix before closing.
 IMPLEMENTATION APPROVED:  P2-4b (D-061) and its fixes (D-063, D-065, D-066, D-070). Next, in order, each after the one before closes: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e (D-065, D-069, D-070).
 OPEN BLOCKERS:            the user's retest on 0.7.4 (gate steps 3, 8); merge approval; closing P2-4b
 ```
@@ -113,7 +113,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Retest on 0.7.3: step 2 passed, step 3 partial (D-070); 0.7.4 built: 536 tests, 11/11 mutants (S-067)
 - [x] 0.7.4 retest: the Hunter's order and the milestone rows confirmed from the saved file (D-073)
 - [x] Emblem and +1 accepted (D-075)
-- [ ] **User:** Q-R7, Q-R7-a, Q-R7-b (route rules R-1..R-7, Phase2_Plan.md section 13); then merge #17 and close P2-4b
+- [x] Q-R7, Q-R7-a, Q-R7-b answered (D-076); #18 merged (prompt on main)
+- [x] 0.7.5 built: R-1, R-2, R-3, R-5, R-7, the cap in the rules table; 545 tests, 12/12 mutants (S-072)
+- [ ] **User:** test 0.7.5 (README); then merge #17 and close P2-4b
+- [ ] **User:** decide on the personal-data scan findings (Session_Handoff S-072; nothing scrubbed)
 - [x] Build 71037 realm evidence recorded: EI-E-34..38 (D-073)
 - [x] Realm plan written: Phase2_Plan.md section 12 (S-069)
 - [x] Cross-realm test: account-wide across normal realms (EI-E-39); Hardcore its own pool, untested (EI-E-40) (D-074)

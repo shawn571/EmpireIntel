@@ -1,6 +1,17 @@
-EmpireIntel 0.7.4 - the plan window, retest of step 3 (P2-4b)
+EmpireIntel 0.7.5 - the plan window, the Fastest route's rules (P2-4b)
 
-WHAT 0.7.4 CHANGES (your 0.7.3 retest, D-070)
+WHAT 0.7.5 CHANGES (your route rules, D-075, D-076)
+  R-1  A profession is never assumed: a craft is planned only on characters that have it. No "Learn X" step.
+       A craft no character has is not planned; the footer (and /ei next) says "Not planned: no character has ...".
+  R-2  The highest skill is the path: each craft's milestones (150, 225, 300) go to the character with the highest
+       skill (a tie goes to the higher level, then to the character you play), with its level gates.
+  R-3  The Priest's Tailoring 225 is a planned step (on him, by R-2). It costs about 19 h (level 10 -> 20 first),
+       so it comes after the cheaper points: it shows once the target reaches it (about 20 points today).
+  R-5  Fastest's Up next is also row 1 (marked), and every row starts with its step number.
+  R-7  A row with no point that opens a later point says "(prerequisite for step n)" (in both modes).
+  The cap (16) now comes from the rules table, not from the window's code (R-6 itself comes with P2-4c).
+
+WHAT 0.7.4 CHANGED (D-070)
   - Every Legacy milestone is its own row, in Fastest and in My plan. Learning Alchemy 0 -> 225 is two rows:
     "Learn Alchemy, 0 -> 150" and "Alchemy 150 -> 225", each with its own training gate and time. A milestone
     the account already has (or an earlier step earns) is a row with no point; hover it for why.
@@ -57,24 +68,23 @@ RESTART OR RELOAD?
   Update from any 0.7.x or 0.6.0: /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
   the AddOns list refreshes at the next start, harmless). Saved data: unchanged format 2.
 
-RETEST (gate steps 3 and 8 only; 1, 2, 4, 5, 6 and 7 passed)
-  Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload. Type /ei version:
-  expect "version 0.7.4, saved data schema 2 (ok)". About 3 seconds after the /reload, expect
-  "plan: added 2 milestone steps to my plan ...: <Hunter> Alchemy 150, <Hunter> Blacksmithing 150."
-  Also look at the card: the Horde emblem is about as large as the portrait.
-  3. My plan:
-     a. the Hunter's Alchemy 150 row is just above his Alchemy 225; same for Blacksmithing;
-     b. his Alchemy 225 shows +1 in My plan and in Fastest (Fastest shows "Learn Alchemy, 0 -> 150" with no
-        point, then "Alchemy 150 -> 225" +1);
-     c. hover a row with no point where a milestone is passed: the tooltip says it is already earned (or by
-        which step);
-     d. right-click the Hunter's Alchemy 225 > Move to top: his Level 25 and Alchemy 150 come above it;
-     e. /reload and open again: all kept.
-  8. Send a screenshot of each mode (as images), the saved file
-       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
-     and any line with UNEXPECTED or any red Lua error.
+TEST (about 5 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload.
+     Type /ei version: expect "version 0.7.5, saved data schema 2 (ok)".
+  2. Open the window (/ei plan), Fastest:
+     a. row 1 is the Up next step (the same as the card), marked; every row starts with its number;
+     b. your Hunter has no profession step at all (only his level step, "Level 25 (Novice Hunter)");
+     c. Leatherworking is on your Horde Rogue (69), Engineering on your Shaman (1), Blacksmithing on your Warrior,
+        Enchanting on your Priest, Alchemy on your Druid; no "Learn" step anywhere;
+     d. the footer has no "Not planned" text (every craft has a character), unless one is ignored.
+  3. Tailoring 225 on the Priest: type  /ei plan target 20  then open Fastest again: a row
+     "<Priest> ... Tailoring 150 -> 225" is there. Click the target button to go back (Cap 2/16 or Next reward).
+  4. Hover a row with no point (for example a "Level 10" step in My plan before its craft step): the row and the
+     tooltip say "prerequisite for step n", and step n is the craft step.
+  5. /ei next: the same route in chat; a "Not planned (R-1): ..." line only if a craft has no character.
+  6. Send screenshots of Fastest (as images) and any line with UNEXPECTED or any red Lua error.
 
-ROLLBACK TO 0.7.3 (OR EARLIER 0.7.x)
+ROLLBACK TO 0.7.4 (OR EARLIER 0.7.x)
   Put that folder back and /reload. Saved data is the same format (added milestone rows and removed repeats
   stay as they are).
 

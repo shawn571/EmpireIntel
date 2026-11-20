@@ -4,6 +4,29 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-072 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. **EmpireIntel 0.7.5** built on `p2-4b-window` (PR #17, not merged): the Fastest route's rules R-1, R-2, R-3, R-5, R-7 and the cap in the rules table (D-076). P2-4b closes after the user's test of 0.7.5 and decision.
+
+**Done this session:** #18 merged (70f8062) under the docs-only standing approval: the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main; tests on main 408/408 (Lua 5.1 and 5.3). Main merged back into `p2-4b-window` (c046f63).
+
+**Personal-data scan (all 21 branches, 109 commits, full history), nothing scrubbed:**
+- Character GUIDs: **none real.** Only the tests' synthetic `Player-1-0000000n` fixtures.
+- Battle.net account folder numbers (WTF folder `<digits>#n`): **none.** Only placeholders such as `WTF\Account\<your account>`.
+- Character names, e-mail addresses, BattleTags: **none** (the user's GitHub no-reply address `<id>+shawn571@users.noreply.github.com` as author of the 15 merge commits, and Claude's no-reply address).
+- Other personal items found: the copyright line "Copyright (c) 2026 Shawn Robinson" in `LICENSE` (and quoted in Decisions.md, D-001); the GitHub user name `shawn571` (repository paths, `.claude/settings.json` merge rule); four Claude Code session links (`claude.ai/code/session_...`) in commit messages (they open only for the user's account).
+- Game data, not personal: the realm name "CAMWOW US2 Realm 1 PvE" and the realm server numbers 6796, 6800, 6928, 6933, 6935 (docs, since D-073).
+
+**Pending (the user decides):** test 0.7.5; merge #17 and close P2-4b; whether anything from the scan should be changed. Then the check's trim (0.1.10), P2-4r, P2-4c (with R-6 and Q-R7-b), P2-4d, P2-4e.
+
+**Branches and pull requests:** main 70f8062 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): 0.7.5 and the docs, 545 tests; does not match main. #10 and #11 open. The repository is public on purpose (D-074).
+
+**Package:** `EmpireIntel_AddOns_v0.7.5.zip`, sha256 `850bc76bc376940812362ff5282a7af992ca52df177d2b6d7ec08cd27c4b09a5`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4 (0.7.5 next), EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037. The user has ignored the test characters.
+
+**User's next step:** install 0.7.5, run its README test, send screenshots; decide on #17, P2-4b and the scan.
+
 ## S-071 | 2026-11-20 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4: emblem and +1 accepted (D-075). **#17 not merged, P2-4b not closed:** the user waits for the route rules (Phase2_Plan.md section 13) and decides whether they are fixed in P2-4b first.

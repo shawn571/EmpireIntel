@@ -469,7 +469,9 @@ function L.Draw(list)
         local col = UI.ClassColor(data.who.class) or C.text
         r.who:SetText(data.who.name .. ' ' .. (data.who.classText or '') .. (data.who.level and (' ' .. data.who.level) or ''))
         r.who:SetTextColor(col[1], col[2], col[3], 1)
-        local step = data.step .. (data.target and (' ' .. data.target) or '')
+        -- the step's number first, so "prerequisite for step n" and "covered by step n" can be found (R-7)
+        local step = tostring(data.index) .. '. ' .. data.step .. (data.target and (' ' .. data.target) or '')
+        if data.prereqFor and list.mode == 'mine' then step = step .. ' (prerequisite for step ' .. data.prereqFor .. ')' end
         if data.ignored then step = step .. ' (ignored)' end
         if data.status == 'covered' then step = step .. ' (covered by step ' .. tostring(data.coveredBy) .. ')' end
         if data.note and data.note ~= '' then step = step .. ' (note)' end
@@ -480,7 +482,7 @@ function L.Draw(list)
         r.pts:SetText(data.pts or '')
         r.time:SetText(data.time or '')
         if r.dot then if data.unverified then r.dot:Show() else r.dot:Hide() end end
-        if r.sel then if data.selected then r.sel:Show() else r.sel:Hide() end end
+        if r.sel then if data.selected or (data.upnext and not (list.view and list.view.selected)) then r.sel:Show() else r.sel:Hide() end end
       end
     end
   end

@@ -596,6 +596,13 @@ Question: does Fastest pick the fastest character itself, or follow My plan’s 
 Fold these into the plan, and propose whether they go into P2-4b as a fix before closing, or into the next increment. Don’t build until I approve. Order after that stays as agreed: close P2-4b → EmpireIntelCheck 0.1.10 trim → P2-4r."
 Consequences: emblem and the +1 match accepted (0.7.4); #17 not merged, P2-4b not closed ("not yet"). Q-R, Q-R-1, Q-R-3 (with a confirmation), Q-R-4 approved; Q-R-2: the `/ei realm` command; Q-R-6 yes once a Hardcore realm exists. P2-4r gains a character picker on the card for testing (Phase2_Plan.md 12.5). The seven route rules recorded as planner rules R-1..R-7 and planned in Phase2_Plan.md section 13, with the question answered there (Fastest picks characters itself; it never reads My plan). No code until approved.
 
+## D-076 Route rules built as 0.7.5; prompt on main; personal-data scan | User (2026-11-20)
+The user's exact words (character names replaced by roles):
+"Q-R7: yes. Build 0.7.5 with R-1, R-2, R-3, R-5 and R-7 before closing P2-4b; R-6 in P2-4c (move the 16 into the rules table in 0.7.5). Q-R7-a: yes. Q-R7-b: only on a character I picked; the planner may suggest one, but doesn’t plan it until I pick. I’ve ignored my test characters.
+Also, before building: put the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main now, with a prompt-only docs PR under standing approval, so a new session started from main has it before #17 merges. And check the repo for the same kinds of personal data GoldIntel found (Battle.net account folder number, character GUIDs) and list what you find; don’t scrub until I approve.
+Send 0.7.5 with the package block and test steps, including a check that Tailoring 225 now appears on [the Priest] and that [the Hunter] has no profession steps."
+Done: #18 (prompt only, the D-071 paragraph at the top of NEXT_SESSION_PROMPT.md on main) merged under the docs-only standing approval (70f8062; 408 tests on main under Lua 5.1 and 5.3); main merged back into `p2-4b-window` (the prompt conflict kept the branch's fuller prompt). The personal-data scan of every branch's history found nothing of the GoldIntel kinds (Session_Handoff S-072 lists what it found); nothing scrubbed. EmpireIntel 0.7.5 built with R-1, R-2 (tie-break as Q-R7-a), R-3, R-5, R-7 and the cap in the rules table (P2-4b_Report.md section 6). Q-R7-b recorded for P2-4c (Phase2_Plan.md 13.4). **R-3 as built:** the Priest's Tailoring 225 is a planned step on him, but at about 19 h it follows cheaper points: in a replay of the user's saved file it is step 16, so it shows at a target of about 20, not at 15 or 16 [inferred, offline replay].
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

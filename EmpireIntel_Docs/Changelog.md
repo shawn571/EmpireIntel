@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-20 | S-072 | EmpireIntel 0.7.5: the Fastest route's rules; the prompt on main (#18); personal-data scan
+- D-076. #18 merged (70f8062): the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main; main merged into `p2-4b-window`. 0.7.5: R-1 (no assumed profession), R-2 (highest skill is the path), R-3, R-5 (Up next as row 1, step numbers), R-7 (prerequisite rows), the cap in the rules table. 545 tests (Lua 5.1 and 5.3); 12/12 mutants. Personal-data scan of all branches: no GUIDs, account folder numbers or character names found.
+
 ## 2026-11-20 | S-071 | Route rules R-1..R-7 planned; Q-R answered (documentation only)
 - D-075. Emblem and +1 accepted. Phase2_Plan.md 1.13.0: 12.5 (Q-R answers; a character picker on the card), section 13 (Fastest picks characters itself; why the Hunter learned crafts and Tailoring 225 was left out, from an offline replay; rules R-1..R-7; proposal: R-1, R-2, R-3, R-5, R-7 as P2-4b fix 0.7.5, R-6 in P2-4c). No code.
 
