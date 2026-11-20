@@ -555,6 +555,20 @@ Done (S-068), with no change of scope or of any decision:
 - **Other updates:** README.md and CONTRIBUTING.md (current status, owner plus Claude, D-068); CODE_STANDING_ORDERS.md 1.3.0 (roles; D-071 in section 2; Q-T4 wording); NEXT_SESSION_PROMPT.md step 5 matches D-071; Legacy_Rules.md, Phase2_Plan.md, Phase3_Legacy_Plan.md and Release_Pipeline.md status lines; the two 2026-11-03 reviews marked as historical records; the bug-report template no longer says "public repository"; the empty `reviews/` folder removed (no review was ever stored).
 - **Not changed:** Decisions.md and Changelog.md history (append-only), older handoff sections, and the phase reports (records).
 
+## D-073 Build 71037 realm evidence recorded; realm-identity plan requested | User (2026-11-20)
+The user's exact words (character names left out; C3 is the ignored beta character):
+"Retest 0.7.4: the saved file shows [the Hunter]’s order Level 25 → Alchemy 150 → Alchemy 225 at the top, and the 150 rows above the 225 rows. Emblem and +1: [OK / issue]. Merge #17 and close P2-4b: [yes/no].
+New evidence, record as EI-E entries:
+1. Client build 1.60.1/71037 (dated Nov 18) returns “” from GetRealmName() and GetNormalizedRealmName(). EmpireIntelCheck caught it on [a Horde Warrior] (ds_guid_key_mismatch, ds_duplicate_guid). It may be a deliberate Blizzard change, not a bug, so don’t assume it will be fixed.
+2. DataStore broke. It created blank-realm keys (“Default..Name”): duplicates for [two characters], and the only entry for characters created since. Altoholic showed only the current character until I added a workaround. Our roster was unaffected because Unit.lua drops empty realms and we identify characters by GUID.
+3. Each realm has its own GUID server number: 6796 = CAMWOW US2 Realm 1 PvE, 6800 = PvP realm, 6928 = RP realm, 6935 = RP-PvP realm. 6933 was the Realm 7 PvE beta realm and no longer exists ([C3] is a leftover beta character). I created level-1 test characters [three, on 6800, 6928 and 6935]. All three have realm = nil and ruleset = “normal” in our roster, so the realm-type badge can’t tell them apart. No Hardcore realm is available yet.
+4. Workaround installed, not part of our repo: a local addon “!RealmFix” 2.0 that loads before DataStore. When the game returns “”, it supplies the realm name from the GUID server number using a learned map, and leaves unknown numbers blank. It saves a log to RealmFixDB. While it’s installed, GetRealmName() returns the filled-in name for 6796, so EmpireIntelCheck no longer sees the raw “” on that realm. Treat realm values seen with the shim installed accordingly. EmpireIntel must not depend on the shim.
+Propose, plan only, don’t build until I approve:
+(a) Realm identity by GUID server number, with name and ruleset as labels learned whenever the game gives a name. Characters on an unknown server number show as “Unknown realm (number)”, never merged with other realms. Let me label an unknown realm once in the GUI. Rulesets aren’t unique, so don’t group by ruleset; show it as a label. Hardcore still comes from C_GameRules.
+(b) How the plan, the Legacy points and the roster should treat test characters and characters on other realms: option to ignore them, and whether Legacy points are per account or per realm.
+(c) The planned 0.1.10 trim of EmpireIntelCheck. Its file was at 248 KB of 256 KB and already dropping data."
+Consequences: EI-E-34..38 recorded (EI-E-38: the race file "Skyborne", seen in the same file). Plan in Phase2_Plan.md section 12 (Q-R, Q-R-1..5), no code. **Not done:** the merge of #17 and closing P2-4b: the message kept the template placeholders "[OK / issue]" and "[yes/no]", so neither is approved yet. The 0.7.4 retest result recorded from the saved file: the Hunter's order and the 150-above-225 rows are as fixed [file].
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

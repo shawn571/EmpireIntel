@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-069 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 installed; the saved file confirms the Hunter's order and the 150-above-225 rows [file]. **Not yet answered:** emblem and +1 ("[OK / issue]"), merging #17 and closing P2-4b ("[yes/no]"): the user's message kept the template placeholders, so nothing was merged.
+
+**This session:** build 71037 realm evidence recorded (EI-E-34..38, D-073); the realm-identity plan written (Phase2_Plan.md section 12, for approval, no code). Docs only; tests unchanged (536).
+
+**Pending (the user decides):** emblem and +1; merging #17; closing P2-4b; Q-R and Q-R-1..5 (realm identity as P2-4r before P2-4c; the saved `realms` section; `/ei realm` command; "Forget a character"; the check's trim right after P2-4b; plan only the played realm until the cross-realm test); the cross-realm Legacy test; then P2-4c, P2-4d, P2-4e in order.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1). `p2-4b-window` (PR #17): 0.7.4 and the docs, 536 tests; does not match main. #10 and #11 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; unchanged.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0 (not ours; EI-E-37). Client build 71037.
+
+**User's next step:** answer emblem and +1, the merge and closing P2-4b; run the cross-realm Legacy test; answer Q-R.
+
 ## S-068 | 2026-11-16 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 on `p2-4b-window` (PR #17, not merged) is installed; the user's retest of gate steps 3 and 8 is under way.

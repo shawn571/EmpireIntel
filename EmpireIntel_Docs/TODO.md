@@ -3,7 +3,7 @@
 DOC VERSION: 1.6.0  |  UPDATED: 2026-11-16 (session S-068)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4b: 0.7.4 on p2-4b-window (PR #17, not merged), installed, live retest of steps 3 and 8 under way.
+CURRENT PHASE:            Phase 2, increment P2-4b: 0.7.4 on p2-4b-window (PR #17, not merged); retest: order and 150-above-225 confirmed from the saved file; emblem, +1, merge and close not answered yet.
 IMPLEMENTATION APPROVED:  P2-4b (D-061) and its fixes (D-063, D-065, D-066, D-070). Next, in order, each after the one before closes: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e (D-065, D-069, D-070).
 OPEN BLOCKERS:            the user's retest on 0.7.4 (gate steps 3, 8); merge approval; closing P2-4b
 ```
@@ -111,7 +111,11 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Section 11.4 answered; plan inputs and standing order D-068 recorded (S-066, D-068, D-069)
 - [x] Q-D068-1 (Questie read dropped) and Q-D068-2 (no bundled quest data; LibForeverData and pfQuest read if installed) answered (D-070)
 - [x] Retest on 0.7.3: step 2 passed, step 3 partial (D-070); 0.7.4 built: 536 tests, 11/11 mutants (S-067)
-- [ ] **User:** retest gate steps 3 and 8 on 0.7.4; merge approval for #17; close P2-4b
+- [x] 0.7.4 retest: the Hunter's order and the milestone rows confirmed from the saved file (D-073)
+- [ ] **User:** emblem and +1 OK or not; merge approval for #17; close P2-4b
+- [x] Build 71037 realm evidence recorded: EI-E-34..38 (D-073)
+- [x] Realm plan written: Phase2_Plan.md section 12 (S-069)
+- [ ] **User:** Q-R, Q-R-1..5; the cross-realm Legacy test (log in on the PvP-realm test character, open the Legacy window, `/ei legacy`)
 - [ ] EmpireIntelCheck 0.1.10-tp1 (short quest check, file under 128 KB): with P2-4e, not before
 - [ ] P2-4c (profession choices, setup wizard), only after P2-4b closes
 - [ ] P2-4d (rested XP in the route), only after P2-4c closes

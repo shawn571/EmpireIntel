@@ -1,6 +1,6 @@
 # EmpireIntel Risk Register
 
-DOC VERSION: 2.0.0  |  DATE: 2026-11-16 (S-068)  |  Reviewed at every increment gate. L = likelihood, I = impact (H/M/L).
+DOC VERSION: 2.1.0  |  DATE: 2026-11-20 (S-069)  |  Reviewed at every increment gate. L = likelihood, I = impact (H/M/L).
 
 ## Open risks
 
@@ -15,10 +15,12 @@ DOC VERSION: 2.0.0  |  DATE: 2026-11-16 (S-068)  |  Reviewed at every increment 
 | R-14 | A Legacy or UI call is protected and shows a "blocked" popup | L | M | Only calls proven by the check; never in combat; reads on command only |
 | R-16 | `GetXPExhaustion` returns nil or 0 unreliably | M | L | nil stored as "none reported", never as a measured 0 |
 | R-17 | A saved plan step is bad or names an unknown character | M | L | Checked at load; each bad step one `UNEXPECTED` line and skipped |
-| R-18 | A patch changes the API (builds 70790, 70862, 70938 so far) | M | M | The check re-runs passively; the build is recorded in `meta.build` |
+| R-18 | A patch changes the API (builds 70790, 70862, 70938, 71037 so far; 71037 dropped realm names, EI-E-34) | M | M | The check re-runs passively; the build is recorded in `meta.build` |
 | R-21 | Levelling-time estimates are far from real play (default rates, one measured rate for every level) | H | M | Measured XP per hour where it exists (7 of 8 characters); P2-4e adds quests and grinding; cross-check with ForeverXP Bar (D-068) |
-| R-22 | The check's saved file reaches its 256 KB cap and drops data (about 252 KB on 2026-11-14) | H | L | 0.1.10 stops saving old discovery results; target under 128 KB (Phase2_Plan.md 11.5) |
+| R-22 | The check's saved file reaches its 256 KB cap and drops data (about 248 KB on 2026-11-20, already dropping data) | H | L | 0.1.10 stops saving old discovery results; target under 128 KB (Phase2_Plan.md 11.5) |
 | R-23 | A third-party source is copied under the wrong license | L | H | D-068: the license file is read before any copy and recorded in THIRD_PARTY.md; clean room otherwise; no data tables |
+| R-25 | The game no longer gives realm names (build 71037, EI-E-34); characters on other realms or test realms get mixed into the route or the Legacy count | H | M | GUID server number as the realm identity; labels learned or set by the user; only the played realm planned until the cross-realm test (Phase2_Plan.md section 12) |
+| R-26 | DataStore's data is wrong on 71037 (blank-realm keys, duplicates, missing alts) | H | M | Merge by GUID; own records win when newer; DataStore optional (EI-E-35) |
 | R-24 | The window looks or behaves differently under ElvUI or other UI add-ons | M | L | No Blizzard templates; the fill path with a read-back; live gate with ElvUI on and off |
 
 ## Closed risks (kept for the record)
