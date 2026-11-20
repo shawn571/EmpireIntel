@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-071 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4: emblem and +1 accepted (D-075). **#17 not merged, P2-4b not closed:** the user waits for the route rules (Phase2_Plan.md section 13) and decides whether they are fixed in P2-4b first.
+
+**Approved (D-075):** Q-R, Q-R-1, Q-R-2 (the `/ei realm` command), Q-R-3 (Forget, with a confirmation), Q-R-4; Q-R-6 once a Hardcore realm exists; P2-4r gets a character picker on the card. Route rules R-1..R-7 recorded; the plan proposes R-1, R-2, R-3, R-5, R-7 as P2-4b fix **0.7.5** before closing, R-6 (targets, editable cap) in P2-4c, R-4 by ignoring the test character now. Not built.
+
+**Pending (the user decides):** Q-R7, Q-R7-a, Q-R7-b; then merging #17 and closing P2-4b; then the check's trim (0.1.10), P2-4r, P2-4c, P2-4d, P2-4e.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0). `p2-4b-window` (PR #17): 0.7.4 and the docs; does not match main. #10 and #11 open. The repository is public on purpose (D-074).
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; unchanged.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037.
+
+**User's next step:** answer Q-R7, Q-R7-a, Q-R7-b; meanwhile ignore the RP-PvP test character in the window if wanted.
+
 ## S-070 | 2026-11-20 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 installed. **Still not answered:** emblem and +1, merging #17, closing P2-4b (the user's message again kept the placeholders "[OK / issue: ...]" and "[yes/no]").

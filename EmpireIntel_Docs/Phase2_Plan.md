@@ -1,8 +1,8 @@
 # EmpireIntel Phase 2 Plan: characters, views and the route planner
 
-DOC VERSION: 1.12.0  |  DATE: 2026-11-20 (S-070)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
+DOC VERSION: 1.13.0  |  DATE: 2026-11-20 (S-071)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
-**Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (built, in its live retest as 0.7.4); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (for approval).
+**Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (built, in its live retest as 0.7.4); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (P2-4r, approved D-075); **section 13** is the Fastest route's rules R-1..R-7 (D-075, for approval).
 
 **Phase 2 builds EmpireIntel's character views and the Legacy route planner:** unlock progress, rested XP, milestones ahead, the route and the plan window (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1, FR-PLAN-1..3). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4. (It was first authorized for "pre-25 features" only, D-027; the account has since unlocked Legacy, and the planner was approved on top, D-054, D-055.)
 
@@ -808,6 +808,12 @@ The check's file is about 248 KB of its 256 KB cap [reported; 234 KB on disk in 
 - the Skyborne atlases (12.2b): which `raceicon-<skyborne | windshaper | highorder>-<male | female>` exist;
 - the short quest check of 11.5 stays with P2-4e.
 
+### 12.5 Approved (D-075) and the test addition
+
+Q-R, Q-R-1 (the saved `realms` section inside format 2), Q-R-2 (`/ei realm <number> <type> <name>`), Q-R-3 ("Forget a character", after a confirmation), Q-R-4 (the check's trim right after P2-4b) approved; Q-R-6 yes once a Hardcore realm exists.
+
+**Any character on the card (for P2-4r's tests and in general):** a click on the card's name opens our own list of every known character (grouped by realm label, ignored ones marked); picking one shows it on the card (portrait for the played character, else race and class icons, the Skyborne label, faction, realm type) without a plan step. Another click on the card goes back to Up next. P2-4r's live steps use it to show the Skyborne Druid, the PvP, RP and RP-PvP test characters, and a character with no faction. (`/ei alts` lines are plain chat text and cannot be clicked without game hyperlinks, so the picker is on the card.)
+
 ### 12.4 Order and questions
 
 Proposed order: P2-4b closes -> **check 0.1.10-tp1 (trim and realm probes)** -> **P2-4r realm identity (12.1, 12.2; EmpireIntel 0.7.5 or folded into 0.8.0)** -> P2-4c (0.8.0, 0.8.1) -> P2-4d -> P2-4e.
@@ -821,3 +827,41 @@ Proposed order: P2-4b closes -> **check 0.1.10-tp1 (trim and realm probes)** -> 
 | Q-R-4 | Bring the check's trim (0.1.10-tp1) forward to right after P2-4b? | Yes |
 | Q-R-5 | (answered by the cross-realm test, D-074: no longer needed) | - |
 | Q-R-6 | A switch in the window to show the other pool's route (Hardcore or normal) without logging in on it? | Yes, once a Hardcore realm exists |
+
+## 13. The Fastest route's rules (D-075; for approval, no code)
+
+### 13.1 The user's question: does Fastest follow My plan?
+
+**No. Fastest picks characters itself; it never reads My plan** [file: `Core/Route.lua`]. Each round it lists every way to earn the next point (each character's next class milestone, each craft's next milestone on any character, each dungeon challenge) and takes the cheapest in estimated hours. My plan is the user's own list and is only ever filled from Fastest by "Copy the route to my plan".
+
+**Why the Hunter got Alchemy and Blacksmithing** [file: code; replay of the user's 2026-11-20 saved file, offline, inferred]: the engine lets any character with a free primary slot (fewer than two, L-6) learn any craft from 0 (`learn = true`). Once its route takes the Hunter to 25 for Novice Hunter, he needs no level for a training gate, so "learn Alchemy 0 -> 150 -> 225" is cheaper than other characters' gates. The same happens to the level-1 test characters.
+
+**Why Tailoring 225 is missing (R-3):** not a dropped step. The Priest's Tailoring 225 needs level 20 (Expert, L-4): about 16 h of levelling from 10 at his measured 8,205 XP per hour, plus about 3 h of skill, about 19 h. The route to "next reward" needed 12 more points and found 12 cheaper ones (mostly the "learn" steps of R-1). With R-1 and R-2 below, the learn steps go and Tailoring 225 comes in.
+
+### 13.2 The rules (recorded as planner rules R-1..R-7, status "user")
+
+| Rule | The user's rule | What the route does |
+|---|---|---|
+| **R-1** | Never assume a profession will be learned | A craft is planned only on characters that have it (or, from P2-4c, that the user chose for it in the wizard). A craft no character has is not planned; the footer says "not planned: no character has Engineering" (and so on). No "Learn X" step ever appears without the user's choice |
+| **R-2** | The highest skill is the path | Per craft, the **path character** is the one with the highest skill (a tie goes to the higher level, then the played character). It takes every milestone of that craft (150, 225, 300), including its level gates. If it cannot reach a gate's level within the route (for example a gate above the target's horizon), the step shows "blocked: needs level n (L-4)" for that character; the route never switches to another character silently. From P2-4c the user can choose another path character |
+| **R-3** | Tailoring 225 must be in the route | Follows from R-1 and R-2 (13.1); a test checks the user's case |
+| **R-4** | Leave the RP-PvP test character out | Today: right-click his row > Ignore, or `/ei plan ignore <name>` (exists since 0.6.0; no build needed). P2-4r adds ignore per realm and "Forget a character" (Q-R-3) |
+| **R-5** | Up next must be in the table | Step 1 becomes row 1 in Fastest too, highlighted as Up next (as in My plan), so the rows count every step |
+| **R-6** | Targets: plan to the cap by default, track beyond it; no hard-coded 15 or 16 | Targets: **Cap** (default), **Next reward**, **Next point**, **A number** (1 to 65), and **All 65**. The cap and the reward track come from the rules table (L-12 cap 16, unverified; L-13 rewards 15/25/40/55, confirmed by screenshot), never from code; the cap is editable (Options, P2-4c; `/ei plan cap <n>` until then) because the game gives no cap value (Legacy_Rules.md section 3). Beyond the cap the header says "earned 17 of 65 (cap 16: points over the cap are earned but cannot be spent)" [inferred from EI-E-04 "seasonal cap"; to be confirmed] |
+| **R-7** | A row with no point that unlocks a later point says so | Such a row shows "prerequisite for step n" in the PTS column's place (tooltip: what it unlocks); a level step for a gate, a 150 step before a 225, a dungeon's level step |
+
+### 13.3 Where they go: proposal
+
+| Part | Proposal | Why |
+|---|---|---|
+| R-1, R-2, R-3, R-5, R-7 | **P2-4b fix 0.7.5, before closing** | They decide whether the window's route is right; P2-4b's gate is the window showing the route. Each is small and pure (Route, PlanView); about 15 tests |
+| R-4 | **Nothing to build now**; ignore him in the window today; P2-4r adds realm ignore and Forget | The feature exists |
+| R-6 targets and an editable cap | **P2-4c** (with Options) | It needs a saved setting (`plan.cap`, a format change inside format 2) and the Options page; until then the target button keeps Cap 16, Next reward, Next point, and the 16 moves from code into the rules table in 0.7.5 so nothing is hard-coded twice |
+
+Order after that, as agreed: close P2-4b -> EmpireIntelCheck 0.1.10 trim -> P2-4r -> P2-4c -> P2-4d -> P2-4e.
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-R7 | Build R-1, R-2, R-3, R-5 and R-7 as P2-4b fix 0.7.5 before closing; R-6 in P2-4c; R-4 by ignoring him now? | Yes |
+| Q-R7-a | R-2 tie-break: highest skill, then higher level, then the played character? | Yes |
+| Q-R7-b | R-1 with P2-4c: once the wizard exists, a craft no character has can be planned only on a character the user picked for it (or "planner's choice")? | Yes |

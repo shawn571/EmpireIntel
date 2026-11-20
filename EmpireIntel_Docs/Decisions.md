@@ -578,6 +578,24 @@ Blizzard has stated this will not be the case for the Hardcore ruleset when it o
 (The message also kept the placeholders "Emblem and +1: [OK / issue: …]. Merge #17 and close P2-4b: [yes/no]."; neither is answered, so #17 stays unmerged and P2-4b open. A character name is replaced by its role.)
 Consequences: CODE_STANDING_ORDERS.md section 7 (1.4.0), Project_Bible.md section 7 and R-09: the repository is public on purpose; every push is checked for character names, GUIDs and account names. EI-E-38 updated, EI-E-39 (account-wide across normal realms, the user's test) and EI-E-40 (Hardcore's own pool, the user's report of Blizzard's statement, untested). Phase2_Plan.md 12.2 (two pools: normal realms and Hardcore; new rule L-19 confirmed; L-18 sourced to the user's report, still unverified), 12.2b (Skyborne: Windshaper for Horde, High Order for Alliance; class icon when the faction is unknown), 12.3 (the check lists the Skyborne atlases). Q-R-5 answered by the test; Q-R-6 added.
 
+## D-075 Emblem and +1 accepted; Q-R answers; route rules R-1..R-7 for the Fastest route | User (2026-11-20)
+The user's exact words (character names replaced by roles):
+"Emblem and +1: OK (emblem about portrait size; [the Hunter]’s Alchemy 225 shows +1 in both Fastest and My plan).
+Merge #17 and close P2-4b: not yet. Wait until you’ve answered the route problems below and I’ve decided whether they’re fixed in P2-4b first.
+Q-R: yes. Q-R-1: yes. Q-R-2: add the command. Q-R-3: yes, with a confirmation. Q-R-4: yes. Q-R-6: yes, once a Hardcore realm exists.
+For P2-4r testing: I need a way to show any character’s card even when they have no plan steps (e.g. [the Skyborne Druid], my only Skyborne, who is too far down to earn a point before the milestones are done). Add that to the P2-4r test steps, for example a click on a character in /ei alts or a character picker on the card.
+Fastest route problems (screenshot attached). Treat these as rules; record them and fix them in the route:
+1. Never assume a profession will be learned. If no character has a profession, don’t plan “Learn X, 0 → 150” steps for it. [The Hunter] has no professions, so he shouldn’t get Alchemy or Blacksmithing steps at all.
+2. Same profession on several characters: the highest skill is the path. Blacksmithing → [the Horde Warrior] (51), Enchanting → [the Priest] (47), Alchemy → [the Druid] (82), Leatherworking → [the Horde Rogue] (69, not [the Alliance Rogue] at 44), Engineering → [the Shaman] (1, not [the Horde Warrior] learning it). That character takes every milestone of that profession (150 and 225), unless it can’t reach the level needed. If so, show it rather than silently switching characters.
+3. Tailoring is missing. [The Priest] has Tailoring 150/150, so his Tailoring 225 should be in the route.
+4. [The RP-PvP test character] shouldn’t be in the route. Exclude him until Forget/ignore exists (Q-R-3).
+5. Up next isn’t in the table ([the Paladin], Experienced Spelunker). Make it row 1, or say it’s shown separately.
+6. Targets: 15 is the next reward, but 16 is the current per-character cap, and more than 16 can be earned. Plan up to the cap by default, and let me track beyond it. Don’t hard-code 15 or 16.
+7. Rows with no point that unlock a later point should say so (“prerequisite for step n”).
+Question: does Fastest pick the fastest character itself, or follow My plan’s assignments? [The Hunter] got Alchemy 225 and Blacksmithing 225 in Fastest even though he has no professions.
+Fold these into the plan, and propose whether they go into P2-4b as a fix before closing, or into the next increment. Don’t build until I approve. Order after that stays as agreed: close P2-4b → EmpireIntelCheck 0.1.10 trim → P2-4r."
+Consequences: emblem and the +1 match accepted (0.7.4); #17 not merged, P2-4b not closed ("not yet"). Q-R, Q-R-1, Q-R-3 (with a confirmation), Q-R-4 approved; Q-R-2: the `/ei realm` command; Q-R-6 yes once a Hardcore realm exists. P2-4r gains a character picker on the card for testing (Phase2_Plan.md 12.5). The seven route rules recorded as planner rules R-1..R-7 and planned in Phase2_Plan.md section 13, with the question answered there (Fastest picks characters itself; it never reads My plan). No code until approved.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

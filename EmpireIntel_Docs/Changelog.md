@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-20 | S-071 | Route rules R-1..R-7 planned; Q-R answered (documentation only)
+- D-075. Emblem and +1 accepted. Phase2_Plan.md 1.13.0: 12.5 (Q-R answers; a character picker on the card), section 13 (Fastest picks characters itself; why the Hunter learned crafts and Tailoring 225 was left out, from an offline replay; rules R-1..R-7; proposal: R-1, R-2, R-3, R-5, R-7 as P2-4b fix 0.7.5, R-6 in P2-4c). No code.
+
 ## 2026-11-20 | S-070 | Repository public on purpose; cross-realm result; Hardcore pool and Skyborne in the plan (documentation only)
 - D-074. CODE_STANDING_ORDERS 1.4.0 section 7, Project_Bible section 7, R-09: public on purpose, every push checked for names, GUIDs and account names. EI-E-38 to EI-E-40. Phase2_Plan.md 1.12.0: 12.2 two points pools (normal realms, Hardcore), 12.2b Skyborne by faction, 12.3 Skyborne atlases in the check; Q-R-5 answered, Q-R-6 added.
 

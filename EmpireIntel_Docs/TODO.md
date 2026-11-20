@@ -112,11 +112,12 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Q-D068-1 (Questie read dropped) and Q-D068-2 (no bundled quest data; LibForeverData and pfQuest read if installed) answered (D-070)
 - [x] Retest on 0.7.3: step 2 passed, step 3 partial (D-070); 0.7.4 built: 536 tests, 11/11 mutants (S-067)
 - [x] 0.7.4 retest: the Hunter's order and the milestone rows confirmed from the saved file (D-073)
-- [ ] **User:** emblem and +1 OK or not; merge approval for #17; close P2-4b (asked twice; placeholders not filled)
+- [x] Emblem and +1 accepted (D-075)
+- [ ] **User:** Q-R7, Q-R7-a, Q-R7-b (route rules R-1..R-7, Phase2_Plan.md section 13); then merge #17 and close P2-4b
 - [x] Build 71037 realm evidence recorded: EI-E-34..38 (D-073)
 - [x] Realm plan written: Phase2_Plan.md section 12 (S-069)
 - [x] Cross-realm test: account-wide across normal realms (EI-E-39); Hardcore its own pool, untested (EI-E-40) (D-074)
-- [ ] **User:** Q-R, Q-R-1..4, Q-R-6 (Phase2_Plan.md 12.4)
+- [x] Q-R, Q-R-1..4, Q-R-6 answered (D-075); P2-4r gains the card's character picker
 - [ ] EmpireIntelCheck 0.1.10-tp1 (short quest check, file under 128 KB): with P2-4e, not before
 - [ ] P2-4c (profession choices, setup wizard), only after P2-4b closes
 - [ ] P2-4d (rested XP in the route), only after P2-4c closes
