@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-20 | S-070 | Repository public on purpose; cross-realm result; Hardcore pool and Skyborne in the plan (documentation only)
+- D-074. CODE_STANDING_ORDERS 1.4.0 section 7, Project_Bible section 7, R-09: public on purpose, every push checked for names, GUIDs and account names. EI-E-38 to EI-E-40. Phase2_Plan.md 1.12.0: 12.2 two points pools (normal realms, Hardcore), 12.2b Skyborne by faction, 12.3 Skyborne atlases in the check; Q-R-5 answered, Q-R-6 added.
+
 ## 2026-11-20 | S-069 | Build 71037 realm evidence; realm-identity plan (documentation only)
 - D-073. Compatibility_Notes EI-E-34..38 (empty realm names on 71037, DataStore's blank-realm keys, GUID server numbers per realm, the user's !RealmFix shim, the "Skyborne" race file). Phase2_Plan.md 1.11.0 section 12: realm identity by GUID server number, other realms and test characters, the check's trim brought forward; Q-R, Q-R-1..5. Risk_Register R-25, R-26. No code.
 

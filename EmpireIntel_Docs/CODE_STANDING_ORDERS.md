@@ -1,6 +1,6 @@
 # Code Standing Orders
 
-DOC VERSION: 1.3.0  |  DATE: 2026-11-16  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
+DOC VERSION: 1.4.0  |  DATE: 2026-11-20  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
 
 Quotes in "double quotes" are the user's exact words.
 
@@ -79,7 +79,7 @@ Quotes in "double quotes" are the user's exact words.
 - Q-T4 (trait-system reads) is unapproved. P3-1 has passed its live gate (D-042); Q-T4 waits for the user's decision.
 - Collection is passive: the user plays normally and sends files after `/reload` or logout; in-game commands only in test steps.
 - Keep scope lean; surface unexpected conditions visibly (an `UNEXPECTED` line in the addon and in the report).
-- Verify the repository is private before every push.
+- **The repository is public on purpose** (the user, 2026-11-20, D-074: "public is intended for now (my decision)"). Before every push, check the changes for character names, GUIDs and account names (and SavedVariables, WTF folders, screenshots with names, balances); none may be pushed. Characters are written C1, C2, ... or by role ("the Hunter").
 
 ## 8. Third-party add-ons: copy and credit, clean room, optional plugins, cross-checks (D-068, 2026-11-14)
 

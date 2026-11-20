@@ -569,6 +569,15 @@ Propose, plan only, don’t build until I approve:
 (c) The planned 0.1.10 trim of EmpireIntelCheck. Its file was at 248 KB of 256 KB and already dropping data."
 Consequences: EI-E-34..38 recorded (EI-E-38: the race file "Skyborne", seen in the same file). Plan in Phase2_Plan.md section 12 (Q-R, Q-R-1..5), no code. **Not done:** the merge of #17 and closing P2-4b: the message kept the template placeholders "[OK / issue]" and "[yes/no]", so neither is approved yet. The 0.7.4 retest result recorded from the saved file: the Hunter's order and the 150-above-225 rows are as fixed [file].
 
+## D-074 Repository public on purpose; Legacy points account-wide across normal realms; Hardcore its own pool; Skyborne by faction | User (2026-11-20)
+The user's exact words:
+"Repository: public is intended for now (my decision). Push. Update CODE_STANDING_ORDERS section 7 to say the repo is public on purpose, and keep checking every push for character names, GUIDs and account names. Docs-only, under standing approval."
+"Cross-realm test: Legacy points are account-wide. My PvP-realm character shows the same points as my main realm. Record that.
+Blizzard has stated this will not be the case for the Hardcore ruleset when it opens: Hardcore will have its own Legacy points. Record that as my statement, not tested yet. Plan for it: points account-wide across normal realms (PvE, PvP, RP, RP-PvP), and separate for Hardcore. Treat Hardcore as a separate points pool in the route and in Fastest/My plan."
+"Skyborne (EI-E-38): Skyborne can be either faction. Horde Skyborne are the Windshaper, Alliance Skyborne are the High Order. [A Horde Druid] is a Horde Skyborne. The roster already records faction from UnitFactionGroup, so choose the race icon and label by race + faction: Skyborne + Horde = Windshaper, Skyborne + Alliance = High Order. Fall back to the class icon only when faction is unknown (e.g. a DataStore-only alt with no faction). Add this to the plan; it’s small, so it can go with P2-4r or the next UI increment."
+(The message also kept the placeholders "Emblem and +1: [OK / issue: …]. Merge #17 and close P2-4b: [yes/no]."; neither is answered, so #17 stays unmerged and P2-4b open. A character name is replaced by its role.)
+Consequences: CODE_STANDING_ORDERS.md section 7 (1.4.0), Project_Bible.md section 7 and R-09: the repository is public on purpose; every push is checked for character names, GUIDs and account names. EI-E-38 updated, EI-E-39 (account-wide across normal realms, the user's test) and EI-E-40 (Hardcore's own pool, the user's report of Blizzard's statement, untested). Phase2_Plan.md 12.2 (two pools: normal realms and Hardcore; new rule L-19 confirmed; L-18 sourced to the user's report, still unverified), 12.2b (Skyborne: Windshaper for Horde, High Order for Alliance; class icon when the faction is unknown), 12.3 (the check lists the Skyborne atlases). Q-R-5 answered by the test; Q-R-6 added.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

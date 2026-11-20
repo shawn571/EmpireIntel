@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: characters, views and the route planner
 
-DOC VERSION: 1.11.0  |  DATE: 2026-11-20 (S-069)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
+DOC VERSION: 1.12.0  |  DATE: 2026-11-20 (S-070)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
 **Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (built, in its live retest as 0.7.4); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (for approval).
 
@@ -769,21 +769,23 @@ So **race, sex, class, faction, realm, professions and rested are all saved**, a
 - **A name seen while a realm add-on such as !RealmFix is loaded** cannot be told apart from the game's. Proposal: learn it, mark the source "game or a realm add-on" when such an add-on is loaded (checked by name at run time, read only), and let the user overwrite any label. EmpireIntel never reads the shim's data.
 - **Unknown server number:** shown as **"Unknown realm (6800)"**, never merged with another realm (the GUID differs, so records never merge; views group by server number).
 - **Label it once in the window:** the Options' Characters page (P2-4c 0.8.1) gets a "Realms" list: each server number, its learned or user label, a name field and a type choice (PvE, PvP, RP-PvE, RP-PvP). Until 0.8.1, `/ei realm <number> <type> <name>` (Q-R-2: or wait for the window).
-- **Ruleset is a label, never a group.** The badge shows the realm type from the server's label; Hardcore still comes from `C_GameRules.IsHardcoreActive()` per character (the `ruleset` field). Rule L-18 (Hardcore points kept apart) is unchanged and applies to the Hardcore flag only, not to realm types.
+- **Realm type is a label, never a group.** The badge shows the realm type from the server's label; Hardcore still comes from `C_GameRules.IsHardcoreActive()` per character (the `ruleset` field) and decides the points pool (12.2).
 
 ### 12.2 (b) Other realms and test characters in the plan, the Legacy points and the roster
 
-**The open question first: are Legacy points per account or per realm?** EI-E-27 shows the challenges are account-wide on one realm; nothing shows yet whether a character on another realm shares them. **A test (no code, about 2 minutes):** log in on the PvP-realm test character, open the Legacy window: "Legacy Points 3 / 65" (or the account's current count) means **per account across realms**; "0 / 65" means **per realm**. Then type `/ei legacy` there and send the line. The answer becomes rule **L-22** (confirmed by that test).
+**Answered (D-074):** Legacy points are **account-wide across the normal realms** (PvE, PvP, RP, RP-PvP): the user's PvP-realm character shows the main realm's points (EI-E-39). **Hardcore will have its own points** (Blizzard's statement, reported by the user, untested, EI-E-40). Rules: **new L-19, confirmed** "Legacy points are shared by all normal realms" (src: EI-E-39); **L-18** ("Hardcore characters' Legacy points are kept apart") gets the user's report of Blizzard's statement as its source and stays labelled unverified until a Hardcore realm opens (EI-E-40). (Numbering: the 105% rule and the camp buffs planned in 10.3 and 11.5 become L-20, L-21 and L-22.)
 
-Proposal, by answer:
+**Two pools, one window:**
 
-| | Per account (all realms) | Per realm |
+| | Normal pool (all normal realms) | Hardcore pool |
 |---|---|---|
-| Route (Fastest) | Every included character on any realm can earn the account's points | Only characters on the played character's realm (server number); the others are listed as "other realm" |
-| Earned points | The game's read on any character | The game's read for that realm; points of another realm are never added |
-| My plan | Steps of any realm | Steps of another realm are marked "other realm" (like "ignored") and skipped for Up next |
+| Characters | every included character whose ruleset is normal, on any normal realm | characters whose `C_GameRules.IsHardcoreActive()` was true (the `ruleset` field) |
+| Earned points | the game's Legacy read on a normal character | the game's read on a Hardcore character (separate) |
+| Route (Fastest) | planned when a normal character is played | planned when a Hardcore character is played |
+| My plan | steps of normal characters | steps of Hardcore characters are marked "Hardcore pool" and skipped while a normal character is played (and the other way round) |
+| Header and card | the target counts the pool being played; the footer names it ("normal realms" or "Hardcore") | the same |
 
-Until the answer, the route uses **only the played character's realm** and says so in the footer (the cautious choice: it never adds points that may not count).
+0.7.x already applies L-18 by leaving out any character whose ruleset differs from the played one; the behaviour stays, the pool is now named, and a later switch in the window shows the other pool's route without logging in on it (Q-R-6). Realm types never split the normal pool.
 
 **Test characters and characters to leave out:**
 - **Ignore per character** already exists (row menu, `/ei plan ignore`); the wizard's character page (P2-4c) lists every character with a tick.
@@ -791,11 +793,19 @@ Until the answer, the route uses **only the played character's realm** and says 
 - **Forget a character** (new, optional, **Q-R-3**): removes its record from EmpireIntel's saved data after a confirmation, for deleted or throwaway characters. A deletion of saved data, so it needs the user's approval as a feature.
 - **Roster and `/ei alts`:** keep every character, show its realm label (or "Unknown realm (n)") and ruleset label; DataStore's blank-realm duplicates are already merged by GUID (EI-E-35), and the bridge treats an empty realm part of a DataStore key as unknown, never as a realm named "".
 
+### 12.2b Skyborne icons and labels (D-074; small, goes with P2-4r)
+
+- **Race plus faction picks the race icon and label:** Skyborne + Horde = **Windshaper**, Skyborne + Alliance = **High Order** (EI-E-38). The card and the Characters page show that label (for example "Windshaper Druid").
+- **The icon:** the atlas names for the two are not known yet; the check (12.3) lists which `raceicon-...` atlases exist for "skyborne", "windshaper" and "highorder" (male and female). EmpireIntel uses the one the check proves; until then, or if none exists, the class icon, as now.
+- **Faction unknown** (for example a DataStore-only alt without a faction): the class icon, and the label "Skyborne".
+- Tests: both factions, faction unknown, the atlas present and absent.
+
 ### 12.3 (c) EmpireIntelCheck 0.1.10-tp1: the trim, brought forward
 
 The check's file is about 248 KB of its 256 KB cap [reported; 234 KB on disk in the 2026-11-20 file, file], and it is already dropping data: its own `calls` and `partA` results are "dropped: over size cap" [file]. The trim planned in 11.5 is brought forward as its own small build, **right after P2-4b closes, before P2-4c** (Q-R-4), with no new probes except realm ones:
 - stop saving the old discovery results no later phase uses (`latest.results`, `docs`, `undoc`, `strongSeen`) and the atlas raw-size tables in `uiLatest`; keep the Legacy challenges' done and progress text only; target under 128 KB;
 - add realm probes: `GetRealmName()`, `GetNormalizedRealmName()`, the GUID server number, whether a realm add-on (for example "!RealmFix") is loaded, and `GetRealmID()` if the client has it (presence first, zero-argument call, under the existing limits);
+- the Skyborne atlases (12.2b): which `raceicon-<skyborne | windshaper | highorder>-<male | female>` exist;
 - the short quest check of 11.5 stays with P2-4e.
 
 ### 12.4 Order and questions
@@ -804,9 +814,10 @@ Proposed order: P2-4b closes -> **check 0.1.10-tp1 (trim and realm probes)** -> 
 
 | ID | Question | Recommendation |
 |---|---|---|
-| Q-R | Approve the realm plan (12.1, 12.2) as increment P2-4r, before P2-4c? | Yes |
+| Q-R | Approve the realm plan (12.1, 12.2, 12.2b) as increment P2-4r, before P2-4c? | Yes |
 | Q-R-1 | Approve the saved `realms` section inside format 2 (server number -> name, type, source, time)? | Yes |
 | Q-R-2 | A `/ei realm <number> <type> <name>` command until the Options page exists, or wait for 0.8.1? | The command (small, removable) |
 | Q-R-3 | Add "Forget a character" (deletes its record after a confirmation)? | Yes, with a confirmation |
 | Q-R-4 | Bring the check's trim (0.1.10-tp1) forward to right after P2-4b? | Yes |
-| Q-R-5 | Until the cross-realm test answers, plan only the played character's realm? | Yes |
+| Q-R-5 | (answered by the cross-realm test, D-074: no longer needed) | - |
+| Q-R-6 | A switch in the window to show the other pool's route (Hardcore or normal) without logging in on it? | Yes, once a Hardcore realm exists |

@@ -10,7 +10,7 @@ DOC VERSION: 2.1.0  |  DATE: 2026-11-20 (S-069)  |  Reviewed at every increment 
 | R-04 | Forever returns "Unknown" as a character name | M | M | Keyed by GUID; "Unknown" never replaces a known name (Alts merge rule) |
 | R-05 | DataStore API drift (one author, no published contract) | M | M | The bridge checks each getter, calls it under pcall, counts errors as `UNEXPECTED`; works without DataStore |
 | R-08 | Stale alt data is read as current | H | M | Every value carries its source and age; projections are labelled |
-| R-09 | Private data leaks into the repository | L | H | Repository private (checked before every push); names written C1, C2; synthetic fixtures; review before commit (D-007) |
+| R-09 | Private data leaks into the repository, which is public on purpose (D-074) | M | H | Every push checked for character names, GUIDs and account names; names written C1, C2 or by role; synthetic fixtures; no SavedVariables (D-007) |
 | R-13 | A planner rule is wrong (11 of 18 rules are unverified, for example the cap of 16, the training gates, the rested-kill rule) | M | M | Every rule has a status and source; estimates list the unverified rules they use; live checks confirm them one by one |
 | R-14 | A Legacy or UI call is protected and shows a "blocked" popup | L | M | Only calls proven by the check; never in combat; reads on command only |
 | R-16 | `GetXPExhaustion` returns nil or 0 unreliably | M | L | nil stored as "none reported", never as a measured 0 |

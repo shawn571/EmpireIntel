@@ -4,6 +4,22 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-070 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 installed. **Still not answered:** emblem and +1, merging #17, closing P2-4b (the user's message again kept the placeholders "[OK / issue: ...]" and "[yes/no]").
+
+**Approved this session (D-074):** the repository is **public on purpose**; every push is checked for character names, GUIDs and account names (CODE_STANDING_ORDERS section 7). Recorded: Legacy points account-wide across normal realms (EI-E-39, the user's test); Hardcore its own pool (EI-E-40, the user's report, untested); Skyborne Windshaper (Horde) and High Order (Alliance) (EI-E-38). Plan updated: Phase2_Plan.md 12.2 (two points pools), 12.2b (Skyborne icons and labels), 12.3 (Skyborne atlases in the check). Docs only; tests unchanged (536).
+
+**Pending (the user decides):** emblem and +1; merging #17; closing P2-4b; Q-R, Q-R-1..4, Q-R-6 (Phase2_Plan.md 12.4); then the check's trim, P2-4r, P2-4c, P2-4d, P2-4e in order.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0). `p2-4b-window` (PR #17): 0.7.4 and the docs, pushed; does not match main. #10 and #11 open. The repository is public.
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; unchanged.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037.
+
+**User's next step:** answer emblem and +1, the merge and closing P2-4b, and Q-R, Q-R-1..4, Q-R-6.
+
 ## S-069 | 2026-11-20 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 installed; the saved file confirms the Hunter's order and the 150-above-225 rows [file]. **Not yet answered:** emblem and +1 ("[OK / issue]"), merging #17 and closing P2-4b ("[yes/no]"): the user's message kept the template placeholders, so nothing was merged.

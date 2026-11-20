@@ -74,7 +74,7 @@ The gates, merge rules and report format are in CODE_STANDING_ORDERS.md. In shor
 
 ## 7. Repository hygiene (D-007)
 
-The repository is private (checked before every push). Even so: never commit SavedVariables, WTF folders, chat logs, screenshots with names, character names, GUIDs, account names or balances. Characters are written C1, C2, ... in documents. Test fixtures are synthetic. `.gitignore` enforces the folder rules; review enforces the rest.
+The repository is **public on purpose** (D-074). Every push is checked for private data first: never commit SavedVariables, WTF folders, chat logs, screenshots with names, character names, GUIDs, account names or balances. Characters are written C1, C2, ... in documents. Test fixtures are synthetic. `.gitignore` enforces the folder rules; review enforces the rest.
 
 ## 8. Design principles (ordered)
 
