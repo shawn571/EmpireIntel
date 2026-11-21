@@ -603,6 +603,13 @@ Also, before building: put the standing-permissions paragraph at the top of NEXT
 Send 0.7.5 with the package block and test steps, including a check that Tailoring 225 now appears on [the Priest] and that [the Hunter] has no profession steps."
 Done: #18 (prompt only, the D-071 paragraph at the top of NEXT_SESSION_PROMPT.md on main) merged under the docs-only standing approval (70f8062; 408 tests on main under Lua 5.1 and 5.3); main merged back into `p2-4b-window` (the prompt conflict kept the branch's fuller prompt). The personal-data scan of every branch's history found nothing of the GoldIntel kinds (Session_Handoff S-072 lists what it found); nothing scrubbed. EmpireIntel 0.7.5 built with R-1, R-2 (tie-break as Q-R7-a), R-3, R-5, R-7 and the cap in the rules table (P2-4b_Report.md section 6). Q-R7-b recorded for P2-4c (Phase2_Plan.md 13.4). **R-3 as built:** the Priest's Tailoring 225 is a planned step on him, but at about 19 h it follows cheaper points: in a replay of the user's saved file it is step 16, so it shows at a target of about 20, not at 15 or 16 [inferred, offline replay].
 
+## D-077 0.7.5 passed; #17 merged; P2-4b closed; scan left as is; next the check's trim, then P2-4r; the target box redesign for P2-4c | User (2026-11-21)
+The user's exact words (character names replaced by roles):
+"0.7.5: steps 2, 3, 4, 5 pass. Test characters ignored (4 ignored, including the old beta character). /ei next shows the same route (17 steps to 20, ~178 h): [the Hunter] has only Level 25; Leatherworking is on [the Horde Rogue], Blacksmithing on [the Warrior], Engineering on [the Shaman], Alchemy on [the Druid], Enchanting on [the Priest]; no “Learn” steps; Tailoring is in the later steps.
+Merge #17 and close P2-4b: yes. Scan findings: leave as is. Next: EmpireIntelCheck 0.1.10 trim, then P2-4r, as agreed.
+For P2-4c (with R-6): the top-right box changes the target when clicked, but nothing shows it’s a button, and I’ve wondered more than once what its numbers mean. Split it into (1) plain progress text, e.g. “Legacy points: 3 · next reward at 15 (Air Rifle)”, and (2) a control that looks like a button or dropdown, e.g. “Plan to: Cap (16) ▾”, with a tooltip: “The route plans steps until this many points.” Propose the design in the P2-4c plan."
+Consequences: P2-4b **closed** (EmpireIntel 0.7.5); #17 merged through the REST command (D-050). The scan findings stay as they are. Next, in order: EmpireIntelCheck 0.1.10-tp1 (the trim with realm and Skyborne probes, Phase2_Plan.md 12.3, approved as Q-R-4), then P2-4r (section 12), then P2-4c (with R-6 and the target box design, 10.4). Rule R-4 is met by the user ignoring the test characters.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

@@ -4,6 +4,20 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-073 | 2026-11-21 | Claude
+
+**Phase and increment:** Phase 2. **P2-4b closed** (EmpireIntel 0.7.5, D-077); #17 merged into main. Next: EmpireIntelCheck 0.1.10-tp1 (trim, realm and Skyborne probes; approved), then P2-4r.
+
+**Approved:** through D-077. The scan findings stay as they are. The target box design (Phase2_Plan.md 10.4) is part of P2-4c, for approval with it.
+
+**Branches and pull requests:** main has EmpireIntel 0.7.5 and EmpireIntelCheck 0.1.9-tp1 (the merge commit is in the report). #10 and #11 open (reference). The repository is public on purpose (D-074).
+
+**Package:** `EmpireIntel_AddOns_v0.7.5.zip`, sha256 `850bc76bc376940812362ff5282a7af992ca52df177d2b6d7ec08cd27c4b09a5`; installed.
+
+**Installed (as the user has said):** EmpireIntel 0.7.5, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037. Test characters ignored.
+
+**User's next step:** wait for EmpireIntelCheck 0.1.10-tp1 and its test steps.
+
 ## S-072 | 2026-11-20 | Claude
 
 **Phase and increment:** Phase 2, P2-4b. **EmpireIntel 0.7.5** built on `p2-4b-window` (PR #17, not merged): the Fastest route's rules R-1, R-2, R-3, R-5, R-7 and the cap in the rules table (D-076). P2-4b closes after the user's test of 0.7.5 and decision.

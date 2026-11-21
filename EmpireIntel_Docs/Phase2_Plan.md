@@ -1,8 +1,8 @@
 # EmpireIntel Phase 2 Plan: characters, views and the route planner
 
-DOC VERSION: 1.14.0  |  DATE: 2026-11-20 (S-072)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
+DOC VERSION: 1.15.0  |  DATE: 2026-11-21 (S-073)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
-**Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (built, in its live retest as 0.7.4); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (P2-4r, approved D-075); **section 13** is the Fastest route's rules R-1..R-7 (D-075, for approval).
+**Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (**closed** as 0.7.5, D-077); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (P2-4r, approved D-075); **section 13** is the Fastest route's rules R-1..R-7 (D-075, for approval).
 
 **Phase 2 builds EmpireIntel's character views and the Legacy route planner:** unlock progress, rested XP, milestones ahead, the route and the plan window (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1, FR-PLAN-1..3). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4. (It was first authorized for "pre-25 features" only, D-027; the account has since unlocked Legacy, and the planner was approved on top, D-054, D-055.)
 
@@ -610,6 +610,20 @@ Two increments, one approval each, both after P2-4b closes. Proposed order: **P2
 4. **Rerun:** `/ei setup`, a "Setup..." button in the window's header, and an entry in the game's AddOns options **if the client has the options API** (checked at run time under `pcall`; if absent, one `UNEXPECTED` line and the other two ways still work). Every answer is also changeable later in the window (right-click a character's row: "Professions...", "Include / Ignore").
 5. **Saved data (needs approval, Q-P2-4c-1):** in the `plan` section, new fields `profs = { ['<GUID>'] = { 'Alchemy', 'auto' } }` (a profession name, `'auto'` = planner's choice, or `'none'`, one per free slot) and `setup = { done = '0.8.0', at = <time> }`. Nothing is converted; older versions ignore the fields. Characters stay stored by GUID.
 6. **Tests** (about 40): no assumed profession anywhere (route, chat, window); planner's choice labelled; the "choose" row; each wizard page; Skip and Back; rerun; read-only saved data; the options-panel probe absent and present. **Package** 0.8.0, `/reload`.
+
+### 10.4 P2-4c: the target box, split in two (D-077, with R-6; for approval with P2-4c)
+
+The 0.7.x box at the top right ("Next reward 3/15", "Cap 3/16") both shows progress and changes the target when clicked, and nothing says it is a button. P2-4c splits it:
+
+| Part | Look | Content |
+|---|---|---|
+| **(1) Progress text** (not clickable) | plain text in the header, left of the control | "Legacy points: 3 · next reward at 15 (Air Rifle)"; past the cap: "Legacy points: 17 · cap 16 (1 over: earned, not spendable)"; all rewards reached: "Legacy points: 56 · all rewards reached". The points come from the game's read, else "(inferred)" |
+| **(2) Plan-to control** | a button with a frame and a down arrow, hover highlight, like the mode switch: "Plan to: Cap (16) ▾" | Click opens our own small menu (no template): **Cap (16)**, **Next reward (15)**, **Next point (4)**, **A number...** (opens the edit bar, 1 to 65), **All 65**. The current choice has a check mark. The numbers in brackets come from the rules table and the cap setting (R-6), never from code |
+
+- **Tooltip of the control:** "The route plans steps until this many points." and one line per choice (what it means; the cap's source: L-12, unverified, editable in Options).
+- **Editable cap (R-6):** Options > General: "Spending cap per character: 16" (saved as `plan.cap` inside format 2, approved with P2-4c's fields); the Cap choice follows it.
+- **Header layout:** title, Fastest / My plan, then the progress text, then the control, then the close button. If the window is narrow, the progress text shortens to "3 pts · next 15".
+- **Tests:** the progress text in each state; every menu choice saves and redraws; the control looks like a button (frame, arrow, hover); the numbers follow the rules table and the cap setting.
 
 ### 10.3 P2-4d: rested XP in the route (EmpireIntel 0.9.0)
 

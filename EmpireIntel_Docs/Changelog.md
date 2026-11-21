@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-21 | S-073 | P2-4b closed; #17 merged; the target box design for P2-4c
+- D-077. 0.7.5 passed; P2-4b closed; #17 merged into main (EmpireIntel 0.7.5 on main). Phase2_Plan.md 1.15.0 10.4: the target box split into progress text and a "Plan to" control (P2-4c, with R-6).
+
 ## 2026-11-20 | S-072 | EmpireIntel 0.7.5: the Fastest route's rules; the prompt on main (#18); personal-data scan
 - D-076. #18 merged (70f8062): the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main; main merged into `p2-4b-window`. 0.7.5: R-1 (no assumed profession), R-2 (highest skill is the path), R-3, R-5 (Up next as row 1, step numbers), R-7 (prerequisite rows), the cap in the rules table. 545 tests (Lua 5.1 and 5.3); 12/12 mutants. Personal-data scan of all branches: no GUIDs, account folder numbers or character names found.
 

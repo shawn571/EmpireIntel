@@ -3,7 +3,7 @@
 DOC VERSION: 1.6.0  |  UPDATED: 2026-11-16 (session S-068)
 
 ```
-CURRENT PHASE:            Phase 2, increment P2-4b: 0.7.5 on p2-4b-window (PR #17, not merged), the route rules fix before closing.
+CURRENT PHASE:            Phase 2: P2-4b closed (0.7.5, D-077), merged. Next: EmpireIntelCheck 0.1.10-tp1 (trim, realm and Skyborne probes), then P2-4r.
 IMPLEMENTATION APPROVED:  P2-4b (D-061) and its fixes (D-063, D-065, D-066, D-070). Next, in order, each after the one before closes: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e (D-065, D-069, D-070).
 OPEN BLOCKERS:            the user's retest on 0.7.4 (gate steps 3, 8); merge approval; closing P2-4b
 ```
@@ -115,8 +115,10 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Emblem and +1 accepted (D-075)
 - [x] Q-R7, Q-R7-a, Q-R7-b answered (D-076); #18 merged (prompt on main)
 - [x] 0.7.5 built: R-1, R-2, R-3, R-5, R-7, the cap in the rules table; 545 tests, 12/12 mutants (S-072)
-- [ ] **User:** test 0.7.5 (README); then merge #17 and close P2-4b
-- [ ] **User:** decide on the personal-data scan findings (Session_Handoff S-072; nothing scrubbed)
+- [x] 0.7.5 test passed; #17 merged; **P2-4b closed** (D-077); scan findings left as they are
+- [ ] EmpireIntelCheck 0.1.10-tp1: trim (under 128 KB), realm and Skyborne probes (Phase2_Plan.md 12.3) (approved, Q-R-4, D-077)
+- [ ] P2-4r: realm identity, two points pools, Skyborne labels, the card's character picker (section 12)
+- [ ] P2-4c: with R-6, Q-R7-b and the target box design (10.4)
 - [x] Build 71037 realm evidence recorded: EI-E-34..38 (D-073)
 - [x] Realm plan written: Phase2_Plan.md section 12 (S-069)
 - [x] Cross-realm test: account-wide across normal realms (EI-E-39); Hardcore its own pool, untested (EI-E-40) (D-074)
