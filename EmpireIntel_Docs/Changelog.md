@@ -2,6 +2,9 @@
 
 Append-only. Newest first.
 
+## 2026-11-21 | S-074 | EmpireIntelCheck 0.1.10-tp1 built (branch `check-0110-trim`, not merged)
+- D-078. The saved file compacted at logout (about 234 KB -> about 94 KB on the user's file, measured offline); realm probes (realm name as given, GetRealmID, GUID server number, realm add-on loaded); Skyborne atlases. 550 tests (Lua 5.1 and 5.3); 8/8 mutants. #17 merged before it (199f193).
+
 ## 2026-11-21 | S-073 | P2-4b closed; #17 merged; the target box design for P2-4c
 - D-077. 0.7.5 passed; P2-4b closed; #17 merged into main (EmpireIntel 0.7.5 on main). Phase2_Plan.md 1.15.0 10.4: the target box split into progress text and a "Plan to" control (P2-4c, with R-6).
 

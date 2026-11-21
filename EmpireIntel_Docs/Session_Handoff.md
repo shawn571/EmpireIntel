@@ -4,6 +4,20 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-074 | 2026-11-21 | Claude
+
+**Phase and increment:** Phase 2. P2-4b closed; **#17 merged** (199f193; main has EmpireIntel 0.7.5, 545 tests under Lua 5.1 and 5.3 on main). **EmpireIntelCheck 0.1.10-tp1** built on branch `check-0110-trim` (D-078), pull request open, not merged.
+
+**Approved:** through D-077 (the trim was approved as Q-R-4; "Next: EmpireIntelCheck 0.1.10 trim"). Pending: the user's test of 0.1.10 and its merge; then P2-4r (section 12, approved).
+
+**Branches and pull requests:** main 199f193 (EmpireIntel 0.7.5, EmpireIntelCheck 0.1.9-tp1). `check-0110-trim`: main plus 0.1.10-tp1, 550 tests. #10 and #11 open (reference). The repository is public on purpose.
+
+**Package:** `EmpireIntelCheck_AddOns.zip` (0.1.10-tp1, 11 files), sha256 `cabc8e981226ee3fdf666eac47a2b3912ccae7f7f5fd0318efe27678dbe93138`; `/reload`. EmpireIntel unchanged (0.7.5).
+
+**Installed (as the user has said):** EmpireIntel 0.7.5, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037.
+
+**User's next step:** install 0.1.10, run its README test (the Skyborne Druid, optionally a test character), log out, send the check's file; approve its merge; then P2-4r starts.
+
 ## S-073 | 2026-11-21 | Claude
 
 **Phase and increment:** Phase 2. **P2-4b closed** (EmpireIntel 0.7.5, D-077); #17 merged into main. Next: EmpireIntelCheck 0.1.10-tp1 (trim, realm and Skyborne probes; approved), then P2-4r.

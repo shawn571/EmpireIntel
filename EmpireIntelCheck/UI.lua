@@ -24,7 +24,8 @@ NS.UI = UI
 
 UI.TEXTURE = 'Interface\\AddOns\\EmpireIntelCheck\\Media\\Test'       -- an 8x8 flat-colour TGA shipped in this folder
 UI.MISSING = 'Interface\\AddOns\\EmpireIntelCheck\\Media\\NoSuchFile'   -- for comparison: a file that does not exist
-UI.RACES = { 'human', 'orc', 'dwarf', 'nightelf', 'scourge', 'undead', 'tauren', 'gnome', 'troll' }
+UI.RACES = { 'human', 'orc', 'dwarf', 'nightelf', 'scourge', 'undead', 'tauren', 'gnome', 'troll',
+  'skyborne', 'windshaper', 'highorder' }       -- 0.1.10: the Skyborne (Windshaper, High Order) atlases, EI-E-38
 UI.CLASSES = { 'WARRIOR', 'PALADIN', 'HUNTER', 'ROGUE', 'PRIEST', 'SHAMAN', 'MAGE', 'WARLOCK', 'DRUID' }
 UI.FACTION_ATLASES = { 'AllianceEmblem', 'HordeEmblem' }
 UI.MAX_ADDONS = 200
@@ -154,6 +155,13 @@ function UI.Run()
   c['C_GameRules.IsSelfFoundAllowed'] = result(A.Call('C_GameRules.IsSelfFoundAllowed'))
   c['GetRealmName'] = result(A.Call('GetRealmName'))
   c['GetNormalizedRealmName'] = result(A.Call('GetNormalizedRealmName'))
+  -- 0.1.10 (Phase2_Plan.md 12.3): since build 71037 the realm name can be "" (EI-E-34); the realm is the GUID's server
+  -- number (EI-E-36); a realm add-on (the user's "!RealmFix") may fill the name in (EI-E-37); GetRealmID if present
+  c['GetRealmID'] = result(A.Call('GetRealmID'))
+  local gcode, gv = A.Call('UnitGUID', 'player')
+  local server = gcode == 'ok' and type(gv[1]) == 'string' and string.match(gv[1], '^Player%-(%d+)%-') or nil
+  c['UnitGUID server'] = server and { r = 'present', v = { server } } or { r = 'nothing' }
+  c['realm add-on !RealmFix loaded'] = result(A.Call('C_AddOns.IsAddOnLoaded', '!RealmFix'))
   -- the names C_GameRules has (listed, not called), for a realm-type or ruleset getter not known yet
   local gr = U.path('C_GameRules')
   if type(gr) == 'table' then
@@ -249,7 +257,9 @@ function UI.Run()
   local hv, pv, sfv = first('C_GameRules.IsHardcoreActive'), first('C_GameRules.GetForeverExperiencePreset'), first('C_GameRules.IsSelfFoundAllowed')
   res.identity = { race = rv and rv[2], raceId = rv and rv[3], sex = sv and sv[1], faction = fv and fv[1],
     hardcore = hv and hv[1], preset = pv and pv[1], selfFound = sfv and sfv[1],
-    portrait = (first('portrait GetTexture after it') or {})[1] }
+    portrait = (first('portrait GetTexture after it') or {})[1],
+    realm = (first('GetRealmName') or {})[1], server = server,
+    realmAddon = (first('realm add-on !RealmFix loaded') or {})[1] }
   return res
 end
 

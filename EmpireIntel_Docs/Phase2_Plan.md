@@ -1,6 +1,6 @@
 # EmpireIntel Phase 2 Plan: characters, views and the route planner
 
-DOC VERSION: 1.15.0  |  DATE: 2026-11-21 (S-073)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
+DOC VERSION: 1.16.0  |  DATE: 2026-11-21 (S-074)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
 **Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (**closed** as 0.7.5, D-077); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (P2-4r, approved D-075); **section 13** is the Fastest route's rules R-1..R-7 (D-075, for approval).
 
@@ -827,6 +827,10 @@ The check's file is about 248 KB of its 256 KB cap [reported; 234 KB on disk in 
 Q-R, Q-R-1 (the saved `realms` section inside format 2), Q-R-2 (`/ei realm <number> <type> <name>`), Q-R-3 ("Forget a character", after a confirmation), Q-R-4 (the check's trim right after P2-4b) approved; Q-R-6 yes once a Hardcore realm exists.
 
 **Any character on the card (for P2-4r's tests and in general):** a click on the card's name opens our own list of every known character (grouped by realm label, ignored ones marked); picking one shows it on the card (portrait for the played character, else race and class icons, the Skyborne label, faction, realm type) without a plan step. Another click on the card goes back to Up next. P2-4r's live steps use it to show the Skyborne Druid, the PvP, RP and RP-PvP test characters, and a character with no faction. (`/ei alts` lines are plain chat text and cannot be clicked without game hyperlinks, so the picker is on the card.)
+
+### 12.3b Built (D-078)
+
+EmpireIntelCheck 0.1.10-tp1 on branch `check-0110-trim`: the trim at logout (the user's file about 234 KB -> about 94 KB, measured offline), the realm probes and the Skyborne atlases. 550 tests (Lua 5.1 and 5.3); mutation check 8 of 8. `/reload` from 0.1.9. Waiting for the user's test.
 
 ### 12.4 Order and questions
 
