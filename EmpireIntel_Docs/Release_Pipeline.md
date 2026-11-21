@@ -1,6 +1,8 @@
 # EmpireIntel Release Pipeline (design)
 
-DOC VERSION: 0.2.0  |  DATE: 2026-11-03  |  STATUS: **Approved as a design only (D-018, amended D-020). No implementation until the user has reviewed the first launch results and authorized Stage 1.**  |  Scope: EmpireIntel and EmpireIntelCheck only. GoldIntel is out of scope and is never touched.
+DOC VERSION: 0.2.0  |  DATE: 2026-11-03  |  STATUS: **Approved as a design only (D-018, amended D-020). Stage 1 is not authorized (CODE_STANDING_ORDERS.md section 7).** Releases today are by hand: Claude builds and verifies the zip, the user installs it with `/reload`.  |  Scope: EmpireIntel and EmpireIntelCheck only. GoldIntel is out of scope and is never touched.
+
+> **Status note (2026-11-16):** the game launched 2026-11-04 and EmpireIntel has shipped 0.2.1 to 0.7.4 by hand. The condition "the user has reviewed the first launch results" is met in substance; Stage 1 still waits for the user's explicit authorization.
 
 > **Undelivered dependency:** the report task on the user's computer does not exist yet (D-020). Nothing in this design may assume it. Section 13 lists what depends on it and what works without it.
 

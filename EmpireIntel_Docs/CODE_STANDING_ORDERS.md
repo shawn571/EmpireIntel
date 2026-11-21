@@ -1,6 +1,6 @@
 # Code Standing Orders
 
-DOC VERSION: 1.1.0  |  DATE: 2026-11-08  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
+DOC VERSION: 1.4.0  |  DATE: 2026-11-20  |  STATUS: **In force (user, 2026-11-08, "Standing instruction, effective now"; merge rules added by D-049, "Standing order, effective now.").** These orders bind every Claude Code session on EmpireIntel. Where another document disagrees, this file wins, then Project_Bible.md section 4.
 
 Quotes in "double quotes" are the user's exact words.
 
@@ -8,9 +8,11 @@ Quotes in "double quotes" are the user's exact words.
 
 - **The user** is the sponsor, project manager and client tester, and the final decision authority on scope, phases, saved-data format changes, dependencies and going public.
 - **Claude** is the lead architect and developer, and the source of truth for requirements, contracts, code and changelogs. Claude handles fixes within approved scope, tests, releases and rollback.
-- External AI reviews are inputs to accept or reject with a reason.
+- There are no other contributors or reviewers. Installed add-ons may be used to cross-check numbers in live tests (D-068).
 
 ## 2. Gates
+
+- **Standing permissions (D-071, pasted at the start of every session):** Claude may edit code and docs, run tests, build packages, commit and push to work branches without asking; never push to `main`, never force-push, never change permission settings files. An approval in chat of an increment, fix or merge is the explicit approval to do it, including the merge with the REST command.
 
 - "never start the next increment before I approve it." Every phase and every increment needs its own approval. Planning is not implementation: no code before approval.
 - "Do not merge anything until I approve" (2026-11-08). Branches stay unmerged until the user approves each merge.
@@ -74,11 +76,28 @@ Quotes in "double quotes" are the user's exact words.
 
 - GoldIntel is handled in a separate session; EmpireIntel work never changes it or plans work for it (D-018/D-020).
 - Release pipeline: designed only; **Stage 1 is not authorized** (D-018, D-020, D-027).
-- Q-T4 (trait-system reads) is unapproved; the user decides it after P3-1 passes its live gate (2026-11-08).
+- Q-T4 (trait-system reads) is unapproved. P3-1 has passed its live gate (D-042); Q-T4 waits for the user's decision.
 - Collection is passive: the user plays normally and sends files after `/reload` or logout; in-game commands only in test steps.
 - Keep scope lean; surface unexpected conditions visibly (an `UNEXPECTED` line in the addon and in the report).
-- Verify the repository is private before every push.
+- **The repository is public on purpose** (the user, 2026-11-20, D-074: "public is intended for now (my decision)"). Before every push, check the changes for character names, GUIDs and account names (and SavedVariables, WTF folders, screenshots with names, balances); none may be pushed. Characters are written C1, C2, ... or by role ("the Hunter").
 
-## 8. New sessions
+## 8. Third-party add-ons: copy and credit, clean room, optional plugins, cross-checks (D-068, 2026-11-14)
 
-A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before changing code or merging (except under the docs-only standing approval, section 2).
+The user's standing order, exact words: "We can copy and credit where it’s allowed. Where copying isn’t allowed and it’s a core function of what we’re trying to build, do the clean room thing. We can use addons to check our work too. Where it makes sense we will have some things be optional plugins and note that some features will be better if these addons are installed but our addon will still work without them."
+
+"What this means in practice:
+1. Copy and credit only from MIT or CC BY sources (for example Sharpie’s Gear Judge and its XP and Roster plugins, and pfQuest), with notices in THIRD_PARTY.md and file headers.
+2. Clean room for GPL or All Rights Reserved sources (Polestar, LibForeverData, Altoholic and DataStore, Questie, ForeverXP Bar, Forever Planner, Profession Planner): you get hint notes from me (game functions, events, pitfalls, behaviour), never their code. Write your own version and record “approach informed by <add-on>, no code copied”. Never copy data tables.
+3. Optional plugins: read another add-on’s data while the game runs only when it’s offered for that (LibForeverData, Auctionator’s interface). Every feature must work without it, and the window says which add-ons improve which features.
+4. Cross-checks: use installed add-ons to check our numbers in live tests (ForeverXP Bar for XP per hour and time to level, Profession Planner for profession steps)."
+
+How Claude applies it:
+- Before copying anything, read the source's own license file and record it in THIRD_PARTY.md (name, version or commit, license, what was copied, where). Copied files keep the source's notice in their header. A license the user names but the file does not confirm is not enough.
+- Clean room: Claude does not open the code of a GPL or All Rights Reserved add-on. It works from the user's hint notes and the game's own documented behaviour, and writes "approach informed by <add-on>, no code copied" in the file header and in the report. No data table from such a source enters the repository or the zip.
+- A data source's own license counts too, not only the code's (for example a database an MIT add-on ships may come from elsewhere).
+- Optional plugins live in `Bridge/`, are read only while the game runs, are never required (`## OptionalDeps` at most), and the window says which add-on improves which feature. Each has a test with the add-on absent.
+- Supersedes the "never copied" part of D-003 for MIT and CC BY sources only; D-003 still holds for DataStore and Altoholic (All Rights Reserved: run-time use of their public functions only).
+
+## 9. New sessions
+
+A new Code session starts from NEXT_SESSION_PROMPT.md. It reads this file, Session_Handoff.md and Project_Bible.md, verifies them against the repository, reports any conflict, and waits for the user's approval before starting an increment, a fix or a merge (except under the docs-only standing approval and the standing permissions, section 2).

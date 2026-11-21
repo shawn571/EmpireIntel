@@ -4,6 +4,207 @@ Append the newest section at the TOP. The newest section wins.
 
 ---
 
+## S-073 | 2026-11-21 | Claude
+
+**Phase and increment:** Phase 2. **P2-4b closed** (EmpireIntel 0.7.5, D-077); #17 merged into main. Next: EmpireIntelCheck 0.1.10-tp1 (trim, realm and Skyborne probes; approved), then P2-4r.
+
+**Approved:** through D-077. The scan findings stay as they are. The target box design (Phase2_Plan.md 10.4) is part of P2-4c, for approval with it.
+
+**Branches and pull requests:** main has EmpireIntel 0.7.5 and EmpireIntelCheck 0.1.9-tp1 (the merge commit is in the report). #10 and #11 open (reference). The repository is public on purpose (D-074).
+
+**Package:** `EmpireIntel_AddOns_v0.7.5.zip`, sha256 `850bc76bc376940812362ff5282a7af992ca52df177d2b6d7ec08cd27c4b09a5`; installed.
+
+**Installed (as the user has said):** EmpireIntel 0.7.5, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037. Test characters ignored.
+
+**User's next step:** wait for EmpireIntelCheck 0.1.10-tp1 and its test steps.
+
+## S-072 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. **EmpireIntel 0.7.5** built on `p2-4b-window` (PR #17, not merged): the Fastest route's rules R-1, R-2, R-3, R-5, R-7 and the cap in the rules table (D-076). P2-4b closes after the user's test of 0.7.5 and decision.
+
+**Done this session:** #18 merged (70f8062) under the docs-only standing approval: the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main; tests on main 408/408 (Lua 5.1 and 5.3). Main merged back into `p2-4b-window` (c046f63).
+
+**Personal-data scan (all 21 branches, 109 commits, full history), nothing scrubbed:**
+- Character GUIDs: **none real.** Only the tests' synthetic `Player-1-0000000n` fixtures.
+- Battle.net account folder numbers (WTF folder `<digits>#n`): **none.** Only placeholders such as `WTF\Account\<your account>`.
+- Character names, e-mail addresses, BattleTags: **none** (the user's GitHub no-reply address `<id>+shawn571@users.noreply.github.com` as author of the 15 merge commits, and Claude's no-reply address).
+- Other personal items found: the copyright line "Copyright (c) 2026 Shawn Robinson" in `LICENSE` (and quoted in Decisions.md, D-001); the GitHub user name `shawn571` (repository paths, `.claude/settings.json` merge rule); four Claude Code session links (`claude.ai/code/session_...`) in commit messages (they open only for the user's account).
+- Game data, not personal: the realm name "CAMWOW US2 Realm 1 PvE" and the realm server numbers 6796, 6800, 6928, 6933, 6935 (docs, since D-073).
+
+**Pending (the user decides):** test 0.7.5; merge #17 and close P2-4b; whether anything from the scan should be changed. Then the check's trim (0.1.10), P2-4r, P2-4c (with R-6 and Q-R7-b), P2-4d, P2-4e.
+
+**Branches and pull requests:** main 70f8062 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): 0.7.5 and the docs, 545 tests; does not match main. #10 and #11 open. The repository is public on purpose (D-074).
+
+**Package:** `EmpireIntel_AddOns_v0.7.5.zip`, sha256 `850bc76bc376940812362ff5282a7af992ca52df177d2b6d7ec08cd27c4b09a5`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4 (0.7.5 next), EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037. The user has ignored the test characters.
+
+**User's next step:** install 0.7.5, run its README test, send screenshots; decide on #17, P2-4b and the scan.
+
+## S-071 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4: emblem and +1 accepted (D-075). **#17 not merged, P2-4b not closed:** the user waits for the route rules (Phase2_Plan.md section 13) and decides whether they are fixed in P2-4b first.
+
+**Approved (D-075):** Q-R, Q-R-1, Q-R-2 (the `/ei realm` command), Q-R-3 (Forget, with a confirmation), Q-R-4; Q-R-6 once a Hardcore realm exists; P2-4r gets a character picker on the card. Route rules R-1..R-7 recorded; the plan proposes R-1, R-2, R-3, R-5, R-7 as P2-4b fix **0.7.5** before closing, R-6 (targets, editable cap) in P2-4c, R-4 by ignoring the test character now. Not built.
+
+**Pending (the user decides):** Q-R7, Q-R7-a, Q-R7-b; then merging #17 and closing P2-4b; then the check's trim (0.1.10), P2-4r, P2-4c, P2-4d, P2-4e.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0). `p2-4b-window` (PR #17): 0.7.4 and the docs; does not match main. #10 and #11 open. The repository is public on purpose (D-074).
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; unchanged.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037.
+
+**User's next step:** answer Q-R7, Q-R7-a, Q-R7-b; meanwhile ignore the RP-PvP test character in the window if wanted.
+
+## S-070 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 installed. **Still not answered:** emblem and +1, merging #17, closing P2-4b (the user's message again kept the placeholders "[OK / issue: ...]" and "[yes/no]").
+
+**Approved this session (D-074):** the repository is **public on purpose**; every push is checked for character names, GUIDs and account names (CODE_STANDING_ORDERS section 7). Recorded: Legacy points account-wide across normal realms (EI-E-39, the user's test); Hardcore its own pool (EI-E-40, the user's report, untested); Skyborne Windshaper (Horde) and High Order (Alliance) (EI-E-38). Plan updated: Phase2_Plan.md 12.2 (two points pools), 12.2b (Skyborne icons and labels), 12.3 (Skyborne atlases in the check). Docs only; tests unchanged (536).
+
+**Pending (the user decides):** emblem and +1; merging #17; closing P2-4b; Q-R, Q-R-1..4, Q-R-6 (Phase2_Plan.md 12.4); then the check's trim, P2-4r, P2-4c, P2-4d, P2-4e in order.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0). `p2-4b-window` (PR #17): 0.7.4 and the docs, pushed; does not match main. #10 and #11 open. The repository is public.
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; unchanged.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0. Client build 71037.
+
+**User's next step:** answer emblem and +1, the merge and closing P2-4b, and Q-R, Q-R-1..4, Q-R-6.
+
+## S-069 | 2026-11-20 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 installed; the saved file confirms the Hunter's order and the 150-above-225 rows [file]. **Not yet answered:** emblem and +1 ("[OK / issue]"), merging #17 and closing P2-4b ("[yes/no]"): the user's message kept the template placeholders, so nothing was merged.
+
+**This session:** build 71037 realm evidence recorded (EI-E-34..38, D-073); the realm-identity plan written (Phase2_Plan.md section 12, for approval, no code). Docs only; tests unchanged (536).
+
+**Pending (the user decides):** emblem and +1; merging #17; closing P2-4b; Q-R and Q-R-1..5 (realm identity as P2-4r before P2-4c; the saved `realms` section; `/ei realm` command; "Forget a character"; the check's trim right after P2-4b; plan only the played realm until the cross-realm test); the cross-realm Legacy test; then P2-4c, P2-4d, P2-4e in order.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1). `p2-4b-window` (PR #17): 0.7.4 and the docs, 536 tests; does not match main. #10 and #11 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; unchanged.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4, EmpireIntelCheck 0.1.9-tp1, the user's own "!RealmFix" 2.0 (not ours; EI-E-37). Client build 71037.
+
+**User's next step:** answer emblem and +1, the merge and closing P2-4b; run the cross-realm Legacy test; answer Q-R.
+
+## S-068 | 2026-11-16 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. EmpireIntel 0.7.4 on `p2-4b-window` (PR #17, not merged) is installed; the user's retest of gate steps 3 and 8 is under way.
+
+**This session:** the documents were brought up to date at the user's request (D-072): it is the user and Claude only, the game has launched, and the living documents describe the add-on as built. No code change; tests unchanged (536).
+
+**Approved, pending, branches, package:** as S-067 (0.7.4, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; main 9cb1d10 with 0.6.0; #10 and #11 open). These documents are on `p2-4b-window` and reach main with #17 (they touch Project_Bible, Architecture and others, outside the docs-only standing approval, and a separate pull request would conflict with #17 in Decisions.md).
+
+**User's next step:** finish the 0.7.4 retest (gate steps 3 and 8) and send the results; decide on merging #17 and closing P2-4b.
+
+## S-067 | 2026-11-14 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest on 0.7.3: step 2 passed, step 3 partial (D-070). Retest build **EmpireIntel 0.7.4** on `p2-4b-window`, PR #17 open, **not merged** ("don't merge #17 yet").
+
+**Approved:** through D-070 (fixes 1, 2, 4 built; Q-D068-1 Questie read dropped; Q-D068-2 no bundled quest data, LibForeverData and pfQuest read at run time if installed, else grinding only, labelled; P2-4c adds "add any milestone row" and assumes no profession). Order after P2-4b: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e. Standing order D-068 in force.
+
+**Pending (the user decides):** the retest on 0.7.4 (gate steps 3 and 8, and a look at the emblem); merging #17; closing P2-4b; the next check version (0.1.10 with P2-4e); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 to 0.7.4 and the docs, 536 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.4.zip`, sha256 `2d71b74d1a71ba52d5b3a8bf052330191e6e6d2394328fedeacbead7671dc481`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.4 (retest under way), EmpireIntelCheck 0.1.9-tp1.
+
+**Standing permissions (D-071):** the user's paragraph is at the top of NEXT_SESSION_PROMPT.md, pasted at the start of every session.
+
+**Open questions:** none new.
+
+**User's next step:** retest gate steps 3 and 8 (expect the chat line adding the Hunter's two 150 rows), send both screenshots and the saved file.
+
+## S-066 | 2026-11-14 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest build EmpireIntel 0.7.3 on `p2-4b-window` (PR #17, not merged), waiting for the user's retest. "Start nothing new until P2-4b closes."
+
+**Approved / recorded this session:** standing order **D-068** (third-party add-ons: copy and credit from MIT and CC BY only; clean room for GPL and All Rights Reserved; optional plugins only where offered; cross-checks with installed add-ons), in CODE_STANDING_ORDERS.md section 8 and NEXT_SESSION_PROMPT.md; **D-069** (section 11.4 answers: options in the window in two increments 0.8.0 and 0.8.1; P2-4e yes; Q-P2-4f yes, played time first; plan inputs). Order after P2-4b: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e.
+
+**Pending (the user decides):** the retest on 0.7.3 (gate steps 2, 3, 8); merging #17; closing P2-4b; **Q-D068-1** (drop the Questie read: it is not offered to other add-ons) and **Q-D068-2** (pfQuest's database comes from VMaNGOS, GPL v2) (Phase2_Plan.md 11.6); the next check version (now 0.1.10 with P2-4e: short quest check, file under 128 KB); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 to 0.7.3 and these docs, 526 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open. Note: the standing order lives on `p2-4b-window` until #17 merges (a separate docs PR would conflict in Decisions.md); new sessions use this branch (this handoff names it).
+
+**Package:** `EmpireIntel_AddOns_v0.7.3.zip`, sha256 `c55eb642608ae976109cdc4686acc9c4c0f9b7793966e8bd5db114216b9c56c1`; `/reload`; no format change. Unchanged this session.
+
+**Installed (as the user has said):** EmpireIntel 0.7.2 (0.7.3 next), EmpireIntelCheck 0.1.9-tp1. The user's saved files (2026-11-14) [file]: 8 characters on one realm ("... PvE"), measured XP per hour for 7 (all but the level-1 Hunter), C3 still ignored; the check's file about 252 KB of 256 KB, trimming by "size cap".
+
+**User's next step:** install 0.7.3 and retest gate steps 2, 3 and 8; answer Q-D068-1 and Q-D068-2.
+
+## S-065 | 2026-11-09 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest on 0.7.2: step 6 passed, steps 2 and 3 failed (D-066). Retest build **EmpireIntel 0.7.3** (D-067) on `p2-4b-window`, PR #17 open, **not merged** ("don't merge #17").
+
+**Approved:** through D-066 (the 0.7.3 fixes; items 5-7 as a plan only). P2-4c and P2-4d approved earlier (D-065), not started.
+
+**Pending (the user decides):** the retest on 0.7.3 (gate steps 2, 3, 8); merging #17; closing P2-4b; Q-P2-4c-4 and Q-P2-4c-5 (options in the window, one or two increments), Q-P2-4e with e-1 and e-2 (realistic levelling time, Questie read), Q-P2-4f (more captured at login) (Phase2_Plan.md section 11); the next check version (D-059); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 to 0.7.3, 526 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.3.zip`, sha256 `c55eb642608ae976109cdc4686acc9c4c0f9b7793966e8bd5db114216b9c56c1`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.2, EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** those in section 11.4. Not confirmed: whether row tooltips showed at all on 0.7.2 (the cause of the note finding is inferred: tooltips opened off screen to the right).
+
+**User's next step:** install 0.7.3, repeat gate steps 2, 3 and 8, send both screenshots and the saved file; answer section 11.4.
+
+## S-064 | 2026-11-09 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Retest build **EmpireIntel 0.7.2** (finding 10, repeated steps; D-065) on `p2-4b-window`, PR #17 open, **not merged**.
+
+**Approved:** through D-065: finding 10 and the repeat removal (built); **P2-4c and P2-4d approved with conditions** (Phase2_Plan.md section 10: c-1 inside format 2, c-2 nothing planned for a free slot until chosen, c-3 gathering shown as no points; d-1 **no**, L-17 stays unverified until the user's rested-kill check; d-2, d-3 yes). P2-4c starts only after P2-4b closes; P2-4d only after P2-4c closes.
+
+**Pending (the user decides):** the one retest on 0.7.2 (gate steps 2, 3, 6, 8); merging #17; closing P2-4b; the next check version (D-059, not built); #10; Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0, 0.7.1 and 0.7.2, 519 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.2.zip`, sha256 `07b2c0fcc0626bd3bf0214c8d57ceabb132942d3ea1084ccaac8db6ede5a3a70`; `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.7.0 (0.7.1 sent, not reported installed), EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** none new.
+
+**User's next step:** install 0.7.2, /reload (expect the chat line removing the repeated Enchanting 150), run gate steps 2, 3, 6, 8 once, send screenshots of both modes (as images) and the saved file; then decide on merging #17 and closing P2-4b.
+
+## S-063 | 2026-11-09 | Claude
+
+**Phase and increment:** Phase 2, P2-4b. Live gate on 0.7.0 **partly passed** (steps 1, 4, 5, 7; D-063). Retest build **EmpireIntel 0.7.1** (items 1-9, D-064) on `p2-4b-window`, PR #17 open, **not merged** ("Don't merge #17").
+
+**Approved:** through D-063 (fix items 1-9; plan items 10-11 without code).
+
+**Pending (the user decides):** the retest (gate steps 2, 3, 6, 8; README in the zip); merging #17; closing P2-4b; Q-P2-4c and Q-P2-4d with their sub-questions (Phase2_Plan.md section 10); the next check version (D-059, not built); #10 (P3-2 becomes format 3 when next edited); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window` (PR #17): main plus 0.7.0 and 0.7.1, 514 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.1.zip`, sha256 `937d51e9944ac7334cc3a118d15d6eb056091d969068396f9c561b1299120866` (P2-4b_Report.md section 6); `/reload`; no format change. Note: the build tool stores file times, so a rebuild from a fresh checkout gives another sha256 with the same files.
+
+**Installed (as the user has said):** EmpireIntel 0.7.0, EmpireIntelCheck 0.1.9-tp1.
+
+**Open questions:** Q-P2-4c, Q-P2-4c-1..3, Q-P2-4d, Q-P2-4d-1..3. My plan's screenshot (0.7.0) received later as an image: finding 10 (My plan time and points counted from today, overlapping) proposed for 0.7.2, waiting for the user's go-ahead; one duplicate Enchanting 150 is saved in the user's plan (remove it, or copy the route again).
+
+**User's next step:** install 0.7.1, repeat gate steps 2, 3, 6, 8, send the screenshots (as images) and the saved file; answer Q-P2-4c and Q-P2-4d.
+
+## S-062 | 2026-11-08 | Claude
+
+**Phase and increment:** Phase 2, P2-4b **built** as EmpireIntel 0.7.0 (D-061 approval, D-062 build choices) on branch `p2-4b-window`, pull request open, **not merged**.
+
+**Approved:** through D-061 (the P2-4b plan with the fill path). #16 merged (9cb1d10).
+
+**Pending (the user decides):** the live gate (P2-4b_Report.md section 5; with ElvUI on and off); merging the P2-4b pull request; closing P2-4b; the next check version (D-059, not built); #10 (P3-2 becomes format 3 when next edited; Q-P3-2a later); Q-T4; Stage 1.
+
+**Branches and pull requests:** main 9cb1d10 (EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1, 408 tests). `p2-4b-window`: main plus 0.7.0, 485 tests (Lua 5.1 and 5.3); does not match main. #11 reference only; #10 open.
+
+**Package:** `EmpireIntel_AddOns_v0.7.0.zip` (sha256 in P2-4b_Report.md section 4); `/reload`; no format change.
+
+**Installed (as the user has said):** EmpireIntel 0.6.0, EmpireIntelCheck 0.1.9-tp1.
+
+**User's next step:** install 0.7.0, run the 8-step live gate with ElvUI on and off, send screenshots, the saved file and the fill-path line.
+
 ## S-061 | 2026-11-08 | Claude
 
 **Phase and increment:** P2-4a **closed** (D-060). Mockup **approved** (D-060). P2-4b **planned** in Phase2_Plan.md section 9 (EmpireIntel 0.7.0), for approval; **no window code**.

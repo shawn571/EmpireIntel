@@ -1,9 +1,9 @@
 # Legacy rules: what earns points, what they buy
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-07  |  STATUS: user's account of the game plus screenshots. **Not yet confirmed by the client read** (EmpireIntelCheck 0.1.6, Q-T7).
+DOC VERSION: 1.0.0  |  DATE: 2026-11-07  |  STATUS (2026-11-16): **the challenge list and the point reads are confirmed by the client** (EmpireIntelCheck runs 8-15, EI-E-20..27) and are read by EmpireIntel since 0.5.0 (`/ei legacy`). Still unconfirmed: the spending cap of 16, perk effects, and anything about the trees beyond the screenshots (trait-system reads, Q-T4, unapproved).
 
 Sources, strongest first:
-- **[client]**: read by an addon (none yet for the rules below).
+- **[client]**: read by an add-on (EmpireIntelCheck, then EmpireIntel).
 - **[screenshot]**: the user's screenshots of the Legacy window, 2026-11-07, build 70862.
 - **[user]**: the user's list, 2026-11-07.
 - **[web]**: guides found by search, provisional and partly contradictory. Used only where marked.
@@ -65,15 +65,16 @@ Explorer needs the Explore Azeroth achievement on one character: Eastern Kingdom
   - In all, 27 nodes and 75 ranks. Arrows show prerequisites; the green-bordered nodes are the available ones (2 or 3 per tree). "Apply Changes" commits a spend.
 - [web] A spending cap of 16 points per character at launch; perk names such as Overtime, Productivity Bonus, Diligent Study, Bountiful Harvest (Professions), Thrill of Adventure, Well Rested (Adventure), Reinforcement, Diplomat (Resourcefulness). Names and values differ between sites.
 
-## 3. What EmpireIntel needs from the client (open)
+## 3. What EmpireIntel needs from the client
 
 | Item | Route | Status |
 |---|---|---|
-| Points earned, cap | Legacy currency (`C_CurrencyInfo`) | 0.1.6 reads it |
-| Each challenge done or not, with its steps | Legacy achievement category | 0.1.6 reads it |
+| Points earned, available, spent | `LegacySystem.GetCurrencyInfo()` (after the pane has loaded) | **Read** by EmpireIntel since 0.5.0 (EI-E-21, EI-E-24..26) |
+| The spending cap | not found in any read | Open (L-12) |
+| Each challenge done or not, with its steps | the Legacy achievement categories | **Read** by EmpireIntel since 0.5.0 (EI-E-20, EI-E-22, EI-E-23) |
 | Tree node names, ranks spent, effects | trait system (Q-T4) or tooltips | Not covered by Q-T7; the screenshots give ranks only |
 
-## 4. Plan note: `/ei legacy` (NOT authorized; Phase 2 uses no Legacy API, D-027)
+## 4. Plan note: `/ei legacy` (written 2026-11-07 before it was authorized; built as P3-1, EmpireIntel 0.5.0, closed D-042)
 
 What a future `/ei legacy` could show from the reads proven by the check:
 

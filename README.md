@@ -1,24 +1,30 @@
 # EmpireIntel
 
-A **WoW Forever** addon (client 1.60.x, Interface 16001) that tracks the **Legacy system** across your characters:
-Legacy points and challenges, perks spent per character against the cap, rested XP and professions, plus a
-"what next" list driven by a plan file you write.
+A **World of Warcraft: Forever** addon (client 1.60.x, Interface 16001) for the **Legacy system**: it tracks your characters,
+reads your Legacy points and challenges, and plans the fastest way to your next Legacy points.
 
-**Status:** Phase 1. `EmpireIntelCheck/` is Test Package 1, a passive in-client check (see its README.txt). EmpireIntel itself is not built yet. The v1 design is in
-[`EmpireIntel_Docs/Architecture.md`](EmpireIntel_Docs/Architecture.md) and is waiting for approval. The first package is a passive in-client check that discovers what the Legacy API exposes.
+**Status (2026-11-16):** EmpireIntel 0.6.0 is on `main`. EmpireIntel 0.7.x (the plan window) is on branch `p2-4b-window`
+(pull request #17), in its live retest. The current state is always in
+[`EmpireIntel_Docs/Session_Handoff.md`](EmpireIntel_Docs/Session_Handoff.md).
 
-## Alt data
-EmpireIntel reads alt data (level, class, rested XP, professions) from [DataStore](https://github.com/Thaoky/DataStore) when you
-have it installed (Altoholic users already do), and from its own per-character snapshots otherwise. DataStore is a separate addon by its own author
-under its own license; EmpireIntel never bundles or copies it.
+## What it does
+- Records each character you play: level, XP, rested XP, professions, race, faction, realm. Alts not yet logged in come
+  from [DataStore](https://github.com/Thaoky/DataStore) if you have it (Altoholic users do); it works without it.
+- Reads the account's Legacy points (earned, available, spent) and the 65 challenges with what is left, after the unlock.
+- Plans a route to a Legacy target (Fastest) or follows your own plan (My plan), in a window with a minimap button,
+  and in chat. Every time is a labelled estimate, with the unverified rules it uses.
+- Chat commands: `/ei`, `/ei alts`, `/ei unlock`, `/ei rest`, `/ei milestones`, `/ei legacy`, `/ei next`, `/ei plan`,
+  `/ei rules`, `/ei version`, `/ei off`, `/ei on`.
 
 ## Layout
-- `EmpireIntelCheck/` Test Package 1 (throwaway, read-only). `Tests/` offline suite: `lua5.1 Tests/run.lua` and `lua5.3 Tests/run.lua`.
-- `tools/build_package.py` builds and verifies `dist/EmpireIntelCheck_AddOns.zip`.
-- `EmpireIntel_Docs/` governance (start with `Project_Bible.md`), requirements, decisions, architecture, compatibility notes, risks,
-  the GoldIntel reuse audit and the DataStore/Altoholic review.
+- `EmpireIntel/` the addon (its `README.txt` has install, test and rollback steps for the current version).
+- `EmpireIntelCheck/` a read-only check addon used to prove client behaviour before EmpireIntel relies on it.
+- `Tests/` the offline suite: `lua5.1 Tests/run.lua` and `lua5.3 Tests/run.lua`.
+- `tools/build_package.py` builds and verifies the zip: `python3 tools/build_package.py EmpireIntel`.
+- `EmpireIntel_Docs/` the project documents (start with `CODE_STANDING_ORDERS.md` and `Project_Bible.md`).
+- `THIRD_PARTY.md` third-party sources (copied with credit, informed by, or read at run time).
 
-## Contributing
-See `CONTRIBUTING.md`. Never attach SavedVariables files, character names or account details to issues or pull requests.
+## Privacy
+Never attach SavedVariables files, character names or account details to issues or pull requests.
 
 Licensed under the MIT License (see `LICENSE`).

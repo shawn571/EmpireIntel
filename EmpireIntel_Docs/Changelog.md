@@ -2,6 +2,48 @@
 
 Append-only. Newest first.
 
+## 2026-11-21 | S-073 | P2-4b closed; #17 merged; the target box design for P2-4c
+- D-077. 0.7.5 passed; P2-4b closed; #17 merged into main (EmpireIntel 0.7.5 on main). Phase2_Plan.md 1.15.0 10.4: the target box split into progress text and a "Plan to" control (P2-4c, with R-6).
+
+## 2026-11-20 | S-072 | EmpireIntel 0.7.5: the Fastest route's rules; the prompt on main (#18); personal-data scan
+- D-076. #18 merged (70f8062): the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main; main merged into `p2-4b-window`. 0.7.5: R-1 (no assumed profession), R-2 (highest skill is the path), R-3, R-5 (Up next as row 1, step numbers), R-7 (prerequisite rows), the cap in the rules table. 545 tests (Lua 5.1 and 5.3); 12/12 mutants. Personal-data scan of all branches: no GUIDs, account folder numbers or character names found.
+
+## 2026-11-20 | S-071 | Route rules R-1..R-7 planned; Q-R answered (documentation only)
+- D-075. Emblem and +1 accepted. Phase2_Plan.md 1.13.0: 12.5 (Q-R answers; a character picker on the card), section 13 (Fastest picks characters itself; why the Hunter learned crafts and Tailoring 225 was left out, from an offline replay; rules R-1..R-7; proposal: R-1, R-2, R-3, R-5, R-7 as P2-4b fix 0.7.5, R-6 in P2-4c). No code.
+
+## 2026-11-20 | S-070 | Repository public on purpose; cross-realm result; Hardcore pool and Skyborne in the plan (documentation only)
+- D-074. CODE_STANDING_ORDERS 1.4.0 section 7, Project_Bible section 7, R-09: public on purpose, every push checked for names, GUIDs and account names. EI-E-38 to EI-E-40. Phase2_Plan.md 1.12.0: 12.2 two points pools (normal realms, Hardcore), 12.2b Skyborne by faction, 12.3 Skyborne atlases in the check; Q-R-5 answered, Q-R-6 added.
+
+## 2026-11-20 | S-069 | Build 71037 realm evidence; realm-identity plan (documentation only)
+- D-073. Compatibility_Notes EI-E-34..38 (empty realm names on 71037, DataStore's blank-realm keys, GUID server numbers per realm, the user's !RealmFix shim, the "Skyborne" race file). Phase2_Plan.md 1.11.0 section 12: realm identity by GUID server number, other realms and test characters, the check's trim brought forward; Q-R, Q-R-1..5. Risk_Register R-25, R-26. No code.
+
+## 2026-11-16 | S-068 | Documents brought up to date (documentation only)
+- D-072. Project_Bible 2.0.0, Architecture 3.0.0 (as built), Requirements 2.0.0, Risk_Register 2.0.0, Compatibility_Notes 2.0.0 (EI-E-33), CODE_STANDING_ORDERS 1.3.0; README, CONTRIBUTING, NEXT_SESSION_PROMPT step 5, status lines of Legacy_Rules, Phase2_Plan, Phase3_Legacy_Plan, Release_Pipeline; the 2026-11-03 reviews marked historical; `reviews/` removed. No code change.
+
+## 2026-11-14 | S-067 | D-071 standing permissions recorded (documentation only)
+- The user's paragraph added word for word at the top of NEXT_SESSION_PROMPT.md; Decisions.md D-071; handoff: 0.7.4 installed, retest under way.
+
+## 2026-11-14 | S-067 | Retest build EmpireIntel 0.7.4: one row per Legacy milestone, points once per account, emblem at portrait size (branch `p2-4b-window`, not merged)
+- D-070. Retest on 0.7.3: step 2 passed, step 3 partial. 0.7.4: route steps split at milestones; missing milestone rows added to My plan at load; points counted once per account in both modes; emblem about the portrait's size. 536 tests (Lua 5.1 and 5.3); 11/11 mutants. Phase2_Plan.md 1.10.0 section 11.7: Questie read dropped; no bundled quest data; P2-4c adds any milestone row and assumes no profession.
+
+## 2026-11-14 | S-066 | Standing order D-068 (third-party add-ons); plan inputs D-069 (documentation only)
+- D-068 recorded with the user's words in CODE_STANDING_ORDERS.md 1.2.0 section 8, NEXT_SESSION_PROMPT.md, Decisions.md; Project_Bible.md section 6 updated; THIRD_PARTY.md created. D-003 superseded in part (MIT and CC BY copy with credit).
+- D-069: answers to Phase2_Plan.md 11.4 and plan inputs; Phase2_Plan.md 1.9.0 sections 11.5 (P2-4c, P2-4d, P2-4e, Q-P2-4f, the check's file size) and 11.6 (Questie read vs D-068; pfQuest's data license). No code; nothing started.
+
+## 2026-11-09 | S-065 | Retest build EmpireIntel 0.7.3: chains, selection card, notes on hover, emblem size; plan for items 5-7 (branch `p2-4b-window`, not merged)
+- D-066, D-067. Retest on 0.7.2: step 6 passed, 2 and 3 failed. 0.7.3: whole prerequisite chains move in order; the card follows the selected row; notes on hover (tooltips at the pointer) and on the card; fixed badge and emblem sizes. 526 tests (Lua 5.1 and 5.3); 15/15 mutants.
+- Phase2_Plan.md 1.8.0 section 11: all options in the window (into P2-4c), realistic levelling time (P2-4e, with the quest-log, Questie and Wowhead evidence), what is captured at login; for approval, no code.
+
+## 2026-11-09 | S-064 | Retest build EmpireIntel 0.7.2: finding 10 and repeated steps (branch `p2-4b-window`, not merged)
+- D-065. My plan rows count from the earlier steps ("covered by step n"); repeated saved steps removed at load, said in chat. 519 tests (Lua 5.1 and 5.3). Q-P2-4c and Q-P2-4d approved with conditions (L-17 stays unverified); not started.
+
+## 2026-11-09 | S-063 | P2-4b live gate partly passed; retest build EmpireIntel 0.7.1; plan for P2-4c and P2-4d (branch `p2-4b-window`, not merged)
+- D-063 (the user's findings 1-11), D-064. Gate steps 1, 4, 5, 7 passed. 0.7.1 fixes items 1-9: prerequisites kept on every My plan edit, the next skill milestone without duplicates, an edit bar and note tooltips, ignored characters' steps marked, the target button labelled, the realm-type badge, the game's faction icon, a refresh when combat ends, "Account" and today's NOW in both modes. 514 tests (Lua 5.1 and 5.3); 22/22 new mutants. EI-E-32. P2-4b_Report.md section 6.
+- Phase2_Plan.md 1.7.0 section 10: P2-4c (profession choices, setup wizard) and P2-4d (rested XP in the route, the 105% rule as unverified L-19, rested priority), for approval; no code.
+
+## 2026-11-08 | S-062 | P2-4b built: EmpireIntel 0.7.0, the plan window (branch `p2-4b-window`, not merged)
+- D-061 (plan approved with the fill path), #16 merged (9cb1d10). The window, the Up Next card, both modes, own scrolling, drag, in-place edit, right-click menu, resizing with saved size and place, Escape, the minimap button, the compartment, the DataStore faction getter. One fill path with a SetColorTexture read-back and the white-texture fallback. No format change, no TOC header change. 485 tests (Lua 5.1 and 5.3); 21/21 new mutants. D-062, P2-4b_Report.md.
+
 ## 2026-11-08 | S-061 | P2-4a closed; mockup approved; P2-4b build plan for approval (documentation only)
 - D-060. #15 merged (72f4192). Phase2_Plan.md 1.6.0 section 9: the P2-4b plan (EmpireIntel 0.7.0: files, `/reload`, no saved-data change, tests, live gate, the DataStore faction getter); Q-P2-4b-1..4. No code.
 

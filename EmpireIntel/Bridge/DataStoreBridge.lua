@@ -5,7 +5,7 @@ local ADDON, EI = ...
 --   Reads your characters from DataStore, live, when DataStore is installed. This is the ONLY file allowed to
 --   touch DataStore (static test). DataStore is All Rights Reserved: it is used at run time only, never copied.
 --
--- RULES (Phase2_Plan.md section 5, approved Q-P2-2)
+-- RULES (Phase2_Plan.md section 5, approved Q-P2-2; GetCharacterFaction added in P2-4b, D-059, 9.4)
 --   * Read-only getters only, from the approved list below; dsCall refuses any other name. All were checked live
 --     on the launch build by TP-1 T5/T6 (EI-E-07). Nothing that scans, sets or requests.
 --   * The GUID comes from DataStore's own DataStore_CharacterGUIDs table, read only.
@@ -34,6 +34,7 @@ B.ALLOWED = {
   IterateCharacters = true, GetCharacterLevel = true, GetCharacterClass = true, GetRestXP = true, IsResting = true,
   GetLastLogout = true, GetModuleLastUpdateByKey = true,
   GetProfession1Name = true, GetProfession1Rank = true, GetProfession2Name = true, GetProfession2Rank = true,
+  GetCharacterFaction = true,                -- P2-4b (Q-P2-4a-3, D-059): read-only, never stored
 }
 
 local function store() return P.env.DataStore end
@@ -86,6 +87,15 @@ local function readCharacter(ds, errs, key, id, guids, now)
   if ok and num(v) and v >= 1 then c.level = v end
   local ok2, _, token = dsCall(ds, errs, 'GetCharacterClass', key)
   if ok2 then c.class = str(token) end
+  -- faction (P2-4b): only Alliance or Horde is accepted; anything else is counted as a DataStore error
+  local okF, fv = dsCall(ds, errs, 'GetCharacterFaction', key)
+  if okF then
+    if fv == 'Alliance' or fv == 'Horde' then c.faction = fv
+    elseif fv ~= nil and fv ~= '' then
+      errs.n = errs.n + 1
+      errs.first = errs.first or ('GetCharacterFaction returned ' .. safeText(fv))
+    end
+  end
   ok, v = dsCall(ds, errs, 'GetRestXP', key)
   if ok and num(v) and v >= 0 then c.rest = v end
   ok, v = dsCall(ds, errs, 'IsResting', key)

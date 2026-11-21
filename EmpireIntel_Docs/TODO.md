@@ -1,11 +1,11 @@
 # EmpireIntel TODO
 
-DOC VERSION: 1.4.0  |  UPDATED: 2026-11-08 (session S-058)
+DOC VERSION: 1.6.0  |  UPDATED: 2026-11-16 (session S-068)
 
 ```
-CURRENT PHASE:            Phase 2: P2-4a closed (D-060); P2-4b build plan written (Phase2_Plan.md section 9), for approval.
-IMPLEMENTATION APPROVED:  none open. P2-4b code waits for Q-P2-4b-1.
-OPEN BLOCKERS:            Q-P2-4b-1..4
+CURRENT PHASE:            Phase 2: P2-4b closed (0.7.5, D-077), merged. Next: EmpireIntelCheck 0.1.10-tp1 (trim, realm and Skyborne probes), then P2-4r.
+IMPLEMENTATION APPROVED:  P2-4b (D-061) and its fixes (D-063, D-065, D-066, D-070). Next, in order, each after the one before closes: P2-4c (0.8.0, 0.8.1), P2-4d, P2-4e (D-065, D-069, D-070).
+OPEN BLOCKERS:            the user's retest on 0.7.4 (gate steps 3, 8); merge approval; closing P2-4b
 ```
 
 Rules: work only on the current phase. A phase is complete only when its exit test passes. Mark tasks `[x]` with date and session.
@@ -55,16 +55,16 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] P3-1 live gate passed; 0.5.1 checked; **closed** (D-042)
 - [ ] P3-2 saved summary: locked (needs approval and a format change)
 - [ ] P3-3 per-tree detail: locked (needs Q-T4)
-- Exit test: Architecture section 9 exit criteria.
+- Exit test: each increment's live gate (P3-1 passed, D-042).
 
 ## Release pipeline (Release_Pipeline.md): design APPROVED (D-018, D-020); implementation NOT authorized; stage 0
 - [x] S-004: design written
 - [x] S-005: user approved the design with two amendments (report task undelivered; saved-data restore only with explicit approval) and answered Q-R1..Q-R6
-- [ ] **User:** review the first launch results, then decide whether to authorize Stage 1
+- [ ] **User:** decide whether to authorize Stage 1 (releases are by hand until then)
 - Undelivered dependencies: report task (does not exist), installer, Claude's separate GitHub identity (before Stage 2)
 - Implementation tasks are listed only after Stage 1 is authorized.
 
-## Phase 2: pre-25 features (AUTHORIZED, D-027; one approval per increment; Phase2_Plan.md)
+## Phase 2: characters, views and the route planner (AUTHORIZED, D-027, D-054, D-055; one approval per increment; Phase2_Plan.md)
 - [x] Q-P2-1 approved with realm field and no P_TICK (D-028)
 - [x] P2-1 Foundation and own snapshot: EmpireIntel 0.2.1, closed by the user 2026-11-05 (D-029)
 - [x] Q-P2-2 approved 2026-11-06
@@ -98,10 +98,37 @@ Rules: work only on the current phase. A phase is complete only when its exit te
 - [x] Static mockup of the window (both modes, Up Next card, parts) published for approval (S-060)
 - [x] Mockup approved; P2-4a **closed** (D-060)
 - [x] P2-4b build plan written: Phase2_Plan.md section 9 (S-061)
-- [ ] **User:** Q-P2-4b-1..4 (approve the P2-4b plan); merge the plan pull request
-- [ ] P2-4b build: EmpireIntel 0.7.0 (window, minimap button, compartment, DataStore faction getter), after approval
+- [x] Q-P2-4b-1..4 approved with the fill path (D-061); #16 merged (9cb1d10)
+- [x] P2-4b built: EmpireIntel 0.7.0 on branch `p2-4b-window`; 485 tests, 21/21 mutants (S-062, D-062)
+- [x] Live gate on 0.7.0: steps 1, 4, 5, 7 passed; findings 1-11 (D-063, 2026-11-09)
+- [x] 0.7.1 built for the retest (items 1-9): 514 tests, 22/22 mutants (S-063, D-064)
+- [x] P2-4c and P2-4d planned: Phase2_Plan.md section 10 (S-063)
+- [x] Finding 10 and repeated steps fixed: 0.7.2, 519 tests (S-064, D-065)
+- [x] Q-P2-4c and Q-P2-4d answered (D-065): approved with conditions; L-17 stays unverified
+- [x] Retest on 0.7.2: step 6 passed; 2 and 3 failed (D-066)
+- [x] 0.7.3 built: chains, selection card, notes on hover, emblem size; 526 tests, 15/15 mutants (S-065, D-067)
+- [x] Items 5-7 planned: Phase2_Plan.md section 11 (S-065)
+- [x] Section 11.4 answered; plan inputs and standing order D-068 recorded (S-066, D-068, D-069)
+- [x] Q-D068-1 (Questie read dropped) and Q-D068-2 (no bundled quest data; LibForeverData and pfQuest read if installed) answered (D-070)
+- [x] Retest on 0.7.3: step 2 passed, step 3 partial (D-070); 0.7.4 built: 536 tests, 11/11 mutants (S-067)
+- [x] 0.7.4 retest: the Hunter's order and the milestone rows confirmed from the saved file (D-073)
+- [x] Emblem and +1 accepted (D-075)
+- [x] Q-R7, Q-R7-a, Q-R7-b answered (D-076); #18 merged (prompt on main)
+- [x] 0.7.5 built: R-1, R-2, R-3, R-5, R-7, the cap in the rules table; 545 tests, 12/12 mutants (S-072)
+- [x] 0.7.5 test passed; #17 merged; **P2-4b closed** (D-077); scan findings left as they are
+- [ ] EmpireIntelCheck 0.1.10-tp1: trim (under 128 KB), realm and Skyborne probes (Phase2_Plan.md 12.3) (approved, Q-R-4, D-077)
+- [ ] P2-4r: realm identity, two points pools, Skyborne labels, the card's character picker (section 12)
+- [ ] P2-4c: with R-6, Q-R7-b and the target box design (10.4)
+- [x] Build 71037 realm evidence recorded: EI-E-34..38 (D-073)
+- [x] Realm plan written: Phase2_Plan.md section 12 (S-069)
+- [x] Cross-realm test: account-wide across normal realms (EI-E-39); Hardcore its own pool, untested (EI-E-40) (D-074)
+- [x] Q-R, Q-R-1..4, Q-R-6 answered (D-075); P2-4r gains the card's character picker
+- [ ] EmpireIntelCheck 0.1.10-tp1 (short quest check, file under 128 KB): with P2-4e, not before
+- [ ] P2-4c (profession choices, setup wizard), only after P2-4b closes
+- [ ] P2-4d (rested XP in the route), only after P2-4c closes
+- [ ] **User (any time):** the rested-kill check for L-17 (README 0.6.0 step 8); the 105% test for L-19 once the alts are set up (Phase2_Plan.md 10.3)
 - [ ] Next check version (setter labels "ok, no return value", SetColorTexture read-back, full UI result per character): not built yet (D-059)
 - [ ] P2-4 old build line above (0.6.0 plus EmpireIntel_Plan 1): superseded by D-054; #11 stays unmerged, reference only
 - [ ] When #10 is next edited: P3-2 becomes saved-data format 3 (D-055, D-056); Q-P3-2a later
 
-## Later phases: see Architecture.md section 10 (not approved)
+## Next increments: Phase2_Plan.md sections 10-11 (approved, in order after P2-4b closes); Phase 3 P3-2 and P3-3 locked

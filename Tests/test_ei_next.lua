@@ -154,10 +154,10 @@ end)
 ---------------------------------------------------------------------------
 T.describe('P2-4a: the rules table', function()
   local EI = pureEI()
-  T.it('has L-1 to L-18, each with a status and a source', function()
-    T.eq(#EI.RouteRules.LIST, 18)
+  T.it('has L-1 to L-18 and the user\'s route rules R-1, R-2 (D-075), each with a status and a source', function()
+    T.eq(#EI.RouteRules.LIST, 20)
     for i, r in ipairs(EI.RouteRules.LIST) do
-      T.eq(r.id, 'L-' .. i)
+      T.eq(r.id, i <= 18 and ('L-' .. i) or ('R-' .. (i - 18)))
       T.truthy(({ confirmed = 1, partly = 1, user = 1, unverified = 1 })[r.status], r.id)
       T.truthy(type(r.src) == 'string' and r.src ~= '' and type(r.text) == 'string', r.id)
     end
@@ -168,9 +168,10 @@ T.describe('P2-4a: the rules table', function()
     T.truthy(l11.text:find('after a character reaches 50, counting zones explored before', 1, true))
     T.eq(EI.RouteRules.EXPLORER_LEVEL, 50)
   end)
-  T.it('counts: 18 rules, 11 unverified (partly or unverified)', function()
+  T.it('counts: 20 rules, 11 unverified (partly or unverified); R-1 and R-2 are the user\'s', function()
     local n, u = EI.RouteRules.Counts()
-    T.eq(n, 18); T.eq(u, 11)
+    T.eq(n, 20); T.eq(u, 11)
+    T.eq({ EI.RouteRules.BY_ID['R-1'].status, EI.RouteRules.BY_ID['R-2'].status }, { 'user', 'user' })
   end)
   T.it('the XP table matches the bars measured on Forever (EI-E-14: level 6 3600, level 12 10100)', function()
     T.eq(EI.RouteRules.XP[6], 3600)
@@ -263,14 +264,10 @@ T.describe('P2-4a: the route engine', function()
     local any = build(EI, { rows = rowsToday(), target = 16, ruleset = 'normal' })
     T.eq(any.excluded.ruleset, 0)
   end)
-  T.it('learning a craft is planned only with a free primary slot and known professions (L-6)', function()
+  T.it('R-1 (D-075): a profession is never assumed: no craft step on a character without it, even with a free slot', function()
     local free = build(EI, { rows = { row(C1, { name = 'A', class = 'MAGE', level = 30, xp = 0, professions = { { name = 'Mining', skill = 1, max = 75 } } }) }, target = 16 })
-    local learned = 0
-    for _, s in ipairs(free.steps) do
-      for _, p in ipairs(s.parts) do if p.kind == 'skill' and p.learn then learned = learned + 1 end end
-    end
-    T.truthy(learned >= 1, 'one craft learned in the free slot')
-    T.eq(learned, 1, 'only one slot is free')
+    for _, s in ipairs(free.steps) do T.falsy(s.kind == 'craft', 'no craft step') end
+    T.eq(free.notPlanned, { 'Alchemy', 'Blacksmithing', 'Enchanting', 'Engineering', 'Leatherworking', 'Tailoring' })
     local unknown = build(EI, { rows = { row(C1, { name = 'B', class = 'MAGE', level = 30, xp = 0 }) }, target = 16 })
     for _, s in ipairs(unknown.steps) do T.falsy(s.kind == 'craft', 'no craft without known professions') end
   end)
@@ -344,7 +341,7 @@ T.describe('P2-4a: /ei next, auto mode', function()
     local W = session({ eidb = today() })
     local out = run(W, 'next')
     T.truthy(find(out, 'next (fastest route to 16 Legacy points; 1 earned [inferred'), dump(out))
-    T.truthy(find(out, '18 rules, 11 unverified: /ei rules'), dump(out))
+    T.truthy(find(out, '20 rules, 11 unverified: /ei rules'), dump(out))
     T.truthy(find(out, '1. Cee Two Priest 6: level 10, then Tailoring 56 -> 150 (train Journeyman): +1 (Journeyman Tailor), ~'), dump(out))
     T.truthy(find(out, '[estimate; unverified: L-4 L-5 L-15 L-16 L-17]'), dump(out))
     T.truthy(find(out, 'Next reward at 15: Air Rifle.'), dump(out))
@@ -389,9 +386,9 @@ end)
 
 ---------------------------------------------------------------------------
 T.describe('P2-4a: /ei plan and my plan', function()
-  T.it('/ei plan shows the settings and the commands', function()
+  T.it('/ei plan help shows the settings and the commands', function()
     local W = session({ eidb = today() })
-    local out = run(W, 'plan')
+    local out = run(W, 'plan help')
     T.truthy(find(out, 'plan: mode auto (fastest route), target 16, my plan 0 steps, ignored: none'), dump(out))
     T.truthy(find(out, '/ei plan copy'), dump(out))
   end)
@@ -433,11 +430,17 @@ T.describe('P2-4a: /ei plan and my plan', function()
     local W = session({ eidb = today() })
     run(W, 'plan copy')
     local mine = W.env.EmpireIntelDB.plan.mine
-    local second = mine[2]
-    run(W, 'plan top 2')
-    T.eq(W.env.EmpireIntelDB.plan.mine[1], second)
+    local first, second = mine[1], mine[2]
+    -- D-063 item 1: Tailoring 150 needs level 10 (L-4), so the level step moves to the top with it
+    local out = run(W, 'plan top 2')
+    T.eq(W.env.EmpireIntelDB.plan.mine[1], first)
+    T.eq(W.env.EmpireIntelDB.plan.mine[2], second)
+    T.truthy(find(out, 'moved step 2 to the top. Moved with it, in order: Cee Two Level 10.'), dump(out))
     local n = #W.env.EmpireIntelDB.plan.mine
-    run(W, 'plan remove 1')
+    out = run(W, 'plan remove 1')
+    T.truthy(find(out, 'not removed: Cee Two Tailoring 150 needs level 10 first'), dump(out))
+    T.eq(#W.env.EmpireIntelDB.plan.mine, n)
+    run(W, 'plan remove 2')
     T.eq(#W.env.EmpireIntelDB.plan.mine, n - 1)
     T.truthy(find(run(W, 'plan remove 99'), 'no step 99'))
     run(W, 'plan clear')
@@ -480,10 +483,11 @@ T.describe('P2-4a: /ei plan and my plan', function()
   T.it('/ei rules lists every rule with its status and source', function()
     local W = session({})
     local out = run(W, 'rules')
-    T.truthy(find(out, 'rules: 18 planner rules, 11 unverified'), dump(out))
+    T.truthy(find(out, 'rules: 20 planner rules, 11 unverified'), dump(out))
     T.truthy(find(out, 'L-17 [unverified] While rested, kills give double XP'), dump(out))
     T.truthy(find(out, 'L-11 [user] Explorer'), dump(out))
-    T.eq(#out, 19)
+    T.truthy(find(out, 'R-1 [user] Never assume a profession will be learned'), dump(out))
+    T.eq(#out, 21)
   end)
 end)
 
@@ -541,17 +545,7 @@ T.describe('P2-4a static rules', function()
     T.truthy(c:find('P.Legacy.Read', 1, true))
     for _, n in ipairs({ 'GetCategoryList', 'GetAchievementInfo', 'LegacySystem' }) do T.falsy(c:find(n, 1, true), n) end
   end)
-  T.it('no window code (D-056): frames only in Platform/Events.lua and Platform/Scheduler.lua; no UI calls', function()
-    local _, files = F.loadAddon(F.new(), 'EmpireIntel')
-    for _, f in ipairs(files) do
-      local c = code(f)
-      if f ~= 'Platform/Events.lua' and f ~= 'Platform/Scheduler.lua' then T.falsy(c:find('CreateFrame', 1, true), f) end
-      for _, ui in ipairs({ 'UIParent', 'SetPoint', 'CreateTexture', 'CreateFontString', 'Minimap', 'UISpecialFrames',
-        'AddonCompartment', 'GameTooltip', 'SetPortraitTexture' }) do
-        T.falsy(c:find(ui, 1, true), ui .. ' in ' .. f)
-      end
-    end
-    local toc = assert(io.open(DIR .. 'EmpireIntel.toc')):read('*a')
-    T.falsy(toc:find('AddonCompartment', 1, true) or toc:find('IconTexture', 1, true), 'no TOC header for P2-4b')
+  T.it('P2-4a had no window code (D-056); from 0.7.0 the P2-4b static rules apply (test_ei_window.lua)', function()
+    T.truthy(io.open(root .. '/Tests/test_ei_window.lua'), 'the P2-4b rules exist')
   end)
 end)

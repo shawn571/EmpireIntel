@@ -1,10 +1,12 @@
-# EmpireIntel Phase 2 Plan: pre-25 features
+# EmpireIntel Phase 2 Plan: characters, views and the route planner
 
-DOC VERSION: 1.6.0  |  DATE: 2026-11-08 (S-061)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9: the P2-4b build plan, for approval (Q-P2-4b).**
+DOC VERSION: 1.15.0  |  DATE: 2026-11-21 (S-073)  |  STATUS: **Phase 2 authorized for the pre-25 features only (D-027). P2-1, P2-2, P2-3 and P2-4a closed (D-029, D-032, D-041, D-060). Section 7 superseded (D-054). Section 8 approved (D-055, D-056); the window mockup approved (D-060). Section 9 approved (D-061), built as 0.7.0, retest 0.7.1 (D-063, D-064). Section 10: P2-4c and P2-4d approved with conditions (D-065); each starts only after the one before closes (P2-4b, then P2-4c). Section 11: the user's items 5-7 of D-066, answered (D-069) with plan inputs under D-068 (third-party add-ons); nothing started until P2-4b closes.**
 
-**Phase 2 builds EmpireIntel's pre-25 features:** unlock progress, rested XP, milestones ahead and "what next" (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4.
+**Where to look (2026-11-16):** sections 1-8 are the history of P2-1 to P2-4a (all closed or superseded); **section 9** is P2-4b, the plan window (**closed** as 0.7.5, D-077); **sections 10 and 11** are the approved next increments P2-4c, P2-4d and P2-4e and their inputs; **section 12** is the realm-identity plan after build 71037 (P2-4r, approved D-075); **section 13** is the Fastest route's rules R-1..R-7 (D-075, for approval).
 
-Out of scope for Phase 2: any Legacy call beyond the P3-1 reads (used by P2-4 only, D-052), trait-system calls, UI windows (commands only), the release pipeline (Stage 1 not authorized), GoldIntel (handled elsewhere).
+**Phase 2 builds EmpireIntel's character views and the Legacy route planner:** unlock progress, rested XP, milestones ahead, the route and the plan window (Requirements FR-PRE-1..4, FR-REST-1, FR-PROF-1, FR-ALT-1, FR-PLAN-1..3). P2-1 to P2-3 use no Legacy API. **P2-4 uses the Legacy reads proven in P3-1, on command only, under the Legacy lock rule (section 7.3, D-052).** Perks and the per-character cap wait for Q-T4. (It was first authorized for "pre-25 features" only, D-027; the account has since unlocked Legacy, and the planner was approved on top, D-054, D-055.)
+
+Out of scope for Phase 2: any Legacy call beyond the P3-1 reads (used by P2-4 only, D-052), trait-system calls, the release pipeline (Stage 1 not authorized), GoldIntel (handled elsewhere). (The 2026-11-05 text also excluded UI windows; the window was approved later, D-054, D-055, D-060.)
 
 ## 1. Increments
 
@@ -583,3 +585,304 @@ The approved mockup (D-060): https://claude.ai/artifact/GrBwFsCBY7uZssod6mkLA1 (
 - Otherwise fills use `SetTexture` on our own `Media/White8.tga` (an 8x8 white file; our shipped texture loaded in 0.1.9, EI-E-29) plus `SetVertexColor`, read back with `GetVertexColor`. If both fail: one `UNEXPECTED` line, and the window still opens with text only.
 - The path that ran is reported: once in chat when the window first opens, and in `/ei plan help`. Not saved (no format change).
 - Tests cover both paths and the double failure.
+
+## 10. P2-4c and P2-4d: profession choices with a setup wizard, and rested XP in the route (approved D-065; D-063 items 10 and 11; not started)
+
+**Answers (D-065):** Q-P2-4c yes; c-1 yes, inside format 2; c-2 yes, nothing is planned for a free slot until the user chooses a profession or "planner's choice" in the wizard; c-3 yes, gathering skills appear, marked as earning no Legacy points. Q-P2-4d yes; **d-1 no: L-17 stays unverified until the user's rested-kill check on Forever**; d-2 yes; d-3 yes (1.4 levels, 0.90). Order: P2-4c after P2-4b closes, P2-4d after P2-4c, one increment at a time.
+
+Two increments, one approval each, both after P2-4b closes. Proposed order: **P2-4c first** (it removes a wrong assumption from today's route), then P2-4d.
+
+### 10.1 Why the route showed Alchemy for C4 (item 10) [file: code; screenshot]
+
+`Core/Route.lua` lets a character with a free primary slot (fewer than two, L-6) **learn** any craft when that is the cheapest next point (`learn = true`). C4 Druid has no Alchemy and a free slot, so the route chose "learn Alchemy". In chat the step says "learn Alchemy"; **in the window the word was lost**: `PlanView.StepFacts` writes "Level 10, then Alchemy 150" when a level part comes first. Both are wrong by the user's rule: a profession a character has not learned is never assumed.
+
+### 10.2 P2-4c: what it delivers (EmpireIntel 0.8.0)
+
+1. **Profession choices per character.** For each character: its learned professions (read, as now) plus, for each free primary slot, one of: a profession the user picks, **"let the planner choose"**, or **"none"**.
+2. **The route uses only** learned professions, the user's picks, and, where the user said "let the planner choose", the planner's pick. With no answer for a free slot, the route assumes nothing: that character's craft points are not planned, and **one row says "C4: choose a profession (1 free slot)"** (no time, no points). A planner's pick is written **"learn Alchemy (planner's choice)"**, in chat, the window and the card. The window never drops "learn" again (test).
+3. **A first-run setup wizard** (in the spirit of ElvUI's install; our own frames and look, no templates, D-060). It opens the first time the window opens after 0.8.0, and never again unless asked. Pages, each with Back, Next and Skip:
+   1. Welcome: what EmpireIntel plans, and that every answer can be changed later.
+   2. Characters to include: every known character with a tick (unticked = ignored, the same list as `/ei plan ignore`).
+   3. Professions: per included character, its learned professions (read only) and a choice per free slot (the six crafts, the three gathering skills, "let the planner choose", "none").
+   4. Target: Cap 16, next reward or next point.
+   5. Default view and the minimap button: Fastest or My plan; button on or off.
+   6. Done: a summary; Finish saves everything at once.
+4. **Rerun:** `/ei setup`, a "Setup..." button in the window's header, and an entry in the game's AddOns options **if the client has the options API** (checked at run time under `pcall`; if absent, one `UNEXPECTED` line and the other two ways still work). Every answer is also changeable later in the window (right-click a character's row: "Professions...", "Include / Ignore").
+5. **Saved data (needs approval, Q-P2-4c-1):** in the `plan` section, new fields `profs = { ['<GUID>'] = { 'Alchemy', 'auto' } }` (a profession name, `'auto'` = planner's choice, or `'none'`, one per free slot) and `setup = { done = '0.8.0', at = <time> }`. Nothing is converted; older versions ignore the fields. Characters stay stored by GUID.
+6. **Tests** (about 40): no assumed profession anywhere (route, chat, window); planner's choice labelled; the "choose" row; each wizard page; Skip and Back; rerun; read-only saved data; the options-panel probe absent and present. **Package** 0.8.0, `/reload`.
+
+### 10.4 P2-4c: the target box, split in two (D-077, with R-6; for approval with P2-4c)
+
+The 0.7.x box at the top right ("Next reward 3/15", "Cap 3/16") both shows progress and changes the target when clicked, and nothing says it is a button. P2-4c splits it:
+
+| Part | Look | Content |
+|---|---|---|
+| **(1) Progress text** (not clickable) | plain text in the header, left of the control | "Legacy points: 3 · next reward at 15 (Air Rifle)"; past the cap: "Legacy points: 17 · cap 16 (1 over: earned, not spendable)"; all rewards reached: "Legacy points: 56 · all rewards reached". The points come from the game's read, else "(inferred)" |
+| **(2) Plan-to control** | a button with a frame and a down arrow, hover highlight, like the mode switch: "Plan to: Cap (16) ▾" | Click opens our own small menu (no template): **Cap (16)**, **Next reward (15)**, **Next point (4)**, **A number...** (opens the edit bar, 1 to 65), **All 65**. The current choice has a check mark. The numbers in brackets come from the rules table and the cap setting (R-6), never from code |
+
+- **Tooltip of the control:** "The route plans steps until this many points." and one line per choice (what it means; the cap's source: L-12, unverified, editable in Options).
+- **Editable cap (R-6):** Options > General: "Spending cap per character: 16" (saved as `plan.cap` inside format 2, approved with P2-4c's fields); the Cap choice follows it.
+- **Header layout:** title, Fastest / My plan, then the progress text, then the control, then the close button. If the window is narrow, the progress text shortens to "3 pts · next 15".
+- **Tests:** the progress text in each state; every menu choice saves and redraws; the control looks like a button (frame, arrow, hover); the numbers follow the rules table and the cap setting.
+
+### 10.3 P2-4d: rested XP in the route (EmpireIntel 0.9.0)
+
+**What 0.7.x already does [file: code]:** every levelling estimate already spends the character's projected rested pool (L-17: a pool of R saves R of kill XP; saving = min(R, XP to go)), and the tooltip says "rest saves ~X h". What is missing:
+
+1. **(a) The pool grows during the route.** Today the pool is the one projected for *now*. P2-4d projects each character's pool to the moment its step starts: while the user plays other characters (the route's earlier steps, in play hours), a character logged out in an inn gains 5% of a level per 8 h (EI-E-28, confirmed). Assumption to approve (Q-P2-4d-2): **one character is played at a time and the others rest in an inn.** Each step's time then uses the pool it will have, and its row shows the pool ("rested 1.2 lv").
+2. **(b) The 105% rule (new rule L-19, unverified).** As the user describes it: a character that stays logged out in an inn without logging in stops gaining rested XP at 105% of a level (about 7 days at 5% per 8 h) instead of 150%. Not confirmed on Forever, so it is **labelled unverified** wherever it is used. The projection caps an untouched pool at 1.05 levels; **the route adds a step "log in and out on C<n>"** when a resting character reaches about 0.90 levels (about 6 days), after which the pool can grow to 1.5. A time line says when ("in about 2 days").
+3. **(c) Rested priority (alt cycling).** In the default route, a character at or near the cap (1.4 levels or more, or due to reach the cap before its next step) gets a step **"play C<n>: about X h at double XP (rested pool 1.5 lv)"**, placed before the cheapest Legacy step, even when it does not reach a Legacy milestone. Such a step earns 0 points; the route shows it as rested use, and the time to 60 account-wide is the measure. A switch in the wizard and the window, "Rested priority: on" (default on, as asked).
+4. **Saved data:** none beyond P2-4c's (the switch is one field `restPriority` in `plan`, with Q-P2-4c-1).
+5. **Tests** (about 30): pool growth across steps; the 1.05 cap without a login and 1.5 after one; the login step at 0.90; priority ordering and its switch; no change when every pool is empty. **Package** 0.9.0, `/reload`.
+
+**The 105% test for the user (once the alt roster is set up; no code):**
+1. Pick two alts with little or no rested XP, both logged out in an inn on the same day. Note `/ei rest` for both.
+2. Alt A: do not log in for 8 days. Alt B: log in once on day 6 (just log in and out), then leave it.
+3. On day 8 or later, log in on each and type `/ei rest`. Send both lines.
+4. If A shows about 1.05 levels and B about 1.2 or more, the 105% rule holds on Forever (L-19 becomes confirmed). If both show about the same (about 1.2 or more), there is no 105% stop and L-19 is dropped.
+
+### 10.4 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4c | Approve P2-4c as in 10.2 (EmpireIntel 0.8.0)? | Yes, after P2-4b closes |
+| Q-P2-4c-1 | Approve the saved fields `plan.profs`, `plan.setup` (and `plan.restPriority` for P2-4d), additive inside format 2 (no number change, since P3-2 keeps format 3)? | Yes |
+| Q-P2-4c-2 | With no answer for a free slot, plan nothing for it and show "choose a profession" (fewer points planned until you answer)? | Yes |
+| Q-P2-4c-3 | Gathering skills in the wizard's choices (they give no points, L-3, but use a slot, L-6)? | Yes |
+| Q-P2-4d | Approve P2-4d as in 10.3 (EmpireIntel 0.9.0)? | Yes, after P2-4c |
+| Q-P2-4d-1 | Record your words "Use the confirmed rule: a pool of R saves R of kill XP" as confirming L-17 (status user-confirmed, D-063), so it loses its unverified label? | Yes |
+| Q-P2-4d-2 | Assume one character played at a time, the others resting in an inn, for the pool growth? | Yes |
+| Q-P2-4d-3 | Thresholds: rested priority at 1.4 levels or more; the login step at 0.90 levels? | Yes |
+
+## 11. Items 5-7 of D-066 (for approval; no code)
+
+### 11.1 All options in the window (item 5): folded into P2-4c
+
+It fits P2-4c: the wizard asks the questions once, and the same pages stay open as the window's **Options**. Proposal (Q-P2-4c-4):
+
+- **`/ei` opens the window** (today it prints a status line; that line moves to the Options' About page and to `/ei status`). Every command stays as a shortcut.
+- **A gear button in the header** opens Options inside the window (our own frames, D-060), with pages:
+
+| Page | What it holds | Replaces |
+|---|---|---|
+| General | Mode (Fastest / My plan), target, the minimap button on/off, recording on/off, "Run setup again" | `/ei plan mode`, `/ei plan target`, `/ei minimap`, `/ei off` / `on`, `/ei setup` |
+| Characters | One line per character: class, level, realm and realm type, faction, rested now, professions, last seen, source; Include / Ignore; "Professions..." | `/ei alts`, `/ei rest`, `/ei unlock`, `/ei plan ignore` / `unignore` |
+| Professions | The wizard's page: learned professions and the choice per free slot (gathering marked "no Legacy points") | (new, P2-4c) |
+| Legacy | Earned, available, spent; the closest challenges; read on opening the page, never in combat | `/ei legacy`, `/ei milestones` |
+| Rules | L-1..L-n with status and source | `/ei rules` |
+| About | Version, saved-data schema and state, the fill path, the last UNEXPECTED lines | `/ei version`, `/ei plan help` |
+
+- **Row menus** keep the per-step actions (move, add, note, target, ignore, copy the route).
+- The game's AddOns options entry, if the client has the options API (P2-4c point 4), opens the same page.
+- No saved field beyond P2-4c's. Tests: every command's action reachable from the window (one test per row of the table).
+- Size: this roughly doubles P2-4c. **Q-P2-4c-5:** one increment (0.8.0), or two (0.8.0 professions and wizard; 0.8.1 Options)? Recommendation: two, so each has a short live gate.
+
+### 11.2 Realistic levelling time (item 6): new increment P2-4e, after P2-4d
+
+**Why 9 h for C2 6 -> 20 today [file: code]:** the time is the XP from 6 to 20 by the classic table (about 159,600 XP, L-15) divided by the default XP per hour by band (12,000 below 10, 18,000 from 10, L-16 [assumed]) minus the rested saving. No character has a measured rate yet (Q-F2 needs 30 minutes played in one session with a level gained). The defaults are the guess; P2-4e replaces them.
+
+**What the game gives about quests in the log** [inherited from the classic and modern API documentation; **not yet observed on Forever**, so a check comes first]:
+- the list: `GetNumQuestLogEntries`, `GetQuestLogTitle(i)` (title, quest level, headers, complete flag, quest id), or `C_QuestLog.GetInfo(i)` on newer clients;
+- objectives: `GetNumQuestLeaderBoards(i)` and `GetQuestLogLeaderBoard(n, i)` (text such as "Kobold killed: 3/10", type, done), or `C_QuestLog.GetQuestObjectives(id)`;
+- XP: `GetQuestLogRewardXP()` for the selected quest on clients that have it (absent on some classic builds);
+- locations: **classic clients give no objective locations** (no quest map points); that is why Questie exists. The player's own position (`C_Map.GetBestMapForUnit`, `C_Map.GetPlayerMapPosition`) is available. Travel time therefore needs a database of where objectives are.
+
+**What Questie's database could add, read only** [file: Questie's LICENSE.md, fetched 2026-11-09; content inferred from its public structure, to be checked]: quest starters, finishers and objective spawn coordinates (NPCs, objects, items), quest levels and required levels, and (for classic) quest XP. It would be read at run time from an installed Questie through a new Bridge, like DataStore: optional, read only, never stored, degrade when absent. **License:** Questie's LICENSE.md says "when in doubt consider Questie as 'all rights reserved'"; the team tolerates GPLv3 copying but "can not promise all contributors are" fine with it. EmpireIntel is MIT: **no Questie code or data is copied into the repository or the zip** (D-003); only an installed Questie is read in game. Risks: its internal tables are not a public API and can change; its data is classic's, and Forever's quests may differ.
+
+**Why live Wowhead lookups are impossible** [inherited]: addons run in a sandbox with no network and no file access; the only output is the SavedVariables file written at logout. An offline copy of Wowhead's data would mean scraping it, which its terms forbid; not proposed.
+
+**The model (every part labelled):** per character, time to the target level = quest part + grind part.
+- Quest part: for each quest in its log at a fitting level, its XP (game or Questie, labelled which) and its time (objectives x minutes per objective [assumed, then measured] + travel between objectives and to the turn-in from Questie's coordinates at a riding or running speed [assumed]).
+- Grind part: the XP left after the quests, at the character's measured kill rate, or the classic mob-XP formula and kills per hour [assumed], doubled while rested (P2-4d, L-17 unverified).
+- The measured XP per hour (Q-F2) calibrates both when it exists.
+- Quests completed while the user plays are seen at the next snapshot; the estimate updates.
+
+**Steps:** (1) a check, EmpireIntelCheck 0.1.10-tp1: which quest-log functions exist and what they return for the user's log; whether `GetQuestLogRewardXP` exists; the player position; whether Questie is loaded and the shape (names, counts) of its quest tables, nothing copied. (2) Then P2-4e, built on what the check shows. Saved data: a per-character quest summary (ids, levels, XP, objective counts), which is a format change (Q-P2-4e-2).
+
+### 11.3 What is captured at login (item 7) [file: Core/Snapshot.lua, Platform/Unit.lua]
+
+Saved for each character the first time it logs in with EmpireIntel running, and updated at each level, profession change, timer and logout:
+
+| Saved | From | Since |
+|---|---|---|
+| name (with surname), realm, class | `UnitName`, `GetRealmName`, `UnitClass` | format 1 |
+| level, XP, XP to next level | `UnitLevel`, `UnitXP`, `UnitXPMax` | format 1 |
+| rested XP and resting (in an inn or city), and when | `GetXPExhaustion`, `IsResting` | format 1 |
+| professions: name, skill, max, skill line | `GetProfessions`, `GetProfessionInfo` | format 1 |
+| race, sex, faction, ruleset (hardcore or normal), experience preset | `UnitRace`, `UnitSex`, `UnitFactionGroup`, `C_GameRules` | format 2 |
+| measured XP per hour (after 30 minutes with a level gained) | the snapshots themselves | format 2 (`plan.rates`) |
+
+So **race, sex, class, faction, realm, professions and rested are all saved**, as the user listed. **Portraits are not** (the game draws them only for a unit in view, EI-E-30); offline alts show their race and class icons, as now.
+
+**Other useful things that could be captured** (each needs a check probe first, then the user's approval as a format change, Q-P2-4f):
+1. **Bind location** (`GetBindLocation`): the inn the hearthstone is set to. Shows whether the character rests where it logs out.
+2. **Logout zone and resting at logout**: already saved as "resting"; the zone name would make the rested projection's assumption visible.
+3. **Played time** (`RequestTimePlayed`, the `TIME_PLAYED_MSG` event: total and this level): a much better measured rate than login sessions, and it needs no 30-minute session.
+4. **The quest log summary** of 11.2 (for P2-4e).
+5. Not proposed: money, gear, talents, bags (not needed for the plan).
+
+### 11.4 Questions for the user
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-P2-4c-4 | Fold "all options in the window" (11.1) into P2-4c, with `/ei` opening the window? | Yes |
+| Q-P2-4c-5 | Build it as two increments (0.8.0 professions and wizard; 0.8.1 Options) instead of one? | Two |
+| Q-P2-4e | Approve P2-4e (11.2): first the check 0.1.10-tp1, then the quest-and-grind model, after P2-4d? | Yes |
+| Q-P2-4e-1 | Read an installed Questie at run time (optional Bridge, nothing copied, license as quoted)? | Yes, read only |
+| Q-P2-4e-2 | Save a per-character quest summary (a format change, inside format 2)? | Decide after the check |
+| Q-P2-4f | Capture bind location, logout zone and played time (11.3, after a check probe; a format change inside format 2)? | Yes, played time first |
+
+### 11.5 Answers and plan inputs (D-068, D-069; still no code)
+
+**Answers:** Q-P2-4c-4 yes (options in the window, `/ei` opens it). Q-P2-4c-5: two increments, **0.8.0** (profession choices and the wizard), then **0.8.1** (Options). Q-P2-4e yes. e-1: Questie read only, nothing copied, works without it (but see 11.6). e-2: decided after the check. Q-P2-4f yes, played time first.
+
+**Order:** P2-4b closes -> P2-4c (0.8.0, then 0.8.1) -> P2-4d -> P2-4e. One increment at a time; each starts after the one before closes.
+
+**P2-4c and Q-P2-4f (into 0.8.0, with the user's inputs):**
+- Captured per character **at login and on change, never during logout** (unit data is unreliable then, EI-E-08): played time with the game's own request (`RequestTimePlayed`, answered by `TIME_PLAYED_MSG`, total and this level), **gold** (`GetMoney`), **hearthstone location** (`GetBindLocation`) and **zone**. New roster fields inside format 2 (approved: Q-P2-4f, D-069). The request prints the game's own "Total time played" chat lines; the plan is to ask once per login and on level-up only.
+- Roster flags, **approach from Sharpie's Roster (MIT, copied and credited only after its license file is read; else written fresh)**: a character not seen for 7 days, and a character that needs a login after an EmpireIntel update (its record lacks a field the new version captures). Gold per character and the account total on the Characters page.
+- The wizard's last page tells the user to log in once on each character (and lists the ones that need it).
+- **Works without DataStore and Altoholic:** a test runs the whole window with them absent, and a live step repeats it with both disabled.
+- Measured XP per hour: already used in every estimate since 0.6.0 (`Route.Rate`: a character's measured rate replaces the band default). The user's saved file has rates for 7 of 8 characters (the level-1 Hunter has none) [file]. Limit: one rate per character, measured at its current levels, is used for every level ahead; P2-4e refines it with played time and the quest model.
+
+**P2-4d (rested):** two more rested rules, **labelled unverified**: Forever's campfire buff "Camp Benefits" and sleeping-bag buff "Well Rested" (the user's hint; how each changes rested gain is to be checked live: the plan adds one check step per buff, and the rules stay unverified until the user's observation). L-17 stays unverified until the user's rested-kill check (D-065).
+
+**P2-4e (levelling time):**
+- Quest data: **LibForeverData as an optional plugin** (read while the game runs, it is offered for that; never copied: clean room for its code), with **pfQuest as the bundled fallback** (see 11.6 for its data's license).
+- Quest XP: the game's own quest-XP function, which Sharpie's XP plugin uses on Forever (the user's hint): the 0.1.10 check confirms it in one line and stays short (function present, a value for one quest in the log; the player position; whether LibForeverData and pfQuest are loaded).
+- XP per hour and time to level: **reuse Sharpie's XP plugin code with credit** (MIT, after its license file is read), feeding the estimates; cross-checked live against ForeverXP Bar (D-068 point 4).
+- Every estimate labelled with its source (game, LibForeverData, pfQuest, measured, assumed).
+
+**The check's saved file (EmpireIntelCheck 0.1.10, with the short quest check):** the user's file is about 252 KB by Lua's own count against the 256 KB cap (`C.DB_LIMIT`), and the cap's cascade is already dropping documented systems ("size cap") [file]. The largest parts: the Legacy challenges about 101 KB, `latest` (the old discovery results) about 45 KB, `uiLatest` about 41 KB (each atlas's raw size table about 0.5 KB), `docs` about 26 KB, `undoc` about 12 KB. Fix in 0.1.10: stop saving the discovery leftovers no later phase uses (`latest.results`, `docs`, `undoc`, `strongSeen`), keep only names and present/absent in `uiLatest` (no raw size tables), and keep only the Legacy challenges' done/progress text (as D-036 intended). Target: under 128 KB, so the cap is never reached. No change to EmpireIntel itself.
+
+### 11.6 Two points for the user
+
+| ID | Point | Recommendation |
+|---|---|---|
+| Q-D068-1 | e-1 says "Questie read only", but D-068 point 3 allows reading another add-on's data only "when it's offered for that". Questie's quest database is internal to Questie, not offered to other add-ons, and its license is "when in doubt ... all rights reserved" (its LICENSE.md). Drop the Questie read and use LibForeverData (offered) and pfQuest instead? | Yes, drop the Questie read |
+| Q-D068-2 | pfQuest's code is MIT (its LICENSE file, read 2026-11-14), but its README says the vanilla database is "powered by the database of VMaNGOS", whose core repository is GPL v2. Bundling pfQuest's data tables may therefore not be "copy and credit from MIT". Options: (a) do not bundle; read an installed pfQuest's data at run time as an optional plugin instead (if it offers it), (b) bundle only pfQuest's MIT code paths, no data, (c) you check the data's license and decide. pfQuest's data is also vanilla's, not Forever's | (a), until the data's license is clear |
+
+### 11.7 Decided (D-070)
+
+- **Q-D068-1: the Questie read is dropped.** P2-4e reads no Questie data.
+- **Q-D068-2: no quest data is bundled.** P2-4e reads **LibForeverData** while the game runs as an optional plugin, and **pfQuest the same way if installed**. With neither, the levelling estimate uses **grinding only, labelled** ("[estimate: grinding only; no quest data add-on]").
+- **P2-4c also covers** (the user's 0.7.3 notes): (1) **add any milestone row from the window** (a row menu "Add milestone..." and the Options page: any class level 25/45/60 or craft 150/225/300 for any included character, never a duplicate, with its prerequisites, D-063 item 1, D-070); (2) **no profession assumed**: the route gave the level-1 Hunter, who has no professions, both Alchemy and Blacksmithing; under 10.2 points 1-2 and c-2 nothing is planned for his free slots until the user chooses one or "planner's choice" in the wizard.
+
+## 12. Realms after build 71037: identity by GUID server, other realms and test characters, the check's trim (for approval; D-073; no code)
+
+**Why:** since build 71037 the game returns "" for the realm name (EI-E-34); DataStore broke on it (EI-E-35); each realm has its own GUID server number (EI-E-36). EmpireIntel's roster survived (GUID keys; an empty realm is dropped, the last name kept), but new characters have no realm, and the realm-type badge cannot tell the PvP, RP and RP-PvP test characters apart. EmpireIntel must work without the user's "!RealmFix" shim (EI-E-37).
+
+### 12.1 (a) Realm identity by GUID server number
+
+- **The realm is the GUID's server number** (`Player-<server>-<id>`), read from the character's GUID, which the game always gives. It is never guessed from a name.
+- **Name and type are labels on that number**, learned whenever the game gives a non-empty realm name for the played character: name as given, type from the end of the name (PvE, PvP, RP-PvE, RP-PvP; the 0.7.1 rule). Stored once per server number:
+  ```
+  EmpireIntelDB.realms = { ['6796'] = { name = 'CAMWOW US2 Realm 1 PvE', type = 'PvE', src = 'game' | 'user', at = <time> } }
+  ```
+  A new section inside format 2 (additive; older versions ignore it): **Q-R-1, a saved-data change**. The existing roster `realm` field stays as the character's last known name.
+- **A name seen while a realm add-on such as !RealmFix is loaded** cannot be told apart from the game's. Proposal: learn it, mark the source "game or a realm add-on" when such an add-on is loaded (checked by name at run time, read only), and let the user overwrite any label. EmpireIntel never reads the shim's data.
+- **Unknown server number:** shown as **"Unknown realm (6800)"**, never merged with another realm (the GUID differs, so records never merge; views group by server number).
+- **Label it once in the window:** the Options' Characters page (P2-4c 0.8.1) gets a "Realms" list: each server number, its learned or user label, a name field and a type choice (PvE, PvP, RP-PvE, RP-PvP). Until 0.8.1, `/ei realm <number> <type> <name>` (Q-R-2: or wait for the window).
+- **Realm type is a label, never a group.** The badge shows the realm type from the server's label; Hardcore still comes from `C_GameRules.IsHardcoreActive()` per character (the `ruleset` field) and decides the points pool (12.2).
+
+### 12.2 (b) Other realms and test characters in the plan, the Legacy points and the roster
+
+**Answered (D-074):** Legacy points are **account-wide across the normal realms** (PvE, PvP, RP, RP-PvP): the user's PvP-realm character shows the main realm's points (EI-E-39). **Hardcore will have its own points** (Blizzard's statement, reported by the user, untested, EI-E-40). Rules: **new L-19, confirmed** "Legacy points are shared by all normal realms" (src: EI-E-39); **L-18** ("Hardcore characters' Legacy points are kept apart") gets the user's report of Blizzard's statement as its source and stays labelled unverified until a Hardcore realm opens (EI-E-40). (Numbering: the 105% rule and the camp buffs planned in 10.3 and 11.5 become L-20, L-21 and L-22.)
+
+**Two pools, one window:**
+
+| | Normal pool (all normal realms) | Hardcore pool |
+|---|---|---|
+| Characters | every included character whose ruleset is normal, on any normal realm | characters whose `C_GameRules.IsHardcoreActive()` was true (the `ruleset` field) |
+| Earned points | the game's Legacy read on a normal character | the game's read on a Hardcore character (separate) |
+| Route (Fastest) | planned when a normal character is played | planned when a Hardcore character is played |
+| My plan | steps of normal characters | steps of Hardcore characters are marked "Hardcore pool" and skipped while a normal character is played (and the other way round) |
+| Header and card | the target counts the pool being played; the footer names it ("normal realms" or "Hardcore") | the same |
+
+0.7.x already applies L-18 by leaving out any character whose ruleset differs from the played one; the behaviour stays, the pool is now named, and a later switch in the window shows the other pool's route without logging in on it (Q-R-6). Realm types never split the normal pool.
+
+**Test characters and characters to leave out:**
+- **Ignore per character** already exists (row menu, `/ei plan ignore`); the wizard's character page (P2-4c) lists every character with a tick.
+- **Ignore a whole realm** (new): one tick per realm on the Realms list, for test realms. Ignored characters stay in the roster, marked; nothing is deleted.
+- **Forget a character** (new, optional, **Q-R-3**): removes its record from EmpireIntel's saved data after a confirmation, for deleted or throwaway characters. A deletion of saved data, so it needs the user's approval as a feature.
+- **Roster and `/ei alts`:** keep every character, show its realm label (or "Unknown realm (n)") and ruleset label; DataStore's blank-realm duplicates are already merged by GUID (EI-E-35), and the bridge treats an empty realm part of a DataStore key as unknown, never as a realm named "".
+
+### 12.2b Skyborne icons and labels (D-074; small, goes with P2-4r)
+
+- **Race plus faction picks the race icon and label:** Skyborne + Horde = **Windshaper**, Skyborne + Alliance = **High Order** (EI-E-38). The card and the Characters page show that label (for example "Windshaper Druid").
+- **The icon:** the atlas names for the two are not known yet; the check (12.3) lists which `raceicon-...` atlases exist for "skyborne", "windshaper" and "highorder" (male and female). EmpireIntel uses the one the check proves; until then, or if none exists, the class icon, as now.
+- **Faction unknown** (for example a DataStore-only alt without a faction): the class icon, and the label "Skyborne".
+- Tests: both factions, faction unknown, the atlas present and absent.
+
+### 12.3 (c) EmpireIntelCheck 0.1.10-tp1: the trim, brought forward
+
+The check's file is about 248 KB of its 256 KB cap [reported; 234 KB on disk in the 2026-11-20 file, file], and it is already dropping data: its own `calls` and `partA` results are "dropped: over size cap" [file]. The trim planned in 11.5 is brought forward as its own small build, **right after P2-4b closes, before P2-4c** (Q-R-4), with no new probes except realm ones:
+- stop saving the old discovery results no later phase uses (`latest.results`, `docs`, `undoc`, `strongSeen`) and the atlas raw-size tables in `uiLatest`; keep the Legacy challenges' done and progress text only; target under 128 KB;
+- add realm probes: `GetRealmName()`, `GetNormalizedRealmName()`, the GUID server number, whether a realm add-on (for example "!RealmFix") is loaded, and `GetRealmID()` if the client has it (presence first, zero-argument call, under the existing limits);
+- the Skyborne atlases (12.2b): which `raceicon-<skyborne | windshaper | highorder>-<male | female>` exist;
+- the short quest check of 11.5 stays with P2-4e.
+
+### 12.5 Approved (D-075) and the test addition
+
+Q-R, Q-R-1 (the saved `realms` section inside format 2), Q-R-2 (`/ei realm <number> <type> <name>`), Q-R-3 ("Forget a character", after a confirmation), Q-R-4 (the check's trim right after P2-4b) approved; Q-R-6 yes once a Hardcore realm exists.
+
+**Any character on the card (for P2-4r's tests and in general):** a click on the card's name opens our own list of every known character (grouped by realm label, ignored ones marked); picking one shows it on the card (portrait for the played character, else race and class icons, the Skyborne label, faction, realm type) without a plan step. Another click on the card goes back to Up next. P2-4r's live steps use it to show the Skyborne Druid, the PvP, RP and RP-PvP test characters, and a character with no faction. (`/ei alts` lines are plain chat text and cannot be clicked without game hyperlinks, so the picker is on the card.)
+
+### 12.4 Order and questions
+
+Proposed order: P2-4b closes -> **check 0.1.10-tp1 (trim and realm probes)** -> **P2-4r realm identity (12.1, 12.2; EmpireIntel 0.7.5 or folded into 0.8.0)** -> P2-4c (0.8.0, 0.8.1) -> P2-4d -> P2-4e.
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-R | Approve the realm plan (12.1, 12.2, 12.2b) as increment P2-4r, before P2-4c? | Yes |
+| Q-R-1 | Approve the saved `realms` section inside format 2 (server number -> name, type, source, time)? | Yes |
+| Q-R-2 | A `/ei realm <number> <type> <name>` command until the Options page exists, or wait for 0.8.1? | The command (small, removable) |
+| Q-R-3 | Add "Forget a character" (deletes its record after a confirmation)? | Yes, with a confirmation |
+| Q-R-4 | Bring the check's trim (0.1.10-tp1) forward to right after P2-4b? | Yes |
+| Q-R-5 | (answered by the cross-realm test, D-074: no longer needed) | - |
+| Q-R-6 | A switch in the window to show the other pool's route (Hardcore or normal) without logging in on it? | Yes, once a Hardcore realm exists |
+
+## 13. The Fastest route's rules (D-075; for approval, no code)
+
+### 13.1 The user's question: does Fastest follow My plan?
+
+**No. Fastest picks characters itself; it never reads My plan** [file: `Core/Route.lua`]. Each round it lists every way to earn the next point (each character's next class milestone, each craft's next milestone on any character, each dungeon challenge) and takes the cheapest in estimated hours. My plan is the user's own list and is only ever filled from Fastest by "Copy the route to my plan".
+
+**Why the Hunter got Alchemy and Blacksmithing** [file: code; replay of the user's 2026-11-20 saved file, offline, inferred]: the engine lets any character with a free primary slot (fewer than two, L-6) learn any craft from 0 (`learn = true`). Once its route takes the Hunter to 25 for Novice Hunter, he needs no level for a training gate, so "learn Alchemy 0 -> 150 -> 225" is cheaper than other characters' gates. The same happens to the level-1 test characters.
+
+**Why Tailoring 225 is missing (R-3):** not a dropped step. The Priest's Tailoring 225 needs level 20 (Expert, L-4): about 16 h of levelling from 10 at his measured 8,205 XP per hour, plus about 3 h of skill, about 19 h. The route to "next reward" needed 12 more points and found 12 cheaper ones (mostly the "learn" steps of R-1). With R-1 and R-2 below, the learn steps go and Tailoring 225 comes in.
+
+### 13.2 The rules (recorded as planner rules R-1..R-7, status "user")
+
+| Rule | The user's rule | What the route does |
+|---|---|---|
+| **R-1** | Never assume a profession will be learned | A craft is planned only on characters that have it (or, from P2-4c, that the user chose for it in the wizard). A craft no character has is not planned; the footer says "not planned: no character has Engineering" (and so on). No "Learn X" step ever appears without the user's choice |
+| **R-2** | The highest skill is the path | Per craft, the **path character** is the one with the highest skill (a tie goes to the higher level, then the played character). It takes every milestone of that craft (150, 225, 300), including its level gates. If it cannot reach a gate's level within the route (for example a gate above the target's horizon), the step shows "blocked: needs level n (L-4)" for that character; the route never switches to another character silently. From P2-4c the user can choose another path character |
+| **R-3** | Tailoring 225 must be in the route | Follows from R-1 and R-2 (13.1); a test checks the user's case |
+| **R-4** | Leave the RP-PvP test character out | Today: right-click his row > Ignore, or `/ei plan ignore <name>` (exists since 0.6.0; no build needed). P2-4r adds ignore per realm and "Forget a character" (Q-R-3) |
+| **R-5** | Up next must be in the table | Step 1 becomes row 1 in Fastest too, highlighted as Up next (as in My plan), so the rows count every step |
+| **R-6** | Targets: plan to the cap by default, track beyond it; no hard-coded 15 or 16 | Targets: **Cap** (default), **Next reward**, **Next point**, **A number** (1 to 65), and **All 65**. The cap and the reward track come from the rules table (L-12 cap 16, unverified; L-13 rewards 15/25/40/55, confirmed by screenshot), never from code; the cap is editable (Options, P2-4c; `/ei plan cap <n>` until then) because the game gives no cap value (Legacy_Rules.md section 3). Beyond the cap the header says "earned 17 of 65 (cap 16: points over the cap are earned but cannot be spent)" [inferred from EI-E-04 "seasonal cap"; to be confirmed] |
+| **R-7** | A row with no point that unlocks a later point says so | Such a row shows "prerequisite for step n" in the PTS column's place (tooltip: what it unlocks); a level step for a gate, a 150 step before a 225, a dungeon's level step |
+
+### 13.3 Where they go: proposal
+
+| Part | Proposal | Why |
+|---|---|---|
+| R-1, R-2, R-3, R-5, R-7 | **P2-4b fix 0.7.5, before closing** | They decide whether the window's route is right; P2-4b's gate is the window showing the route. Each is small and pure (Route, PlanView); about 15 tests |
+| R-4 | **Nothing to build now**; ignore him in the window today; P2-4r adds realm ignore and Forget | The feature exists |
+| R-6 targets and an editable cap | **P2-4c** (with Options) | It needs a saved setting (`plan.cap`, a format change inside format 2) and the Options page; until then the target button keeps Cap 16, Next reward, Next point, and the 16 moves from code into the rules table in 0.7.5 so nothing is hard-coded twice |
+
+Order after that, as agreed: close P2-4b -> EmpireIntelCheck 0.1.10 trim -> P2-4r -> P2-4c -> P2-4d -> P2-4e.
+
+| ID | Question | Recommendation |
+|---|---|---|
+| Q-R7 | Build R-1, R-2, R-3, R-5 and R-7 as P2-4b fix 0.7.5 before closing; R-6 in P2-4c; R-4 by ignoring him now? | Yes |
+| Q-R7-a | R-2 tie-break: highest skill, then higher level, then the played character? | Yes |
+| Q-R7-b | R-1 with P2-4c: once the wizard exists, a craft no character has can be planned only on a character the user picked for it (or "planner's choice")? | Yes |
+
+### 13.4 Decided and built (D-076)
+
+- Q-R7 yes: **R-1, R-2, R-3, R-5, R-7 built as P2-4b fix 0.7.5**; the cap moved into the rules table (`RouteRules.CAP`, L-12); R-6 (targets and an editable cap) goes to P2-4c. Q-R7-a yes (highest skill, then level, then the played character).
+- **Q-R7-b (for P2-4c):** a craft no character has is planned only on a character the user picked for it; the planner may **suggest** one (for example in the wizard: "suggested: the Hunter, a free slot"), but it plans nothing until the user picks. This replaces the "planner's choice" option of 10.2 for crafts no character has.
+- **R-3 as built:** the Priest's Tailoring 225 is planned on him (R-2), but it costs about 19 h (levels 10 -> 20 first), so in the user's data it is the 16th cheapest step and appears at a target of about 20 [inferred, offline replay of the user's 2026-11-20 file]. R-6's "All 65" and "track beyond the cap" (P2-4c) will show it without changing the target.
+- The user has ignored the test characters (R-4).

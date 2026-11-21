@@ -1,3 +1,142 @@
+EmpireIntel 0.7.5 - the plan window, the Fastest route's rules (P2-4b)
+
+WHAT 0.7.5 CHANGES (your route rules, D-075, D-076)
+  R-1  A profession is never assumed: a craft is planned only on characters that have it. No "Learn X" step.
+       A craft no character has is not planned; the footer (and /ei next) says "Not planned: no character has ...".
+  R-2  The highest skill is the path: each craft's milestones (150, 225, 300) go to the character with the highest
+       skill (a tie goes to the higher level, then to the character you play), with its level gates.
+  R-3  The Priest's Tailoring 225 is a planned step (on him, by R-2). It costs about 19 h (level 10 -> 20 first),
+       so it comes after the cheaper points: it shows once the target reaches it (about 20 points today).
+  R-5  Fastest's Up next is also row 1 (marked), and every row starts with its step number.
+  R-7  A row with no point that opens a later point says "(prerequisite for step n)" (in both modes).
+  The cap (16) now comes from the rules table, not from the window's code (R-6 itself comes with P2-4c).
+
+WHAT 0.7.4 CHANGED (D-070)
+  - Every Legacy milestone is its own row, in Fastest and in My plan. Learning Alchemy 0 -> 225 is two rows:
+    "Learn Alchemy, 0 -> 150" and "Alchemy 150 -> 225", each with its own training gate and time. A milestone
+    the account already has (or an earlier step earns) is a row with no point; hover it for why.
+  - My plan: a saved step that passes a milestone without a row of its own gets that row, just before it, when
+    you log in or /reload; chat says which (your Hunter gets "Alchemy 150" and "Blacksmithing 150").
+    Raising a target past a milestone adds that milestone's row too.
+  - Points are counted once per account in both modes: the Hunter's Alchemy 225 is +1 in My plan as in Fastest.
+  - The faction emblem is about the size of the character portrait, level with it at the card's right; the realm
+    badge sits to its left.
+
+WHAT 0.7.3 CHANGED (D-066)
+  - Moving a step up brings its whole chain ahead of it, in order: Enchanting 225 to the top puts Level 10,
+    Enchanting 150 and Level 20 before it (chat: "Moved with it, in order: ..."). Moving a step down takes the
+    steps that build on it along, after it. Nothing is left below as "covered".
+  - Click a row to select it: the card shows that row's character (portrait for the one you play, else race and
+    class icons), its faction and realm type, and the row's note. Click the card to go back to Up next.
+    In My plan, click the selected row again (or right-click > Edit target) to edit its target.
+  - Notes: hovering a row shows its note at the mouse pointer (tooltips now open at the pointer, so they cannot
+    open off screen to the right of the window).
+  - The faction emblem and the realm badge have fixed sizes: the emblem's disc is as high as the badge (22 px).
+
+WHAT 0.7.2 ADDED (D-065)
+  10. My plan counts each row from the end of the earlier steps of the same character (and profession):
+      "Level 20" after "Level 10" shows only the time from 10 to 20; "Enchanting 225" after "Enchanting 150"
+      only 150 to 225. A step an earlier step already reaches reads "(covered by step n)", greyed, with no
+      time or points. NOW stays today's value. The footer counts covered steps.
+  Repeated steps in My plan are removed when you log in or /reload (the first of each is kept, with a later
+  copy's note if it had none); chat says which, for example
+      "plan: removed 1 repeated step from my plan (the first of each is kept): step 9 <name> Enchanting 150."
+
+WHAT 0.7.1 CHANGED (your findings 1 to 9, D-063)
+  1. My plan keeps prerequisites (training gates, L-4). A move, Move to top or drag that would put a skill
+     step above the level step it needs takes that level step along; moving a level step down takes the
+     steps that need it along. Chat says what moved with it. Removing or lowering a level step that a later
+     step needs is refused, with the reason. A skill step with no level step before it shows as a gate.
+  2. Add a skill step after: the next milestone (150 -> 225 -> 300) after everything already planned for that
+     character and profession, never a duplicate; its level step is added before it when missing.
+     Add a level step after: the next class milestone after the levels already planned.
+  3. Notes: Edit note (and clicking a target) opens an edit bar below the rows, clear of the text. Enter or
+     clicking away saves, Escape cancels. A row with a note shows "(note)"; hover it to read the note; the
+     Up next card shows it too.
+  4. Ignore: the ignored character's steps stay in My plan, marked "(ignored)", greyed and never "up next";
+     chat says how many. Right-click such a row: Unignore. Fastest's footer says how many are ignored.
+  5. The target button says what it is: "Cap 2/16", "Next reward 2/15", "Next point 2/3"; hover explains.
+  6. The badge shows the realm type (PvE, PvP, RP-PvE, RP-PvP; Hardcore from the game), read from the end
+     of the realm name [inferred]; hover the card for the source.
+  7. The faction emblem is the game's faction icon (the one the target frame uses), not the large crest.
+  8. When combat ends, an open window reads Legacy again and the combat line goes away.
+  9. A dungeon challenge says "Account" in both modes; the step names the character it runs on.
+     NOW is today's value in both modes; in Fastest the value at that point of the route is in the tooltip.
+     Copying the route keeps the runner's level step before a dungeon challenge.
+
+RESTART OR RELOAD?
+  Update from any 0.7.x or 0.6.0: /RELOAD IS ENOUGH (changed files in the existing folder; the version label in
+  the AddOns list refreshes at the next start, harmless). Saved data: unchanged format 2.
+
+TEST (about 5 minutes)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload.
+     Type /ei version: expect "version 0.7.5, saved data schema 2 (ok)".
+  2. Open the window (/ei plan), Fastest:
+     a. row 1 is the Up next step (the same as the card), marked; every row starts with its number;
+     b. your Hunter has no profession step at all (only his level step, "Level 25 (Novice Hunter)");
+     c. Leatherworking is on your Horde Rogue (69), Engineering on your Shaman (1), Blacksmithing on your Warrior,
+        Enchanting on your Priest, Alchemy on your Druid; no "Learn" step anywhere;
+     d. the footer has no "Not planned" text (every craft has a character), unless one is ignored.
+  3. Tailoring 225 on the Priest: type  /ei plan target 20  then open Fastest again: a row
+     "<Priest> ... Tailoring 150 -> 225" is there. Click the target button to go back (Cap 2/16 or Next reward).
+  4. Hover a row with no point (for example a "Level 10" step in My plan before its craft step): the row and the
+     tooltip say "prerequisite for step n", and step n is the craft step.
+  5. /ei next: the same route in chat; a "Not planned (R-1): ..." line only if a craft has no character.
+  6. Send screenshots of Fastest (as images) and any line with UNEXPECTED or any red Lua error.
+
+ROLLBACK TO 0.7.4 (OR EARLIER 0.7.x)
+  Put that folder back and /reload. Saved data is the same format (added milestone rows and removed repeats
+  stay as they are).
+
+EmpireIntel 0.7.0 - the plan window (P2-4b)
+
+WHAT 0.7.0 ADDS (your approval D-060, D-061; Phase2_Plan.md section 9; the approved mockup)
+  /ei plan          opens or closes the plan window. /ei plan help: the settings in chat (what /ei plan did before).
+  The window: Fastest / My plan, the target (click it: 16 -> next reward -> next point), the Up Next card
+    (the played character's portrait; an alt's race icon with its class icon; the game's faction emblem; the
+    ruleset), the steps with status icons, an amber dot for unverified rules, and a tooltip with each rule
+    and its source. Escape closes it. Drag the title area to move it, the lower-right grip to resize it; size
+    and place are kept. Default 560 x 420.
+  My plan: drag a row to reorder; click a row to edit its target (Enter saves, Escape cancels); right-click:
+    Move to top, Add a level or skill step after, Edit note, Ignore in Fastest, Remove step.
+  Fastest: right-click: Copy the route to my plan, Ignore.
+  The minimap button (our own mark): left-click opens the window, right-click switches the mode, drag moves it
+    along the edge (round or ElvUI's square minimap). /ei minimap off | on.
+  The AddOn compartment has an EmpireIntel entry.
+  Alts show their faction from DataStore until they log in once with 0.7.0 (read only, never saved).
+  In combat the window still works; it uses the last Legacy read and says "from before combat".
+  The game's own fonts; no font is shipped. No Blizzard templates, so ElvUI does not restyle the window.
+  Fills: the window tests SetColorTexture once, when it is first opened; if that does not read back, it uses
+    its own white texture. The chat line "window: fills: ..." says which ran (also in /ei plan help).
+
+RESTART OR RELOAD?
+  Update from 0.6.0: /RELOAD IS ENOUGH (new files and textures in the existing folder; no TOC header change).
+  Saved data: unchanged format 2 (the window's size and place and the minimap button use fields format 2
+  already has).
+
+UPDATE AND TEST (the live gate, about 10 minutes; once with ElvUI on and once with ElvUI off)
+  1. Replace the folder Interface\AddOns\EmpireIntel with the one in the zip, then /reload.
+     Open the window three ways: /ei plan, the minimap button, the AddOn compartment entry.
+     Expect the window each time; Escape closes it. Note the chat line "window: fills: ...".
+  2. Fastest: the card shows the character you play with its portrait. Log in on your other character (or
+     /ei plan ignore <the played one>): the card shows the other one with its race icon and class icon.
+     Compare both modes with the mockup.
+  3. My plan (/ei plan copy first if it is empty): drag a row to a new place, click a row and change its target,
+     right-click Move to top and Remove step. /reload and open again: the changes are kept.
+  4. Resize the window with the lower-right grip and move it, /reload, open again: same size and place.
+  5. With ElvUI on and with ElvUI off: the window looks the same; the minimap button sits on the edge of the
+     round minimap and of ElvUI's square one; drag it along the edge.
+  6. Open the window in combat: no error; the footer says "Legacy values from before combat".
+  7. Type /ei alts on a character whose alt has not logged in since 0.7.0: that alt's faction comes from
+     DataStore and matches the game (the window's card shows "(DataStore)" next to the emblem).
+  8. Send a screenshot of each mode, the saved file
+       WTF\Account\<your account>\SavedVariables\EmpireIntel.lua
+     and any line with UNEXPECTED or any red Lua error.
+
+ROLLBACK TO 0.6.0
+  Put the 0.6.0 folder back and /reload. Saved data stays as it is (0.6.0 reads format 2 and ignores the
+  window and minimap fields).
+
 EmpireIntel 0.6.0 - the Legacy route planner in chat (P2-4a)
 
 WHAT 0.6.0 ADDS (your approval D-055 and D-056; Phase2_Plan.md section 8)

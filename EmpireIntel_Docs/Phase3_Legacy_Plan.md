@@ -1,6 +1,6 @@
 # EmpireIntel Phase 3 Plan: `/ei legacy`
 
-DOC VERSION: 0.1.0  |  DATE: 2026-11-08  |  STATUS: **Phase 3 authorized for P3-1 only (D-037). P3-1 built as EmpireIntel 0.5.0 on branch `p3-1-legacy` (D-038); waiting for its live gate. P3-2 and P3-3 locked.**
+DOC VERSION: 0.1.0  |  DATE: 2026-11-08  |  STATUS (2026-11-16): **Phase 3 authorized for P3-1 only (D-037). P3-1 closed (D-042) and merged (D-048); `/ei legacy` is in EmpireIntel since 0.5.0. P3-2 and P3-3 locked. The post-25 plan (sections 7-12) is on branch `p3-post25-plan`, pull request #10, open; P3-2 becomes saved-data format 3 when next edited (D-055, D-056).**
 
 **Phase 3 would let EmpireIntel itself show the Legacy values that EmpireIntelCheck has proven readable (TP-1 runs 6-14):** points earned, available and spent, and every challenge with its steps and what is left. It reuses the check's proven calls and limits (Q-T7, Q-T8, Q-T9). Per-tree detail is not in the first version: it needs the trait system (Q-T4), which is unapproved and can wait (section 5).
 
@@ -26,7 +26,7 @@ DOC VERSION: 0.1.0  |  DATE: 2026-11-08  |  STATUS: **Phase 3 authorized for P3-
 | P3-2 Saved Legacy summary (optional, later) | A small saved record (points, completed challenge ids, time), so `/ei legacy` can show the last-known points before the pane is opened, and P2-4 "what next" can use challenges. **Saved-data format 2: needs separate approval** | `/reload` | Migration tests; format approval |
 | P3-3 Per-tree detail (only if Q-T4 is approved) | Points per tree, ranks per node, perk names; explains `spentInTree` | `/reload` | Q-T4 first; its own plan |
 
-P2-4 (plan file, "what next") stays where it is in Phase 2. Once P3-1 exists, it could also suggest the closest challenges, for example "Novice Spelunker: 1 dungeon left".
+P2-4 ("what next", now the route planner and window) stays in Phase 2. Once P3-1 exists, it could also suggest the closest challenges, for example "Novice Spelunker: 1 dungeon left".
 
 ## 3. P3-1 in detail (for approval, Q-P3-1)
 

@@ -36,6 +36,9 @@ RR.LIST = {
   { id = 'L-16', status = 'unverified', text = 'Time costs: hours per level band, per skill point, per dungeon run (defaults, or the character\'s measured XP per hour)', src = '[assumed]; Q-F2 (D-055)' },
   { id = 'L-17', status = 'unverified', text = 'While rested, kills give double XP; a pool of R saves R of kill XP; quest and exploration XP get no bonus', src = '[web: warcraft.wiki.gg, wowhead.com]; [inherited]' },
   { id = 'L-18', status = 'unverified', text = 'Hardcore characters\' Legacy points are kept apart; the planner never mixes rulesets', src = '[web: warcraft.wiki.gg, warcrafttavern.com]' },
+  -- the user's route rules (D-075): a profession is never assumed; a craft's milestones go to its highest skill
+  { id = 'R-1', status = 'user', text = 'Never assume a profession will be learned: a craft is planned only on characters that have it', src = 'user (D-075)' },
+  { id = 'R-2', status = 'user', text = 'The highest skill is the path: a craft\'s milestones go to the character with the highest skill (then the higher level, then the played character)', src = 'user (D-075)' },
 }
 RR.BY_ID = {}
 for _, r in ipairs(RR.LIST) do RR.BY_ID[r.id] = r end
@@ -94,7 +97,8 @@ RR.HOURS_PER_ZONE = 1.0                                 -- [assumed]
 -- L-13: the reward track
 RR.REWARDS = { { at = 15, name = 'Air Rifle' }, { at = 25, name = 'Spectral Bear Cub' }, { at = 40, name = 'Spectral Bear Tabard' },
   { at = 55, name = 'Reins of the Spectral Bear' } }
-RR.DEFAULT_TARGET = 16                                  -- Q-F1 (D-055); L-12
+RR.CAP = 16                                             -- L-12 (unverified): the spending cap; editable in P2-4c (R-6)
+RR.DEFAULT_TARGET = RR.CAP                              -- Q-F1 (D-055): plan to the cap by default
 RR.MAX_STEPS = 60
 
 --- The next reward above `earned`, or nil.

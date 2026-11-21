@@ -8,6 +8,7 @@ local ADDON, EI = ...
 -- /ei next      the plan: the fastest route to the Legacy target, or my plan (Core/Next.lua, P2-4a)
 -- /ei plan ...  the plan settings (mode, target, copy, remove, top, clear, ignore, unignore) (Core/Next.lua)
 -- /ei rules     the planner's rules, sources and status (Core/RouteRules.lua)
+-- /ei minimap on|off  show or hide the minimap button (UI/Minimap.lua, P2-4b)
 -- /ei version    addon version, saved-data schema, store state
 -- /ei off | on   stop or resume all snapshots (kept across logins)
 -- /ei help
@@ -83,6 +84,11 @@ function C.Handle(msg)
   elseif msg == 'plan' or string.sub(msg, 1, 5) == 'plan ' then
     local ok, err = pcall(EI.Next.PlanCommand, string.sub(msg, 6))
     if not ok then P.Print('UNEXPECTED: /ei plan failed: ' .. tostring(err)) end
+  elseif msg == 'minimap on' or msg == 'minimap off' then
+    if EI.MinimapButton then
+      local ok, why = EI.MinimapButton.SetShown(msg == 'minimap on')
+      P.Print('minimap button ' .. (msg == 'minimap on' and 'shown' or 'hidden') .. (ok and '.' or (' (' .. tostring(why) .. ')')))
+    end
   elseif msg == 'rules' then
     local ok, err = pcall(EI.Next.RulesCommand)
     if not ok then P.Print('UNEXPECTED: /ei rules failed: ' .. tostring(err)) end
@@ -98,7 +104,7 @@ function C.Handle(msg)
     EI.Snapshot.Start()
     P.Print('ON. This character is saved in about 2 seconds.')
   else
-    P.Print('commands: /ei (this character), /ei alts, /ei unlock, /ei rest, /ei milestones, /ei legacy, /ei next, /ei plan, /ei rules, /ei version, /ei off, /ei on')
+    P.Print('commands: /ei (this character), /ei alts, /ei unlock, /ei rest, /ei milestones, /ei legacy, /ei next, /ei plan (window), /ei plan help, /ei minimap on|off, /ei rules, /ei version, /ei off, /ei on')
   end
 end
 

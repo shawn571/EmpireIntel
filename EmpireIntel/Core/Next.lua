@@ -3,6 +3,7 @@ local ADDON, EI = ...
 --
 -- PURPOSE
 --   /ei next     the plan in chat: the fastest route (auto mode, Core/Route.lua) or the user's own steps (mine mode)
+--   /ei plan     opens or closes the plan window (P2-4b, Q-P2-4b-2); /ei plan help: the settings in chat
 --   /ei plan ... the plan settings in chat (mode, target, copy, remove, top, clear, ignore, unignore)
 --   /ei rules    the planner's rules with their sources and status (Core/RouteRules.lua)
 --   Phase2_Plan.md 8.1, 8.4-8.7 (approved D-055, D-056). The window (P2-4b) is not built here.
@@ -104,12 +105,15 @@ local function partsText(s)
 end
 
 function N.StepLine(s)
+  local tail = s.prereqFor and (' (prerequisite for step ' .. s.prereqFor .. ')') or ''
   -- the level at this point of the route (earlier steps may have levelled the character)
-  local t = head(s.row, s.atLevel) .. (s.atLevel ~= s.row.level and ' (in this route)' or '') .. ': ' .. partsText(s) .. ': +' .. s.points .. ' (' .. table.concat(s.earns, ', ') .. '), '
+  local pts = (s.points > 0) and ('+' .. s.points .. ' (' .. table.concat(s.earns, ', ') .. ')')
+    or ('no point (' .. tostring(s.already or 'already') .. ' already earned)')
+  local t = head(s.row, s.atLevel) .. (s.atLevel ~= s.row.level and ' (in this route)' or '') .. ': ' .. partsText(s) .. ': ' .. pts .. ', '
     .. hoursText(s.hours)
   if (s.restHours or 0) > 0.05 then t = t .. ' (rest saves ' .. hoursText(s.restHours) .. ')' end
   if s.measured then t = t .. ' (measured XP rate)' end
-  return t .. rulesTag(EI.Route.UnverifiedRules(s)) .. srcTag(s.row)
+  return t .. rulesTag(EI.Route.UnverifiedRules(s)) .. srcTag(s.row) .. tail
 end
 
 local function targetText(res)
@@ -174,6 +178,9 @@ function N.AutoLines(ctx)
       lines[#lines + 1] = 'Explorer (planned from level ' .. RR.EXPLORER_LEVEL .. ', L-11): ' .. who
         .. '; its zones left are read only while it is played (/ei next on it), so the route does not count it yet.'
     end
+  end
+  if res.notPlanned and #res.notPlanned > 0 then
+    lines[#lines + 1] = 'Not planned (R-1): no character has ' .. table.concat(res.notPlanned, ', ') .. '.'
   end
   local reward = RR.NextReward(res.earned)
   if reward and res.targetKind ~= 'reward' then lines[#lines + 1] = 'Next reward at ' .. reward.at .. ': ' .. reward.name .. '.' end
@@ -307,6 +314,7 @@ function N.MineLines(ctx)
   local list, met = {}, 0
   for _, g in ipairs(plan.steps) do
     local l = stepLine(g, ctx)
+    if l ~= 'met' and g.guid and ctx.ignore and ctx.ignore[g.guid] then l = '(ignored) ' .. l end   -- D-063 item 4
     if l == 'met' then met = met + 1 else list[#list + 1] = { n = g.n, s = l } end
   end
   lines[#lines + 1] = string.format('next (my plan: %s; %d met, %d skipped%s):', plural(plan.total, 'step'), met,
@@ -341,7 +349,7 @@ local function routeFor(rows, legacy, now)
 end
 
 -- gathers rows (and a Legacy read when allowed), then calls fn(rows, legacy, why, now)
-local function withData(forRoute, fn)
+local function withData(forRoute, fn, quiet)
   local rows = EI.Views.Collect()
   local now = (P.Now())
   local mode = EI.Plan.Mode()
@@ -356,17 +364,20 @@ local function withData(forRoute, fn)
   end)
   if not ok then
     fn(rows, nil, why, now, plan)
-  elseif P.Legacy.busy then
+  elseif P.Legacy.busy and not quiet then
     P.Print('next: reading Legacy challenges (about 2 seconds).')
   end
 end
+
+N.Data = withData            -- for the window (UI/Window.lua)
+N.RouteFor = routeFor
 
 --- /ei next
 function N.Command()
   withData(false, function(rows, legacy, why, now, plan)
     local lines
     if EI.Plan.Mode() == 'mine' then
-      lines = N.MineLines({ rows = rows, plan = plan, unlocked = N.Unlocked(rows), now = now, rates = EI.Plan.Rates(),
+      lines = N.MineLines({ rows = rows, plan = plan, unlocked = N.Unlocked(rows), now = now, rates = EI.Plan.Rates(), ignore = EI.Plan.Ignore(),
         legacy = legacy, legacyWhy = why })
     else
       local res, ruleset = routeFor(rows, legacy, now)
@@ -390,8 +401,9 @@ local function settings(rows)
   say(string.format('mode %s, target %s, my plan %s, ignored: %s, measured XP rates: %d.',
     EI.Plan.Mode() == 'auto' and 'auto (fastest route)' or 'mine (my plan)', tostring(t), plural(#EI.Plan.Mine(), 'step'),
     #ign > 0 and table.concat(ign, ', ') or 'none', nr))
-  say('commands: /ei plan mode auto|mine, /ei plan target 16|reward|next, /ei plan copy, /ei plan remove <n>, /ei plan top <n>, /ei plan clear, /ei plan ignore <name>, /ei plan unignore <name>.')
-  say('saved by the game at /reload or logout.')
+  say('commands: /ei plan (the window), /ei plan help, /ei plan mode auto|mine, /ei plan target ' .. RR.CAP .. '|reward|next, /ei plan copy, /ei plan remove <n>, /ei plan top <n>, /ei plan clear, /ei plan ignore <name>, /ei plan unignore <name>.')
+  say('/ei plan opens the window; /ei minimap on|off. Saved by the game at /reload or logout.')
+  if P.UI then say('window ' .. P.UI.FillText() .. '.') end
 end
 
 local function done(ok, why, text)
@@ -401,7 +413,16 @@ end
 --- /ei plan <args> (args lower case, trimmed)
 function N.PlanCommand(args)
   local cmd, rest = string.match(args or '', '^(%S*)%s*(.-)$')
-  if cmd == '' then settings(EI.Views.Collect()); return end
+  if cmd == '' then
+    if EI.Window then
+      local ok, err = pcall(EI.Window.Toggle)
+      if not ok then P.Print('UNEXPECTED: the window failed: ' .. tostring(err)) end
+    else
+      settings(EI.Views.Collect())
+    end
+    return
+  end
+  if cmd == 'help' then settings(EI.Views.Collect()); return end
   if cmd == 'mode' then
     local ok, why = EI.Plan.SetMode(rest)
     done(ok, why, 'mode ' .. rest .. '. /ei next shows it.')
@@ -422,11 +443,13 @@ function N.PlanCommand(args)
     local n = tonumber(rest)
     local mine = EI.Plan.Mine()
     if not n or not mine[n] then say('no step ' .. tostring(rest) .. ' (my plan has ' .. plural(#mine, 'step') .. ').'); return end
-    local list = {}
-    for i, e in ipairs(mine) do if i ~= n then list[#list + 1] = e end end
-    if cmd == 'top' then table.insert(list, 1, mine[n]) end
+    local byGuid = {}
+    for _, r in ipairs(EI.Views.Collect()) do if r.guid then byGuid[r.guid] = r end end
+    local list, carried
+    if cmd == 'top' then list, carried = EI.Plan.MoveKeeping(mine, n, 1, byGuid) else list, carried = EI.Plan.RemoveKeeping(mine, n, byGuid) end
+    if not list then say((cmd == 'top' and 'not moved: ' or '') .. tostring(carried)); return end
     local ok, why = EI.Plan.SetMine(list)
-    done(ok, why, (cmd == 'top' and 'moved step ' .. n .. ' to the top.' or 'removed step ' .. n .. '.'))
+    done(ok, why, (cmd == 'top' and ('moved step ' .. n .. ' to the top.' .. EI.Plan.CarriedText(carried or {}, byGuid)) or 'removed step ' .. n .. '.'))
   elseif cmd == 'clear' then
     local ok, why = EI.Plan.SetMine({})
     done(ok, why, 'my plan is empty.')
@@ -434,7 +457,7 @@ function N.PlanCommand(args)
     local row, why = EI.Plan.MatchChar(EI.Views.Collect(), rest)
     if not row then say(why); return end
     local ok, err = EI.Plan.SetIgnored(row.guid, cmd == 'ignore')
-    done(ok, err, tostring(row.name) .. (cmd == 'ignore' and ' is left out of the fastest route.' or ' is back in the fastest route.'))
+    done(ok, err, EI.Plan.IgnoreText(row.name, row.guid, cmd == 'ignore'))
   else
     settings(EI.Views.Collect())
   end

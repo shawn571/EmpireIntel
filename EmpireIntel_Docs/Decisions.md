@@ -441,6 +441,175 @@ The user's words: "Q-P2-4b-1: yes, with one addition: SetColorTexture isn't prov
 - Q-P2-4b-1..4 **yes**. Merge #16; build P2-4b as EmpireIntel 0.7.0 (Phase2_Plan.md section 9 plus 9.9).
 - **Fill path (9.9):** every colour fill goes through one function in `Platform/UI.lua`. At window creation it tests `SetColorTexture` with a read-back; if that fails, fills use `SetTexture` on our own white texture plus `SetVertexColor`. The path that ran is reported; tests cover both.
 
+## D-062 P2-4b built: EmpireIntel 0.7.0 | Claude (2026-11-08), within D-060 and D-061
+Built on branch `p2-4b-window`, not merged. Report: P2-4b_Report.md. Choices within the approved plan, open to the user's change:
+- **Position saved as TOPLEFT against the screen** (from `GetLeft`/`GetTop`): the game may re-anchor a moved frame to another corner and format 2 keeps no relative point, so this is what restores exactly.
+- **The window draws at once** with "Reading Legacy challenges..." and updates when the read finishes; the window's reads print no chat line.
+- **"Add a step after"** is two menu items (a level step, a skill step) with the next milestone as the target, edited in place afterwards; no form.
+- **Status icons:** a step is "blocked by a gate" when it starts with levelling for a training gate or a dungeon's level; training alone is not a gate.
+- **The compartment** shows our own mark (`Media/Mark.tga`); the minimap button and the window use the same mark.
+- **Faction from DataStore** is shown as "(DataStore)" next to the emblem on the card.
+
+## D-063 P2-4b live gate: partial pass; fix items 1-9 for a retest; plan items 10-11 for approval | User (2026-11-09)
+The user's exact words (character names replaced: C2 the Priest, C1 the Paladin, C3 the ignored character, C4 the Druid):
+"P2-4b live gate results (screenshots of both modes attached). Passed: 1 (/ei plan and minimap button), 4 (resize and persistence), 5 (ElvUI on and off, minimap placement), 7 (/ei alts). Don't merge #17. Fix items 1–9, rebuild for a retest, and plan items 10–11 for my approval (no code for those until I approve):
+1. My plan prerequisites: every edit (move, Move to top, drag, add, edit target) must keep prerequisites. Example: Enchanting 150 can't move above "Priest level 10" (gate L-4). Block the move, or move the prerequisite with it, and say which.
+2. Add a skill step after: adding after Enchanting 150 creates a second Enchanting 150; adding after Enchanting 225 creates Enchanting 150. Offer the next milestone (225 after 150, 300 after 225) and never duplicate an existing step.
+3. Notes: the edit box draws over the step text, and the note vanishes after editing. Give notes their own space (a second line or a tooltip), with the edit box clear of the text.
+4. Ignore and My plan: steps for an ignored character ([C3]) stayed in My plan. On ignore, mark or remove its steps there and tell me.
+5. Target button: it cycles 2/3, 2/16, 2/15 with no label. Label it ("Next point 2/3", "Cap 2/16", "Next reward 2/15") and add a tooltip.
+6. Ruleset badge: "Normal" means nothing to me. Show the realm type: PvE, PvP, RP-PvE, RP-PvP, or Hardcore later. Our realm name ends in "PvE"; report with evidence how the type can be read (game call, realm name or DataStore).
+7. Faction emblem: a red square shows instead of the Horde emblem. Find out why and check against the 0.1.9 evidence.
+8. Combat footer: "Legacy not read (in combat), counts inferred" stays after combat until I reopen. Refresh when combat ends.
+9. Consistency: Experienced Spelunker shows "Account" in My plan and the Paladin in Fastest; use one. NOW shows today's value in My plan but the expected value at that step in Fastest; label the difference or use one meaning.
+10. Profession choices and a setup wizard (plan first): I don't know where [C4]'s Alchemy came from (the Druid has Alchemy 0). The route must not assume a profession a character hasn't learned. Add a first-run setup wizard (like ElvUI's install) that asks for preferences: each character's intended professions (or "let the planner choose"), the target, which characters to include, and similar. Everything can be changed later, and the wizard can be rerun from the add-on's options. Until a profession is chosen or learned, show "choose a profession" or "learn Alchemy (planner's choice)", never a silent assumption.
+11. Rested XP in the route (plan first):
+a. Leveling time must use rested XP. A character with a full rested pool levels faster until the pool runs out, so its time estimate is lower. Use the confirmed rule: a pool of R saves R of kill XP.
+b. The 105% cap issue: in all versions of WoW, rested XP stops at 105% of a level, not 150%, if a character stays logged out in an inn without logging in until 105% has built up (about 7 days). It isn't confirmed on Forever. Label it unverified, and give me a simple test once my alt roster is set up. The plan should add a step "log in and out on <character>" when a resting character reaches about 90% (about 6 days), so the pool keeps growing to 150%.
+c. A character at or near 150% gets priority in the default route: level it through its rested pool so nothing is wasted, even if that isn't up to a Legacy milestone. This is the usual alt-cycling strategy, rotating through characters by rested state, to reach 60 account-wide faster.
+Each fix gets a test. End with the package block and only the gate steps to repeat."
+Consequences: #17 stays unmerged; items 1-9 built as EmpireIntel 0.7.1 on `p2-4b-window` (D-064, P2-4b_Report.md section 6); items 10-11 planned in Phase2_Plan.md section 10 (Q-P2-4c), no code. Only one screenshot (Fastest) reached the session; the second, sent as an image address, could not be opened (HTTP 403).
+
+## D-064 P2-4b retest built: EmpireIntel 0.7.1 | Claude (2026-11-09), within D-063
+Choices within the user's items, open to change:
+- **Item 1:** the prerequisite is carried, not blocked, for moves (the level step goes up with a skill step; a level step moved down takes its dependents); removing or lowering a needed level step is refused; adding or raising a skill target adds the missing level step before it. Gates that were already open before an edit are left as they are (shown as a gate), so an edit never moves unrelated steps.
+- **Item 3:** one edit bar below the rows for notes and targets; Enter or leaving the box saves, Escape cancels; the note is in the row tooltip with a "(note)" mark, and on the Up next card.
+- **Item 4:** the steps are marked, not removed (kept, greyed, never up next); Unignore in the row menu.
+- **Item 6:** the realm type comes from the end of the realm name [inferred]; no game call gives it (EI-E-31, EI-E-32).
+- **Item 7:** the emblem is `Interface\TargetingFrame\UI-PVP-<faction>` (EI-E-30), cropped to its icon [inferred crop]; the atlas is the fallback.
+- **Item 9:** "Account" in both modes (L-7: the progress is account-wide); NOW means today's value in both modes; the character column shows today's level.
+
+## D-065 Finding 10 and duplicates fixed in 0.7.2; Q-P2-4c and Q-P2-4d approved with conditions; one retest | User (2026-11-09)
+The user's exact words:
+"Finding 10: fix now in 0.7.2: each My plan row counts from the end of the earlier steps for the same character and profession; a step already reached shows “covered by step n” with no time or points. Also remove saved duplicate steps automatically on load (keep the first) and say so in chat. I’ll retest once, on 0.7.2: steps 2, 3, 6 and 8.
+Q-P2-4c: yes. c-1: yes (inside format 2). c-2: yes; nothing is planned for a free slot until I choose a profession or pick “planner’s choice” in the wizard. c-3: yes, gathering skills appear in the wizard, marked as earning no Legacy points.
+Q-P2-4d: yes. d-1: no, keep the rested rule unverified until I do the /ei rested-kill check on Forever. d-2: yes. d-3: yes (1.4 levels, 0.90).
+Build P2-4c and P2-4d only after P2-4b closes, one increment at a time."
+Consequences: EmpireIntel 0.7.2 built on `p2-4b-window` (P2-4b_Report.md section 6). P2-4c and P2-4d are approved as planned (Phase2_Plan.md section 10) with these answers, and are not started: P2-4c begins only after P2-4b closes, P2-4d after P2-4c. L-17 stays unverified (the rested-kill check, README 0.6.0 step 8). Claude's choices within the words: the first copy of a repeated step keeps a later copy's note when it has none; a saved step with an unknown key is never removed as a repeat (it stays an UNEXPECTED line); the repeat check runs about 3 seconds after login or `/reload`, after the first snapshot, so the chat line can name the character; `/ei next` in chat still counts each of my plan's steps from today (finding 10 was about the window's rows).
+
+## D-066 Retest 0.7.2: steps 2 and 3 fail; fixes for 0.7.3; plan items 5-7 | User (2026-11-09)
+The user's exact words:
+"Retest 0.7.2 (screenshots of both modes attached). The removed-repeat line appeared. Step 6 passes. Steps 2 and 3 fail; don’t merge #17. Fix in 0.7.3:
+Prerequisite chain: moving a step up must move its whole chain ahead of it, in order. Moving Enchanting 225 to the top must put Level 10, Enchanting 150 and Level 20 before it, not leave them below as “covered”.
+Notes: a row only shows “(note)”, and the only way to read the note is to edit it again. Show the note text on hover and on the card when that row is selected.
+Card follows the selected row: clicking any row (any character) shows that character on the card: portrait or race/class icon, faction, realm type.
+Faction emblem: still too small. Draw it at a fixed size that matches the PvE badge.
+Each fix gets a test. End with the package block and only the gate steps to repeat.
+Plan only, no code, for my approval:
+5. All options in the window: /ei opens the window, and everything the /ei commands do (mode, target, copy, ignore and unignore, rules, minimap on/off, alts, legacy, version, setup) is reachable there, through a settings or options panel and the row menus. The commands can stay as shortcuts, but nobody should need them. Fold this into the P2-4c setup wizard and options plan if that fits.
+6. Realistic leveling time (new increment): 9 hours for 6 to 20 isn’t realistic, even speedrunning. The estimate must adjust per character: its own measured XP per hour (Q-F2), its rested pool (P2-4d), the quests in its quest log with their expected XP, including travel time to and from objectives, and pure mob grinding for anything beyond the quest log. Report with evidence what the game gives about quests in the log (XP, objectives, locations), what Questie’s database could add read-only (and its license), and why live Wowhead lookups aren’t possible in game. Label every estimate.
+7. Captured at login: confirm what is saved for each character the first time it logs in with EmpireIntel running (race, sex, class, faction, realm, professions, rested). Portraits can’t be saved, so offline alts use race/class icons. Say if anything else useful can be captured."
+Consequences: #17 stays unmerged; 0.7.3 built (D-067); items 5-7 planned in Phase2_Plan.md section 11 (Q-P2-4c-4, Q-P2-4e, Q-P2-4f), no code.
+
+## D-067 Retest build: EmpireIntel 0.7.3 | Claude (2026-11-09), within D-066
+Choices within the user's words, open to change:
+- **The chain** of a step is every step of the same character it builds on: for a level step the lower level steps; for a skill step the lower steps of the same profession and the level steps up to the one that opens the highest training gate. Moving up brings the chain ahead in progression order (level, then the skills it opens); moving down takes the steps that build on it along, after it. Chat: "Moved with it, in order: ...".
+- **Selecting:** a left click selects a row (the card shows it, the row is highlighted); a click on the selected row in My plan edits its target (also "Edit target" in the menu); clicking the card goes back to Up next; switching the mode clears the selection. An account row (dungeon challenge) shows "account-wide" with no badge.
+- **Notes on hover:** row tooltips now open at the mouse pointer (ANCHOR_CURSOR). Inferred cause of the user's finding: the tooltip opened to the right of the full-width row, which can be off screen.
+- **Size:** the badge is a fixed 22 px pill; the emblem texture is 28 px so its disc (about 0.77 of it, measured on the 0.7.2 screenshot [inferred]) is about 22 px.
+
+## D-068 Standing order: third-party add-ons (copy and credit, clean room, optional plugins, cross-checks) | User (2026-11-14), standing order
+The user's exact words: "New standing order (record with my words in CODE_STANDING_ORDERS.md, NEXT_SESSION_PROMPT.md and Decisions): We can copy and credit where it’s allowed. Where copying isn’t allowed and it’s a core function of what we’re trying to build, do the clean room thing. We can use addons to check our work too. Where it makes sense we will have some things be optional plugins and note that some features will be better if these addons are installed but our addon will still work without them."
+"What this means in practice:
+1. Copy and credit only from MIT or CC BY sources (for example Sharpie’s Gear Judge and its XP and Roster plugins, and pfQuest), with notices in THIRD_PARTY.md and file headers.
+2. Clean room for GPL or All Rights Reserved sources (Polestar, LibForeverData, Altoholic and DataStore, Questie, ForeverXP Bar, Forever Planner, Profession Planner): you get hint notes from me (game functions, events, pitfalls, behaviour), never their code. Write your own version and record “approach informed by <add-on>, no code copied”. Never copy data tables.
+3. Optional plugins: read another add-on’s data while the game runs only when it’s offered for that (LibForeverData, Auctionator’s interface). Every feature must work without it, and the window says which add-ons improve which features.
+4. Cross-checks: use installed add-ons to check our numbers in live tests (ForeverXP Bar for XP per hour and time to level, Profession Planner for profession steps)."
+Recorded in CODE_STANDING_ORDERS.md section 8 (with how Claude applies it) and NEXT_SESSION_PROMPT.md. **Supersedes D-003 in part:** copying with credit is now allowed from MIT and CC BY sources; D-003 stands for DataStore and Altoholic (All Rights Reserved). Project_Bible.md section 6 updated to match. THIRD_PARTY.md created (empty list). Licenses named by the user are confirmed from each source's own license file before anything is copied.
+
+## D-069 Plan inputs for P2-4c, P2-4d, P2-4e and Q-P2-4f; answers to section 11.4 | User (2026-11-14)
+The user's exact words:
+"Plan inputs (no code):
+* P2-4e: quest data from LibForeverData as an optional plugin, with pfQuest (MIT) as the bundled fallback. Quest XP uses the game’s quest-XP function, which Sharpie’s XP plugin (MIT) uses on Forever, so keep the 0.1.10 check short. Reuse Sharpie’s XP-per-hour and time-to-level code with credit.
+* P2-4d: add Forever’s campfire buff (“Camp Benefits”) and sleeping-bag buff (“Well Rested”) as rested rules, labelled unverified.
+* P2-4c and Q-P2-4f: from Sharpie’s Roster (MIT), flag characters not seen for 7 days or that need a login after an update, and show gold per character and the total. Capture played time with the game’s own request, plus gold, hearthstone location and zone, at login and on change, never during logout (EI-E-08). Prove with a test and a live step that everything works with DataStore and Altoholic disabled. The setup wizard tells me to log in once on each character.
+* Section 11.4 answers: Q-P2-4c-4: yes. Q-P2-4c-5: two (0.8.0, then 0.8.1). Q-P2-4e: yes. e-1: Questie read only, nothing copied, and works without it. e-2: decide after the check. Q-P2-4f: yes, played time first.
+I’ll install and retest 0.7.3 next. Start nothing new until P2-4b closes."
+Also from the user's reviewer notes on the saved files: "Measured XP per hour now exists for 7 of 8 characters; use it in estimates. EmpireIntelCheck’s saved file is 232 KB against its 256 KB cap and marked truncated; trim it or plan a fix."
+Consequences: Phase2_Plan.md 1.9.0 sections 10 and 11 updated (plan only). Nothing started. Two points need the user (Phase2_Plan.md 11.6): e-1 (reading Questie) conflicts with D-068 point 3, and pfQuest's bundled database comes from VMaNGOS (GPL v2), not only from pfQuest's MIT code.
+
+## D-070 Retest 0.7.3: step 2 passed, step 3 partial; fixes 1, 2 and 4 in 0.7.4; Q-D068-1 and Q-D068-2 answered | User (2026-11-14)
+The user's exact words (character names replaced: the Hunter, the Priest):
+"Retest 0.7.3: step 2 pass; step 3 partial; step 8 screenshots attached (files after logout).
+Each Legacy milestone is its own row. My plan shows “Alchemy 225” as +2 and hides Alchemy 150. Show 150, 225 and 300 as separate rows and steps (the Hunter is missing his 150 rows). Moving a 225 row up must bring the 150 row above it.
+Points mismatch: the Hunter’s “Learn Alchemy, 0 → 225” shows +1 in Fastest but +2 in My plan.
+The Priest’s Enchanting 225 wasn’t in my copied plan because the target is next reward (15). Not a bug, but I need a way to add any milestone row from the window (P2-4c options).
+Emblems: make the faction emblem about the same size as the character portrait on the card.
+The route assigns the Hunter both Alchemy and Blacksmithing although he has no professions. That’s P2-4c (setup wizard); confirm it’s covered.
+Q-D068-1: yes, drop the Questie read. Q-D068-2: bundle no quest data; read LibForeverData while the game runs as an optional plugin, and pfQuest the same way if installed; with neither, estimates use grinding only, labelled. Fix 1, 2 and 4 in 0.7.4; don’t merge #17 yet."
+Consequences: 0.7.4 built (P2-4b_Report.md section 6); #17 not merged. P2-4c gains "add any milestone row" (Phase2_Plan.md 10.2); the Hunter's two assumed crafts are covered by P2-4c's rule (10.2 points 1-2, c-2: nothing planned for a free slot until chosen). P2-4e: no Questie read, no bundled quest data; LibForeverData and an installed pfQuest read at run time as optional plugins; with neither, grinding only, labelled (Phase2_Plan.md 11.6).
+Claude's choices within the words: a route step that passes several milestones becomes one step per milestone, each with its own training gate and its share of the time (exact: level time as differences from the same start); a milestone row the account already has, or that an earlier step earns, shows no point and says why; My plan counts points once per account in plan order (class per class, craft per craft, L-2, L-3), starting from the account's earned milestones (the game's Legacy read, else inferred), as Fastest does; saved plans get the missing milestone rows at login or `/reload` (chat names them), and a raised target gets its new milestone rows; the emblem's disc is about the portrait's 52 px (texture 66 px), level with the portrait, the badge to its left, the card title kept clear of it.
+
+## D-071 Standing permissions for each session (pasted at the start of every session) | User (2026-11-14), standing
+The user's exact words: "Standing permissions from me, for this whole session: you may edit code and docs, run tests, build packages, commit, and push to work branches without asking (never push to main, never force-push, never change permission settings files). When I approve an increment, fix or merge in this chat, that is my explicit approval to do it, including merging that pull request yourself with the REST merge command. Docs-only pull requests (Session_Handoff, NEXT_SESSION_PROMPT, CODE_STANDING_ORDERS, Decisions, TODO, Changelog) you may merge yourself under my standing approval. Add this paragraph, word for word, to the top of NEXT_SESSION_PROMPT.md as text I paste at the start of every session, and record it as a decision."
+Recorded: the paragraph is the first paragraph of NEXT_SESSION_PROMPT.md, word for word. It restates D-049, D-050 and D-051 (merge only after approval in chat, the REST merge command, the docs-only standing approval) and adds: no push to main, no force-push, no change to permission settings files. Gates are unchanged: a new increment, a fix or a merge still needs the user's approval in chat (CODE_STANDING_ORDERS.md section 2).
+
+## D-072 Documents brought up to date | User (2026-11-16)
+The user's exact words: "Can you clean up the docs, I see some outdated stuff in them. For example it's not multi AI, it's just Claude. And some docs read like it's prelaunch and the game is launched. Just in general there is a bunch of outdated information that should be updated to reflect current reality"
+Done (S-068), with no change of scope or of any decision:
+- **Project_Bible.md 2.0.0:** roles are the user and Claude only (the multi-AI contract and external-review intake removed); session continuity for Claude Code sessions; reading order starts with CODE_STANDING_ORDERS.md; governance points to the standing orders (D-049, D-050, D-051, D-071); the third-party rule is D-068; the inventory separates living documents from records.
+- **Architecture.md 3.0.0:** the design as built (layers, modules, saved-data format 2, the route, My plan, invariants, tests); the pre-launch design (v2.x) is left to the reports and git history.
+- **Requirements_v1.md 2.0.0:** restates the requirements as the user decided them: the route planner, the saved plan and the window (D-054, D-055, D-060) replace the plan file and "no windows"; FR-LEG-2 waits for Q-T4; the pre-launch assumptions settled. This is the user's decision to update the requirements to current reality; it adds no scope.
+- **Risk_Register.md 2.0.0:** closed risks moved to a closed list with their outcome; new R-21 (levelling estimates), R-22 (the check's file size), R-23 (third-party licenses), R-24 (other UI add-ons).
+- **Compatibility_Notes.md 2.0.0:** the client profile from launch evidence; the pre-launch web summaries kept with how each turned out; EI-E-33 (build 70938).
+- **Other updates:** README.md and CONTRIBUTING.md (current status, owner plus Claude, D-068); CODE_STANDING_ORDERS.md 1.3.0 (roles; D-071 in section 2; Q-T4 wording); NEXT_SESSION_PROMPT.md step 5 matches D-071; Legacy_Rules.md, Phase2_Plan.md, Phase3_Legacy_Plan.md and Release_Pipeline.md status lines; the two 2026-11-03 reviews marked as historical records; the bug-report template no longer says "public repository"; the empty `reviews/` folder removed (no review was ever stored).
+- **Not changed:** Decisions.md and Changelog.md history (append-only), older handoff sections, and the phase reports (records).
+
+## D-073 Build 71037 realm evidence recorded; realm-identity plan requested | User (2026-11-20)
+The user's exact words (character names left out; C3 is the ignored beta character):
+"Retest 0.7.4: the saved file shows [the Hunter]’s order Level 25 → Alchemy 150 → Alchemy 225 at the top, and the 150 rows above the 225 rows. Emblem and +1: [OK / issue]. Merge #17 and close P2-4b: [yes/no].
+New evidence, record as EI-E entries:
+1. Client build 1.60.1/71037 (dated Nov 18) returns “” from GetRealmName() and GetNormalizedRealmName(). EmpireIntelCheck caught it on [a Horde Warrior] (ds_guid_key_mismatch, ds_duplicate_guid). It may be a deliberate Blizzard change, not a bug, so don’t assume it will be fixed.
+2. DataStore broke. It created blank-realm keys (“Default..Name”): duplicates for [two characters], and the only entry for characters created since. Altoholic showed only the current character until I added a workaround. Our roster was unaffected because Unit.lua drops empty realms and we identify characters by GUID.
+3. Each realm has its own GUID server number: 6796 = CAMWOW US2 Realm 1 PvE, 6800 = PvP realm, 6928 = RP realm, 6935 = RP-PvP realm. 6933 was the Realm 7 PvE beta realm and no longer exists ([C3] is a leftover beta character). I created level-1 test characters [three, on 6800, 6928 and 6935]. All three have realm = nil and ruleset = “normal” in our roster, so the realm-type badge can’t tell them apart. No Hardcore realm is available yet.
+4. Workaround installed, not part of our repo: a local addon “!RealmFix” 2.0 that loads before DataStore. When the game returns “”, it supplies the realm name from the GUID server number using a learned map, and leaves unknown numbers blank. It saves a log to RealmFixDB. While it’s installed, GetRealmName() returns the filled-in name for 6796, so EmpireIntelCheck no longer sees the raw “” on that realm. Treat realm values seen with the shim installed accordingly. EmpireIntel must not depend on the shim.
+Propose, plan only, don’t build until I approve:
+(a) Realm identity by GUID server number, with name and ruleset as labels learned whenever the game gives a name. Characters on an unknown server number show as “Unknown realm (number)”, never merged with other realms. Let me label an unknown realm once in the GUI. Rulesets aren’t unique, so don’t group by ruleset; show it as a label. Hardcore still comes from C_GameRules.
+(b) How the plan, the Legacy points and the roster should treat test characters and characters on other realms: option to ignore them, and whether Legacy points are per account or per realm.
+(c) The planned 0.1.10 trim of EmpireIntelCheck. Its file was at 248 KB of 256 KB and already dropping data."
+Consequences: EI-E-34..38 recorded (EI-E-38: the race file "Skyborne", seen in the same file). Plan in Phase2_Plan.md section 12 (Q-R, Q-R-1..5), no code. **Not done:** the merge of #17 and closing P2-4b: the message kept the template placeholders "[OK / issue]" and "[yes/no]", so neither is approved yet. The 0.7.4 retest result recorded from the saved file: the Hunter's order and the 150-above-225 rows are as fixed [file].
+
+## D-074 Repository public on purpose; Legacy points account-wide across normal realms; Hardcore its own pool; Skyborne by faction | User (2026-11-20)
+The user's exact words:
+"Repository: public is intended for now (my decision). Push. Update CODE_STANDING_ORDERS section 7 to say the repo is public on purpose, and keep checking every push for character names, GUIDs and account names. Docs-only, under standing approval."
+"Cross-realm test: Legacy points are account-wide. My PvP-realm character shows the same points as my main realm. Record that.
+Blizzard has stated this will not be the case for the Hardcore ruleset when it opens: Hardcore will have its own Legacy points. Record that as my statement, not tested yet. Plan for it: points account-wide across normal realms (PvE, PvP, RP, RP-PvP), and separate for Hardcore. Treat Hardcore as a separate points pool in the route and in Fastest/My plan."
+"Skyborne (EI-E-38): Skyborne can be either faction. Horde Skyborne are the Windshaper, Alliance Skyborne are the High Order. [A Horde Druid] is a Horde Skyborne. The roster already records faction from UnitFactionGroup, so choose the race icon and label by race + faction: Skyborne + Horde = Windshaper, Skyborne + Alliance = High Order. Fall back to the class icon only when faction is unknown (e.g. a DataStore-only alt with no faction). Add this to the plan; it’s small, so it can go with P2-4r or the next UI increment."
+(The message also kept the placeholders "Emblem and +1: [OK / issue: …]. Merge #17 and close P2-4b: [yes/no]."; neither is answered, so #17 stays unmerged and P2-4b open. A character name is replaced by its role.)
+Consequences: CODE_STANDING_ORDERS.md section 7 (1.4.0), Project_Bible.md section 7 and R-09: the repository is public on purpose; every push is checked for character names, GUIDs and account names. EI-E-38 updated, EI-E-39 (account-wide across normal realms, the user's test) and EI-E-40 (Hardcore's own pool, the user's report of Blizzard's statement, untested). Phase2_Plan.md 12.2 (two pools: normal realms and Hardcore; new rule L-19 confirmed; L-18 sourced to the user's report, still unverified), 12.2b (Skyborne: Windshaper for Horde, High Order for Alliance; class icon when the faction is unknown), 12.3 (the check lists the Skyborne atlases). Q-R-5 answered by the test; Q-R-6 added.
+
+## D-075 Emblem and +1 accepted; Q-R answers; route rules R-1..R-7 for the Fastest route | User (2026-11-20)
+The user's exact words (character names replaced by roles):
+"Emblem and +1: OK (emblem about portrait size; [the Hunter]’s Alchemy 225 shows +1 in both Fastest and My plan).
+Merge #17 and close P2-4b: not yet. Wait until you’ve answered the route problems below and I’ve decided whether they’re fixed in P2-4b first.
+Q-R: yes. Q-R-1: yes. Q-R-2: add the command. Q-R-3: yes, with a confirmation. Q-R-4: yes. Q-R-6: yes, once a Hardcore realm exists.
+For P2-4r testing: I need a way to show any character’s card even when they have no plan steps (e.g. [the Skyborne Druid], my only Skyborne, who is too far down to earn a point before the milestones are done). Add that to the P2-4r test steps, for example a click on a character in /ei alts or a character picker on the card.
+Fastest route problems (screenshot attached). Treat these as rules; record them and fix them in the route:
+1. Never assume a profession will be learned. If no character has a profession, don’t plan “Learn X, 0 → 150” steps for it. [The Hunter] has no professions, so he shouldn’t get Alchemy or Blacksmithing steps at all.
+2. Same profession on several characters: the highest skill is the path. Blacksmithing → [the Horde Warrior] (51), Enchanting → [the Priest] (47), Alchemy → [the Druid] (82), Leatherworking → [the Horde Rogue] (69, not [the Alliance Rogue] at 44), Engineering → [the Shaman] (1, not [the Horde Warrior] learning it). That character takes every milestone of that profession (150 and 225), unless it can’t reach the level needed. If so, show it rather than silently switching characters.
+3. Tailoring is missing. [The Priest] has Tailoring 150/150, so his Tailoring 225 should be in the route.
+4. [The RP-PvP test character] shouldn’t be in the route. Exclude him until Forget/ignore exists (Q-R-3).
+5. Up next isn’t in the table ([the Paladin], Experienced Spelunker). Make it row 1, or say it’s shown separately.
+6. Targets: 15 is the next reward, but 16 is the current per-character cap, and more than 16 can be earned. Plan up to the cap by default, and let me track beyond it. Don’t hard-code 15 or 16.
+7. Rows with no point that unlock a later point should say so (“prerequisite for step n”).
+Question: does Fastest pick the fastest character itself, or follow My plan’s assignments? [The Hunter] got Alchemy 225 and Blacksmithing 225 in Fastest even though he has no professions.
+Fold these into the plan, and propose whether they go into P2-4b as a fix before closing, or into the next increment. Don’t build until I approve. Order after that stays as agreed: close P2-4b → EmpireIntelCheck 0.1.10 trim → P2-4r."
+Consequences: emblem and the +1 match accepted (0.7.4); #17 not merged, P2-4b not closed ("not yet"). Q-R, Q-R-1, Q-R-3 (with a confirmation), Q-R-4 approved; Q-R-2: the `/ei realm` command; Q-R-6 yes once a Hardcore realm exists. P2-4r gains a character picker on the card for testing (Phase2_Plan.md 12.5). The seven route rules recorded as planner rules R-1..R-7 and planned in Phase2_Plan.md section 13, with the question answered there (Fastest picks characters itself; it never reads My plan). No code until approved.
+
+## D-076 Route rules built as 0.7.5; prompt on main; personal-data scan | User (2026-11-20)
+The user's exact words (character names replaced by roles):
+"Q-R7: yes. Build 0.7.5 with R-1, R-2, R-3, R-5 and R-7 before closing P2-4b; R-6 in P2-4c (move the 16 into the rules table in 0.7.5). Q-R7-a: yes. Q-R7-b: only on a character I picked; the planner may suggest one, but doesn’t plan it until I pick. I’ve ignored my test characters.
+Also, before building: put the standing-permissions paragraph at the top of NEXT_SESSION_PROMPT.md on main now, with a prompt-only docs PR under standing approval, so a new session started from main has it before #17 merges. And check the repo for the same kinds of personal data GoldIntel found (Battle.net account folder number, character GUIDs) and list what you find; don’t scrub until I approve.
+Send 0.7.5 with the package block and test steps, including a check that Tailoring 225 now appears on [the Priest] and that [the Hunter] has no profession steps."
+Done: #18 (prompt only, the D-071 paragraph at the top of NEXT_SESSION_PROMPT.md on main) merged under the docs-only standing approval (70f8062; 408 tests on main under Lua 5.1 and 5.3); main merged back into `p2-4b-window` (the prompt conflict kept the branch's fuller prompt). The personal-data scan of every branch's history found nothing of the GoldIntel kinds (Session_Handoff S-072 lists what it found); nothing scrubbed. EmpireIntel 0.7.5 built with R-1, R-2 (tie-break as Q-R7-a), R-3, R-5, R-7 and the cap in the rules table (P2-4b_Report.md section 6). Q-R7-b recorded for P2-4c (Phase2_Plan.md 13.4). **R-3 as built:** the Priest's Tailoring 225 is a planned step on him, but at about 19 h it follows cheaper points: in a replay of the user's saved file it is step 16, so it shows at a target of about 20, not at 15 or 16 [inferred, offline replay].
+
+## D-077 0.7.5 passed; #17 merged; P2-4b closed; scan left as is; next the check's trim, then P2-4r; the target box redesign for P2-4c | User (2026-11-21)
+The user's exact words (character names replaced by roles):
+"0.7.5: steps 2, 3, 4, 5 pass. Test characters ignored (4 ignored, including the old beta character). /ei next shows the same route (17 steps to 20, ~178 h): [the Hunter] has only Level 25; Leatherworking is on [the Horde Rogue], Blacksmithing on [the Warrior], Engineering on [the Shaman], Alchemy on [the Druid], Enchanting on [the Priest]; no “Learn” steps; Tailoring is in the later steps.
+Merge #17 and close P2-4b: yes. Scan findings: leave as is. Next: EmpireIntelCheck 0.1.10 trim, then P2-4r, as agreed.
+For P2-4c (with R-6): the top-right box changes the target when clicked, but nothing shows it’s a button, and I’ve wondered more than once what its numbers mean. Split it into (1) plain progress text, e.g. “Legacy points: 3 · next reward at 15 (Air Rifle)”, and (2) a control that looks like a button or dropdown, e.g. “Plan to: Cap (16) ▾”, with a tooltip: “The route plans steps until this many points.” Propose the design in the P2-4c plan."
+Consequences: P2-4b **closed** (EmpireIntel 0.7.5); #17 merged through the REST command (D-050). The scan findings stay as they are. Next, in order: EmpireIntelCheck 0.1.10-tp1 (the trim with realm and Skyborne probes, Phase2_Plan.md 12.3, approved as Q-R-4), then P2-4r (section 12), then P2-4c (with R-6 and the target box design, 10.4). Rule R-4 is met by the user ignoring the test characters.
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)

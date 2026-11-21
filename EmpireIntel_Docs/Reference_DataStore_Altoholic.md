@@ -1,6 +1,6 @@
 # Reference review: DataStore and Altoholic on WoW Forever
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-03  |  Method: source read only, nothing copied, nothing run in a client
+DOC VERSION: 1.0.0  |  DATE: 2026-11-03  |  STATUS: **historical record**; since then DataStore was checked live (EI-E-07, EI-E-17) and is read by `Bridge/DataStoreBridge.lua` (P2-2, getters listed there); D-068 governs third-party use  |  Method: source read only, nothing copied, nothing run in a client
 
 > **Update S-002 (2026-11-03):** with the Legacy scope (D-010), the DataStore modules that matter are core, **Characters** (level, class, `GetRestXP`, `GetRestXPRate`, `IsResting`, last logout) and **Crafts** (`GetProfessions`, `GetProfessionInfo`). Containers, Mails and Inventory are no longer needed. **No DataStore module and no Altoholic file reads Forever Legacy data.** DataStore_Achievements' `Legacy*` ids are retail achievement categories, unrelated, and that module has no Forever TOC. DataStore_Characters notes that `GetXPExhaustion` 'is not reliable (sometimes returns 0)'.
 

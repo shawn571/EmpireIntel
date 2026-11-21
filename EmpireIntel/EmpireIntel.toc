@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: EmpireIntel
-## Notes: Your characters' Legacy progress and the fastest route to the next points (/ei next). Phase 2 increment P2-4a.
-## Version: 0.6.0
+## Notes: Your characters' Legacy progress and the fastest route to the next points (/ei plan, /ei next). Phase 2 increment P2-4b (retest 0.7.5).
+## Version: 0.7.5
 ## SavedVariables: EmpireIntelDB
 
 Platform/Platform.lua
@@ -12,6 +12,7 @@ Platform/Unit.lua
 Platform/SavedVars.lua
 Platform/Slash.lua
 Platform/Legacy.lua
+Platform/UI.lua
 Store/Migrations.lua
 Store/Store.lua
 Bridge/DataStoreBridge.lua
@@ -25,4 +26,10 @@ Core/RouteRules.lua
 Core/Route.lua
 Core/Plan.lua
 Core/Next.lua
+UI/Theme.lua
+Core/PlanView.lua
+UI/UpNext.lua
+UI/Rows.lua
+UI/Window.lua
+UI/Minimap.lua
 Core/Boot.lua

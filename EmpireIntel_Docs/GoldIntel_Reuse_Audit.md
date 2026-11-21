@@ -1,6 +1,6 @@
 # GoldIntel Reuse Audit for EmpireIntel
 
-DOC VERSION: 1.0.0  |  DATE: 2026-11-03  |  Audited: shawn571/GoldIntel at commit a21e071 (0.5.1-passive, contract 1.9.0)
+DOC VERSION: 1.0.0  |  DATE: 2026-11-03  |  STATUS: **historical record** (the port is done: Platform, Store and the harness came from GoldIntel a21e071 in P2-1, each file says so in its header)  |  Audited: shawn571/GoldIntel at commit a21e071 (0.5.1-passive, contract 1.9.0)
 
 > **Update S-002 (2026-11-03):** EmpireIntel's scope is now the Forever Legacy system, rested XP and professions (D-010). The reuse verdicts below still hold. Money, Items and Bags are now needed only for TP-1's DataStore cross-check, not for the product. Section 3 is updated. Q-2 is resolved: the repository is private.
 
