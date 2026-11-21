@@ -528,6 +528,7 @@ C.On('PLAYER_LOGOUT', function()
     base.at = U.wall()
   end
   if base then C.DB().logout[g] = base end
+  pcall(C.Compact, C.DB())           -- 0.1.10: the saved file keeps only what later phases use
 end)
 
 local function onBlocked(addon, fn)

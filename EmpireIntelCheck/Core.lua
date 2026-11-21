@@ -62,6 +62,50 @@ function C.DB()
   return db
 end
 
+--- 0.1.10 (Phase2_Plan.md 12.3, approved Q-R-4): at logout, before the game writes the file, drop what no later phase
+-- uses, so the file stays far under the cap. During the session everything stays in memory and works as before.
+-- Kept: the runs, the verdicts, the Legacy challenges with done / progress (criteria only for the 65 point challenges),
+-- the UI results without the atlas raw-size objects, the per-character records, docs.args (the argument guard).
+function C.Compact(db)
+  if type(db) ~= 'table' then return end
+  if type(db.latest) == 'table' then
+    db.latest = { runId = db.latest.runId, at = db.latest.at, build = db.latest.build, compacted = '0.1.10' }
+  end
+  if type(db.docs) == 'table' then
+    local d = db.docs
+    local legacySystems = {}
+    for _, sy in ipairs(d.systems or {}) do if sy.legacy then legacySystems[#legacySystems + 1] = sy.name end end
+    db.docs = { at = d.at, result = d.result, systemCount = d.systemCount, strongSystems = d.strongSystems, args = d.args,
+      argsCount = d.argsCount, legacySystems = legacySystems, dropped = d.dropped, compacted = '0.1.10' }
+  end
+  if type(db.undoc) == 'table' then
+    db.undoc = { at = db.undoc.at, calledAt = db.undoc.calledAt, results = db.undoc.results, compacted = '0.1.10' }
+  end
+  if type(db.strongSeen) == 'table' and next(db.strongSeen) then
+    local n = 0
+    for _ in pairs(db.strongSeen) do n = n + 1 end
+    db.strongSeen = {}; db.strongSeenDropped = n .. ' names (0.1.10 compaction)'
+  end
+  db.nsBaseline = nil
+  if type(db.uiLatest) == 'table' and type(db.uiLatest.checks) == 'table' then
+    for _, chk in pairs(db.uiLatest.checks) do
+      if type(chk) == 'table' and type(chk.v) == 'table' then
+        for _, x in pairs(chk.v) do if type(x) == 'table' then x.rawSize = nil end end
+      end
+    end
+  end
+  if type(db.legacy) == 'table' then
+    for _, ch in ipairs(db.legacy.challenges or {}) do
+      ch.description, ch.reward, ch.earnedByMe = nil, nil, nil
+      if ch.stepOf or not ch.legacy then ch.criteria = nil
+      else
+        for _, cr in ipairs(ch.criteria or {}) do cr.achievement = nil end
+      end
+    end
+  end
+  db.compacted = '0.1.10'
+end
+
 function C.IsOff()
   local db = NS.env.EmpireIntelCheckDB
   return type(db) == 'table' and db.off == true

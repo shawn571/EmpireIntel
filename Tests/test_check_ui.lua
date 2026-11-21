@@ -210,9 +210,9 @@ T.describe('0.1.9 static rules', function()
       T.falsy(code:find(bad, 1, true), bad)
     end
   end)
-  T.it('the TOC names UI.lua before Run.lua; version 0.1.9-tp1; the texture is an 8x8 TGA', function()
+  T.it('the TOC names UI.lua before Run.lua; version 0.1.10-tp1; the texture is an 8x8 TGA', function()
     local toc = read(DIR .. 'EmpireIntelCheck.toc')
-    T.truthy(toc:find('## Version: 0.1.9-tp1', 1, true))
+    T.truthy(toc:find('## Version: 0.1.10-tp1', 1, true))
     T.truthy(toc:find('UI.lua\nRun.lua', 1, true))
     local tga = read(DIR .. 'Media/Test.tga')
     T.eq(#tga, 18 + 8 * 8 * 4)
@@ -220,5 +220,113 @@ T.describe('0.1.9 static rules', function()
     T.eq(tga:byte(13) + 256 * tga:byte(14), 8)
     T.eq(tga:byte(15) + 256 * tga:byte(16), 8)
     T.eq(tga:byte(17), 32)
+  end)
+end)
+
+---------------------------------------------------------------------------
+-- 0.1.10-tp1 (Phase2_Plan.md 12.3, Q-R-4, D-077): the realm and Skyborne probes; the file compacted at logout
+---------------------------------------------------------------------------
+T.describe('0.1.10: realm probes after build 71037 (EI-E-34..37)', function()
+  local function realmSession(o)
+    local W = F.new({})
+    withUI(W, {})
+    W.env.GetRealmName = function() return o.realm end
+    W.env.GetNormalizedRealmName = function() return o.realm end
+    if o.realmID then W.env.GetRealmID = function() return o.realmID end end
+    W.env.C_AddOns.IsAddOnLoaded = function(x) return x == '!RealmFix' and o.fix == true end
+    W.env.UnitGUID = function(u) if u == 'player' then return 'Player-9999-00000099' end end
+    F.load(W); W:login(); W:advance(12); W:advance(30)
+    return W
+  end
+  T.it('an empty realm name is recorded as the game gave it, with the GUID server number and no realm add-on', function()
+    local W = realmSession({ realm = '', realmID = 1234 })
+    T.eq(check(W, 'GetRealmName').v, { '' })
+    T.eq(check(W, 'UnitGUID server'), { r = 'present', v = { '9999' } })
+    T.eq(check(W, 'GetRealmID').v, { 1234 })
+    T.eq(check(W, 'realm add-on !RealmFix loaded').v, { false })
+    local id = latest(W).identity
+    T.eq({ id.realm, id.server, id.realmAddon }, { '', '9999', false })
+    T.eq(W:db().uiChars['Player-9999-00000099'].server, '9999', 'per character')
+  end)
+  T.it('with the realm add-on loaded, the name is recorded and the add-on is named; GetRealmID absent is "not found"', function()
+    local W = realmSession({ realm = 'Some Realm PvP', fix = true })
+    T.eq(check(W, 'GetRealmName').v, { 'Some Realm PvP' })
+    T.eq(check(W, 'realm add-on !RealmFix loaded').v, { true })
+    T.eq(latest(W).identity.realmAddon, true)
+    T.truthy(check(W, 'GetRealmID').r ~= 'present')
+  end)
+end)
+
+T.describe('0.1.10: the Skyborne atlases (EI-E-38)', function()
+  T.it('raceicon-skyborne, -windshaper and -highorder are probed for both sexes; present ones say so', function()
+    local W = F.new({})
+    withUI(W, {})
+    local get = W.env.C_Texture.GetAtlasInfo
+    W.env.C_Texture.GetAtlasInfo = function(n) if n == 'raceicon-windshaper-male' then return { width = 64, height = 64, file = 9 } end; return get(n) end
+    F.load(W); W:login(); W:advance(12); W:advance(30)
+    for _, r in ipairs({ 'skyborne', 'windshaper', 'highorder' }) do
+      for _, g in ipairs({ 'male', 'female' }) do T.truthy(check(W, 'atlas raceicon-' .. r .. '-' .. g), r .. g) end
+    end
+    T.eq(check(W, 'atlas raceicon-windshaper-male').r, 'present')
+    T.eq(check(W, 'atlas raceicon-highorder-female').r, 'nothing')
+  end)
+end)
+
+T.describe('0.1.10: the saved file is compacted at logout', function()
+  local function filled(W)
+    local db = W:db()
+    db.latest = db.latest or {}
+    db.latest.results = {}
+    for i = 1, 400 do db.latest.results['C_X.Get' .. i] = { code = 'ok', values = { string.rep('v', 60) } } end
+    db.latest.names = { a = true }
+    db.docs = { at = 1, systemCount = 410, result = 'ok', args = { ['C_X.GetA'] = 1 }, argsCount = 1,
+      systems = { { name = 'Sys', namespace = 'C_Sys', legacy = false, functions = { string.rep('f', 2000) } }, { name = 'LegacyThing', legacy = true } },
+      events = { E = true }, index = { string.rep('i', 5000) } }
+    db.undoc = { at = 2, calledAt = 3, namespaces = { C_A = { string.rep('n', 3000) } }, plan = { 'C_A.GetB' }, results = { ['C_A.GetB'] = { code = 'ok' } } }
+    db.strongSeen = { LegacyA = { first = 1 }, LegacyB = { first = 2 } }
+    db.nsBaseline = { list = { string.rep('b', 3000) } }
+    db.uiLatest = { checks = { ['atlas x'] = { r = 'present', v = { { width = 64, file = 1, rawSize = { x = 64, y = 64, Add = '<function>' } } } } } }
+    db.legacy = { challenges = {
+      { id = 1, name = 'Novice Druid', legacy = 1, completed = false, description = 'Reach level 25', reward = 'Earn 1 Legacy Point.', earnedByMe = false,
+        criteria = { { text = 'Dungeon A', completed = true, achievement = 760 } } },
+      { id = 2, name = 'Explore Eastern Kingdoms', stepOf = 3, completed = false, description = 'Complete the maps', reward = '',
+        criteria = { { text = 'Alterac Mountains', completed = false, achievement = 761 } } } } }
+    return db
+  end
+  T.it('in the session nothing is dropped; at logout the leftovers go and what later phases use stays', function()
+    local W = session({})
+    local db = filled(W)
+    T.truthy(db.latest.results and db.docs.systems and db.undoc.plan, 'usable during the session')
+    W:fire('PLAYER_LOGOUT')
+    db = W:db()
+    T.eq(db.compacted, '0.1.10')
+    T.isnil(db.latest.results); T.isnil(db.latest.names); T.truthy(db.latest.runId ~= nil or db.latest.compacted)
+    T.isnil(db.docs.systems); T.isnil(db.docs.events); T.isnil(db.docs.index)
+    T.eq(db.docs.args, { ['C_X.GetA'] = 1 }, 'the argument guard stays')
+    T.eq(db.docs.legacySystems, { 'LegacyThing' })
+    T.eq(db.docs.systemCount, 410)
+    T.isnil(db.undoc.namespaces); T.isnil(db.undoc.plan)
+    T.eq(db.undoc.results, { ['C_A.GetB'] = { code = 'ok' } })
+    T.eq(db.strongSeen, {}); T.truthy(db.strongSeenDropped:find('2 names', 1, true))
+    T.isnil(db.nsBaseline)
+    T.eq(db.uiLatest.checks['atlas x'].v[1], { width = 64, file = 1 })
+    local c1, c2 = db.legacy.challenges[1], db.legacy.challenges[2]
+    T.isnil(c1.description); T.isnil(c1.reward); T.isnil(c1.earnedByMe)
+    T.eq(c1.criteria, { { text = 'Dungeon A', completed = true } }, 'done and progress stay')
+    T.eq({ c1.id, c1.name, c1.completed }, { 1, 'Novice Druid', false })
+    T.isnil(c2.criteria, 'a step\'s own sub-areas go')
+    T.eq({ c2.stepOf, c2.completed }, { 3, false })
+  end)
+  T.it('a file of the user\'s size shape ends far under the cap (half of it)', function()
+    local W = session({})
+    local db = filled(W)
+    for i = 1, 111 do
+      db.legacy.challenges[#db.legacy.challenges + 1] = { id = 100 + i, name = 'Ch' .. i, legacy = (i <= 65) and 1 or nil, stepOf = (i > 65) and 7 or nil,
+        completed = false, description = string.rep('d', 85), reward = 'Earn 1 Legacy Point.', earnedByMe = false,
+        criteria = (function() local t = {} for j = 1, 10 do t[j] = { text = 'Zone ' .. j, completed = false, achievement = j } end return t end)() }
+    end
+    W:fire('PLAYER_LOGOUT')
+    local size = W.env.EmpireIntelCheckDB and #T.serialize(W.env.EmpireIntelCheckDB) or 0
+    T.truthy(size < 128 * 1024, 'size ' .. size)
   end)
 end)

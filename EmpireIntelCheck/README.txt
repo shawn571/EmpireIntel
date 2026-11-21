@@ -1,4 +1,31 @@
-EmpireIntelCheck 0.1.9-tp1 - EmpireIntel Test Package 1: the Legacy check, plus the UI checks
+EmpireIntelCheck 0.1.10-tp1 - EmpireIntel Test Package 1: the trim, and realm and Skyborne checks
+
+WHAT CHANGED IN 0.1.10 (your approval Q-R-4, D-077; Phase2_Plan.md 12.3)
+  - The saved file stays small: when you log out (or /reload), the check drops what no later step uses: the old
+    discovery results, the API documentation lists (the argument guard stays), the undocumented-namespace lists,
+    the atlas raw-size objects, and each Legacy challenge's description and reward text (the challenges, their
+    done / not done and their steps stay). Your file of 2026-11-20 shrinks from about 234 KB to roughly 95 KB.
+    During play nothing is dropped; everything works as before.
+  - New realm checks (build 71037 returns "" for the realm name, EI-E-34): the realm name exactly as the game gives
+    it, GetRealmID (if the client has it), the GUID's server number, and whether a realm add-on ("!RealmFix") is
+    loaded. Saved per character (by GUID) with race, faction and ruleset.
+  - New race-icon checks for the Skyborne: raceicon-skyborne, -windshaper and -highorder (male and female).
+  Update from 0.1.9: /RELOAD IS ENOUGH (files changed in the existing folder).
+
+TEST (about 5 minutes; keep your "!RealmFix" as it is, the check only notes whether it is loaded)
+  1. Replace the folder Interface\AddOns\EmpireIntelCheck with the one in the zip, then /reload.
+  2. Wait about 15 seconds, then type  /eicheck ui  : expect the usual "UI checks: ..." line.
+  3. Log in on the Skyborne Druid, wait 15 seconds, type  /eicheck ui  (this records the Skyborne icons and its
+     realm values).
+  4. Optional: log in on one test character on another realm (PvP, RP or RP-PvP), wait 15 seconds, /eicheck ui.
+  5. Log out to the character screen (this writes the file), then send
+       WTF\Account\<your account>\SavedVariables\EmpireIntelCheck.lua
+     Expect it well under 128 KB. Note any UNEXPECTED line or red Lua error.
+
+ROLLBACK TO 0.1.9
+  Put the 0.1.9 folder back and /reload. Data dropped by the trim is not needed by anything.
+
+EmpireIntelCheck 0.1.9-tp1 - the Legacy check, plus the UI checks (earlier notes)
 
 WHAT IT IS
   A throwaway, read-only, passive addon. It finds out what the WoW Forever client exposes about the

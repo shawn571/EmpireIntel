@@ -610,6 +610,14 @@ Merge #17 and close P2-4b: yes. Scan findings: leave as is. Next: EmpireIntelChe
 For P2-4c (with R-6): the top-right box changes the target when clicked, but nothing shows it’s a button, and I’ve wondered more than once what its numbers mean. Split it into (1) plain progress text, e.g. “Legacy points: 3 · next reward at 15 (Air Rifle)”, and (2) a control that looks like a button or dropdown, e.g. “Plan to: Cap (16) ▾”, with a tooltip: “The route plans steps until this many points.” Propose the design in the P2-4c plan."
 Consequences: P2-4b **closed** (EmpireIntel 0.7.5); #17 merged through the REST command (D-050). The scan findings stay as they are. Next, in order: EmpireIntelCheck 0.1.10-tp1 (the trim with realm and Skyborne probes, Phase2_Plan.md 12.3, approved as Q-R-4), then P2-4r (section 12), then P2-4c (with R-6 and the target box design, 10.4). Rule R-4 is met by the user ignoring the test characters.
 
+## D-078 EmpireIntelCheck 0.1.10-tp1 built (the trim, realm and Skyborne probes) | Claude (2026-11-21), within Q-R-4 and D-077
+Built on branch `check-0110-trim`, not merged. Choices within the approved plan (Phase2_Plan.md 12.3), open to change:
+- **Compact at logout only:** the trim runs when the game writes the file (logout or `/reload`), so during play every list stays usable (the argument guard, the `/eicheck undoc` plan). The cascade under the cap (`C.Trim`) is unchanged as a safety net.
+- **Kept:** runs and verdicts; the Legacy challenges with done / progress, their step lists, and criteria text only for the 65 point challenges; `docs.args` (the argument guard) and the names of any Legacy-named documented system; `undoc.results`; the UI results without the atlas raw-size objects; per-character records.
+- **Dropped:** `latest.results`, `latest.names` and `latest.discovery` (so the next run's "added / removed names" list starts empty), `docs` systems, events and index, `undoc` lists and plan, `strongSeen` (counted), `nsBaseline`, challenge descriptions, reward text and `earnedByMe`, the steps' own sub-area criteria.
+- **Size, measured offline on the user's 2026-11-20 file [inferred]:** serialized 127,858 -> 51,102 bytes (40 percent); the 234 KB file on disk would be about 94 KB.
+- **New probes (UI checks):** `GetRealmName` as given (with `GetNormalizedRealmName`), `GetRealmID` (zero-argument getter, under the limits), the GUID's server number, whether "!RealmFix" is loaded (`C_AddOns.IsAddOnLoaded`, read only); per character: realm, server, realm add-on. Race-icon atlases `raceicon-skyborne`, `-windshaper`, `-highorder` (male, female).
+
 ---
 
 ## Open questions for the user (updated S-002, 2026-11-03)
